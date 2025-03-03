@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loading } from '@/components/ui/loading';
-import { fetchEvents } from '@/api/yachts';
+import { fetchFormulaOne } from '@/api/yachts';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { addToWishlist, fetchWishlist, removeFromWishlist } from '@/api/wishlist';
@@ -46,7 +46,7 @@ const Events = ({ limit }) => {
     
     try {
       setLoading(true);
-      const response = await fetch('https://api.takeoffyachts.com/yacht/check_event/', {
+      const response = await fetch('https://api.takeoffyachts.com/yacht/f1-yachts/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ const Events = ({ limit }) => {
   useEffect(() => {
     const getEvents = async () => {
       try {
-        const data = await fetchEvents(session?.user?.userid || 1);
+        const data = await fetchFormulaOne(session?.user?.userid || 1);
         setEvents(data);
       } catch (err) {
         setError(err.message || 'Unexpected Error');
@@ -154,7 +154,7 @@ const Events = ({ limit }) => {
   return (
     <section className="md:py-10 py-4 px-2">
       <div className="max-w-5xl mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-6">Our Events</h1>
+        <h1 className="text-3xl font-bold mb-6">Formula One</h1>
 
         <div className="flex flex-col space-y-4 mb-8">
           <div className="flex items-center justify-between">
@@ -283,29 +283,28 @@ const Events = ({ limit }) => {
               ))
           ) : eventsToDisplay.length > 0 ? (
             eventsToDisplay.map((item) => {
-              if (!item?.event) {
-                return null;
-              }
-
-              const { event } = item;
               return (
                 <Card
-                  key={event.id}
+                  key={item.id}
                   className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[250px] h-full max-h-[260px]"
                 >
                   <div className="relative">
                     <Image
-                      src={event.event_image 
-                        ? `https://api.takeoffyachts.com${event.event_image}`
-                        : '/assets/images/dubai.png'
+                      src={
+                        item.event_image 
+                        ? `https://api.takeoffyachts.com${item.event_image}`
+                        : '/assets/images/f1.png'
                       }
-                      alt={event.name || 'Event Image'}
+                      alt={item.name || 'F1 Yacht Image'}
                       width={400}
                       height={250}
                       className="object-cover px-3 pt-3 rounded-3xl h-[170px]"
+                      onError={(e) => {
+                        e.target.src = '/assets/images/f1.png'
+                      }}
                     />
 
-                    <Link href={`/dashboard/events/${event.id}`}>
+                    <Link href={`/dashboard/formula-one/${item.id}`}>
                       <p className="absolute inset-0 z-10"></p>
                     </Link>
 
@@ -316,11 +315,11 @@ const Events = ({ limit }) => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        handleWishlistToggle(event.id);
+                        handleWishlistToggle(item.id);
                       }}
                     >
                       <Image 
-                        src={favorites.has(event.id) ? '/assets/images/wishlist.svg' : '/assets/images/unwishlist.svg'} 
+                        src={favorites.has(item.id) ? '/assets/images/wishlist.svg' : '/assets/images/unwishlist.svg'} 
                         width={20} 
                         height={20} 
                         alt="Wishlist"
@@ -329,19 +328,20 @@ const Events = ({ limit }) => {
                     </Button>
                     <div className="absolute bottom-4 right-6 bg-white/80 dark:bg-gray-900 backdrop-blur-sm p-1.5 rounded-md">
                       <span className="text-xs font-medium">
-                        {item.packages.length} Packages Available
+                        {/* Assuming packages is part of the item, adjust if not */}
+                        {item.packages?.length || 0} Package Available
                       </span>
                     </div>
                   </div>
                   <CardContent className="px-4 py-2">
-                    <h3 className="text-md font-semibold mb-1">{event.name || 'Unnamed Event'}</h3>
+                    <h3 className="text-md font-semibold mb-1">{item.name || 'Unnamed Yacht'}</h3>
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {event.location || 'Location N/A'}
+                        {item.location || 'Location N/A'}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                      {(event.description || '').substring(0, 24)}...
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                      {(item.description || '').substring(0, 24)}...
                     </p>
                   </CardContent>
                 </Card>
@@ -349,7 +349,7 @@ const Events = ({ limit }) => {
             })
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-12">
-              <p className="text-gray-500 text-lg mb-4">No events found</p>
+              <p className="text-gray-500 text-lg mb-4">No Formula One Yachts found</p>
               <Button 
                 variant="outline" 
                 onClick={resetFilters}

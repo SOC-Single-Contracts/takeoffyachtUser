@@ -4,7 +4,6 @@ import axios from 'axios';
 export const getAllBlogs = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/Blogs/blogs/`);
-    console.log('Full API Response:', response.data);
     
     // Ensure we return the nested 'data' array
     if (response.data && response.data.status && response.data.data) {
