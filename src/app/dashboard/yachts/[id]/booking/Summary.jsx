@@ -1,0 +1,163 @@
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Copy, Mail, Phone, User, Calendar, Clock, Users, Globe, MessageSquare } from "lucide-react";
+import { useBookingContext } from "./BookingContext";
+import { format } from "date-fns";
+
+const Summary = ({ onNext }) => {
+  const { bookingData, selectedYacht, calculateTotal } = useBookingContext();
+
+  return (
+    <section className="">
+      <div className="max-w-5xl mx-auto container px-2 space-y-6 mt-8">
+        {/* Contact Details Table */}
+        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-semibold text-md text-black">
+                Your Contact Details
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white dark:bg-gray-800 text-xs">
+            <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span className="font-semibold">Full Name</span>
+              </TableCell>
+              <TableCell className="font-medium">{bookingData.fullName}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                <span className="font-semibold">Email</span>
+              </TableCell>
+              <TableCell className="font-medium">{bookingData.email}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <Phone className="w-4 h-4" />
+                <span className="font-semibold">Phone</span>
+              </TableCell>
+              <TableCell className="font-medium">{bookingData.phone}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                <span className="font-semibold">Country</span>
+              </TableCell>
+              <TableCell className="font-medium">{bookingData.country}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+
+        {/* Booking Details Table */}
+        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-semibold text-md text-black">
+                Booking Details
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white dark:bg-gray-800 text-xs">
+            <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span className="font-semibold">Date</span>
+              </TableCell>
+              <TableCell className="font-medium">
+                {format(new Date(bookingData.date), 'dd MMMM yyyy')}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span className="font-semibold">Time & Duration</span>
+              </TableCell>
+              <TableCell className="font-medium">
+                {format(new Date(bookingData.startTime), 'hh:mm a')} ({bookingData.duration} hours)
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                <span className="font-semibold">Guests</span>
+              </TableCell>
+              <TableCell className="font-medium">
+                {bookingData.adults} Adults{bookingData.kids > 0 && `, ${bookingData.kids} Children`}
+              </TableCell>
+            </TableRow>
+            {bookingData.notes && (
+              <TableRow>
+                <TableCell className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  <span className="font-semibold">Special Requests</span>
+                </TableCell>
+                <TableCell className="font-medium">{bookingData.notes}</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+
+        {/* Price Summary Table */}
+        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-semibold text-md text-black">
+                Price Summary {bookingData.isNewYearBooking && "(New Year's Eve Special Rate)"}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white dark:bg-gray-800 text-xs">
+            <TableRow>
+              <TableCell className="font-semibold">
+                Charter ({bookingData.duration} hours)
+                {bookingData.isNewYearBooking && " - New Year's Eve Rate"}
+              </TableCell>
+              <TableCell className="font-medium">
+                AED {(bookingData.isNewYearBooking ? 
+                  (selectedYacht?.yacht?.new_year_price || 0) : 
+                  (selectedYacht?.yacht?.per_hour_price || 0)) * bookingData.duration}
+              </TableCell>
+            </TableRow>
+            {bookingData.extras && bookingData.extras.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell className="font-semibold">{item.name}</TableCell>
+                <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
+              </TableRow>
+            ))}
+            <TableRow>
+              <TableCell className="font-bold">Total Amount</TableCell>
+              <TableCell className="font-bold">AED {calculateTotal()}</TableCell>
+            </TableRow>
+            {bookingData.isPartialPayment && (
+              <TableRow>
+                <TableCell className="font-bold text-blue-600">Amount Due Now (50%)</TableCell>
+                <TableCell className="font-bold text-blue-600">AED {calculateTotal() / 2}</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+
+        <div className="flex justify-end">
+          <Button
+            onClick={onNext}
+            className="bg-[#BEA355] text-white px-8 py-2 rounded-full hover:bg-[#A89245]"
+          >
+            Proceed to Payment
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Summary;

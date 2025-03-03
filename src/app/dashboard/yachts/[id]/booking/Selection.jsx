@@ -1,0 +1,947 @@
+"use client";
+import React, { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { CalendarIcon, Clock, Minus, Plus, MapPin } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { useBookingContext } from './BookingContext';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { toast } from 'sonner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import Image from 'next/image';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Fancybox } from "@fancyapps/ui";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
+
+const Selection = ({ onNext }) => {
+  const { toast } = useToast();
+  const { bookingData, updateBookingData, selectedYacht } = useBookingContext();
+  const capacity = selectedYacht?.yacht?.capacity || 0; // Get the yacht's capacity
+
+  const [loading, setLoading] = useState(false);
+  const [availableDates, setAvailableDates] = useState([]); // State to track available dates
+  const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' }); // State for date range
+
+  const [extras, setExtras] = useState({
+    food: [],
+    extra: [],
+    sport: []
+  });
+  const [quantities, setQuantities] = useState({});
+  const [loadingExtras, setLoadingExtras] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(44 * 60);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 0) {
+          clearInterval(timer);
+          toast.error("Booking session expired. Please start over.");
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+  
+    return () => clearInterval(timer);
+  }, []);
+
+  // useEffect(() => {
+  //   const fetchAvailability = async () => {
+  //     if (!selectedYacht?.yacht?.id) {
+  //       toast.error('Yacht ID is not available.');
+  //       return; // Exit if yacht ID is not defined
+  //     }
+  
+  //     try {
+  //       const response = await fetch(`https://api.takeoffyachts.com/yacht/check_yacht_availability/?yacht_id=${selectedYacht.yacht.id}`);
+  //       const data = await response.json();
+  //       if (data.error_code === 'pass') {
+  //         const available = data.availability.filter(item => item.is_available).map(item => item.date);
+  //         setAvailableDates(available); // Store available dates
+  //       } else {
+  //         toast.error('Failed to check availability.');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error checking availability:', error);
+  //       toast.error('Error checking availability.');
+  //     }
+  //   };
+  
+  //   fetchAvailability();
+  // }, [selectedYacht]);
+
+  // Fetch availability on component mount
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      if (!selectedYacht?.yacht?.id) {
+        toast.error('Yacht ID is not available.');
+        return; // Exit if yacht ID is not defined
+      }
+
+      try {
+        const response = await fetch(`https://api.takeoffyachts.com/yacht/check_yacht_availability/?yacht_id=${selectedYacht.yacht.id}`);
+        const data = await response.json();
+        if (data.error_code === 'pass') {
+          const available = data.availability.filter(item => item.is_available).map(item => item.date);
+          setAvailableDates(available); // Store available dates
+          setDateRange(data.date_range); // Store date range
+        } else {
+          toast.error('Failed to check availability.');
+        }
+      } catch (error) {
+        console.error('Error checking availability:', error);
+        toast.error('Error checking availability.');
+      }
+    };
+
+    fetchAvailability();
+  }, [selectedYacht]);
+
+  useEffect(() => {
+    const fetchExtras = async () => {
+      try {
+        const response = await fetch('https://api.takeoffyachts.com/yacht/food/');
+        const data = await response.json();
+        if (data.error_code === 'pass') {
+          // Organize items by category directly from the response
+          const organizedExtras = {
+            food: data.food.filter(item => item.price !== null && item.menucategory !== null),
+            extra: data.extra.filter(item => item.price !== null && item.menucategory !== null),
+            sport: data.sport.filter(item => item.price !== null && item.menucategory !== null)
+          };
+          
+          setExtras(organizedExtras);
+        } else {
+          toast.error('Failed to fetch extras.');
+        }
+      } catch (error) {
+        console.error('Error fetching extras:', error);
+        toast.error('Error fetching extras.');
+      } finally {
+        setLoadingExtras(false);
+      }
+    };
+
+    fetchExtras();
+
+    if (!bookingData.startTime) {
+      const defaultTime = new Date();
+      defaultTime.setHours(9, 0, 0, 0);
+      updateBookingData({ startTime: defaultTime });
+    }
+  }, [selectedYacht]);
+
+  const handleQuantityChange = (itemId, type) => {
+    setQuantities(prev => {
+      const currentQty = prev[itemId] || 0;
+      const newQty = type === 'increment' ? currentQty + 1 : Math.max(0, currentQty - 1);
+      return { ...prev, [itemId]: newQty };
+    });
+  };
+
+  const calculateCategoryTotal = (items) => {
+    return items.reduce((total, item) => {
+      return total + (item.price * (quantities[item.id] || 0));
+    }, 0);
+  };
+
+  const calculateTotal = () => {
+    const basePrice = selectedYacht?.yacht?.per_hour_price || 0;
+    const newYearPrice = selectedYacht?.yacht?.new_year_price || basePrice;
+    
+    // Check if the selected date is New Year's Eve (December 31st)
+    const isNewYearsEve = bookingData.date && (
+      new Date(bookingData.date).getMonth() === 11 &&
+      new Date(bookingData.date).getDate() === 31
+    );
+    
+    // Use New Year's price if it's December 31st
+    const hourlyRate = isNewYearsEve ? newYearPrice : basePrice;
+    
+    const totalExtras = Object.values(extras).reduce((total, category) => {
+      return total + calculateCategoryTotal(category);
+    }, 0);
+
+    return (hourlyRate * bookingData.duration) + totalExtras;
+  };
+
+  const handleNext = async () => {
+    setLoading(true);
+    try {
+      if (!bookingData.date || !bookingData.startTime) {
+        toast.error('Please select date and time');
+        return;
+      }
+
+      if (bookingData.adults + bookingData.kids === 0) {
+        toast.error('Please add at least one guest');
+        return;
+      }
+
+      // Check if it's New Year's Eve
+      const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 && 
+                           new Date(bookingData.date).getDate() === 31;
+
+      // Show warning for New Year's Eve bookings
+      if (isNewYearsEve) {
+        toast.warning("New Year's Eve rates apply for this booking date", {
+          description: "Special pricing will be calculated accordingly."
+        });
+      }
+
+      // Update booking data with quantities and pricing info
+      updateBookingData({
+        extras: Object.entries(quantities).reduce((acc, [id, qty]) => {
+          if (qty > 0) {
+            const item = [...extras.food, ...extras.extra, ...extras.sport].find(i => i.id.toString() === id);
+            if (item) {
+              acc.push({ id, quantity: qty, price: item.price, name: item.name });
+            }
+          }
+          return acc;
+        }, []),
+        isNewYearBooking: isNewYearsEve
+      });
+
+      onNext();
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to proceed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 9; hour <= 21; hour++) {
+      slots.push(format(new Date().setHours(hour, 0, 0, 0), 'HH:mm'));
+    }
+    return slots;
+  };
+
+  const renderExtraItem = (item, category) => (
+    <div key={item.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+      <div className="flex items-center space-x-4">
+        <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 cursor-pointer"
+            onClick={() => {
+              if (item.food_image) {
+                Fancybox.show([
+                  {
+                    src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${item.food_image}`,
+                    type: "image",
+                  }
+                ]);
+              }
+            }}
+        >
+          {item.food_image ? (
+            <Image
+              src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${item.food_image}`}
+              alt={item.name}
+              width={64}
+              height={64}
+              className="object-cover w-full h-full" // Ensure it covers the full area
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400">
+              <span className="text-xs">No image</span>
+            </div>
+          )}
+        </div>
+        <div>
+          <h3 className="font-medium text-black dark:text-white capitalize">{item.name}</h3>
+          <p className="text-xs text-black dark:text-gray-400 capitalize">AED {item.price}</p>
+        </div>
+      </div>
+      <div className="flex items-center space-x-2">
+        <Button
+          onClick={() => handleQuantityChange(item.id, 'decrement')}
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 bg-gray-100 dark:bg-gray-800 border-none"
+        >
+          <Minus className="h-4 w-4" />
+        </Button>
+        <span className="w-8 text-center">{quantities[item.id] || 0}</span>
+        <Button
+          onClick={() => handleQuantityChange(item.id, 'increment')}
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 bg-gray-100 dark:bg-gray-800 border-none"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+
+  const renderLoadingSkeleton = () => (
+    <div className="space-y-4">
+      {[1, 2, 3].map(i => (
+        <div key={i} className="flex items-center justify-between p-4 bg-white rounded-lg">
+          <div className="flex items-center space-x-4">
+            <Skeleton className="w-16 h-16 rounded-lg" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Skeleton className="h-8 w-8 rounded" />
+            <Skeleton className="h-8 w-8 rounded" />
+            <Skeleton className="h-8 w-8 rounded" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <>
+    <div className="w-full mb-6">
+  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+    {/* Yacht Images */}
+    <div className="mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {selectedYacht?.yacht?.yacht_image && (
+          <div className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
+            onClick={() => {
+              Fancybox.show([
+                {
+                  src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.yacht_image}`,
+                  type: "image",
+                }
+              ]);
+            }}
+          >
+            <Image
+              src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.yacht_image}`}
+              alt={selectedYacht.yacht.name}
+              fill
+              className="object-cover hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        )}
+        {[...Array(20)].map((_, index) => {
+          const imageKey = `image${index + 1}`;
+          if (selectedYacht?.yacht?.[imageKey]) {
+            return (
+              <div 
+                key={imageKey}
+                className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
+                onClick={() => {
+                  Fancybox.show([
+                    {
+                      src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht[imageKey]}`,
+                      type: "image",
+                    }
+                  ]);
+                }}
+              >
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht[imageKey]}`}
+                  alt={`${selectedYacht.yacht.name} - ${index + 1}`}
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            );
+          }
+          return null;
+        })}
+      </div>
+    </div>
+
+    {/* Yacht Details */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h2 className="text-2xl font-semibold mb-2">{selectedYacht?.yacht?.name}</h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">{selectedYacht?.yacht?.description}</p>
+        
+        <div className="space-y-4">
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell className="font-medium">Type</TableCell>
+                <TableCell>{selectedYacht?.yacht?.type}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Length</TableCell>
+                <TableCell>{selectedYacht?.yacht?.length} ft</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Cabins</TableCell>
+                <TableCell>{selectedYacht?.yacht?.number_of_cabin}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Sleep Capacity</TableCell>
+                <TableCell>{selectedYacht?.yacht?.sleep_capacity} persons</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Guest Capacity</TableCell>
+                <TableCell>{selectedYacht?.yacht?.capacity} persons</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Crew</TableCell>
+                <TableCell>{selectedYacht?.yacht?.crew_member} ({selectedYacht?.yacht?.crew_language})</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {/* Categories */}
+        {/* <div>
+          <h3 className="font-semibold mb-3">Categories</h3>
+          <div className="flex flex-wrap gap-2">
+            {selectedYacht?.categories?.map((category) => (
+              <span 
+                key={category.id} 
+                className="bg-[#BEA355]/10 text-[#BEA355] px-3 py-1 rounded-full text-sm"
+              >
+                {category.name}
+              </span>
+            ))}
+          </div>
+        </div> */}
+        <div>
+          <h3 className="font-semibold mb-3">Categories</h3>
+          {selectedYacht?.categories?.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {selectedYacht.categories.map((category, index) => (
+                <span 
+                  key={index} 
+                  className="bg-[#BEA355]/10 text-[#BEA355] px-3 py-1 rounded-full text-sm"
+                >
+                  {category.replace(/'/g, '')}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p>No categories available.</p>
+          )}
+        </div>
+
+        {/* Features */}
+        {/* <div>
+          <h3 className="font-semibold mb-3">Features</h3>
+          <div className="flex flex-wrap gap-2">
+            {selectedYacht?.subcategories?.map((sub) => (
+              <span 
+                key={sub.id} 
+                className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
+              >
+                {sub.name}
+              </span>
+            ))}
+          </div>
+        </div> */}
+<h3 className="font-semibold mb-3">Features</h3>
+{selectedYacht?.subcategories?.length > 0 ? (
+  <div className="flex flex-wrap gap-2">
+    {selectedYacht.subcategories.map((sub, index) => (
+      <span 
+        key={index} 
+        className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
+      >
+        {sub.name}
+      </span>
+    ))}
+  </div>
+) : selectedYacht?.yacht?.features?.length > 0 ? (
+  <div className="flex flex-wrap gap-2">
+    {selectedYacht.yacht.features.map((feature, index) => (
+      <span 
+        key={index} 
+        className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
+      >
+        {feature}
+      </span>
+    ))}
+  </div>
+) : (
+  <p className='text-xs'>No features available.</p>
+)}
+
+        {/* Inclusions */}
+        {/* <div>
+          <h3 className="font-semibold mb-3">Included in Charter</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {selectedYacht?.inclusion?.map((item) => (
+              <div key={item.id} className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-[#BEA355] rounded-full"></div>
+                <span className="text-sm capitalize">{item.name}</span>
+              </div>
+            ))}
+          </div>
+        </div> */}
+        <div>
+          <h3 className="font-semibold mb-3">Included in Charter</h3>
+          {selectedYacht?.inclusion?.length > 0 ? (
+            <div className="grid grid-cols-2 gap-2">
+              {selectedYacht.inclusion.map((item) => (
+                <div key={item.id} className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-[#BEA355] rounded-full"></div>
+                  <span className="text-sm capitalize">{item.name}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className='text-xs'>No inclusions available.</p>
+          )}
+        </div>
+
+        {/* New Year Inclusions */}
+        {bookingData.date && 
+         new Date(bookingData.date).getMonth() === 11 && 
+         new Date(bookingData.date).getDate() === 31 && (
+          <div>
+            <h3 className="font-semibold mb-3">New Year's Eve Special Inclusions</h3>
+            <div className="grid grid-cols-2 gap-2">
+              {selectedYacht?.['New year inclusion']?.map((item) => (
+                <div key={item.id} className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-[#BEA355] rounded-full"></div>
+                  <span className="text-sm">{item.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+    <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-6">
+      <div className="flex flex-col w-full lg:w-2/4 xl:w-2/3 gap-4">
+        {/* Date and Time Selection */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6">
+          <div className="flex flex-col space-y-2">
+            <Label className="text-sm font-medium">
+              Select Date<span className='text-red-500'>*</span>
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-[280px] justify-start text-left font-normal",
+                    !bookingData.date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {bookingData.date ? format(bookingData.date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                {/* <Calendar
+                  mode="single"
+                  selected={bookingData.date}
+                  onSelect={(date) => updateBookingData({ date })}
+                  disabled={(date) => date < new Date()}
+                  initialFocus
+                /> */}
+               {/* <Calendar
+              mode="single"
+              selected={bookingData.date}
+              onSelect={(date) => {
+                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
+                  updateBookingData({ date });
+                } else {
+                  toast.error("Selected date is not available.");
+                }
+              }}
+              disabled={(date) => !availableDates.includes(format(date, 'yyyy-MM-dd')) || date < new Date()} // Disable booked dates and past dates
+              initialFocus
+            /> */}
+             <Calendar
+              mode="single"
+              selected={bookingData.date}
+              onSelect={(date) => {
+                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
+                  updateBookingData({ date });
+                } else {
+                  toast.error("Selected date is not available.");
+                }
+              }}
+              disabled={(date) => 
+                !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
+                date < new Date() || 
+                date < new Date(dateRange.start_date) || 
+                date > new Date(dateRange.end_date) // Disable dates outside the range
+              }
+              initialFocus
+            />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="flex justify-between items-start">
+            <div className="flex flex-col space-y-2">
+              <Label className="text-sm font-medium">
+                Start Time<span className='text-red-500'>*</span>
+              </Label>
+              <Select
+                value={format(bookingData.startTime, "HH:mm")}
+                onValueChange={(time) => {
+                  const [hours, minutes] = time.split(':');
+                  const newDate = new Date(bookingData.date);
+                  newDate.setHours(parseInt(hours), parseInt(minutes));
+                  updateBookingData({ startTime: newDate });
+                }}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select time">
+                    <div className="flex items-center">
+                      <Clock className="mr-2 h-4 w-4" />
+                      {format(bookingData.startTime, "h:mm a")}
+                    </div>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {generateTimeSlots().map((time) => (
+                    <SelectItem key={time} value={time}>
+                      {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col items-end space-y-2">
+              <Label className="text-sm font-medium">Duration (min 3 hrs)<span className='text-red-500'>*</span></Label>
+              <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
+                <Button
+                  onClick={() => updateBookingData({ duration: Math.max(3, bookingData.duration - 1) })}
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="w-8 text-center font-medium">{bookingData.duration}</span>
+                <Button
+                  onClick={() => updateBookingData({ duration: bookingData.duration + 1 })}
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Guests Selection */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+          <div className="flex flex-col md:flex-row justify-between items-start space-y-4 md:space-y-0">
+            <Label className="text-sm font-medium">Number of Guests</Label>
+            <div className="flex flex-col space-y-4 items-end">
+              <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
+                <span className="text-sm">Adults</span>
+                <Button
+                  onClick={() => updateBookingData({ adults: Math.max(0, bookingData.adults - 1) })}
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <Input
+                  type="number"
+                  value={bookingData.adults}
+                  // onChange={(e) => updateBookingData({ adults: Math.max(0, parseInt(e.target.value) || 0) })}
+                  onChange={(e) => {
+                    const adults = Math.max(0, parseInt(e.target.value) || 0);
+                    const totalGuests = adults + bookingData.kids;
+                    if (totalGuests > capacity) {
+                      toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
+                    } else {
+                      updateBookingData({ adults });
+                    }
+                  }}
+                  className="w-16 text-center border rounded"
+                />
+                <Button
+                  // onClick={() => updateBookingData({ adults: bookingData.adults + 1 })}
+                  onClick={() => {
+                    const newAdults = bookingData.adults + 1;
+                    const totalGuests = newAdults + bookingData.kids;
+                    if (totalGuests > capacity) {
+                      toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
+                    } else {
+                      updateBookingData({ adults: newAdults });
+                    }
+                  }}
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
+                <span className="text-sm">Kids</span>
+                <Button
+                  onClick={() => updateBookingData({ kids: Math.max(0, bookingData.kids - 1) })}
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <Input
+                  type="number"
+                  value={bookingData.kids}
+                  // onChange={(e) => updateBookingData({ kids: Math.max(0, parseInt(e.target.value) || 0) })}
+                  onChange={(e) => {
+                    const kids = Math.max(0, parseInt(e.target.value) || 0);
+                    const totalGuests = bookingData.adults + kids;
+                    if (totalGuests > capacity) {
+                      toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
+                    } else {
+                      updateBookingData({ kids });
+                    }
+                  }}
+                  className="w-16 text-center border rounded"
+                />
+                <Button
+                  // onClick={() => updateBookingData({ kids: bookingData.kids + 1 })}
+                  onClick={() => {
+                    const newKids = bookingData.kids + 1;
+                    const totalGuests = bookingData.adults + newKids;
+                    if (totalGuests > capacity) {
+                      toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
+                    } else {
+                      updateBookingData({ kids: newKids });
+                    }
+                  }}
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Optional Extras */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+          <Label className="text-sm font-medium mb-4 block">
+            Optional Extras
+          </Label>
+          <Accordion type="multiple" className="space-y-4">
+
+            <AccordionItem value="food">
+              <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
+                <div className="flex justify-between w-full items-center">
+                  <span className="font-semibold">Food & Beverages</span>
+                  <span className="text-black dark:text-gray-400 font-semibold">
+                    AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.food)}</span>
+                  </span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-4 space-y-4">
+                {loadingExtras ? renderLoadingSkeleton() : 
+                  extras.food.map(item => renderExtraItem(item, 'food'))}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="sport">
+              <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
+                <div className="flex justify-between w-full items-center">
+                  <span className="font-semibold">Water Sports</span>
+                  <span className="text-black dark:text-gray-400 font-semibold">
+                    AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.sport)}</span>
+                  </span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-4 space-y-4">
+                {loadingExtras ? renderLoadingSkeleton() : 
+                  extras.sport.map(item => renderExtraItem(item, 'sport'))}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="extra">
+              <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
+                <div className="flex justify-between w-full items-center">
+                  <span className="font-semibold">Miscellaneous</span>
+                  <p className="text-black dark:text-gray-400 font-semibold">
+                    AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.extra)}</span>
+                  </p>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-4 space-y-4">
+                {loadingExtras ? renderLoadingSkeleton() : 
+                  extras.extra.map(item => renderExtraItem(item, 'extra'))}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </div>
+      {/* Summary Card */}
+      <div className="w-full lg:w-1/2 max-w-[400px]">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6 sticky top-4">
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold">
+              AED <span className="text-2xl font-bold">{calculateTotal()}</span> for {bookingData.duration} hours
+            </h2>
+            {/* <p className="text-gray-500 dark:text-gray-400 text-sm">
+              for {bookingData.duration} hours
+            </p> */}
+          </div>
+
+          <Table>
+            <TableHeader className="bg-[#EBEBEB] dark:bg-gray-700">
+              <TableRow>
+                <TableHead className="font-semibold text-black dark:text-gray-400 rounded-t-lg">
+                  {selectedYacht?.yacht?.name || 'Yacht Details'}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="border border-gray-200 dark:border-gray-700">
+              <TableRow>
+                <TableCell className="flex justify-between">
+                  <span className="text-black dark:text-gray-400">Departure</span>
+                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                    {bookingData.startTime && format(bookingData.startTime, "p")}, 
+                    {bookingData.date && format(bookingData.date, " MMM dd, yyyy")}
+                  </span>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="flex justify-between">
+                  <span className="text-black dark:text-gray-400">Duration</span>
+                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">{bookingData.duration} Hours</span>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="flex justify-between">
+                  <span className="text-black dark:text-gray-400">Guests</span>
+                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                    {bookingData.adults + bookingData.kids} 
+                    <span className="text-xs ml-1">
+                      (max {selectedYacht?.yacht?.capacity || 0})
+                    </span>
+                  </span>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="flex justify-between items-center">
+                  <span className="text-black dark:text-gray-400">Location</span>
+                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-1">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {selectedYacht?.yacht?.location || 'Dubai'}
+                  </span>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+
+          {/* <div className="bg-red-50 rounded-md p-2">
+            <p className="text-sm text-black">
+              You have <span className="font-semibold text-red-600">{formatTime(timeLeft)}</span> to complete your booking
+            </p>
+          </div> */}
+
+          {/* <div className="space-y-2 pl-1">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="partial" 
+                checked={bookingData.isPartialPayment}
+                onCheckedChange={(checked) => updateBookingData({ isPartialPayment: checked })}
+              />
+              <Label htmlFor="partial" className="text-sm">
+                You want to do partial payment?
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="terms"
+                className="checked:bg-[#BEA355] checked:border-[#BEA355]"
+                checked={bookingData.termsAccepted}
+                onCheckedChange={(checked) => updateBookingData({ termsAccepted: checked })}
+              />
+              <Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
+                <DialogTrigger asChild>
+                  <Label htmlFor="terms" className="text-sm cursor-pointer hover:text-[#BEA355]">
+                    I agree to terms & conditions
+                  </Label>
+                </DialogTrigger>
+                <DialogContent className="max-w-[800px] max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-semibold mb-4">Terms and Conditions</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 text-sm">
+                    <h3 className="font-semibold text-lg">1. Booking and Payment</h3>
+                    <p>• A deposit of 50% of the total charter fee is required to confirm your booking.</p>
+                    <p>• The remaining balance must be paid at least 7 days before the charter date.</p>
+                    <p>• All payments are non-refundable unless otherwise specified.</p>
+
+                    <h3 className="font-semibold text-lg">2. Cancellation Policy</h3>
+                    <p>• Cancellations made more than 30 days before the charter date: 80% refund</p>
+                    <p>• Cancellations made 15-30 days before: 50% refund</p>
+                    <p>• Cancellations made less than 15 days before: No refund</p>
+
+                    <h3 className="font-semibold text-lg">3. Charter Requirements</h3>
+                    <p>• The lead charterer must be at least 21 years of age.</p>
+                    <p>• Valid identification is required for all passengers.</p>
+                    <p>• The number of guests must not exceed the yacht's capacity.</p>
+
+                    <h3 className="font-semibold text-lg">4. Safety and Conduct</h3>
+                    <p>• All guests must follow safety instructions provided by the crew.</p>
+                    <p>• The captain has full authority to terminate the charter if safety is compromised.</p>
+                    <p>• No illegal activities or substances are permitted on board.</p>
+
+                    <h3 className="font-semibold text-lg">5. Weather Conditions</h3>
+                    <p>• The captain reserves the right to cancel or modify the itinerary due to weather.</p>
+                    <p>• Weather-related cancellations will be rescheduled at no additional cost.</p>
+
+                    <h3 className="font-semibold text-lg">6. Liability</h3>
+                    <p>• The company is not liable for any personal injury or loss of property.</p>
+                    <p>• Guests are advised to have appropriate insurance coverage.</p>
+
+                    <h3 className="font-semibold text-lg">7. Additional Charges</h3>
+                    <p>• Fuel surcharges may apply for extended cruising.</p>
+                    <p>• Additional hours will be charged at the standard hourly rate.</p>
+                    <p>• Damage to the vessel or equipment will be charged accordingly.</p>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div> */}
+
+          <Button 
+            onClick={handleNext}
+            disabled={loading}
+            className="w-full bg-[#BEA355] text-white hover:bg-[#A68D3F] rounded-full"
+          >
+            {loading ? 'Checking availability...' : 'Continue'}
+          </Button>
+        </div>
+      </div>
+    </div>
+    </>
+  );
+};
+
+export default Selection;
