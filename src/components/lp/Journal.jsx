@@ -22,7 +22,6 @@ const Journal = () => {
     const fetchBlogs = async () => {
       try {
         const response = await getAllBlogs();
-        console.log('Fetched Blogs Response:', response);
         
         // Check if response has data and status is true
         if (response.status && response.data && response.data.length > 0) {

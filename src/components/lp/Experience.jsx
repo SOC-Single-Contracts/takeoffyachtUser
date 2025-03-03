@@ -163,7 +163,7 @@ const Experience = () => {
     return (
       <>
         <section className="md:py-16 py-10">
-          <div className="max-w-5xl px-4 mx-auto">
+          <div className="max-w-5xl px-2 mx-auto">
             <div className="flex justify-between items-center">
               <div className="h-10 w-1/3 bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse"></div>
             </div>
@@ -174,7 +174,7 @@ const Experience = () => {
           </div>
         </section>
         <section className="py-10">
-          <div className="max-w-5xl px-4 mx-auto">
+          <div className="max-w-5xl px-2 mx-auto">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 place-items-center">
               {Array.from({ length: 3 }).map((_, index) => (
                 <FeatureSkeleton key={index} />
@@ -233,7 +233,7 @@ const Experience = () => {
   return (
     <>
       <section className="md:py-16 py-10">
-        <div className="max-w-5xl px-4 mx-auto">
+        <div className="max-w-5xl px-2 mx-auto">
           <div className="flex justify-between items-center">
             <h2 className="md:text-[40px] text-[24px] font-semibold tracking-tight sm:text-4xl">
               Top Experiences

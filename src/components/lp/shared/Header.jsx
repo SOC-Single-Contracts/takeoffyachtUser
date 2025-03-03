@@ -14,7 +14,6 @@ import {
   Search,
   Ship,
   SquareArrowOutUpRight,
-  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -217,12 +216,6 @@ const Header = () => {
                       </Link>
                     </MenubarItem>
                     <MenubarItem>
-                      <Link className="flex items-center space-x-2" href="/dashboard/wallet">
-                        <Wallet className="w-4 h-4 mr-2" />
-                        Wallet
-                      </Link>
-                    </MenubarItem>
-                    <MenubarItem>
                       <Link className="flex items-center space-x-2" href="/dashboard/settings">
                         <CircleUserRound className="w-4 h-4 mr-2" />
                         Profile
@@ -348,12 +341,6 @@ const Header = () => {
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <CircleUserRound className="w-4 h-4" /> <span>Profile</span>
-                    </Link>
-                    <Link
-                      href="/dashboard/wallet"
-                      className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
-                    >
-                      <Wallet className="w-4 h-4" /> <span>Wallet</span>
                     </Link>
                     
                     <Separator />
