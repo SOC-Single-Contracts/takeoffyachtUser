@@ -18,6 +18,8 @@ import { useSession } from "next-auth/react";
 import MapSectionWrapper from "@/components/shared/dashboard/MapSectionWrapper";
 import { dubai, summaryimg } from "../../../../../../../public/assets/images";
 import Image from "next/image";
+import jsPDF from "jspdf";
+import QRCode from "qrcode";
 
 const BookingSummary = () => {
   const { id } = useParams();
@@ -259,6 +261,22 @@ const BookingSummary = () => {
     }
   };
 
+  const handleDownloadQRCode = async () => {
+    if (!booking.qr_code) return;
+  
+    try {
+      const qrCodeDataUrl = await QRCode.toDataURL(`https://api.takeoffyachts.com${booking.qr_code}`);
+  
+      const doc = new jsPDF();
+  
+      doc.addImage(qrCodeDataUrl, 'PNG', 10, 10, 180, 180);
+  
+      doc.save('booking_qr_code.pdf');
+    } catch (error) {
+      console.error('Error generating QR code PDF:', error);
+    }
+  };
+
   return (
     <section className="py-8 px-2">
       <div className="max-w-5xl px-2 mx-auto flex items-center space-x-4">
@@ -394,7 +412,7 @@ const BookingSummary = () => {
             <TableCell className="font-medium">
               {booking.qr_code ? (
                 <div className="flex items-center gap-2">
-                  <Link 
+                  {/* <Link 
                     href={`https://api.takeoffyachts.com${booking.qr_code}`} 
                     target="_blank" 
                     className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#BEA355] to-[#D4B96E] text-white rounded-full text-xs font-medium transition-all hover:scale-105 hover:shadow-lg"
@@ -408,6 +426,14 @@ const BookingSummary = () => {
                     size="sm"
                     className="rounded-full border-[#BEA355] text-[#BEA355] hover:bg-[#BEA355] hover:text-white dark:border-[#BEA355] dark:text-[#BEA355] dark:hover:bg-[#BEA355] dark:hover:text-white"
                     onClick={() => window.open(`https://api.takeoffyachts.com${booking.qr_code}`, '_blank')}
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                  </Button> */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full border-[#BEA355] text-[#BEA355] hover:bg-[#BEA355] hover:text-white dark:border-[#BEA355] dark:text-[#BEA355] dark:hover:bg-[#BEA355] dark:hover:text-white"
+                    onClick={handleDownloadQRCode}
                   >
                     <Download className="w-3.5 h-3.5" />
                   </Button>
