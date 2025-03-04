@@ -34,22 +34,24 @@ const PaymentForm = () => {
     }
     return true;
   };
-
+  
   const calculatePaymentAmount = () => {
+    // Use the total cost from bookingData if available
+    const totalCost = bookingData.totalCost || calculateTotal();
+
     // If remaining cost exists and is greater than 0, use that
     if (bookingData.remainingCost && bookingData.remainingCost > 0) {
-      return bookingData.remainingCost;
+        return bookingData.remainingCost;
     }
 
     // If partial payment is enabled, calculate 25% of total
     if (bookingData.isPartialPayment) {
-      const total = calculateTotal();
-      return total * 0.25;
+        return totalCost * 0.25;
     }
 
     // Otherwise, return full total
-    return calculateTotal();
-  };
+    return totalCost;
+};
 
   const determinePaymentEndpoint = () => {
     // If remaining cost exists and is greater than 0, use remaining payment

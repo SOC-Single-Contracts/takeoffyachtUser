@@ -126,6 +126,7 @@ const Selection = ({ onNext }) => {
           };
           
           setExtras(organizedExtras);
+          updateBookingData({ extras: organizedExtras });
         } else {
           toast.error('Failed to fetch extras.');
         }

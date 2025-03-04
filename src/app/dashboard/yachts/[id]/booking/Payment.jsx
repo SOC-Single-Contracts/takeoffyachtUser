@@ -8,6 +8,8 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
@@ -16,7 +18,9 @@ const PaymentForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
-  const { bookingData, selectedYacht, calculateTotal } = useBookingContext();
+  // const { bookingData, selectedYacht, calculateTotal } = useBookingContext();
+  const { bookingData, updateBookingData, selectedYacht, calculateTotal } = useBookingContext();
+
   const { data: session } = useSession();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
@@ -37,7 +41,7 @@ const PaymentForm = () => {
 
   const calculatePaymentAmount = () => {
     const total = calculateTotal();
-    return bookingData.isPartialPayment ? total / 2 : total;
+    return bookingData.isPartialPayment ? total * 0.25 : total;
   };
 
   // const handleSubmit = async (e) => {
@@ -230,6 +234,18 @@ const PaymentForm = () => {
             />
           </div>
           <div className="flex flex-col space-y-2">
+          <div className="flex items-center space-x-2 mb-2">
+            <Checkbox 
+            id="partial" 
+            checked={bookingData.isPartialPayment}
+            onCheckedChange={(checked) => {
+              updateBookingData({ isPartialPayment: checked });
+            }}
+          />
+            <Label htmlFor="partial" className="text-sm font-light">
+              You want to do partial payment?
+            </Label>
+          </div>
             <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
               <CheckCircle className='w-3 h-3 text-green-500' />
               You are only charged if the owner accepts.
@@ -250,7 +266,7 @@ const PaymentForm = () => {
         disabled={isProcessing || !stripe || !cardComplete}
         className='w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-10'
       >
-        {isProcessing ? 'Processing...' : `Pay ${bookingData.isPartialPayment ? '50%' : 'Full'} Amount (AED ${calculatePaymentAmount()})`}
+        {isProcessing ? 'Processing...' : `Pay ${bookingData.isPartialPayment ? '25%' : 'Full'} Amount (AED ${calculatePaymentAmount()})`}
       </Button>
     </form>
   );
@@ -288,8 +304,8 @@ const Payment = () => {
               </div>
               {bookingData.isPartialPayment && (
                 <div className='flex justify-between text-blue-600 font-semibold mt-2'>
-                  <span>Amount Due Now (50%)</span>
-                  <span>AED {calculateTotal() / 2}</span>
+                  <span>Amount Due Now (25%)</span>
+                  <span>AED {calculateTotal() * 0.25}</span>
                 </div>
               )}
             </div>
