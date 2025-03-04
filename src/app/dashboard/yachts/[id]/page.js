@@ -162,9 +162,9 @@ const YachtDetail = () => {
 
   const getInclusionIcon = (name) => {
     const iconMap = {
-      'water': "/assets/images/water.svg",
+      'water drop': "/assets/images/water.svg",
       'ice': "/assets/images/ice-cube.svg",
-      'wifi': "/assets/images/wifi.svg",
+      'water drop': "/assets/images/Icon_Wi-Fi.svg",
       'fruit plater': "/assets/images/fruits.svg",
       'ny water': "/assets/images/water.svg",
       'ny ice': "/assets/images/ice-cube.svg",
@@ -341,6 +341,7 @@ const YachtDetail = () => {
       return 'N/A';
     }
   };
+
 
   return (
     <>
@@ -714,7 +715,10 @@ const YachtDetail = () => {
                         className="text-gray-700 dark:text-gray-400 font-semibold text-sm flex items-center bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-2"
                       >
                         <Image
-                          src={getInclusionIcon(inclusion.name)}
+                         src={
+                          sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_API_URL}${sub?.dark_icon}`
+                          : '/assets/images/f1.png'
+                      }
                           width={20}
                           height={20}
                           alt={inclusion.name}
@@ -757,7 +761,10 @@ const YachtDetail = () => {
                           className="text-gray-700 dark:text-gray-400 font-semibold text-sm flex items-center bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-2"
                         >
                           <Image
-                            src={getInclusionIcon(sub.name)}
+                        src={
+                          sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_API_URL}${sub?.dark_icon}`
+                          : '/assets/images/f1.png'
+                      }
                             width={20}
                             height={20}
                             alt={sub.name}
