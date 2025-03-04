@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import BrandCard from './DiscountCard';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 
 
 
@@ -21,26 +22,26 @@ const PartnerDiscount = () => {
     const { data: session } = useSession();
     const { toast } = useToast();
     const [brands, setBrands] = useState([
-        
-    //     {
-    //     id: 1,
-    //     name: "Luxury Yachts In",
-    //     description: "Premium yacht manufacturer",
-    //     image: "/brands/yacht.jpg"
-    // },
-    // {
-    //     id: 2,
-    //     name: "Elite Marine",
-    //     description: "High-end luxury boats",
-    //     image: "/brands/elite-marine.jpg"
-    // },
-    // {
-    //     id: 3,
-    //     name: "Oceanic Cruises",
-    //     description: "Experience the finest sea voyages",
-    //     image: "/brands/oceanic-cruises.jpg"
-    // }
-]);
+
+        // {
+        //     id: 1,
+        //     name: "Luxury Yachts In",
+        //     description: "Premium yacht manufacturer",
+        //     image: "/brands/yacht.jpg"
+        // },
+        // {
+        //     id: 2,
+        //     name: "Elite Marine",
+        //     description: "High-end luxury boats",
+        //     image: "/brands/elite-marine.jpg"
+        // },
+        // {
+        //     id: 3,
+        //     name: "Oceanic Cruises",
+        //     description: "Experience the finest sea voyages",
+        //     image: "/brands/oceanic-cruises.jpg"
+        // }
+    ]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -64,7 +65,7 @@ const PartnerDiscount = () => {
                 throw new Error(result.error || 'Promocode processing failed');
             }
             // Promocode successful
-         
+
             setBrands(result?.data?.brands);
             toast({
                 title: "Validated",
@@ -85,11 +86,13 @@ const PartnerDiscount = () => {
             setIsProcessing(false);
         }
     };
-//test
+    //test
     // useEffect(() => {
     //     console.log("branfds", brands)
     // }, [brands])
     return (
+
+
         <div className='mx-auto w-full max-w-3xl mx-auto container my-2 flex flex-column justify-between  flex-col items-start gap-8 px-2 px-4 lg:px-6'>
             <div className="flex items-center">
                 <Button
@@ -145,6 +148,8 @@ const PartnerDiscount = () => {
             </div>}
 
         </div>
+
+
     );
 };
 
