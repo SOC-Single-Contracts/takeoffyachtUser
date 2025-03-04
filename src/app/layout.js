@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/toaster";
 import { GlobalLoading } from "./global-loading";
 import { useEffect, useState } from "react";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
           <ThemeProvider>
               {isLoading && <GlobalLoading />}
               {children}
+              <WhatsAppButton />
               <Toaster />
           </ThemeProvider>
         </Providers>
