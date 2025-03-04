@@ -491,34 +491,43 @@ const Settings = () => {
           <DialogTitle>Edit Profile</DialogTitle>
           <form onSubmit={(e) => { e.preventDefault(); handleUpdateProfile(userData); }} className="space-y-4 p-2">
             <div>
-              <Label className="text-sm font-semibold">Profile Picture</Label>
-              <div className="flex items-center space-x-4">
-                {userData.ProfilePicture ? (
-                  <Image
-                    src={userData.ProfilePicture}
-                    alt="Profile"
-                    width={50}
-                    height={50}
-                    className="rounded-full border border-gray-300 shadow-sm object-cover w-12 h-12"
-                  />
-                ) : (
-                  <User className="w-12 h-12 p-1 rounded-full bg-gray-200 border border-gray-300 shadow-sm" />
-                )}
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={async (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      const formData = new FormData();
-                      formData.append('profilePicture', file);
-                      setUserData({ ...userData, ProfilePicture: URL.createObjectURL(file) });
-                    }
-                  }}
-                  className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-[#BEA355]"
+            <div className="flex items-center justify-center space-x-4 relative"> {/* Add relative positioning */}
+              {userData.ProfilePicture ? (
+                <Image
+                  src={userData.ProfilePicture}
+                  alt="Profile"
+                  width={50}
+                  height={50}
+                  className="rounded-full border border-gray-300 shadow-sm object-cover w-24 h-24 cursor-pointer"
+                  onClick={() => document.getElementById('profilePictureInput').click()} // Trigger file input on image click
                 />
+              ) : (
+                <User className="w-24 h-24 p-4 rounded-full bg-gray-200 border border-gray-300 shadow-sm cursor-pointer" 
+                      onClick={() => document.getElementById('profilePictureInput').click()} // Trigger file input on icon click
+                />
+              )}
+              <input
+                id="profilePictureInput"
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const formData = new FormData();
+                    formData.append('profilePicture', file);
+                    setUserData({ ...userData, ProfilePicture: URL.createObjectURL(file) });
+                  }
+                }}
+                className="hidden" // Hide the input
+              />
+              {/* Edit Icon */}
+              <div className="absolute bottom-0 right-[11rem] p-1 bg-white rounded-full shadow-md cursor-pointer" onClick={() => document.getElementById('profilePictureInput').click()}>
+                <svg className="w-6 h-6 text-[#BEA355]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8l2 2-8 8H8v-2l8-8z" />
+                </svg>
               </div>
             </div>
+          </div>
             <div>
               <Label className="text-sm font-semibold">Username</Label>
               <Input

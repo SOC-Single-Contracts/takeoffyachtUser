@@ -7,9 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Copy, Mail, Phone, User, Calendar, Clock, Users, Globe, MessageSquare } from "lucide-react";
+import { Mail, Phone, User, Calendar, Clock, Users, Globe, MessageSquare } from "lucide-react";
 import { useBookingContext } from "./BookingContext";
 import { format } from "date-fns";
+import { Fancybox } from "@fancyapps/ui";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import Image from "next/image";
 
 const Summary = ({ onNext }) => {
   const { bookingData, selectedYacht, calculateTotal } = useBookingContext();
@@ -17,6 +20,56 @@ const Summary = ({ onNext }) => {
   return (
     <section className="">
       <div className="max-w-5xl mx-auto container px-2 space-y-6 mt-8">
+        <div className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {selectedYacht?.yacht?.yacht_image && (
+              <div className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
+                onClick={() => {
+                  Fancybox.show([
+                    {
+                      src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.yacht_image}`,
+                      type: "image",
+                    }
+                  ]);
+                }}
+              >
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.yacht_image}`}
+                  alt={selectedYacht.yacht.name}
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            )}
+            {[...Array(20)].map((_, index) => {
+              const imageKey = `image${index + 1}`;
+              if (selectedYacht?.yacht?.[imageKey]) {
+                return (
+                  <div
+                    key={imageKey}
+                    className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
+                    onClick={() => {
+                      Fancybox.show([
+                        {
+                          src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht[imageKey]}`,
+                          type: "image",
+                        }
+                      ]);
+                    }}
+                  >
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht[imageKey]}`}
+                      alt={`${selectedYacht.yacht.name} - ${index + 1}`}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
+        </div>
         {/* Contact Details Table */}
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
@@ -123,8 +176,8 @@ const Summary = ({ onNext }) => {
                 {bookingData.isNewYearBooking && " - New Year's Eve Rate"}
               </TableCell>
               <TableCell className="font-medium">
-                AED {(bookingData.isNewYearBooking ? 
-                  (selectedYacht?.yacht?.new_year_price || 0) : 
+                AED {(bookingData.isNewYearBooking ?
+                  (selectedYacht?.yacht?.new_year_price || 0) :
                   (selectedYacht?.yacht?.per_hour_price || 0)) * bookingData.duration}
               </TableCell>
             </TableRow>

@@ -62,6 +62,10 @@ const UserDetails = ({ onNext }) => {
         return;
       }
 
+      // Pass the actual country name instead of the code
+      const countryName = countriesList.find(c => c.code === bookingData.country)?.name || bookingData.country;
+      updateBookingData({ country: countryName });
+
       onNext();
     } catch (error) {
       console.error('Error:', error);

@@ -39,7 +39,7 @@ const EventCard = ({ event, packages, onClick }) => {
                     }}
                 />
 
-                <Link href={`/dashboard/events/${event.id}`}> 
+                <Link href={`/dashboard/formula-one/${event.id}`}> 
                     <p className="absolute inset-0 z-10"></p>
                 </Link>
 

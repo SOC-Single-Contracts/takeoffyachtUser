@@ -60,7 +60,7 @@ const YachtDetail = () => {
       try {
         const newData = await fetchYachts(session?.user?.userid || 1);
         const yacht = newData.find(
-          (item) => item.yacht.id.toString() === id
+          (item) => item.yacht && item.yacht.id.toString() === id
         );
 
         if (!yacht) {
@@ -70,7 +70,7 @@ const YachtDetail = () => {
         setSelectedYacht(yacht);
 
         const featured = newData.filter(
-          (item) => item.yacht.id.toString() !== id
+          (item) => item.yacht && item.yacht.id.toString() !== id
         );
 
         setFeaturedYachts(featured);
