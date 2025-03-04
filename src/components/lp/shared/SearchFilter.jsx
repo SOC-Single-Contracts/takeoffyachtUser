@@ -222,12 +222,34 @@ const SearchFilter = () => {
     }
   };
 
+  const handleGuestSelection = (range) => {
+    let adults = 0;
+    let children = 0;
+  
+    if (range === "1 - 10") {
+      adults = 10; 
+    } else if (range === "10 - 30") {
+      adults = 30; 
+    } else if (range === "30 - 50") {
+      adults = 50; 
+    } else if (range === "50+") {
+      adults = 100; 
+    }
+  
+    setGuests({ adults, children, infants: 0 });
+  };
+
   const resetSearch = () => {
     setActiveSearchTab("where");
     setSelectedCity("");
     setSelectedDateRange({ from: null, to: null });
     setGuests({ adults: 1, children: 0, infants: 0 });
   };
+
+  const handleTabChange = (value) => {
+    setActiveMainTab(value);
+  };
+  
 
   return (
     <section className="">
@@ -291,20 +313,20 @@ const SearchFilter = () => {
                   <TabsList className="grid max-w-md mx-auto grid-cols-3 rounded-full border-b bg-[#EFF1F2] border-none h-auto md:h-[50px] p-1">
                   <TabsTrigger 
                     value="yachts" 
-                    className="py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full data-[state=active]:shadow-2xl data-[state=active]:shadow-[#BEA355]/50 data-[state=active]:shadow-lg data-[state=active]:bg-[#BEA355] data-[state=active]:text-white"
-                  >
+                    className={`py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full transition-transform duration-300 ease-in-out ${activeMainTab === 'yachts' ? 'transform scale-105' : ''}`}
+                    >
                     Yachts
                   </TabsTrigger>
                   <TabsTrigger 
                     value="experiences" 
-                    className="py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full data-[state=active]:shadow-2xl data-[state=active]:shadow-[#BEA355]/50 data-[state=active]:shadow-lg data-[state=active]:bg-[#BEA355] data-[state=active]:text-white"
-                  >
+                    className={`py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full transition-transform duration-300 ease-in-out ${activeMainTab === 'experiences' ? 'transform scale-105' : ''}`}
+                    >
                     Experiences
                   </TabsTrigger>
                   <TabsTrigger 
                     value="events" 
-                    className="py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full data-[state=active]:shadow-2xl data-[state=active]:shadow-[#BEA355]/50 data-[state=active]:shadow-lg data-[state=active]:bg-[#BEA355] data-[state=active]:text-white"
-                  >
+                    className={`py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full transition-transform duration-300 ease-in-out ${activeMainTab === 'events' ? 'transform scale-105' : ''}`}
+                    >
                     Events
                   </TabsTrigger>
                 </TabsList>
@@ -365,7 +387,7 @@ const SearchFilter = () => {
                     </TabsTrigger>
                     <TabsContent 
                       value="who" 
-                      className="absolute right-0 top-full mt-2 z-10 w-[300px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
+                      className="absolute right-0 top-full mt-2 z-10 md:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
                     >
                       <h3 className="text-xl font-semibold">Who&apos;s coming?</h3>
                       {Object.keys(guests).map(type => (
@@ -407,6 +429,44 @@ const SearchFilter = () => {
                           </div>
                         </div>
                       ))}
+                      <div className="flex flex-wrap pt-4 items-center md:space-y-0 space-y-1.5 overflow-y-auto md:space-x-1 justify-between">
+                        <Button 
+                          variant="outline" 
+                          type="button" // Change to button to prevent form submission
+                          onClick={() => handleGuestSelection("1 - 10")}
+                          className="w-full sm:w-[70px] border-2 border-[#BEA355] h-[75px] flex flex-col items-center"
+                        >
+                          <Image src="/assets/images/oneuser.svg" width={15} height={15} alt="" />
+                          1 - 10
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          type="button" 
+                          onClick={() => handleGuestSelection("10 - 30")}
+                          className="w-full sm:w-[70px] border-2 border-[#BEA355] h-[75px] flex flex-col items-center"
+                        >
+                          <Image src="/assets/images/twouser.svg" width={20} height={20} alt="" />
+                          10 - 30
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          type="button" 
+                          onClick={() => handleGuestSelection("30 - 50")}
+                          className="w-full sm:w-[70px] border-2 border-[#BEA355] h-[75px] flex flex-col items-center"
+                        >
+                          <Image src="/assets/images/threeuser.svg" width={20} height={20} alt="" />
+                          30 - 50
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          type="button" 
+                          onClick={() => handleGuestSelection("50+")}
+                          className="w-full sm:w-[70px] border-2 border-[#BEA355] h-[75px] flex flex-col items-center"
+                        >
+                          <Image src="/assets/images/threeuser.svg" width={20} height={20} alt="" />
+                          50+
+                        </Button>
+                      </div>
                     </TabsContent>
                     <TabsContent 
                       value="where" 

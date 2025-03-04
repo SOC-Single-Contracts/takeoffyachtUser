@@ -874,7 +874,9 @@ const Yachts = () => {
         {/* Cards Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {yachts.length > 0 ? (
-           yachts.map((item) => (
+            yachts.map((item) => {
+             if (!item || !item.yacht) return null;
+            return (
              <Card
                 key={item.yacht.id}
                 className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
@@ -884,27 +886,27 @@ const Yachts = () => {
                   <Carousel className="w-full h-[221px]">
                     <CarouselContent>
                       {[
-                        item.yacht.yacht_image,
-                        item.yacht.image1,
-                        item.yacht.image2,
-                        item.yacht.image3,
-                        item.yacht.image4,
-                        item.yacht.image5,
-                        item.yacht.image6,
-                        item.yacht.image7,
-                        item.yacht.image8,
-                        item.yacht.image9,
-                        item.yacht.image10,
-                        item.yacht.image11,
-                        item.yacht.image12,
-                        item.yacht.image13,
-                        item.yacht.image14,
-                        item.yacht.image15,
-                        item.yacht.image16,
-                        item.yacht.image17,
-                        item.yacht.image18,
-                        item.yacht.image19,
-                        item.yacht.image20,
+                        item?.yacht?.yacht_image,
+                        item?.yacht?.image1,
+                        item?.yacht?.image2,
+                        item?.yacht?.image3,
+                        item?.yacht?.image4,
+                        item?.yacht?.image5,
+                        item?.yacht?.image6,
+                        item?.yacht?.image7,
+                        item?.yacht?.image8,
+                        item?.yacht?.image9,
+                        item?.yacht?.image10,
+                        item?.yacht?.image11,
+                        item?.yacht?.image12,
+                        item?.yacht?.image13,
+                        item?.yacht?.image14,
+                        item?.yacht?.image15,
+                        item?.yacht?.image16,
+                        item?.yacht?.image17,
+                        item?.yacht?.image18,
+                        item?.yacht?.image19,
+                        item?.yacht?.image20,
                       ].filter(image => image !== null).map((image, index) => (
                         <CarouselItem key={index}>
                           <Image
@@ -989,7 +991,8 @@ const Yachts = () => {
                 </CardContent>
             {/* </Link> */}
               </Card>
-          ))
+            )
+          })
         ) : (
           <div className="col-span-full flex flex-col items-center justify-center py-12">
             <p className="text-gray-500 text-lg mb-4">No yachts found</p>

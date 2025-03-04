@@ -109,7 +109,8 @@ const UserDetails = ({ onNext }) => {
       });
   
       if (!response.ok) {
-        throw new Error('Failed to create booking');
+        const errorResult = await response.json(); // Parse the error response
+        throw new Error(errorResult.error || 'Failed to create booking');
       }
   
       const result = await response.json();

@@ -286,7 +286,7 @@ const Header = () => {
             <div className="md:hidden">
               <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                 <SheetTrigger asChild>
-                  <Button className="rounded-full flex items-center space-x-2 cursor-pointer">
+                  <Button className="rounded-full bg-[#91908b] flex items-center text-white space-x-2 cursor-pointer">
                     <Menu className="w-6 h-6" />
                     <span>Menu</span>
                   </Button>

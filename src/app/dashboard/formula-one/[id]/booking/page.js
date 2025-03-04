@@ -25,7 +25,7 @@ export default function BookingPage() {
         // Only fetch if session is fully loaded and user is authenticated
         if (session?.user?.userid) {
           const events = await fetchFormulaOne(session.user.userid);
-          const event = events.find(item => item.event.id.toString() === id);
+          const event = events.find(item => item.id.toString() === id);
           
           if (!event) {
             throw new Error('Event not found');

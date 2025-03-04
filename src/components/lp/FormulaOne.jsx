@@ -157,7 +157,7 @@ const FormulaOne = ({ limit = 4 }) => {
                     }}
                     />
 
-                  <Link href={`/dashboard/events/${item.id}`}>
+                  <Link href={`/dashboard/formula-one/${item.id}`}>
                     <p className="absolute inset-0 z-10"></p>
                   </Link>
 
