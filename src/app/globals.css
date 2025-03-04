@@ -145,3 +145,14 @@ main {
   scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
 }
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

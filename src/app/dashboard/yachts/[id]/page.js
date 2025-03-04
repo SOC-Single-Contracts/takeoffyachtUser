@@ -60,7 +60,7 @@ const YachtDetail = () => {
       try {
         const newData = await fetchYachts(session?.user?.userid || 1);
         const yacht = newData.find(
-          (item) => item.yacht?.id.toString() === id
+          (item) => item.yacht && item.yacht.id.toString() === id
         );
 
         if (!yacht) {
@@ -70,7 +70,7 @@ const YachtDetail = () => {
         setSelectedYacht(yacht);
 
         const featured = newData.filter(
-          (item) => item.yacht?.id.toString() !== id
+          (item) => item.yacht && item.yacht.id.toString() !== id
         );
 
         setFeaturedYachts(featured);
@@ -115,9 +115,14 @@ const YachtDetail = () => {
         text: yacht?.crew_member ? `${yacht?.crew_member} Crew` : "Included",
         condition: true
       },
+      // {
+      //   imgSrc: "/assets/images/lang.png",
+      //   text: yacht.crew_language || "0",
+      //   condition: true
+      // },
       {
-        imgSrc: "/assets/images/lang.png",
-        text: yacht?.crew_language || "English",
+        imgSrc: "/assets/images/bath.svg",
+        text: yacht.bath || "0",
         condition: true
       },
       {
@@ -515,19 +520,19 @@ const YachtDetail = () => {
                   </div>
                 </div>
                 </div>
-                <Link href={`/dashboard/yachts/${id}/booking`}>
+                <Link href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
                   <Button 
-                    onClick={(e) => {
-                      if (!session) {
-                        e.preventDefault();
-                        toast({
-                          title: "Login Required",
-                          description: "Please login to book a yacht",
-                          variant: "destructive"
-                        });
-                        router.push('/login');
-                      }
-                    }}
+                    // onClick={(e) => {
+                    //   if (!session) {
+                    //     e.preventDefault();
+                    //     toast({
+                    //       title: "Login Required",
+                    //       description: "Please login to book a yacht",
+                    //       variant: "destructive"
+                    //     });
+                    //     router.push('/login');
+                    //   }
+                    // }}
                     className="rounded-full bg-[#BEA355] w-full min-w-[210px] mx-auto text-white h-10"
                   >
                     Book Now

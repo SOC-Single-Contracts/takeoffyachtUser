@@ -43,6 +43,20 @@ export const fetchEvents = async (id) => {
   }
 };
 
+export const fetchFormulaOne = async (id) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/yacht/f1-yachts/`);
+
+    if (response.data.error_code === "pass") {
+      return response.data.data;
+    }
+
+    throw new Error(response.data.error || "Failed to fetch yachts.");
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchTestimonials = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/yacht/yacht_testimonal/`);

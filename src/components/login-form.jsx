@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { AuthSocialButton, SocialActions } from "@/components/auth/social-button";
@@ -17,6 +16,7 @@ import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
+import { signIn } from "next-auth/react";
 
 const loginSchema = z.object({
   Email: z.string().email({ message: "Invalid email address" }),
@@ -33,19 +33,32 @@ export function LoginForm({ className, ...props }) {
 
   const onSubmit = async (data) => {
     try {
-      const res = await signIn("credentials", {
-        redirect: false,
-        Email: data.Email,
-        Password: data.Password,
-      });
+      // Call both the new API and the existing signIn method in parallel
+      const [apiRes, signInRes] = await Promise.all([
+        axios.post(`${process.env.NEXT_PUBLIC_API_URL}/Auth/Login/`, {
+          Email: data.Email,
+          Password: data.Password,
+        }),
+        signIn("credentials", {
+          redirect: false,
+          Email: data.Email,
+          Password: data.Password,
+        }),
+      ]);
 
-      if (res.error) {
+      // Handle the API response
+      if (apiRes.data.error) {
         toast({
           title: "Error",
-          description: res.error,
+          description: apiRes.data.error,
           variant: "destructive",
         });
       } else {
+        if (apiRes.data.token) {
+          // Save token and user ID to local storage
+          localStorage.setItem('token', apiRes.data.token);
+          localStorage.setItem('userid', apiRes.data.userid);
+        }
         toast({
           title: "Welcome back! ",
           description: "Successfully logged in.",
@@ -55,10 +68,20 @@ export function LoginForm({ className, ...props }) {
         reset();
         router.push("/dashboard");
       }
+
+      // Handle the signIn response
+      if (signInRes.error) {
+        toast({
+          title: "Error",
+          description: signInRes.error,
+          variant: "destructive",
+        });
+      }
     } catch (error) {
+      const errorMessage = error.response?.data?.detail || error.message || "An unexpected error occurred.";
       toast({
         title: "Error",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -82,9 +105,11 @@ export function LoginForm({ className, ...props }) {
         });
       }
     } catch (error) {
+      const errorMessage = error.response?.data?.detail || error.message || "An unexpected error occurred.";
+
       toast({
         title: "Error",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -185,4 +210,3 @@ export function LoginForm({ className, ...props }) {
     </form>
   );
 }
-

@@ -17,7 +17,6 @@ import axios from "axios";
 import { useState } from "react";
 import { Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { sb } from "@/lib/sendBird";
 
 const signupSchema = z.object({
   Username: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -65,25 +64,11 @@ export function SignupForm({ className, ...props }) {
         className: "bg-green-500 text-white border-none",
       });
 
-      const res = await signIn("credentials", {
-        redirect: false,
-        Email: data.Email,
-        Password: data.Password,
-      });
+      // Redirect to login page instead of signing in
+      router.push("/login");
 
-      if (res.error) {
-        toast({
-          title: "Error",
-          description: res.error,
-          variant: "destructive",
-        });
-      } else {
-        reset();
-        router.push("/dashboard");
-
-      }
     } catch (error) {
-      toast({ 
+      toast({
         title: "Error",
         description: error.response?.data?.detail || error.message,
         variant: "destructive",

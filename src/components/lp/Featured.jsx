@@ -2,12 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dot, Heart, Sailboat, RefreshCw, Badge, MapPin } from "lucide-react";
+import { Dot, Heart, Sailboat, RefreshCw, Badge, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { fetchYachts } from "@/api/yachts";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { addToWishlist, removeFromWishlist, fetchWishlist } from "@/api/wishlist";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
 
 // Empty State Component
 const EmptyYachtState = ({ onRetry }) => {
@@ -89,7 +90,7 @@ const Featured = () => {
   if (loading) {
     return (
       <section className="md:py-20 py-8">
-        <div className="max-w-5xl px-4 mx-auto">
+        <div className="max-w-5xl px-2 mx-auto">
           {/* Heading Skeleton */}
           <div className="w-full flex items-center justify-between mb-8">
             <div className="h-10 bg-gray-200 dark:bg-gray-700 w-1/3 rounded-md animate-pulse"></div>
@@ -184,90 +185,129 @@ const Featured = () => {
         </div>
         {/* Cards Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
-          {yachts.slice(0, 6).map((yachtItem) => (
-            <Card
-              key={yachtItem.yacht.id}
-              className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
-            >
-              <div className="relative">
-                <Image
-                  src={
-                    yachtItem.yacht.yacht_image 
-                      ? `https://api.takeoffyachts.com${yachtItem.yacht.yacht_image}`
-                      : yachtItem.yacht.image1
-                        ? `https://api.takeoffyachts.com${yachtItem.yacht.image1}`
-                        : '/assets/images/fycht.jpg'
-                  }
-                  alt="not found"
-                  width={326}
-                  height={300}
-                  className="object-cover px-3 pt-3 rounded-3xl w-full h-[221px]"
-                  onError={(e) => {
-                    e.target.src = '/assets/images/fycht.jpg'
-                  }}
-                />
+          {yachts.slice(0, 6).map((yachtItem) => {
+            // Collect all image URLs
+            const images = [
+              yachtItem.yacht.yacht_image,
+              yachtItem.yacht.image1,
+              yachtItem.yacht.image2,
+              yachtItem.yacht.image3,
+              yachtItem.yacht.image4,
+              yachtItem.yacht.image5,
+              yachtItem.yacht.image6,
+              yachtItem.yacht.image7,
+              yachtItem.yacht.image8,
+              yachtItem.yacht.image9,
+              yachtItem.yacht.image10,
+              yachtItem.yacht.image11,
+              yachtItem.yacht.image12,
+              yachtItem.yacht.image13,
+              yachtItem.yacht.image14,
+              yachtItem.yacht.image15,
+              yachtItem.yacht.image16,
+              yachtItem.yacht.image17,
+              yachtItem.yacht.image18,
+              yachtItem.yacht.image19,
+              yachtItem.yacht.image20,
+            ].filter(image => image !== null); // Filter out null images
 
-                <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}>
-                  <p className="absolute inset-0"></p>
-                </Link>
+            return (
+              <Card
+                key={yachtItem.yacht.id}
+                className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+              >
+                <div className="relative">
+                  <Carousel className="w-full h-[221px]">
+                    <CarouselContent>
+                      {images.map((image, index) => (
+                        <CarouselItem key={index}>
+                          <Image
+                            src={image ? `https://api.takeoffyachts.com${image}` : '/assets/images/fycht.jpg'}
+                            alt="Yacht Image"
+                            width={326}
+                            height={300}
+                            className="object-cover px-3 pt-3 rounded-3xl w-full h-[221px]"
+                            onError={(e) => {
+                              e.target.src = '/assets/images/fycht.jpg';
+                            }}
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
+                      <Button variant="icon" onClick={(e) => {
+                        e.stopPropagation(); // Prevent the link from being triggered
+                      }}>
+                        <ChevronLeft />
+                      </Button>
+                    </CarouselPrevious>
+                    <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
+                      <Button variant="icon" onClick={(e) => {
+                        e.stopPropagation(); // Prevent the link from being triggered
+                      }}>
+                        <ChevronRight />
+                      </Button>
+                    </CarouselNext>
+                  </Carousel>
+                  <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}> 
+                    <div className="absolute inset-0"></div>
+                  </Link>
 
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
-                  onClick={() => handleWishlistToggle(yachtItem.yacht.id)}
-                >
-                  <Image 
-                    src={favorites.has(yachtItem.yacht.id) 
-                      ? "/assets/images/wishlist.svg" 
-                      : "/assets/images/unwishlist.svg"
-                    } 
-                    alt="wishlist" 
-                    width={20} 
-                    height={20} 
-                  />
-                </Button>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
+                      onClick={() => handleWishlistToggle(yachtItem.yacht.id)}
+                  >
+                    <Image 
+                      src={favorites.has(yachtItem.yacht.id) 
+                        ? "/assets/images/wishlist.svg" 
+                        : "/assets/images/unwishlist.svg"
+                      } 
+                      alt="wishlist" 
+                      width={20} 
+                      height={20} 
+                    />
+                  </Button>
 
-                {/* Hourly Rate */}
-                <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
-                <span className="font-medium text-xs">
-                  AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_hour_price}</span>
-                    <span className="text-xs font-light ml-1">/Hour</span>
-                </span>
-                </div>
-              </div>
-              <CardContent className="px-4 py-2">
-                {/* Yacht Name */}
-                <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
-                  <MapPin className="size-3 mr-1" /> {yachtItem.yacht.location || "Location Not Available"}
-                </p>
-                <div className="flex justify-between items-center">
-                <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{yachtItem.yacht.name}</h3>
-                <span className="font-medium text-xs">
-                  AED <span className="font-bold text-sm text-primary">{yachtItem.yacht.per_hour_price}</span>
-                    <span className="text-xs font-light ml-1">/Day</span>
-                </span>
-                </div>
-                {/* Specs Grid */}
-                <div className="flex justify-start items-center gap-1">
-                <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
-                  <p className="font-semibold text-xs">{yachtItem.yacht.length || 0} ft</p>
-                  <Dot />
-                  <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                  <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
-                    <p>Guests</p>
-                    <p>{yachtItem.yacht.guest || 0}</p>
+                  <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                    <span className="font-medium text-xs">
+                      AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_hour_price}</span>
+                      <span className="text-xs font-light ml-1">/Hour</span>
+                    </span>
                   </div>
-                  <Dot />
-                  <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                  <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
-                    <p>Cabins</p>
-                    <p>{yachtItem.yacht.number_of_cabin || 0}</p>
-                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+                <CardContent className="px-4 py-2">
+                  <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
+                    <MapPin className="size-3 mr-1" /> {yachtItem.yacht.location || "Location Not Available"}
+                  </p>
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{yachtItem.yacht.name}</h3>
+                    <span className="font-medium text-xs">
+                      AED <span className="font-bold text-sm text-primary">{yachtItem.yacht.per_hour_price}</span>
+                      <span className="text-xs font-light ml-1">/Day</span>
+                    </span>
+                  </div>
+                  <div className="flex justify-start items-center gap-1">
+                    <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
+                    <p className="font-semibold text-xs">{yachtItem.yacht.length || 0} ft</p>
+                    <Dot />
+                    <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                      <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
+                      <p>Guests</p>
+                      <p>{yachtItem.yacht.guest || 0}</p>
+                    </div>
+                    <Dot />
+                    <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                      <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
+                      <p>Cabins</p>
+                      <p>{yachtItem.yacht.number_of_cabin || 0}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         <Link href="/dashboard/yachts">

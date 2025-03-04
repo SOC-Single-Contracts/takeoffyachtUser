@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { fetchEvents } from '@/api/yachts';
+import { fetchFormulaOne } from '@/api/yachts';
 import { useSession } from 'next-auth/react';
 import { Sailboat, RefreshCw } from 'lucide-react';
 
@@ -53,7 +53,7 @@ const EmptyEventState = ({ onRetry }) => {
   );
 };
 
-const Events = ({ limit = 4 }) => {
+const FormulaOne = ({ limit = 4 }) => {
   const { data: session } = useSession()
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +63,7 @@ const Events = ({ limit = 4 }) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchEvents(1);
+      const data = await fetchFormulaOne();
       setEvents(data);
     } catch (err) {
       console.error('Events fetching error:', err);
@@ -81,7 +81,7 @@ const Events = ({ limit = 4 }) => {
     return (
       <section className="py-10 px-2">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Our Events</h1>
+          <h1 className="text-3xl font-bold mb-6">Formula One</h1>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center">
             {Array(4)
               .fill(0)
@@ -128,28 +128,27 @@ const Events = ({ limit = 4 }) => {
   return (
     <section className="py-8 px-2">
       <div className="max-w-5xl mx-auto">
-        <h1 className="md:text-4xl text-[24px] font-semibold">Events</h1>
+        <h1 className="md:text-4xl text-[24px] font-semibold">Formula One</h1>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center my-8">
           {eventsToDisplay.map((item) => {
-            if (!item?.event) {
+            if (!item) {
               return null;
             }
 
-            const { event } = item;
             return (
               <Card
-                key={event.id}
+                key={item.id}
                 className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[298px] h-full max-h-[260px]"
               >
                 <div className="relative">
                 <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" />
                 <Image
                     src={
-                        event.event_image 
-                        ? `https://api.takeoffyachts.com${event.event_image}`
+                        item.event_image 
+                        ? `https://api.takeoffyachts.com${item.event_image}`
                         : '/assets/images/f1.png'
                     }
-                    alt={event.name || 'Event Image'}
+                    alt={item.name || 'Event Image'}
                     width={400}
                     height={250}
                     className="object-cover px-3 pt-3 rounded-3xl h-[170px]"
@@ -158,32 +157,33 @@ const Events = ({ limit = 4 }) => {
                     }}
                     />
 
-                  <Link href={`/dashboard/events/${event.id}`}>
+                  <Link href={`/dashboard/formula-one/${item.id}`}>
                     <p className="absolute inset-0 z-10"></p>
                   </Link>
 
                   <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-900 backdrop-blur-sm p-1.5 rounded-md">
                     <span className="text-xs font-medium">
-                      {item.packages.length} Package Available
+                      {/* Assuming packages is part of the item, adjust if not */}
+                      {item.packages?.length || 0} Package Available
                     </span>
                   </div>
                 </div>
                 <CardContent className="px-4 py-2">
-                  <h3 className="text-md font-semibold mb-1">{event.name || 'Unnamed Event'}</h3>
+                  <h3 className="text-md font-semibold mb-1">{item.name || 'Unnamed Event'}</h3>
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-black dark:text-gray-400">
-                      {event.location || 'Location N/A'}
+                      {item.location || 'Location N/A'}
                     </span>
                   </div>
                   <p className="text-xs text-black mb-4 dark:text-gray-400">
-                    {(event.description || '').substring(0, 24)}...
+                    {(item.description || '').substring(0, 24)}...
                   </p>
                 </CardContent>
               </Card>
             );
           })}
         </div>
-        <Link href="/dashboard/events">
+        <Link href="/dashboard/formula-one">
         <Button variant="outline" className="text-black hover:underline font-semibold uppercase md:text-[16px] hover:shadow-2xl transition duration-500 ease-in-out dark:text-white text-[12px] rounded-full flex items-center group">
             See All
             <svg
@@ -205,4 +205,4 @@ const Events = ({ limit = 4 }) => {
   );
 };
 
-export default Events;
+export default FormulaOne;

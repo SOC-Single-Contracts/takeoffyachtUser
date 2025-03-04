@@ -152,7 +152,7 @@ const Events = ({ limit }) => {
   const eventsToDisplay = limit ? events.slice(0, limit) : events;
 
   return (
-    <section className="md:py-6 py-4 px-2">
+    <section className="md:py-10 py-4 px-2">
       <div className="max-w-5xl mx-auto px-4">
         <h1 className="text-3xl font-bold mb-6">Our Events</h1>
 
