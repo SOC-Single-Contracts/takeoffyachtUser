@@ -76,7 +76,7 @@ const AddMoneyForm = () => {
           'Authorization': `Bearer ${session?.user?.token}`
         },
         body: JSON.stringify({
-          payment_intent_id: paymentMethod.id,
+          payment_method_id: paymentMethod.id,
           amount: paymentAmount
         })
       });
