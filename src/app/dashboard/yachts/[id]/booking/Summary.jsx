@@ -14,7 +14,7 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import Image from "next/image";
 
-const Summary = ({ onNext }) => {
+const Summary = ({ onNext, onEditExtras  }) => {
   const { bookingData, selectedYacht, calculateTotal } = useBookingContext();
 
   return (
@@ -200,7 +200,14 @@ const Summary = ({ onNext }) => {
           </TableBody>
         </Table>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end space-x-2">
+        <Button
+          onClick={onEditExtras}
+          variant="secondary"
+          className=" rounded-full hover:bg-[#A89245]"
+        >
+          Edit Optional Extras
+        </Button>
           <Button
             onClick={onNext}
             className="bg-[#BEA355] text-white px-8 py-2 rounded-full hover:bg-[#A89245]"

@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Copy, Mail, Phone, User, Calendar, Clock, Users, Globe, MessageSquare } from "lucide-react";
+import { Copy, Mail, Phone, User, Calendar, Clock, Users, Globe, MessageSquare, Check, Clipboard } from "lucide-react";
 import { useBookingContext } from "./BookingContext";
 import { parseISO, format, isValid } from "date-fns";
 import { API_BASE_URL } from "@/lib/api";
@@ -43,6 +43,7 @@ const Summary = ({ onNext, initialBookingId }) => {
   const [loading, setLoading] = useState(true);
   const [editableExtras, setEditableExtras] = useState([]);
   const [isPartialPayment, setIsPartialPayment] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -120,7 +121,7 @@ const Summary = ({ onNext, initialBookingId }) => {
       }
 
       const updatedDetails = await response.json();
-      setBookingDetails(updatedDetails);
+      // setBookingDetails(updatedDetails);
       toast({
         title: "Success",
         description: "Booking details updated successfully",
@@ -194,10 +195,53 @@ const Summary = ({ onNext, initialBookingId }) => {
     }
   };
 
+  const handleProceedToPayment = async () => {
+    try {
+      // First update the extras
+      await handleUpdateExtras();
+      
+      // Then update partial payment status
+      await handleUpdatePartialPayment();
+      
+      // Finally proceed to next step
+      onNext();
+    } catch (error) {
+      console.error('Error proceeding to payment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to proceed to payment. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const updateExtraQuantity = (index, newQuantity) => {
     const updatedExtras = [...editableExtras];
     updatedExtras[index].quantity = newQuantity;
     setEditableExtras(updatedExtras);
+  };
+
+  const handleCopyLink = () => {
+    const bookingId = bookingDetails.id;
+    const yachtId = selectedYacht?.yacht?.id || bookingData.yachtId;
+    const bookingLink = `${window.location.origin}/dashboard/yachts/${yachtId}/guest-booking/?bookingId=${bookingId}`;
+    
+    navigator.clipboard.writeText(bookingLink).then(() => {
+      setIsCopied(true); // Set copied state to true
+      toast({
+        title: "Link Copied",
+        description: "The booking link has been copied to your clipboard.",
+        variant: "success",
+      });
+      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+      toast({
+        title: "Error",
+        description: "Failed to copy the booking link.",
+        variant: "destructive",
+      });
+    });
   };
 
   const renderPriceSummary = () => {
@@ -226,8 +270,8 @@ const Summary = ({ onNext, initialBookingId }) => {
                 (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour}
             </TableCell>
           </TableRow>
-          {(bookingDetails.extras || editableExtras).map((item) => (
-            <TableRow key={item.id}>
+          {bookingDetails.extras.map((item) => (
+            <TableRow key={item.extra_id}>
               <TableCell className="font-semibold">{item.name}</TableCell>
               <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
             </TableRow>
@@ -238,7 +282,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               AED {totalCost.toFixed(2)}
             </TableCell>
           </TableRow>
-          {isPartialPayment && (
+          {(!paidCost && !remainingCost && isPartialPayment) && (
             <>
               <TableRow>
                 <TableCell className="font-semibold text-green-600">Partial Payment (25%)</TableCell>
@@ -273,7 +317,7 @@ const Summary = ({ onNext, initialBookingId }) => {
         </TableBody>
       </Table>
     );
-  };
+};
 
   if (loading) {
     return <div>Loading booking details...</div>;
@@ -462,11 +506,11 @@ const Summary = ({ onNext, initialBookingId }) => {
                 </TableRow>
               ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={3} className="text-center text-gray-500 py-4">
-                  No optional extras available
-                </TableCell>
-              </TableRow>
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center text-gray-500 py-4">
+                    No optional extras available
+                  </TableCell>
+                </TableRow>
             )}
           </TableBody>
         </Table>
@@ -486,33 +530,66 @@ const Summary = ({ onNext, initialBookingId }) => {
             className="data-[state=checked]:bg-[#BEA355] data-[state=unchecked]:bg-gray-300"
             checked={isPartialPayment}
             onCheckedChange={(checked) => setIsPartialPayment(checked)}
+            disabled={bookingDetails?.paid_cost > 0 || bookingDetails?.remaining_cost > 0} // Disable if there are paid or remaining amounts
+
           />
         </div>
 
+        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-semibold text-md text-black">
+                Booking Link
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white dark:bg-gray-800 text-xs">
+            <TableRow>
+              <TableCell className="font-semibold">Your Booking Link:</TableCell>
+              <TableCell className="font-medium">
+                <div className="flex items-center">
+                  <span 
+                    className="text-blue-500 cursor-pointer" 
+                    onClick={handleCopyLink}
+                  >
+                    {isCopied ? <Check className="h-5 w-5" /> : <Clipboard className="h-5 w-5" />}
+                  </span>
+                  <span className="ml-2 text-gray-500">{isCopied ? "Copied!" : "(Click to copy)"}</span>
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+
         {renderPriceSummary()}
 
-        <div className="flex justify-end space-x-4">
+        <div className="flex justify-end flex-wrap gap-2">
           <Button
           variant="secondary"
             onClick={handleUpdateExtras}
-            className="px-6 py-2 rounded-full"
+            className="px-6 py-2 text-xs rounded-full"
           >
             Update Extras
           </Button>
-          {((bookingDetails.paid_cost === 0 || bookingDetails.paid_cost === undefined) || 
-            (bookingDetails.remaining_cost > 0)) && (
+          <Button
+            onClick={handleCopyLink}
+            className="bg-blue-500 text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-blue-600"
+          >
+            Copy Booking Link
+          </Button>
+          {((bookingDetails?.paid_cost === 0 || bookingDetails?.paid_cost === undefined) || 
+            (bookingDetails?.remaining_cost > 0)) && (
             <Button
-              onClick={() => {
-                handleUpdatePartialPayment();
-                onNext();
-              }}
-              className="bg-[#BEA355] text-white px-8 py-2 rounded-full hover:bg-[#A89245]"
+              onClick={handleProceedToPayment}
+              className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
             >
-              {isPartialPayment 
+              {isPartialPayment && bookingDetails?.total_cost && !bookingDetails?.paid_cost && !bookingDetails?.remaining_cost
                 ? `Proceed to Payment (25% AED ${(bookingDetails.total_cost * 0.25).toFixed(2)})` 
-                : (bookingDetails.remaining_cost > 0 
+                : (bookingDetails?.remaining_cost > 0 
                   ? `Proceed to Payment (Remaining AED ${bookingDetails.remaining_cost.toFixed(2)})`
-                  : `Proceed to Payment (Total AED ${bookingDetails.total_cost.toFixed(2)})`)}
+                  : bookingDetails?.total_cost 
+                    ? `Proceed to Payment (Total AED ${bookingDetails.total_cost.toFixed(2)})`
+                    : 'Proceed to Payment')}
             </Button>
           )}
         </div>

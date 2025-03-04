@@ -48,7 +48,7 @@ export const BookingProvider = ({ children }) => {
     const extrasTotal = (bookingData.extras || []).reduce((total, item) => {
       return total + (item.price * item.quantity);
     }, 0);
-    
+
     return (hourlyRate * hours) + extrasTotal;
   };
 

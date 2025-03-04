@@ -72,6 +72,10 @@ const BookingWizardContent = () => {
     return null;
   }
 
+  const handleEditExtras = () => {
+    setCurrentStep(1); // Navigate back to the Selection step
+  };
+
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, steps.length));
   };
@@ -105,7 +109,7 @@ const BookingWizardContent = () => {
         </div>
 
         <div className="mt-8">
-          <CurrentStepComponent onNext={handleNext} />
+          <CurrentStepComponent onNext={handleNext} onEditExtras={handleEditExtras} />
         </div>
       </div>
     </section>
