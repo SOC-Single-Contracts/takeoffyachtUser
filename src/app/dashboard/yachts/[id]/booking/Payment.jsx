@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialogHeader } from '@/components/ui/alert-dialog';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
@@ -25,6 +27,8 @@ const PaymentForm = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [cardComplete, setCardComplete] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+
 
   const handleCardChange = (event) => {
     setError(event.error ? event.error.message : null);
@@ -234,17 +238,73 @@ const PaymentForm = () => {
             />
           </div>
           <div className="flex flex-col space-y-2">
-          <div className="flex items-center space-x-2 mb-2">
-            <Checkbox 
+             <div className="space-y-2 pl-1 mb-2">
+            <div className="flex items-center space-x-2">
+          <Checkbox 
             id="partial" 
             checked={bookingData.isPartialPayment}
             onCheckedChange={(checked) => {
               updateBookingData({ isPartialPayment: checked });
             }}
           />
-            <Label htmlFor="partial" className="text-sm font-light">
-              You want to do partial payment?
-            </Label>
+              <Label htmlFor="partial" className="text-sm">
+                You want to do partial payment?
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="terms"
+                className="checked:bg-[#BEA355] checked:border-[#BEA355]"
+                checked={bookingData.termsAccepted}
+                onCheckedChange={(checked) => updateBookingData({ termsAccepted: checked })}
+              />
+              <Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
+                <DialogTrigger asChild>
+                  <Label htmlFor="terms" className="text-sm cursor-pointer hover:text-[#BEA355]">
+                    I agree to terms & conditions
+                  </Label>
+                </DialogTrigger>
+                <DialogContent className="max-w-[800px] max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-semibold mb-4">Terms and Conditions</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 text-sm">
+                    <h3 className="font-semibold text-lg">1. Booking and Payment</h3>
+                    <p>• A deposit of 50% of the total charter fee is required to confirm your booking.</p>
+                    <p>• The remaining balance must be paid at least 7 days before the charter date.</p>
+                    <p>• All payments are non-refundable unless otherwise specified.</p>
+
+                    <h3 className="font-semibold text-lg">2. Cancellation Policy</h3>
+                    <p>• Cancellations made more than 30 days before the charter date: 80% refund</p>
+                    <p>• Cancellations made 15-30 days before: 50% refund</p>
+                    <p>• Cancellations made less than 15 days before: No refund</p>
+
+                    <h3 className="font-semibold text-lg">3. Charter Requirements</h3>
+                    <p>• The lead charterer must be at least 21 years of age.</p>
+                    <p>• Valid identification is required for all passengers.</p>
+                    <p>• The number of guests must not exceed the yacht's capacity.</p>
+
+                    <h3 className="font-semibold text-lg">4. Safety and Conduct</h3>
+                    <p>• All guests must follow safety instructions provided by the crew.</p>
+                    <p>• The captain has full authority to terminate the charter if safety is compromised.</p>
+                    <p>• No illegal activities or substances are permitted on board.</p>
+
+                    <h3 className="font-semibold text-lg">5. Weather Conditions</h3>
+                    <p>• The captain reserves the right to cancel or modify the itinerary due to weather.</p>
+                    <p>• Weather-related cancellations will be rescheduled at no additional cost.</p>
+
+                    <h3 className="font-semibold text-lg">6. Liability</h3>
+                    <p>• The company is not liable for any personal injury or loss of property.</p>
+                    <p>• Guests are advised to have appropriate insurance coverage.</p>
+
+                    <h3 className="font-semibold text-lg">7. Additional Charges</h3>
+                    <p>• Fuel surcharges may apply for extended cruising.</p>
+                    <p>• Additional hours will be charged at the standard hourly rate.</p>
+                    <p>• Damage to the vessel or equipment will be charged accordingly.</p>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
             <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
               <CheckCircle className='w-3 h-3 text-green-500' />
