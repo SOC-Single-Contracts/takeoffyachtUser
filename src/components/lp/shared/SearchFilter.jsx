@@ -434,36 +434,36 @@ const SearchFilter = () => {
                           variant="outline" 
                           type="button" // Change to button to prevent form submission
                           onClick={() => handleGuestSelection("1 - 10")}
-                          className="w-full sm:w-[70px] border-2 border-[#BEA355] h-[75px] flex flex-col items-center"
+                          className="w-full sm:w-[70px] border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center"
                         >
-                          <Image src="/assets/images/oneuser.svg" width={15} height={15} alt="" />
+                          <Image src="/assets/images/oneuser.svg" className='dark:invert' width={15} height={15} alt="" />
                           1 - 10
                         </Button>
                         <Button 
                           variant="outline" 
                           type="button" 
                           onClick={() => handleGuestSelection("10 - 30")}
-                          className="w-full sm:w-[70px] border-2 border-[#BEA355] h-[75px] flex flex-col items-center"
+                          className="w-full sm:w-[70px] border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center"
                         >
-                          <Image src="/assets/images/twouser.svg" width={20} height={20} alt="" />
+                          <Image src="/assets/images/twouser.svg" className='dark:invert' width={20} height={20} alt="" />
                           10 - 30
                         </Button>
                         <Button 
                           variant="outline" 
                           type="button" 
                           onClick={() => handleGuestSelection("30 - 50")}
-                          className="w-full sm:w-[70px] border-2 border-[#BEA355] h-[75px] flex flex-col items-center"
+                          className="w-full sm:w-[70px] border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center"
                         >
-                          <Image src="/assets/images/threeuser.svg" width={20} height={20} alt="" />
+                          <Image src="/assets/images/threeuser.svg" className='dark:invert' width={20} height={20} alt="" />
                           30 - 50
                         </Button>
                         <Button 
                           variant="outline" 
                           type="button" 
                           onClick={() => handleGuestSelection("50+")}
-                          className="w-full sm:w-[70px] border-2 border-[#BEA355] h-[75px] flex flex-col items-center"
+                          className="w-full sm:w-[70px] border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center"
                         >
-                          <Image src="/assets/images/threeuser.svg" width={20} height={20} alt="" />
+                          <Image src="/assets/images/threeuser.svg" className='dark:invert' width={20} height={20} alt="" />
                           50+
                         </Button>
                       </div>
