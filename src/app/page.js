@@ -91,8 +91,8 @@ export default function Home() {
         <Hero />
         <Gallery />
         <Featured />
-        <Events />
         <FormulaOne />
+        <Events />
         <Experience />
         <MaximizeExp />
         <Journal />

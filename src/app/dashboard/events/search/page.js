@@ -21,7 +21,9 @@ export default function SearchResults() {
         const params = {
           user_id: session?.user?.userid || 1,
           location: searchParams.get('location'),
-          date: searchParams.get('date')
+          date: searchParams.get('date'),
+          name:searchParams.get('name') || ""
+
         };
 
         const response = await yachtApi.checkEvents(params);
