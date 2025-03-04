@@ -256,12 +256,6 @@ const SearchFilter = () => {
     setActiveMainTab(value);
   };
 
-  ///test
-
-  useEffect(() => {
-    console.log("searchByName", searchByName)
-  }, [searchByName])
-
 
   return (
     <section className="">
