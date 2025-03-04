@@ -92,27 +92,27 @@ const YachtDetail = () => {
     const detailsMap = [
       {
         imgSrc: "/assets/images/person.svg",
-        text: `${yacht.capacity} Max`,
-        condition: yacht.capacity
+        text: `${yacht?.capacity} Max`,
+        condition: yacht?.capacity
       },
       {
         imgSrc: "/assets/images/sleeping.svg",
-        text: `${yacht.sleep_capacity} Max`,
-        condition: yacht.sleep_capacity
+        text: `${yacht?.sleep_capacity} Max`,
+        condition: yacht?.sleep_capacity
       },
       {
         imgSrc: "/assets/images/ft.svg",
-        text: yacht.length ? `${yacht.length} ft.` : "N/A",
-        condition: yacht.length
+        text: yacht?.length ? `${yacht?.length} ft.` : "N/A",
+        condition: yacht?.length
       },
       {
         imgSrc: "/assets/images/cabin.svg",
-        text: yacht.number_of_cabin ? `${yacht.number_of_cabin} Cabins` : "N/A",
-        condition: yacht.number_of_cabin
+        text: yacht?.number_of_cabin ? `${yacht?.number_of_cabin} Cabins` : "N/A",
+        condition: yacht?.number_of_cabin
       },
       {
         imgSrc: "/assets/images/pilot.svg",
-        text: yacht.crew_member ? `${yacht.crew_member} Crew` : "Included",
+        text: yacht?.crew_member ? `${yacht?.crew_member} Crew` : "Included",
         condition: true
       },
       // {
@@ -126,8 +126,8 @@ const YachtDetail = () => {
         condition: true
       },
       {
-        imgSrc: "/assets/images/yacht.svg",
-        text: selectedYacht.categories[0] ? selectedYacht.categories[0].replace(/'/g, '') : "Super Yacht", // Show first category or default to "Super Yacht"
+        imgSrc: "/assets/images/yacht?.svg",
+        text: selectedYacht?.categories[0] ? selectedYacht?.categories[0].replace(/'/g, '') : "Super Yacht", // Show first category or default to "Super Yacht"
         condition: true
       }
     ];
@@ -289,35 +289,35 @@ const YachtDetail = () => {
   } = selectedYacht;
 
   const yachtImages = [
-    selectedYacht.yacht.yacht_image,
-    selectedYacht.yacht.image1,
-    selectedYacht.yacht.image2,
-    selectedYacht.yacht.image3,
-    selectedYacht.yacht.image4,
-    selectedYacht.yacht.image5,
-    selectedYacht.yacht.image6,
-    selectedYacht.yacht.image7,
-    selectedYacht.yacht.image8,
-    selectedYacht.yacht.image9,
-    selectedYacht.yacht.image10,
-    selectedYacht.yacht.image11,
-    selectedYacht.yacht.image12,
-    selectedYacht.yacht.image13,
-    selectedYacht.yacht.image14,
-    selectedYacht.yacht.image15,
-    selectedYacht.yacht.image16,
-    selectedYacht.yacht.image17,
-    selectedYacht.yacht.image18,
-    selectedYacht.yacht.image19,
-    selectedYacht.yacht.image20,
+    selectedYacht?.yacht?.yacht_image,
+    selectedYacht?.yacht?.image1,
+    selectedYacht?.yacht?.image2,
+    selectedYacht?.yacht?.image3,
+    selectedYacht?.yacht?.image4,
+    selectedYacht?.yacht?.image5,
+    selectedYacht?.yacht?.image6,
+    selectedYacht?.yacht?.image7,
+    selectedYacht?.yacht?.image8,
+    selectedYacht?.yacht?.image9,
+    selectedYacht?.yacht?.image10,
+    selectedYacht?.yacht?.image11,
+    selectedYacht?.yacht?.image12,
+    selectedYacht?.yacht?.image13,
+    selectedYacht?.yacht?.image14,
+    selectedYacht?.yacht?.image15,
+    selectedYacht?.yacht?.image16,
+    selectedYacht?.yacht?.image17,
+    selectedYacht?.yacht?.image18,
+    selectedYacht?.yacht?.image19,
+    selectedYacht?.yacht?.image20,
   ].filter(Boolean);
 
   const allInclusions = [
-    ...(selectedYacht.inclusion || []),
+    ...(selectedYacht?.inclusion || []),
     // ...(selectedYacht['New year inclusion'] || [])
   ];
 
-  const uniqueYachtImages = [...new Set([selectedYacht.yacht.yacht_image, ...yachtImages])].filter(Boolean);
+  const uniqueYachtImages = [...new Set([selectedYacht?.yacht?.yacht_image, ...yachtImages])].filter(Boolean);
 
   // const parseNYAvailability = (availability) => {
   //   try {
@@ -493,7 +493,7 @@ const YachtDetail = () => {
                 <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_hour_price}</span>/hour</p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-                {getYachtDetailsGrid(selectedYacht.yacht)}
+                {getYachtDetailsGrid(selectedYacht?.yacht)}
                 <div className="flex justify-center items-center w-full h-20 border border-gray-300 rounded-lg shadow-sm">
                   <Image src="/assets/images/logoround.svg" quality={100} width={60} height={60} alt="Logo" />
                 </div>
@@ -730,8 +730,8 @@ const YachtDetail = () => {
               <section className="mt-4">
                 <h2 className="text-lg font-medium">Features</h2>
                 <div className="flex flex-wrap gap-4 mt-2">
-                  {selectedYacht.yacht.features && selectedYacht.yacht.features.length > 0 ? (
-                    selectedYacht.yacht.features.map((feature, index) => (
+                  {selectedYacht?.yacht?.features && selectedYacht?.yacht?.features.length > 0 ? (
+                    selectedYacht?.yacht?.features.map((feature, index) => (
                       <Badge key={index} className="bg-[#BEA355]/10 dark:bg-gray-800 text-gray-700 dark:text-gray-400 font-medium text-sm rounded-full px-4 py-2 shadow-md hover:bg-[#BEA355]/20 transition duration-300">
                         {feature}
                       </Badge>

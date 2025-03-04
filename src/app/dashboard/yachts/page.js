@@ -179,7 +179,7 @@ const Yachts = () => {
         if (userId) {
             try {
                 const wishlistItems = await fetchWishlist(userId);
-                const wishlistIds = new Set(wishlistItems.map(item => item.yacht));
+                const wishlistIds = new Set(wishlistItems.map(item => item?.yacht));
                 setFavorites(wishlistIds);
             } catch (err) {
                 console.error('Wishlist loading error:', err);
