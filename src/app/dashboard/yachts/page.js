@@ -177,7 +177,7 @@ const Yachts = () => {
         if (userId) {
             try {
                 const wishlistItems = await fetchWishlist(userId);
-                const wishlistIds = new Set(wishlistItems.map(item => item.yacht));
+                const wishlistIds = new Set(wishlistItems.map(item => item?.yacht));
                 setFavorites(wishlistIds);
             } catch (err) {
                 console.error('Wishlist loading error:', err);
@@ -874,16 +874,16 @@ const Yachts = () => {
           {yachts.length > 0 ? (
            yachts.map((item) => (
             <Card
-              key={item.yacht.id}
+              key={item?.yacht?.id}
               className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
             >
               <div className="relative">
                 <Image
                   src={
-                    item.yacht.yacht_image 
-                      ? `https://api.takeoffyachts.com${item.yacht.yacht_image}`
-                      : item.yacht.image1
-                        ? `https://api.takeoffyachts.com${item.yacht.image1}`
+                    item?.yacht?.yacht_image 
+                      ? `https://api.takeoffyachts.com${item?.yacht?.yacht_image}`
+                      : item?.yacht?.image1
+                        ? `https://api.takeoffyachts.com${item?.yacht?.image1}`
                         : '/assets/images/fycht.jpg'
                   }
                   alt="not found"
@@ -895,7 +895,7 @@ const Yachts = () => {
                   }}
                 />
 
-                <Link href={`/dashboard/yachts/${item.yacht.id}`}>
+                <Link href={`/dashboard/yachts/${item?.yacht?.id}`}>
                   <p className="absolute inset-0"></p>
                 </Link>
 
@@ -903,10 +903,10 @@ const Yachts = () => {
                   variant="secondary"
                   size="icon"
                   className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
-                  onClick={() => handleWishlistToggle(item.yacht.id)}
+                  onClick={() => handleWishlistToggle(item?.yacht?.id)}
                 >
                   <Image 
-                    src={favorites.has(item.yacht.id) 
+                    src={favorites.has(item?.yacht?.id) 
                       ? "/assets/images/wishlist.svg" 
                       : "/assets/images/unwishlist.svg"
                     } 
@@ -919,7 +919,7 @@ const Yachts = () => {
                 {/* Hourly Rate */}
                 <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                 <span className="font-medium text-xs">
-                  AED <span className="font-bold text-lg text-primary">{item.yacht.per_hour_price}</span>
+                  AED <span className="font-bold text-lg text-primary">{item?.yacht?.per_hour_price}</span>
                     <span className="text-xs font-light ml-1">/Hour</span>
                 </span>
                 </div>
@@ -927,30 +927,30 @@ const Yachts = () => {
               <CardContent className="px-4 py-2">
                 {/* Yacht Name */}
                 <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
-                  <MapPin className="size-3 mr-1" /> {item.yacht.location || "Location Not Available"}
+                  <MapPin className="size-3 mr-1" /> {item?.yacht?.location || "Location Not Available"}
                 </p>
                 <div className="flex justify-between items-center">
-                <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item.yacht.name}</h3>
+                <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item?.yacht?.name}</h3>
                 <span className="font-medium text-xs">
-                  AED <span className="font-bold text-sm text-primary">{item.yacht.per_hour_price}</span>
+                  AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_hour_price}</span>
                     <span className="text-xs font-light ml-1">/Day</span>
                 </span>
                 </div>
                 {/* Specs Grid */}
                 <div className="flex justify-start items-center gap-1">
                 <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
-                  <p className="font-semibold text-xs">{item.yacht.length || 0} ft</p>
+                  <p className="font-semibold text-xs">{item?.yacht?.length || 0} ft</p>
                   <Dot />
                   <div className="text-center font-semibold flex items-center text-xs space-x-2">
                   <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
                     <p>Guests</p>
-                    <p>{item.yacht.guest || 0}</p>
+                    <p>{item?.yacht?.guest || 0}</p>
                   </div>
                   <Dot />
                   <div className="text-center font-semibold flex items-center text-xs space-x-2">
                   <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
                     <p>Cabins</p>
-                    <p>{item.yacht.number_of_cabin || 0}</p>
+                    <p>{item?.yacht?.number_of_cabin || 0}</p>
                   </div>
                 </div>
               </CardContent>

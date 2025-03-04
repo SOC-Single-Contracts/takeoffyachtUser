@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   MessageSquareText,
+  Proportions,
   Search,
   Ship,
   SquareArrowOutUpRight,
@@ -223,6 +224,12 @@ const Header = () => {
                       </Link>
                     </MenubarItem>
                     <MenubarItem>
+                      <Link className="flex items-center space-x-2" href="/dashboard/partner-discounts">
+                        <Proportions className="w-4 h-4 mr-2" />
+                        Discounts
+                      </Link>
+                    </MenubarItem>
+                    <MenubarItem>
                       <Link className="flex items-center space-x-2" href="/dashboard/settings">
                         <CircleUserRound className="w-4 h-4 mr-2" />
                         Profile
@@ -354,6 +361,12 @@ const Header = () => {
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <Wallet className="w-4 h-4" /> <span>Wallet</span>
+                    </Link>
+                    <Link
+                      href="/dashboard/partner-discounts"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
+                    >
+                      <Proportions className="w-4 h-4" /> <span>Discounts</span>
                     </Link>
                     
                     <Separator />

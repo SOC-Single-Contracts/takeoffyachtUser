@@ -56,7 +56,8 @@ const AddMoneyForm = () => {
     
 
     try {
-        const paymentAmount = walletDetails?.topupAmount;
+        const paymentAmount = Number(walletDetails?.topupAmount);
+
         
         // Create payment method from card details
         const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
@@ -68,15 +69,15 @@ const AddMoneyForm = () => {
           throw new Error(paymentMethodError.message);
         }
   
-      const response = await fetch('https://api.takeoffyachts.com/yacht/wallet/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/wallet`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session?.user?.token}`
         },
         body: JSON.stringify({
-          payment_method_id: paymentMethod.id,
-          amount: Number(paymentAmount)
+          payment_intent_id: paymentMethod.id,
+          amount: paymentAmount
         })
       });
   
@@ -102,7 +103,7 @@ const AddMoneyForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className='w-full space-y-6'>
-      <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>
+      <div className='bg-white dark:bg-[#24262F] rounded-2xl shadow-md p-6'>
         <div className='flex items-center gap-2 mb-6'>
           <CreditCard className='w-5 h-5' />
           <h2 className='text-xl font-semibold'>Payment Method</h2>
@@ -172,7 +173,7 @@ const AddMoneyForm = () => {
         disabled={isProcessing || !stripe || !cardComplete || walletDetails?.topupAmount <= 0}
         className='w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-10'
       >
-        {isProcessing ? 'Processing...' : `Pay ${walletDetails?.isPartialPayment ? '50%' : 'Full'} Amount (AED ${walletDetails?.topupAmount == "" ? 0 : walletDetails?.topupAmount })`}
+        {isProcessing ? 'Processing...' : `Confirm Deposit`}
       </Button>
     </form>
   );
@@ -183,7 +184,7 @@ const AddMoney = () => {
     const { walletDetails } = useWalletContext();
 
   return (
-    <div className='mx-auto container my-2 flex flex-column justify-between  flex-col items-start gap-8 px-2'>
+    <div className='mx-auto w-full max-w-3xl mx-auto container my-2 flex flex-column justify-between  flex-col items-start gap-8 px-2 px-4 lg:px-6'>
          <div className="flex items-center">
           <Button
             onClick={() => router.back()}
@@ -195,7 +196,7 @@ const AddMoney = () => {
 
         </div>
       
-      <div className='w-full md:w-1/2'>
+      <div className='w-full max-w-3xl mx-auto'>
         <Elements stripe={stripePromise}>
           <AddMoneyForm />
         </Elements>
