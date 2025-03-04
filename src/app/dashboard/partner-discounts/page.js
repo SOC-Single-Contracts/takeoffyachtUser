@@ -42,7 +42,6 @@ const PartnerDiscount = () => {
         //     image: "/brands/oceanic-cruises.jpg"
         // }
     ]);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsProcessing(true);
