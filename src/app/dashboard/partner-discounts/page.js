@@ -41,7 +41,7 @@ const PartnerDiscount = () => {
         //     description: "Experience the finest sea voyages",
         //     image: "/brands/oceanic-cruises.jpg"
         // }
-    ]);
+    ]); 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsProcessing(true);
