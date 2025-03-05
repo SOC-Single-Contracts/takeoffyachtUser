@@ -18,14 +18,14 @@ const AddMoneyForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
+  const token = localStorage.getItem('token'); 
   const { data: session } = useSession();
-  console.log("session",session)
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [cardComplete, setCardComplete] = useState(false);
   const { walletDetails,updateWalletDetails } = useWalletContext();
 
-  console.log("walletDetails",walletDetails)
+  // console.log("walletDetails",walletDetails,token,session?.user?.token)
 
   const handleCardChange = (event) => {
     setError(event.error ? event.error.message : null);
@@ -73,7 +73,7 @@ const AddMoneyForm = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.user?.token}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           payment_method_id: paymentMethod.id,
