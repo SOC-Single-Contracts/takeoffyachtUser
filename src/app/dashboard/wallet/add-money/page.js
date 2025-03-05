@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useWalletContext, WalletProvider } from '../WalletContext';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ const AddMoneyForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
-  const token = localStorage.getItem('token'); 
+  const [token, setToken] = useState(null); 
   const { data: session } = useSession();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
@@ -100,6 +100,11 @@ const AddMoneyForm = () => {
       setIsProcessing(false);
     }
   };
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setToken(localStorage.getItem("token"));
+    }
+  }, []);
 
   return (
     <form onSubmit={handleSubmit} className='w-full space-y-6'>
