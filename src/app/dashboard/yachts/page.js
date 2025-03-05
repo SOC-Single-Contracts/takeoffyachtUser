@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue,SelectTriggerSort } from "@/components/ui/select";
 import { SlidersHorizontal, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,7 @@ const Yachts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
+  const [originalYachts, setOriginalYachts] = useState([]); 
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -70,8 +71,8 @@ const Yachts = () => {
     setSelectedSortBy(value);
   };
 
-  // Find the selected label from the sortByOptions array
   const selectedOption = sortByOptions.find(option => option.value === selectedSortBy);
+
 
   const userId = session?.user?.userid || 1;
 
@@ -248,6 +249,7 @@ const Yachts = () => {
       const responseData = await response.json();
       if (responseData.error_code === 'pass') {
         setYachts(responseData.data || []);
+        setOriginalYachts(responseData.data || []);
       } else {
         setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
@@ -299,6 +301,7 @@ const Yachts = () => {
       try {
         const data = await fetchYachts(userId);
         setYachts(data);
+        setOriginalYachts(data)
       } catch (err) {
         setError(err.message || 'Unexpected Error');
       } finally {
@@ -327,6 +330,32 @@ const Yachts = () => {
       console.error('Error toggling wishlist:', error);
     }
   };
+
+  useEffect(() => {
+    let data = [...yachts]; 
+  
+    if (selectedOption?.value === "default") {
+      data = [...originalYachts]; 
+    } 
+    else if (selectedOption?.value === "Price-High-Low") {
+      data.sort((a, b) => b.yacht?.max_price - a.yacht?.max_price); 
+    } else if (selectedOption?.value === "Price-Low-High") {
+      data.sort((a, b) => a.yacht?.max_price - b.yacht?.max_price); 
+    } else if (selectedOption?.value === "Capacity-High-Low") {
+      data.sort((a, b) => b.yacht.capacity - a.yacht.capacity); 
+    } else if (selectedOption?.value === "Capacity-Low-High") {
+      data.sort((a, b) => a.yacht.capacity - b.yacht.capacity); 
+    }
+  
+    if (JSON.stringify(data) !== JSON.stringify(yachts)) {
+      setYachts(data); 
+    }
+  }, [selectedOption, yachts]); 
+  //test
+  useEffect(() => {
+    // console.log("yachts", yachts);
+  }, [yachts]); 
+  
 
   if (loading) {
     return (
@@ -401,31 +430,24 @@ const Yachts = () => {
                     </Button>
                   </SheetTrigger>
 
-                  {/* <span>
-                    <Button variant="outline" className="gap-2">
-                      <FilterIcon className="h-4 w-4" />
-                      Sort
-                    </Button>
-                    <div className="space-y-2">
-                    <Select value={selectedSortBy} onValueChange={handleChange}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Sort By" />
-        </SelectTrigger>
-        <SelectContent>
-          {sortByOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+                  <span>
 
-      <Button variant="outline" className="w-full mt-2">
-        Sort by {selectedOption ? selectedOption.label : "Default"}
-      </Button>
+                    <div className="space-y-2">
+                      <Select value={selectedSortBy} onValueChange={handleChange}>
+                        <SelectTriggerSort className="w-full">
+                          <SelectValue placeholder="Sort By" />
+                        </SelectTriggerSort>
+                        <SelectContent>
+                          {sortByOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
-                  </span> */}
+                  </span>
                 </div>
 
                 <SheetContent side="left" className="w-full sm:w-[540px]">
