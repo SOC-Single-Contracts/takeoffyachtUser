@@ -338,9 +338,9 @@ const Yachts = () => {
       data = [...originalYachts]; 
     } 
     else if (selectedOption?.value === "Price-High-Low") {
-      data.sort((a, b) => b.yacht?.max_price - a.yacht?.max_price); 
+      data.sort((a, b) => b.yacht?.per_hour_price - a.yacht?.per_hour_price); 
     } else if (selectedOption?.value === "Price-Low-High") {
-      data.sort((a, b) => a.yacht?.max_price - b.yacht?.max_price); 
+      data.sort((a, b) => a.yacht?.per_hour_price - b.yacht?.per_hour_price); 
     } else if (selectedOption?.value === "Capacity-High-Low") {
       data.sort((a, b) => b.yacht.capacity - a.yacht.capacity); 
     } else if (selectedOption?.value === "Capacity-Low-High") {
