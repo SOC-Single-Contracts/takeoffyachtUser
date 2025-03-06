@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Tabs,
@@ -256,14 +256,24 @@ const SearchFilter = () => {
     setActiveMainTab(value);
   };
 
+  const sheetRef = useRef(null); // Reference to the Sheet component
+
+  const handleCloseSheet = () => {
+    setIsDialogOpen(false); // Close the dialog when clicking on the specific div
+  };
+
+
 
   return (
-    <section className="">
-      <Sheet open={isDialogOpen} onOpenChange={(open) => {
+    <section  className="">
+      <Sheet open={isDialogOpen} 
+      onOpenChange={(open) => {
         setIsDialogOpen(open);
         if (!open) resetSearch();
-      }}>
-        <SheetTrigger asChild>
+      }}
+      // ref={sheetRef} // Assign the ref here
+      >
+        <SheetTrigger  asChild>
           <div className="flex items-center justify-between bg-white dark:bg-gray-700 lg:w-[400px] rounded-full shadow-lg cursor-pointer">
             <div className="flex items-center">
               <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
@@ -294,20 +304,26 @@ const SearchFilter = () => {
             </Button>
           </div>
         </SheetTrigger>
-        <SheetContent side="top" className="max-w-8xl p-0 overflow-hidden mt-[-10.5rem] h-[700px] rounded-b-2xl border-none shadow-none outline-none bg-none bg-transparent">
+        <SheetContent handleCloseSheet={handleCloseSheet}   side="top" className="max-w-8xl p-0 overflow-hidden mt-[-10.5rem] h-[700px] rounded-b-2xl border-none shadow-none outline-none bg-none bg-transparent">
           <SheetHeader>
             <VisuallyHidden>
               <SheetTitle>Yacht Search Filter</SheetTitle>
             </VisuallyHidden>
           </SheetHeader>
-          <div className="w-full">
+          <div
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent closing the sheet
+            // Your button logic here
+          }}
+             className="w-full">
             <div className="transition-all duration-300 ease-in-out">
               <Tabs
                 value={activeMainTab}
                 onValueChange={setActiveMainTab}
                 className="w-full mt-40 md:mt-40"
               >
-                <div className="bg-white flex items-center justify-between dark:bg-gray-800 py-3.5 md:py-8 transition-all duration-300 ease-in-out z-0">
+                <div 
+                className="bg-white flex items-center justify-between dark:bg-gray-800 py-3.5 md:py-8 transition-all duration-300 ease-in-out z-0">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -343,7 +359,10 @@ const SearchFilter = () => {
                   value={activeSearchTab}
                   onValueChange={setActiveSearchTab}
                   className="w-full mx-auto mt-2 bg-transparent px-2 sm:px-4"
-
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent closing the sheet
+                    // Your button logic here
+                  }}
                 >
                   <TabsList
                     className="relative grid grid-cols-2 sm:grid-cols-4 w-full mx-auto rounded-none border-b bg-[#EFF1F2] dark:bg-gray-800 h-auto md:h-[72px] rounded-full gap-1 sm:gap-4"
