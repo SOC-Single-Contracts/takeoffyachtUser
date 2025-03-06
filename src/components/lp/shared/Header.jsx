@@ -11,9 +11,11 @@ import {
   LogOut,
   Menu,
   MessageSquareText,
+  Proportions,
   Search,
   Ship,
   SquareArrowOutUpRight,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -216,6 +218,18 @@ const Header = () => {
                       </Link>
                     </MenubarItem>
                     <MenubarItem>
+                      <Link className="flex items-center space-x-2" href="/dashboard/wallet">
+                        <Wallet className="w-4 h-4 mr-2" />
+                        Wallet
+                      </Link>
+                    </MenubarItem>
+                    <MenubarItem>
+                      <Link className="flex items-center space-x-2" href="/dashboard/partner-discounts">
+                        <Proportions className="w-4 h-4 mr-2" />
+                        Discounts
+                      </Link>
+                    </MenubarItem>
+                    <MenubarItem>
                       <Link className="flex items-center space-x-2" href="/dashboard/settings">
                         <CircleUserRound className="w-4 h-4 mr-2" />
                         Profile
@@ -342,7 +356,18 @@ const Header = () => {
                     >
                       <CircleUserRound className="w-4 h-4" /> <span>Profile</span>
                     </Link>
-                    
+                    <Link
+                      href="/dashboard/wallet"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
+                    >
+                      <Wallet className="w-4 h-4" /> <span>Wallet</span>
+                    </Link>
+                    <Link
+                      href="/dashboard/partner-discounts"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
+                    >
+                      <Proportions className="w-4 h-4" /> <span>Discounts</span>
+                    </Link>
                     <Separator />
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">

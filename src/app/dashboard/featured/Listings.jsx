@@ -17,7 +17,7 @@ const FeaturedListings = () => {
   useEffect(() => {
     const getYachts = async () => {
       try {
-        const yachtData = await fetchYachts(data.user.userid);
+        const yachtData = await fetchYachts(data?.user?.userid);
         setFeaturedYachts(yachtData);
       } catch (err) {
         setError(err.message || "Unexpected Error");
@@ -25,7 +25,7 @@ const FeaturedListings = () => {
         setLoading(false);
       }
     };
-    if(data.user.userid){
+    if(data?.user?.userid){
       getYachts();
     }
   }, []);

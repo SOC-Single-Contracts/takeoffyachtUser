@@ -4,8 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
+html {
   height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-inter), sans-serif;
+  scroll-behavior: smooth;
+  @apply bg-white text-black dark:bg-gray-900 dark:text-white ;
+}
+
+ body {
   margin: 0;
   display: flex;
   flex-direction: column;

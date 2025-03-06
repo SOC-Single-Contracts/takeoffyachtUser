@@ -31,6 +31,7 @@ export default function SearchResults() {
           price_asc: false,
           cabin_des: false,
           cabin_asc: true,
+          name:searchParams.get('name') || ""
         };
 
         const response = await yachtApi.checkYachts(params);

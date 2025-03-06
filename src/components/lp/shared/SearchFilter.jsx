@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
 } from "@/components/ui/tabs";
 import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-  } from "@/components/ui/carousel"
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import { Calendar } from "@/components/ui/calendar";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { MapPin, Calendar as CalendarIcon, Users, Search, X } from 'lucide-react';
@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import { API_BASE_URL } from '@/lib/api';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 
 const SearchFilter = () => {
@@ -33,6 +34,7 @@ const SearchFilter = () => {
   const [activeMainTab, setActiveMainTab] = useState("yachts");
   const [activeSearchTab, setActiveSearchTab] = useState("where");
   const [selectedCity, setSelectedCity] = useState("");
+  const [searchByName, setsearchByName] = useState("")
   const [selectedDateRange, setSelectedDateRange] = useState({
     from: null,
     to: null
@@ -44,7 +46,7 @@ const SearchFilter = () => {
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   // New state for dynamic locations
   const [locations, setLocations] = useState([]);
   const [isLocationsLoading, setIsLocationsLoading] = useState(true);
@@ -74,7 +76,7 @@ const SearchFilter = () => {
               setLocations(transformedLocations);
             }
             break;
-          
+
           case 'experiences':
             locationResults = await yachtApi.checkExperiences({ user_id: session?.user?.userid || 1 });
             // For experiences, extract location and experience_image from the nested structure
@@ -87,7 +89,7 @@ const SearchFilter = () => {
               setLocations(transformedLocations);
             }
             break;
-          
+
           case 'events':
             locationResults = await yachtApi.checkEvents({ user_id: session?.user?.userid || 1 });
             // For events, extract location and event_image from the nested event object
@@ -140,8 +142,8 @@ const SearchFilter = () => {
   const handleGuestChange = (type, action) => {
     setGuests(prev => ({
       ...prev,
-      [type]: action === 'increase' 
-        ? prev[type] + 1 
+      [type]: action === 'increase'
+        ? prev[type] + 1
         : Math.max(0, prev[type] - 1)
     }));
   };
@@ -159,7 +161,7 @@ const SearchFilter = () => {
         setLoading(false);
         return;
       }
-      
+
       const baseParams = {
         user_id: session?.user?.userid || 1,
         start_date: formattedStartDate,
@@ -168,7 +170,7 @@ const SearchFilter = () => {
 
       let searchResults;
       let searchPath;
-      
+
       switch (activeMainTab) {
         case 'yachts':
           const yachtParams = {
@@ -182,6 +184,7 @@ const SearchFilter = () => {
             price_asc: false,
             cabin_des: false,
             cabin_asc: true,
+            name: searchByName
           };
           searchResults = await yachtApi.checkYachts(yachtParams);
           searchPath = '/dashboard/yachts/search';
@@ -190,6 +193,7 @@ const SearchFilter = () => {
         case 'experiences':
           const experienceParams = {
             ...baseParams,
+            name: searchByName
           };
           searchResults = await yachtApi.checkExperiences(experienceParams);
           searchPath = '/dashboard/experience/search';
@@ -197,7 +201,8 @@ const SearchFilter = () => {
 
         case 'events':
           const eventParams = {
-            user_id: session?.user?.userid || 1
+            user_id: session?.user?.userid || 1,
+            name: searchByName
           };
           searchResults = await yachtApi.checkEvents(eventParams);
           searchPath = '/dashboard/events/search';
@@ -208,7 +213,8 @@ const SearchFilter = () => {
         router.push(`${searchPath}?${new URLSearchParams({
           location: selectedCity || '',
           date: formattedStartDate || '',
-          guests: totalGuests > 0 ? totalGuests : ''
+          guests: totalGuests > 0 ? totalGuests : '',
+          name: searchByName || ""
         }).toString()}`);
         setIsDialogOpen(false);
       } else {
@@ -225,17 +231,17 @@ const SearchFilter = () => {
   const handleGuestSelection = (range) => {
     let adults = 0;
     let children = 0;
-  
+
     if (range === "1 - 10") {
-      adults = 10; 
+      adults = 10;
     } else if (range === "10 - 30") {
-      adults = 30; 
+      adults = 30;
     } else if (range === "30 - 50") {
-      adults = 50; 
+      adults = 50;
     } else if (range === "50+") {
-      adults = 100; 
+      adults = 100;
     }
-  
+
     setGuests({ adults, children, infants: 0 });
   };
 
@@ -249,7 +255,7 @@ const SearchFilter = () => {
   const handleTabChange = (value) => {
     setActiveMainTab(value);
   };
-  
+
 
   return (
     <section className="">
@@ -260,28 +266,28 @@ const SearchFilter = () => {
         <SheetTrigger asChild>
           <div className="flex items-center justify-between bg-white dark:bg-gray-700 lg:w-[400px] rounded-full shadow-lg cursor-pointer">
             <div className="flex items-center">
-            <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
+              <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
                 <MapPin className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
                 <span className="truncate max-w-[80px] text-xs dark:text-gray-300">{selectedCity || "Where?"}</span>
+              </div>
+              <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
+                <CalendarIcon className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
+                <span className="dark:text-gray-300 text-xs">
+                  {selectedDateRange.from && selectedDateRange.to
+                    ? `${format(selectedDateRange.from, 'MMM dd')} - ${format(selectedDateRange.to, 'MMM dd')}`
+                    : "When?"}
+                </span>
+              </div>
+              <div className="flex items-center px-2 md:px-4 py-1.5 md:py-3 text-sm">
+                <Users className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
+                <span className="dark:text-gray-300 text-xs">
+                  {guests.adults + guests.children + guests.infants} Guests
+                </span>
+              </div>
             </div>
-            <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
-              <CalendarIcon className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
-              <span className="dark:text-gray-300 text-xs">
-                {selectedDateRange.from && selectedDateRange.to
-                  ? `${format(selectedDateRange.from, 'MMM dd')} - ${format(selectedDateRange.to, 'MMM dd')}`
-                  : "When?"}
-              </span>
-            </div>
-            <div className="flex items-center px-2 md:px-4 py-1.5 md:py-3 text-sm">
-              <Users className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
-              <span className="dark:text-gray-300 text-xs">
-                {guests.adults + guests.children + guests.infants} Guests
-              </span>
-            </div>
-            </div>
-            <Button 
-              variant="default" 
-              size="icon" 
+            <Button
+              variant="default"
+              size="icon"
               className="rounded-full h-12 w-12 ml-2 bg-[#BEA355] dark:bg-[#BEA355]"
             >
               <Search className="h-8 w-8 dark:invert" />
@@ -296,70 +302,83 @@ const SearchFilter = () => {
           </SheetHeader>
           <div className="w-full">
             <div className="transition-all duration-300 ease-in-out">
-              <Tabs 
-                value={activeMainTab} 
-                onValueChange={setActiveMainTab} 
+              <Tabs
+                value={activeMainTab}
+                onValueChange={setActiveMainTab}
                 className="w-full mt-40 md:mt-40"
               >
                 <div className="bg-white flex items-center justify-between dark:bg-gray-800 py-3.5 md:py-8 transition-all duration-300 ease-in-out z-0">
-              <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setIsDialogOpen(false)}
-              className="text-gray-500 hover:text-gray-800 w-5 h-5 bg-gray-100 md:ml-1 ml-0.5 dark:text-gray-400 dark:hover:text-gray-200 z-50"
-            >
-              <X className="dark:invert" />
-            </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsDialogOpen(false)}
+                    className="text-gray-500 hover:text-gray-800 w-5 h-5 bg-gray-100 md:ml-1 ml-0.5 dark:text-gray-400 dark:hover:text-gray-200 z-50"
+                  >
+                    <X className="dark:invert" />
+                  </Button>
                   <TabsList className="grid max-w-md mx-auto grid-cols-3 rounded-full border-b bg-[#EFF1F2] border-none h-auto md:h-[50px] p-1">
-                  <TabsTrigger 
-                    value="yachts" 
-                    className={`py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full transition-transform duration-300 ease-in-out ${activeMainTab === 'yachts' ? 'transform scale-105' : ''}`}
+                    <TabsTrigger
+                      value="yachts"
+                      className={`py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full transition-transform duration-300 ease-in-out ${activeMainTab === 'yachts' ? 'transform scale-105' : ''}`}
                     >
-                    Yachts
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="experiences" 
-                    className={`py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full transition-transform duration-300 ease-in-out ${activeMainTab === 'experiences' ? 'transform scale-105' : ''}`}
+                      Yachts
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="experiences"
+                      className={`py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full transition-transform duration-300 ease-in-out ${activeMainTab === 'experiences' ? 'transform scale-105' : ''}`}
                     >
-                    Experiences
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="events" 
-                    className={`py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full transition-transform duration-300 ease-in-out ${activeMainTab === 'events' ? 'transform scale-105' : ''}`}
+                      Experiences
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="events"
+                      className={`py-2.5 text-xs md:text-sm text-[#BEA355] rounded-full transition-transform duration-300 ease-in-out ${activeMainTab === 'events' ? 'transform scale-105' : ''}`}
                     >
-                    Events
-                  </TabsTrigger>
-                </TabsList>
+                      Events
+                    </TabsTrigger>
+                  </TabsList>
                 </div>
 
                 {/* Search Tabs */}
-                <Tabs 
-                  value={activeSearchTab} 
-                  onValueChange={setActiveSearchTab} 
-                  className="w-auto md:max-w-2xl mx-auto mt-2 bg-transparent"
+                <Tabs
+                  value={activeSearchTab}
+                  onValueChange={setActiveSearchTab}
+                  className="w-full mx-auto mt-2 bg-transparent px-2 sm:px-4"
+
                 >
-                  <TabsList className="relative grid grid-cols-4 w-auto md:max-w-2xl mx-auto rounded-none border-b bg-[#EFF1F2] dark:bg-gray-800 h-auto md:h-[72px] rounded-full">
-                      <TabsTrigger 
-                        value="where" 
-                        className="py-1 md:py-3.5 text-xs md:text-sm rounded-full bg-transparent hover:bg-transparent text-[#BEA355] dark:text-[#BEA355] data-[state=active]:bg-white data-[state=active]:drop-shadow-2xl flex flex-col items-start"
-                      >
-                        <div className="flex flex-col items-start md:pl-2 w-full">
-                          <span className="font-semibold text-xs">Where</span>
-                          <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">Add Destination</span>
-                        </div>
-                      </TabsTrigger>
-                    <TabsTrigger 
-                      value="when" 
+                  <TabsList
+                    className="relative grid grid-cols-2 sm:grid-cols-4 w-full mx-auto rounded-none border-b bg-[#EFF1F2] dark:bg-gray-800 h-auto md:h-[72px] rounded-full gap-1 sm:gap-4"
+
+                  >
+                    <TabsTrigger
+                      value="searchbyName"
+                      className="py-2 sm:py-3 text-xs sm:text-sm rounded-full text-[#BEA355] dark:text-[#BEA355] flex flex-col items-start px-2 sm:px-4"
+                    >
+                      <div className="flex flex-col items-start md:pl-2 w-full">
+                        <span className="font-semibold text-xs">Search</span>
+                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">By Name</span>
+                      </div>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="where"
+                      className="py-2 sm:py-3 text-xs sm:text-sm rounded-full text-[#BEA355] dark:text-[#BEA355] flex flex-col items-start px-2 sm:px-4"
+                    >
+                      <div className="flex flex-col items-start md:pl-2 w-full">
+                        <span className="font-semibold text-xs">Where</span>
+                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">Add Destination</span>
+                      </div>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="when"
                       // disabled={!selectedCity}
-                      className="py-1 md:py-3.5 text-xs md:text-sm rounded-full bg-transparent hover:bg-transparent text-[#BEA355] dark:text-[#BEA355] data-[state=active]:bg-white data-[state=active]:drop-shadow-2xl flex flex-col items-start"
+                      className="py-2 sm:py-3 text-xs sm:text-sm rounded-full text-[#BEA355] dark:text-[#BEA355] flex flex-col items-start px-2 sm:px-4"
                     >
                       <div className="flex flex-col items-start md:pl-2 w-full">
                         <span className="font-semibold text-xs">When</span>
                         <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">Add Dates</span>
                       </div>
                     </TabsTrigger>
-                    <TabsTrigger 
-                      value="who" 
+                    <TabsTrigger
+                      value="who"
                       // disabled={!selectedDate}
                       className="py-1 md:py-3.5 w-[154px] md:w-[332px] text-xs md:text-sm rounded-full bg-transparent hover:bg-transparent text-[#BEA355] dark:text-[#BEA355] data-[state=active]:bg-white data-[state=active]:drop-shadow-2xl flex flex-col items-start"
                     >
@@ -368,8 +387,8 @@ const SearchFilter = () => {
                         <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">Add Guests</span>
                       </div>
                     </TabsTrigger>
-                    <TabsTrigger 
-                      value="search" 
+                    <TabsTrigger
+                      value="search"
                       onClick={handleSearch}
                       // disabled={!selectedCity || !selectedDate || loading}
                       className="py-2 md:py-4 w-[80px] md:w-[120px] absolute right-2 text-[9px] md:text-sm rounded-full bg-[#BEA355] text-white hover:bg-[#a98a47] data-[state=disabled]:opacity-50"
@@ -385,28 +404,28 @@ const SearchFilter = () => {
                         </>
                       )}
                     </TabsTrigger>
-                    <TabsContent 
-                      value="who" 
+                    <TabsContent
+                      value="who"
                       className="absolute right-0 top-full mt-2 z-10 md:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
                     >
                       <h3 className="text-xl font-semibold">Who&apos;s coming?</h3>
                       {Object.keys(guests).map(type => (
-                        <div 
-                          key={type} 
+                        <div
+                          key={type}
                           className="flex items-center justify-between"
                         >
                           <span className="text-base capitalize flex-grow">{type}</span>
                           <div className="flex items-center space-x-4 justify-end">
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="icon"
                               onClick={() => handleGuestChange(type, 'decrease')}
                               className="rounded-full h-8 w-8"
                             >
                               -
                             </Button>
-                            <Input 
-                              type="number" 
+                            <Input
+                              type="number"
                               min="0"
                               value={guests[type]}
                               onChange={(e) => {
@@ -418,8 +437,8 @@ const SearchFilter = () => {
                               }}
                               className="w-14 text-center text-lg font-medium border rounded-md px-1 py-1 focus:outline-none focus:ring-0 focus:ring-[#BEA355] dark:bg-gray-700 dark:text-white dark:border-gray-600"
                             />
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="icon"
                               onClick={() => handleGuestChange(type, 'increase')}
                               className="rounded-full h-8 w-8"
@@ -430,8 +449,8 @@ const SearchFilter = () => {
                         </div>
                       ))}
                       <div className="flex flex-wrap pt-4 items-center md:space-y-0 space-y-1.5 overflow-y-auto md:space-x-1 justify-between">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           type="button" // Change to button to prevent form submission
                           onClick={() => handleGuestSelection("1 - 10")}
                           className="w-full sm:w-[70px] border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center"
@@ -439,27 +458,27 @@ const SearchFilter = () => {
                           <Image src="/assets/images/oneuser.svg" className='dark:invert' width={15} height={15} alt="" />
                           1 - 10
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          type="button" 
+                        <Button
+                          variant="outline"
+                          type="button"
                           onClick={() => handleGuestSelection("10 - 30")}
                           className="w-full sm:w-[70px] border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center"
                         >
                           <Image src="/assets/images/twouser.svg" className='dark:invert' width={20} height={20} alt="" />
                           10 - 30
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          type="button" 
+                        <Button
+                          variant="outline"
+                          type="button"
                           onClick={() => handleGuestSelection("30 - 50")}
                           className="w-full sm:w-[70px] border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center"
                         >
                           <Image src="/assets/images/threeuser.svg" className='dark:invert' width={20} height={20} alt="" />
                           30 - 50
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          type="button" 
+                        <Button
+                          variant="outline"
+                          type="button"
                           onClick={() => handleGuestSelection("50+")}
                           className="w-full sm:w-[70px] border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center"
                         >
@@ -468,8 +487,8 @@ const SearchFilter = () => {
                         </Button>
                       </div>
                     </TabsContent>
-                    <TabsContent 
-                      value="where" 
+                    <TabsContent
+                      value="where"
                       className="absolute left-0 top-full mt-2 z-10 md:w-[400px] mx-2 p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
                     >
                       <h3 className="text-md md:text-xl font-semibold mb-4">Add Destination</h3>
@@ -482,7 +501,7 @@ const SearchFilter = () => {
                           <CarouselContent>
                             {cities.map((city) => (
                               <CarouselItem key={city.id} className="basis-1/2 md:basis-1/2 p-2 ml-4">
-                                <div 
+                                <div
                                   className="group cursor-pointer"
                                   onClick={() => {
                                     setSelectedCity(city.name);
@@ -522,26 +541,50 @@ const SearchFilter = () => {
 
                   {/* When Tab Content */}
                   <TabsContent value="when" className="flex justify-center">
-                      <div className="bg-white dark:bg-gray-800 rounded-2xl">
-                    <Calendar
-                      mode="range"
-                      selected={selectedDateRange}
-                      onSelect={(range) => {
-                        setSelectedDateRange(range);
-                        if (range?.to) {
-                          setActiveSearchTab("who");
-                        }
-                      }}
-                      disabled={(date) => date < new Date().setHours(0, 0, 0, 0)}
-                      numberOfMonths={1}
-                      className="rounded-md"
-                    />
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl">
+                      <Calendar
+                        mode="range"
+                        selected={selectedDateRange}
+                        onSelect={(range) => {
+                          setSelectedDateRange(range);
+                          if (range?.to) {
+                            setActiveSearchTab("who");
+                          }
+                        }}
+                        disabled={(date) => date < new Date().setHours(0, 0, 0, 0)}
+                        numberOfMonths={1}
+                        className="rounded-md"
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="searchbyName" className="flex justify-start">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl">
+                      <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>
+
+                        <div className="space-y-2 my-2">
+                          <Label htmlFor="searchByName">
+                            Search By Name
+                          </Label>
+                          <Input
+                            id="searchByName"
+                            type="text"
+                            placeholder="Search"
+                            required
+                            value={searchByName}
+                            onChange={(e) => setsearchByName(e.target.value)}
+                          />
+                        </div>
+
+
+
+                      </div>
                     </div>
                   </TabsContent>
 
                 </Tabs>
-            </Tabs>
-              </div>
+              </Tabs>
+            </div>
           </div>
         </SheetContent>
       </Sheet>

@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Dot, MapPin } from 'lucide-react';
+import { Dot, FilterIcon, MapPin, SortAscIcon } from 'lucide-react';
 import Link from 'next/link';
 import { fetchYachts } from '@/api/yachts';
 import { useSession } from 'next-auth/react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue,SelectTriggerSort } from "@/components/ui/select";
 import { SlidersHorizontal, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,7 @@ const Yachts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
+  const [originalYachts, setOriginalYachts] = useState([]); 
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -55,6 +56,23 @@ const Yachts = () => {
     extra_comforts: [],
     indoor: [],
   });
+
+  const sortByOptions = [
+    { value: "default", label: "Default" },
+    { value: "Price-High-Low", label: "Price: High to Low" },
+    { value: "Price-Low-High", label: "Price: Low to High" },
+    { value: "Capacity-High-Low", label: "Capacity: High to Low" },
+    { value: "Capacity-Low-High", label: "Capacity: Low to High" }
+  ];
+
+  const [selectedSortBy, setSelectedSortBy] = useState("default");
+
+  const handleChange = (value) => {
+    setSelectedSortBy(value);
+  };
+
+  const selectedOption = sortByOptions.find(option => option.value === selectedSortBy);
+
 
   const userId = session?.user?.userid || 1;
 
@@ -179,7 +197,7 @@ const Yachts = () => {
       if (userId) {
         try {
           const wishlistItems = await fetchWishlist(userId);
-          const wishlistIds = new Set(wishlistItems.map(item => item.yacht));
+          const wishlistIds = new Set(wishlistItems.map(item => item?.yacht));
           setFavorites(wishlistIds);
         } catch (err) {
           console.error('Wishlist loading error:', err);
@@ -271,6 +289,9 @@ const Yachts = () => {
       location: filters?.location,
       min_length: filters.min_length,
       max_length: filters.max_length,
+
+      location: filters.location,
+
     };
 
     try {
@@ -285,6 +306,7 @@ const Yachts = () => {
 
       const responseData = await response.json();
       if (responseData.error_code === 'pass') {
+
         // Filter yachts based on price range
         const filteredYachts = responseData.data.filter(item => {
           const price = item.yacht.per_hour_price;
@@ -309,7 +331,7 @@ const Yachts = () => {
       setLoading(false);
     }
   };
-  // ... existing code ...
+
   const resetFilters = () => {
     setFilters({
       min_price: 1000,
@@ -349,6 +371,7 @@ const Yachts = () => {
       try {
         const data = await fetchYachts(userId);
         setYachts(data);
+        setOriginalYachts(data)
       } catch (err) {
         setError(err.message || 'Unexpected Error');
       } finally {
@@ -377,6 +400,32 @@ const Yachts = () => {
       console.error('Error toggling wishlist:', error);
     }
   };
+
+  useEffect(() => {
+    let data = [...yachts]; 
+  
+    if (selectedOption?.value === "default") {
+      data = [...originalYachts]; 
+    } 
+    else if (selectedOption?.value === "Price-High-Low") {
+      data.sort((a, b) => b.yacht?.per_hour_price - a.yacht?.per_hour_price); 
+    } else if (selectedOption?.value === "Price-Low-High") {
+      data.sort((a, b) => a.yacht?.per_hour_price - b.yacht?.per_hour_price); 
+    } else if (selectedOption?.value === "Capacity-High-Low") {
+      data.sort((a, b) => b.yacht.capacity - a.yacht.capacity); 
+    } else if (selectedOption?.value === "Capacity-Low-High") {
+      data.sort((a, b) => a.yacht.capacity - b.yacht.capacity); 
+    }
+  
+    if (JSON.stringify(data) !== JSON.stringify(yachts)) {
+      setYachts(data); 
+    }
+  }, [selectedOption, yachts]); 
+  //test
+  useEffect(() => {
+    // console.log("yachts", yachts);
+  }, [yachts]); 
+  
 
   if (loading) {
     return (
@@ -441,14 +490,36 @@ const Yachts = () => {
 
         <div className="flex flex-col space-y-4 mb-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center  w-full gap-2 flex-wrap">
               <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    <SlidersHorizontal className="h-4 w-4" />
-                    Filters
-                  </Button>
-                </SheetTrigger>
+                <div className="flex justify-between w-full">
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="gap-2">
+                      <SlidersHorizontal className="h-4 w-4" />
+                      Filters
+                    </Button>
+                  </SheetTrigger>
+
+                  <span>
+
+                    <div className="space-y-2">
+                      <Select value={selectedSortBy} onValueChange={handleChange}>
+                        <SelectTriggerSort className="w-full">
+                          <SelectValue placeholder="Sort By" />
+                        </SelectTriggerSort>
+                        <SelectContent>
+                          {sortByOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                  </span>
+                </div>
+
                 <SheetContent side="left" className="w-full sm:w-[540px]">
                   <SheetHeader>
                     <SheetTitle>Filters</SheetTitle>
