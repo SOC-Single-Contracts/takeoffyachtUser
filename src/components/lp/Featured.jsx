@@ -178,7 +178,7 @@ const Featured = () => {
     <section className="md:py-20 py-8">
       <div className="max-w-5xl px-4 mx-auto">
         {/* Heading Section */}
-        <div className="w-full flex items-center justify-between items-center">
+        <div className="w-full flex items-center justify-between">
           <h2 className=" text-[24px] font-semibold tracking-tight md:text-4xl">
             Featured Yachts
           </h2>

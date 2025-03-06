@@ -208,6 +208,59 @@ const Yachts = () => {
     loadWishlist();
   }, [userId]);
 
+  // const handleFilterChange = async () => {
+  //   if (!userId) return;
+
+  //   const payload = {
+  //       user_id: userId,
+  //       min_price: filters.min_price.toString(),
+  //       max_price: filters.max_price.toString(),
+  //       guest: filters.max_guest,
+  //       sleep_capacity: filters.sleep_capacity,
+  //       number_of_cabin: filters.number_of_cabin,
+  //       categories: JSON.stringify(filters.category_name),
+  //       features: JSON.stringify(filters.amenities.concat(
+  //           filters.outdoor_equipment,
+  //           filters.kitchen,
+  //           filters.energy,
+  //           filters.leisure,
+  //           filters.navigation,
+  //           filters.extra_comforts,
+  //           filters.indoor
+  //       )),
+  //       price_asc: filters.price_asc,
+  //       price_des: filters.price_des,
+  //       cabin_asc: filters.cabin_asc,
+  //       cabin_des: filters.cabin_des,
+  //       created_on: filters.created_on,
+  //       location: filters.location,
+  //   };
+
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetch('https://api.takeoffyachts.com/yacht/check_yacht/', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
+
+  //     const responseData = await response.json();
+  //     if (responseData.error_code === 'pass') {
+  //       setYachts(responseData.data || []);
+  //     } else {
+  //       setError(responseData.error || 'Failed to apply filters');
+  //       console.error('API Error:', responseData.error);
+  //     }
+  //   } catch (err) {
+  //     setError(err.message || 'Error applying filters');
+  //     console.error('Filter error:', err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  // ... existing code ...
   const handleFilterChange = async () => {
     if (!userId) return;
 
@@ -233,7 +286,12 @@ const Yachts = () => {
       cabin_asc: filters.cabin_asc,
       cabin_des: filters.cabin_des,
       created_on: filters.created_on,
+      location: filters?.location,
+      min_length: filters.min_length,
+      max_length: filters.max_length,
+
       location: filters.location,
+
     };
 
     try {
@@ -248,8 +306,20 @@ const Yachts = () => {
 
       const responseData = await response.json();
       if (responseData.error_code === 'pass') {
-        setYachts(responseData.data || []);
-        setOriginalYachts(responseData.data || []);
+
+        // Filter yachts based on price range
+        const filteredYachts = responseData.data.filter(item => {
+          const price = item.yacht.per_hour_price;
+          return price >= filters.min_price && price <= filters.max_price;
+        });
+
+
+        // Sort the filtered yachts if needed
+        const sortedYachts = filteredYachts.sort((a, b) => {
+          return a.yacht.per_hour_price - b.yacht.per_hour_price;
+        });
+
+        setYachts(sortedYachts);
       } else {
         setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
@@ -283,14 +353,14 @@ const Yachts = () => {
       created_on: "",
       min_length: "",
       max_length: "",
-      amenities: [], // Reset amenities filter
-      outdoor_equipment: [], // Reset outdoor equipment filter
-      kitchen: [], // Reset kitchen filter
-      energy: [], // Reset energy filter
-      leisure: [], // Reset leisure activities filter
-      navigation: [], // Reset navigation equipment filter
-      extra_comforts: [], // Reset extra comforts filter
-      indoor: [], // Reset indoor equipment filter
+      amenities: [],
+      outdoor_equipment: [],
+      kitchen: [],
+      energy: [],
+      leisure: [],
+      navigation: [],
+      extra_comforts: [],
+      indoor: [],
     });
     handleFilterChange();
   };
