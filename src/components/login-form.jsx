@@ -122,7 +122,10 @@ export function LoginForm({ className, ...props }) {
       {...props}
     >
       <div className="flex flex-col items-center gap-2 text-center">
-        <Image src={logo} width={200} height={50} alt="Logo" />
+        {/* <Image src={logo} width={200} height={50} alt="Logo" /> */}
+        
+        <Image src={`/assets/images/logo.png`} width={200} height={50} alt="Logo" />
+
         <h1 className="text-3xl font-bold my-5">Login</h1>
       </div>
       <div className="grid gap-4">
