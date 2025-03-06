@@ -73,76 +73,76 @@ const Yachts = () => {
     { name: 'Outdoor shower', icon: '/assets/images/outdoorshower.svg' },
     { name: 'External speakers', icon: '/assets/images/externalspeakers.svg' },
     { name: 'External table', icon: '/assets/images/externaltable.svg' },
-  ]; 
-  const kitchenOptions = [ 
-    { name:'Tableware', icon: '/assets/images/Icon_Tableware.svg'}, 
-    {name: 'BBQ Grill', icon: '/assets/images/Icon_BBQgrill.svg'}, 
-    {name: 'Ice machine', icon: '/assets/images/Icon_Icemachine.svg'}, 
-    {name: 'Coffee Machine', icon: '/assets/images/Icon_Coffeemachine.svg'}, 
-    {name: 'Bar', icon: '/assets/images/Icon_Bar.svg'}, 
-    {name: 'Barware', icon: '/assets/images/Icon_Barware.svg'}, 
-    {name: 'Dining Utensils', icon: '/assets/images/Icon_DiningUtensils.svg'}, 
-    {name: 'Dishwasher', icon: '/assets/images/Icon_Dishwasher.svg'}, 
-    {name: 'Microwave', icon: '/assets/images/Icon_Microwave.svg'}, 
-    {name: 'Oven/stovetop', icon: '/assets/images/Icon_Oven.svg'}, 
-    {name:'Freezer', icon: '/assets/images/Icon_Freezer.svg'}
-  ]; 
-  const energyOptions = [{name: '220V Power Outlet', icon: '/assets/images/Icon_220Vpoweroutlet.svg'}, {name: 'Power Inverter', icon: '/assets/images/Icon_Powerinverter.svg'}, {name: 'Solar Panels', icon: '/assets/images/Icon_Solarpanels.svg'}, {name: 'Generator', icon: '/assets/images/Icon_Generator.svg'}];
-  const leisureActivities = [
-    {name: 'Swimming Pool', icon: '/assets/images/Icon_Swimmingpool.svg'}, 
-    {name: 'Inflatable banana', icon: '/assets/images/Icon_Inflatablebanana.svg'}, 
-    {name: 'Kneeboard', icon: '/assets/images/Icon_Kneeboard.svg'}, 
-    {name: 'Video Camera', icon: '/assets/images/Icon_Videocamera.svg'}, 
-    {name: 'Windsuft equipment', icon: '/assets/images/Icon_Windsuftequipment.svg'}, 
-    {name: 'Diving equipment', icon: '/assets/images/Icon_Divingequipment.svg'}, 
-    {name: 'Kitesurfing equipment', icon: '/assets/images/Icon_Kitesurfingequipment.svg'}, 
-    {name: 'Drone', icon: '/assets/images/Icon_Drone.svg'}, 
-    {name: 'Wakeboard', icon: '/assets/images/Icon_Wakeboard.svg'}, 
-    {name: 'Gym', icon: '/assets/images/Icon_Gym.svg'}, 
-    {name: 'Inflatable waterslide', icon: '/assets/images/Icon_Inflatablewaterslide.svg'}, 
-    {name: 'Jacuzzi', icon: '/assets/images/Icon_Jacuzzi.svg'}, 
-    {name: 'Fishing equipment', icon: '/assets/images/Icon_Fishingequipment.svg'}, 
-    {name: 'Water skis', icon: '/assets/images/Icon_Waterskis.svg'}, 
-    {name: 'Jet ski', icon: '/assets/images/Icon_Jetski.svg'}, 
-    {name: 'Kayak', icon: '/assets/images/Icon_Kayak.svg'}, 
-    {name: 'Paddle board', icon: '/assets/images/Icon_Paddleboard.svg'}, 
-    {name: 'Sea scooter', icon: '/assets/images/Icon_Seascooter.svg'}, 
-    {name: 'Seabob', icon: '/assets/images/Icon_Seabob.svg'}, 
-    {name: 'Flyboard', icon: '/assets/images/Icon_Flyboard.svg'}
-  ]; 
-  const navigationEquipment = [
-    {name: 'Fishing Sonar', icon: '/assets/images/Icon_FishingSonar.svg'}, 
-    {name: 'Autopilot', icon: '/assets/images/Icon_Autopilot.svg'}, 
-    {name: 'Bow Sundeck', icon: '/assets/images/Icon_Bowsundeck.svg'}, 
-    {name: 'Bow Thruster', icon: '/assets/images/Icon_Bowthruster.svg'}, 
-    {name: 'Depth Sounder', icon: '/assets/images/Icon_Depthsounder.svg'}, 
-    {name: 'Wi-Fi', icon: '/assets/images/Icon_Wi-Fi.svg'}, 
-    {name: 'VHF', icon: '/assets/images/Icon_VHF.svg'}, 
-    {name: 'Dinghy', icon: '/assets/images/Icon_Dinghy.svg'}, 
-    {name: 'Dinghy’s motor', icon: '/assets/images/Icon_Dinghysmotor.svg'}, 
-    {name: 'GPS', icon: '/assets/images/Icon_GPS.svg'}
   ];
-  const extraComforts = [ 
-    { name: 'Parking', icon: '/assets/images/Icon_Parking.svg'}, 
-    { name: 'Towable Tube', icon: '/assets/images/Icon_TowableTube.svg'}, 
-    { name: 'Washing Machine', icon: '/assets/images/Icon_Washingmachine.svg'}, 
-    { name: 'Watermaker', icon: '/assets/images/Icon_Watermaker.svg'}, 
-    { name: 'Air conditioning', icon: '/assets/images/Icon_AirConditioning.svg'}, 
-    { name: 'Bluetooth', icon: '/assets/images/Icon_Bluetooth.svg'}, 
-    { name: 'TV', icon: '/assets/images/Icon_TV.svg'}, 
-    { name: 'USB Socket', icon: '/assets/images/Icon_USBsocket.svg'}, 
-    { name: 'Bed Linen', icon: '/assets/images/Icon_Bedlinen.svg'}, 
-    { name: 'Haeting', icon: '/assets/images/Icon_Haeting.svg'}, 
-    { name: 'Hot Water', icon: '/assets/images/Icon_Hotwater.svg'}, 
-    { name: 'Electric toilet', icon: '/assets/images/Icon_Electrictoilet.svg'}, 
-    { name: 'Fans', icon: '/assets/images/Icon_Fans.svg'}
-  ]; 
+  const kitchenOptions = [
+    { name: 'Tableware', icon: '/assets/images/Icon_Tableware.svg' },
+    { name: 'BBQ Grill', icon: '/assets/images/Icon_BBQgrill.svg' },
+    { name: 'Ice machine', icon: '/assets/images/Icon_Icemachine.svg' },
+    { name: 'Coffee Machine', icon: '/assets/images/Icon_Coffeemachine.svg' },
+    { name: 'Bar', icon: '/assets/images/Icon_Bar.svg' },
+    { name: 'Barware', icon: '/assets/images/Icon_Barware.svg' },
+    { name: 'Dining Utensils', icon: '/assets/images/Icon_DiningUtensils.svg' },
+    { name: 'Dishwasher', icon: '/assets/images/Icon_Dishwasher.svg' },
+    { name: 'Microwave', icon: '/assets/images/Icon_Microwave.svg' },
+    { name: 'Oven/stovetop', icon: '/assets/images/Icon_Oven.svg' },
+    { name: 'Freezer', icon: '/assets/images/Icon_Freezer.svg' }
+  ];
+  const energyOptions = [{ name: '220V Power Outlet', icon: '/assets/images/Icon_220Vpoweroutlet.svg' }, { name: 'Power Inverter', icon: '/assets/images/Icon_Powerinverter.svg' }, { name: 'Solar Panels', icon: '/assets/images/Icon_Solarpanels.svg' }, { name: 'Generator', icon: '/assets/images/Icon_Generator.svg' }];
+  const leisureActivities = [
+    { name: 'Swimming Pool', icon: '/assets/images/Icon_Swimmingpool.svg' },
+    { name: 'Inflatable banana', icon: '/assets/images/Icon_Inflatablebanana.svg' },
+    { name: 'Kneeboard', icon: '/assets/images/Icon_Kneeboard.svg' },
+    { name: 'Video Camera', icon: '/assets/images/Icon_Videocamera.svg' },
+    { name: 'Windsuft equipment', icon: '/assets/images/Icon_Windsuftequipment.svg' },
+    { name: 'Diving equipment', icon: '/assets/images/Icon_Divingequipment.svg' },
+    { name: 'Kitesurfing equipment', icon: '/assets/images/Icon_Kitesurfingequipment.svg' },
+    { name: 'Drone', icon: '/assets/images/Icon_Drone.svg' },
+    { name: 'Wakeboard', icon: '/assets/images/Icon_Wakeboard.svg' },
+    { name: 'Gym', icon: '/assets/images/Icon_Gym.svg' },
+    { name: 'Inflatable waterslide', icon: '/assets/images/Icon_Inflatablewaterslide.svg' },
+    { name: 'Jacuzzi', icon: '/assets/images/Icon_Jacuzzi.svg' },
+    { name: 'Fishing equipment', icon: '/assets/images/Icon_Fishingequipment.svg' },
+    { name: 'Water skis', icon: '/assets/images/Icon_Waterskis.svg' },
+    { name: 'Jet ski', icon: '/assets/images/Icon_Jetski.svg' },
+    { name: 'Kayak', icon: '/assets/images/Icon_Kayak.svg' },
+    { name: 'Paddle board', icon: '/assets/images/Icon_Paddleboard.svg' },
+    { name: 'Sea scooter', icon: '/assets/images/Icon_Seascooter.svg' },
+    { name: 'Seabob', icon: '/assets/images/Icon_Seabob.svg' },
+    { name: 'Flyboard', icon: '/assets/images/Icon_Flyboard.svg' }
+  ];
+  const navigationEquipment = [
+    { name: 'Fishing Sonar', icon: '/assets/images/Icon_FishingSonar.svg' },
+    { name: 'Autopilot', icon: '/assets/images/Icon_Autopilot.svg' },
+    { name: 'Bow Sundeck', icon: '/assets/images/Icon_Bowsundeck.svg' },
+    { name: 'Bow Thruster', icon: '/assets/images/Icon_Bowthruster.svg' },
+    { name: 'Depth Sounder', icon: '/assets/images/Icon_Depthsounder.svg' },
+    { name: 'Wi-Fi', icon: '/assets/images/Icon_Wi-Fi.svg' },
+    { name: 'VHF', icon: '/assets/images/Icon_VHF.svg' },
+    { name: 'Dinghy', icon: '/assets/images/Icon_Dinghy.svg' },
+    { name: 'Dinghy’s motor', icon: '/assets/images/Icon_Dinghysmotor.svg' },
+    { name: 'GPS', icon: '/assets/images/Icon_GPS.svg' }
+  ];
+  const extraComforts = [
+    { name: 'Parking', icon: '/assets/images/Icon_Parking.svg' },
+    { name: 'Towable Tube', icon: '/assets/images/Icon_TowableTube.svg' },
+    { name: 'Washing Machine', icon: '/assets/images/Icon_Washingmachine.svg' },
+    { name: 'Watermaker', icon: '/assets/images/Icon_Watermaker.svg' },
+    { name: 'Air conditioning', icon: '/assets/images/Icon_AirConditioning.svg' },
+    { name: 'Bluetooth', icon: '/assets/images/Icon_Bluetooth.svg' },
+    { name: 'TV', icon: '/assets/images/Icon_TV.svg' },
+    { name: 'USB Socket', icon: '/assets/images/Icon_USBsocket.svg' },
+    { name: 'Bed Linen', icon: '/assets/images/Icon_Bedlinen.svg' },
+    { name: 'Haeting', icon: '/assets/images/Icon_Haeting.svg' },
+    { name: 'Hot Water', icon: '/assets/images/Icon_Hotwater.svg' },
+    { name: 'Electric toilet', icon: '/assets/images/Icon_Electrictoilet.svg' },
+    { name: 'Fans', icon: '/assets/images/Icon_Fans.svg' }
+  ];
   const indoorEquipment = [
-    {name: 'Indoor Table', icon: '/assets/images/Icon_IndoorTable.svg'}, 
-    {name: 'Restrooms', icon: '/assets/images/Icon_Restrooms.svg'}, 
-    {name: 'Shower', icon: '/assets/images/Icon_Shower.svg'}, 
-    {name: 'Sound system', icon: '/assets/images/Icon_SoundSystem.svg'}, 
-    {name: 'Speakers', icon: '/assets/images/Icon_Speakers.svg'}]; 
+    { name: 'Indoor Table', icon: '/assets/images/Icon_IndoorTable.svg' },
+    { name: 'Restrooms', icon: '/assets/images/Icon_Restrooms.svg' },
+    { name: 'Shower', icon: '/assets/images/Icon_Shower.svg' },
+    { name: 'Sound system', icon: '/assets/images/Icon_SoundSystem.svg' },
+    { name: 'Speakers', icon: '/assets/images/Icon_Speakers.svg' }];
 
   const [activeFilters, setActiveFilters] = useState([]);
 
@@ -176,48 +176,103 @@ const Yachts = () => {
 
   useEffect(() => {
     const loadWishlist = async () => {
-        if (userId) {
-            try {
-                const wishlistItems = await fetchWishlist(userId);
-                const wishlistIds = new Set(wishlistItems.map(item => item.yacht));
-                setFavorites(wishlistIds);
-            } catch (err) {
-                console.error('Wishlist loading error:', err);
-            }
+      if (userId) {
+        try {
+          const wishlistItems = await fetchWishlist(userId);
+          const wishlistIds = new Set(wishlistItems.map(item => item.yacht));
+          setFavorites(wishlistIds);
+        } catch (err) {
+          console.error('Wishlist loading error:', err);
         }
+      }
     };
 
     loadWishlist();
   }, [userId]);
 
+  // const handleFilterChange = async () => {
+  //   if (!userId) return;
+
+  //   const payload = {
+  //       user_id: userId,
+  //       min_price: filters.min_price.toString(),
+  //       max_price: filters.max_price.toString(),
+  //       guest: filters.max_guest,
+  //       sleep_capacity: filters.sleep_capacity,
+  //       number_of_cabin: filters.number_of_cabin,
+  //       categories: JSON.stringify(filters.category_name),
+  //       features: JSON.stringify(filters.amenities.concat(
+  //           filters.outdoor_equipment,
+  //           filters.kitchen,
+  //           filters.energy,
+  //           filters.leisure,
+  //           filters.navigation,
+  //           filters.extra_comforts,
+  //           filters.indoor
+  //       )),
+  //       price_asc: filters.price_asc,
+  //       price_des: filters.price_des,
+  //       cabin_asc: filters.cabin_asc,
+  //       cabin_des: filters.cabin_des,
+  //       created_on: filters.created_on,
+  //       location: filters.location,
+  //   };
+
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetch('https://api.takeoffyachts.com/yacht/check_yacht/', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
+
+  //     const responseData = await response.json();
+  //     if (responseData.error_code === 'pass') {
+  //       setYachts(responseData.data || []);
+  //     } else {
+  //       setError(responseData.error || 'Failed to apply filters');
+  //       console.error('API Error:', responseData.error);
+  //     }
+  //   } catch (err) {
+  //     setError(err.message || 'Error applying filters');
+  //     console.error('Filter error:', err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  // ... existing code ...
   const handleFilterChange = async () => {
     if (!userId) return;
-    
+
     const payload = {
-        user_id: userId,
-        min_price: filters.min_price.toString(),
-        max_price: filters.max_price.toString(),
-        guest: filters.max_guest,
-        sleep_capacity: filters.sleep_capacity,
-        number_of_cabin: filters.number_of_cabin,
-        categories: JSON.stringify(filters.category_name),
-        features: JSON.stringify(filters.amenities.concat(
-            filters.outdoor_equipment,
-            filters.kitchen,
-            filters.energy,
-            filters.leisure,
-            filters.navigation,
-            filters.extra_comforts,
-            filters.indoor
-        )),
-        price_asc: filters.price_asc,
-        price_des: filters.price_des,
-        cabin_asc: filters.cabin_asc,
-        cabin_des: filters.cabin_des,
-        created_on: filters.created_on,
-        location: filters.location,
+      user_id: userId,
+      min_price: filters.min_price.toString(),
+      max_price: filters.max_price.toString(),
+      guest: filters.max_guest,
+      sleep_capacity: filters.sleep_capacity,
+      number_of_cabin: filters.number_of_cabin,
+      categories: JSON.stringify(filters.category_name),
+      features: JSON.stringify(filters.amenities.concat(
+        filters.outdoor_equipment,
+        filters.kitchen,
+        filters.energy,
+        filters.leisure,
+        filters.navigation,
+        filters.extra_comforts,
+        filters.indoor
+      )),
+      price_asc: filters.price_asc,
+      price_des: filters.price_des,
+      cabin_asc: filters.cabin_asc,
+      cabin_des: filters.cabin_des,
+      created_on: filters.created_on,
+      location: filters?.location,
+      min_length: filters.min_length,
+      max_length: filters.max_length,
     };
-    
+
     try {
       setLoading(true);
       const response = await fetch('https://api.takeoffyachts.com/yacht/check_yacht/', {
@@ -227,10 +282,22 @@ const Yachts = () => {
         },
         body: JSON.stringify(payload),
       });
-      
+
       const responseData = await response.json();
       if (responseData.error_code === 'pass') {
-        setYachts(responseData.data || []);
+        // Filter yachts based on price range
+        const filteredYachts = responseData.data.filter(item => {
+          const price = item.yacht.per_hour_price;
+          return price >= filters.min_price && price <= filters.max_price;
+        });
+
+
+        // Sort the filtered yachts if needed
+        const sortedYachts = filteredYachts.sort((a, b) => {
+          return a.yacht.per_hour_price - b.yacht.per_hour_price;
+        });
+
+        setYachts(sortedYachts);
       } else {
         setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
@@ -242,7 +309,7 @@ const Yachts = () => {
       setLoading(false);
     }
   };
-
+  // ... existing code ...
   const resetFilters = () => {
     setFilters({
       min_price: 1000,
@@ -264,14 +331,14 @@ const Yachts = () => {
       created_on: "",
       min_length: "",
       max_length: "",
-      amenities: [], // Reset amenities filter
-      outdoor_equipment: [], // Reset outdoor equipment filter
-      kitchen: [], // Reset kitchen filter
-      energy: [], // Reset energy filter
-      leisure: [], // Reset leisure activities filter
-      navigation: [], // Reset navigation equipment filter
-      extra_comforts: [], // Reset extra comforts filter
-      indoor: [], // Reset indoor equipment filter
+      amenities: [],
+      outdoor_equipment: [],
+      kitchen: [],
+      energy: [],
+      leisure: [],
+      navigation: [],
+      extra_comforts: [],
+      indoor: [],
     });
     handleFilterChange();
   };
@@ -319,7 +386,7 @@ const Yachts = () => {
           <div className="w-full flex items-center justify-between mb-8">
             <div className="h-10 bg-gray-200 dark:bg-gray-700 w-1/3 rounded-md animate-pulse"></div>
           </div>
-          
+
           {/* Cards Grid Skeleton */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center">
             {Array.from({ length: 6 }).map((_, index) => (
@@ -337,11 +404,11 @@ const Yachts = () => {
                   {/* Price Skeleton */}
                   <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
                 </div>
-                
+
                 <CardContent className="px-4 py-4 space-y-3">
                   {/* Yacht Name Skeleton */}
                   <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
-                  
+
                   {/* Specs Skeleton */}
                   <div className="flex justify-start items-center gap-2">
                     <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
@@ -371,7 +438,7 @@ const Yachts = () => {
     <section className="py-4 px-2">
       <div className="max-w-5xl mx-auto">
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
-        
+
         <div className="flex flex-col space-y-4 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-wrap">
@@ -387,14 +454,14 @@ const Yachts = () => {
                     <SheetTitle>Filters</SheetTitle>
                   </SheetHeader>
                   <ScrollArea className="h-[calc(100vh-80px)] px-2">
-                  <Button 
-                    className="w-full bg-[#BEA355] mt-6 rounded-full"
-                    onClick={() => {
-                      handleFilterChange();
-                    }}
-                  >
-                    Show Results
-                  </Button>
+                    <Button
+                      className="w-full bg-[#BEA355] mt-6 rounded-full"
+                      onClick={() => {
+                        handleFilterChange();
+                      }}
+                    >
+                      Show Results
+                    </Button>
                     <div className="space-y-6 py-6 px-1">
                       {/* Price Range */}
                       <div className="space-y-2">
@@ -542,34 +609,34 @@ const Yachts = () => {
                       </div>
 
                       {/* Boat Categories */}
-                      <Accordion collapsible  type="multiple">
+                      <Accordion collapsible type="multiple">
                         <AccordionItem value="item-1">
                           <AccordionTrigger className="text-base">Boat Categories</AccordionTrigger>
                           <AccordionContent>
-                        <div className="grid grid-cols-2 gap-4">
-                          {categories.map((category) => (
-                            <div key={category} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={category}
-                                checked={filters.category_name.includes(category)}
-                                onCheckedChange={(checked) => {
-                                  setFilters(prev => ({
-                                    ...prev,
-                                    category_name: checked
-                                      ? [...prev.category_name, category]
-                                      : prev.category_name.filter(c => c !== category)
-                                  }));
-                                }}
-                              />
-                              <label htmlFor={category} className="text-sm">{category}</label>
+                            <div className="grid grid-cols-2 gap-4">
+                              {categories.map((category) => (
+                                <div key={category} className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={category}
+                                    checked={filters.category_name.includes(category)}
+                                    onCheckedChange={(checked) => {
+                                      setFilters(prev => ({
+                                        ...prev,
+                                        category_name: checked
+                                          ? [...prev.category_name, category]
+                                          : prev.category_name.filter(c => c !== category)
+                                      }));
+                                    }}
+                                  />
+                                  <label htmlFor={category} className="text-sm">{category}</label>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                      </AccordionItem>
+                          </AccordionContent>
+                        </AccordionItem>
                       </Accordion>
 
-                      <Accordion collapsible  type="multiple">
+                      <Accordion collapsible type="multiple">
                         <AccordionItem value="item-2">
                           <AccordionTrigger className="text-base">Amenities & Features</AccordionTrigger>
                           <AccordionContent>
@@ -597,7 +664,7 @@ const Yachts = () => {
                                               }));
                                             }}
                                           />
-                                          
+
                                         </div>
                                       ))}
                                     </div>
@@ -609,27 +676,27 @@ const Yachts = () => {
                                 <AccordionTrigger>Kitchen</AccordionTrigger>
                                 <AccordionContent>
                                   <div className="space-y-3">
-                                      {kitchenOptions.map((option) => (
-                                        <div key={option.name} className="flex items-center justify-between space-x-2">
-                                          <div className="flex items-center space-x-2">
-                                            <Image src={option.icon} alt={`${option.name} icon`} width={5} height={5} className="w-5 h-5" />
-                                            <label htmlFor={option.name} className="text-sm">{option.name}</label>
-                                          </div>
-                                          <Checkbox
-                                            id={option.name}
-                                            checked={filters.kitchen.includes(option.name)}
-                                            onCheckedChange={(checked) => {
-                                              setFilters(prev => ({
-                                                ...prev,
-                                                kitchen: checked
-                                                  ? [...prev.kitchen, option.name]
-                                                  : prev.kitchen.filter(k => k !== option.name)
-                                              }));
-                                            }}
-                                          />
+                                    {kitchenOptions.map((option) => (
+                                      <div key={option.name} className="flex items-center justify-between space-x-2">
+                                        <div className="flex items-center space-x-2">
+                                          <Image src={option.icon} alt={`${option.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                          <label htmlFor={option.name} className="text-sm">{option.name}</label>
                                         </div>
-                                      ))}
-                                    </div>
+                                        <Checkbox
+                                          id={option.name}
+                                          checked={filters.kitchen.includes(option.name)}
+                                          onCheckedChange={(checked) => {
+                                            setFilters(prev => ({
+                                              ...prev,
+                                              kitchen: checked
+                                                ? [...prev.kitchen, option.name]
+                                                : prev.kitchen.filter(k => k !== option.name)
+                                            }));
+                                          }}
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
                                 </AccordionContent>
                               </AccordionItem>
 
@@ -640,8 +707,8 @@ const Yachts = () => {
                                     {energyOptions.map((option) => (
                                       <div key={option.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                        <Image src={option.icon} alt={`${option.name} icon`} width={5} height={5} className="w-5 h-5" />
-                                        <label htmlFor={option.name} className="text-sm">{option.name}</label>
+                                          <Image src={option.icon} alt={`${option.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                          <label htmlFor={option.name} className="text-sm">{option.name}</label>
                                         </div>
                                         <Checkbox
                                           id={option.name}
@@ -777,7 +844,7 @@ const Yachts = () => {
                         </AccordionItem>
                       </Accordion>
 
-                      <Button 
+                      <Button
                         className="w-full bg-[#BEA355] mt-6 rounded-full"
                         onClick={() => {
                           handleFilterChange();
@@ -789,18 +856,18 @@ const Yachts = () => {
                   </ScrollArea>
                 </SheetContent>
               </Sheet>
-              
+
               <div className="flex flex-wrap gap-2">
                 {activeFilters.map((filter, index) => (
-                  <Badge 
-                    key={index} 
+                  <Badge
+                    key={index}
                     variant="secondary"
                     className="px-3 py-1 flex items-center gap-1"
                   >
                     {filter}
                     <X className="h-3 w-3 cursor-pointer" onClick={() => {
                       const [type] = filter.split(':');
-                      switch(type) {
+                      switch (type) {
                         case 'Price':
                           setFilters(prev => ({ ...prev, min_price: 1000, max_price: 4000 }));
                           break;
@@ -857,9 +924,9 @@ const Yachts = () => {
                   </Badge>
                 ))}
                 {activeFilters.length > 0 && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={resetFilters}
                     className="text-sm"
                   >
@@ -875,137 +942,137 @@ const Yachts = () => {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {yachts.length > 0 ? (
             yachts.map((item) => {
-             if (!item || !item.yacht) return null;
-            return (
-             <Card
-                key={item.yacht.id}
-                className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+              if (!item || !item.yacht) return null;
+              return (
+                <Card
+                  key={item.yacht.id}
+                  className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                >
+                  {/* <Link href={`/dashboard/yachts/${item.yacht.id}`}> */}
+                  <div className="relative">
+                    <Carousel className="w-full h-[221px]">
+                      <CarouselContent>
+                        {[
+                          item?.yacht?.yacht_image,
+                          item?.yacht?.image1,
+                          item?.yacht?.image2,
+                          item?.yacht?.image3,
+                          item?.yacht?.image4,
+                          item?.yacht?.image5,
+                          item?.yacht?.image6,
+                          item?.yacht?.image7,
+                          item?.yacht?.image8,
+                          item?.yacht?.image9,
+                          item?.yacht?.image10,
+                          item?.yacht?.image11,
+                          item?.yacht?.image12,
+                          item?.yacht?.image13,
+                          item?.yacht?.image14,
+                          item?.yacht?.image15,
+                          item?.yacht?.image16,
+                          item?.yacht?.image17,
+                          item?.yacht?.image18,
+                          item?.yacht?.image19,
+                          item?.yacht?.image20,
+                        ].filter(image => image !== null).map((image, index) => (
+                          <CarouselItem key={index}>
+                            <Image
+                              src={image ? `https://api.takeoffyachts.com${image}` : '/assets/images/fycht.jpg'}
+                              alt="not found"
+                              width={326}
+                              height={300}
+                              className="object-cover px-3 pt-3 rounded-3xl w-full h-[221px]"
+                              onError={(e) => {
+                                e.target.src = '/assets/images/fycht.jpg';
+                              }}
+                            />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
+                        <Button variant="icon" onClick={(e) => e.stopPropagation()}>
+                          <ChevronLeft />
+                        </Button>
+                      </CarouselPrevious>
+                      <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
+                        <Button variant="icon" onClick={(e) => e.stopPropagation()}>
+                          <ChevronRight />
+                        </Button>
+                      </CarouselNext>
+                    </Carousel>
+                    <Link href={`/dashboard/yachts/${item.yacht.id}`}>
+                      <div className="absolute inset-0"></div>
+                    </Link>
+
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
+                      onClick={() => handleWishlistToggle(item.yacht.id)}
+                    >
+                      <Image
+                        src={favorites.has(item.yacht.id)
+                          ? "/assets/images/wishlist.svg"
+                          : "/assets/images/unwishlist.svg"
+                        }
+                        alt="wishlist"
+                        width={20}
+                        height={20}
+                      />
+                    </Button>
+
+                    <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                      <span className="font-medium text-xs">
+                        AED <span className="font-bold text-lg text-primary">{item.yacht.per_hour_price}</span>
+                        <span className="text-xs font-light ml-1">/Hour</span>
+                      </span>
+                    </div>
+                  </div>
+                  <CardContent className="px-4 py-2">
+                    <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
+                      <MapPin className="size-3 mr-1" /> {item.yacht.location || "Location Not Available"}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item.yacht.name}</h3>
+                      <span className="font-medium text-xs">
+                        AED <span className="font-bold text-sm text-primary">{item.yacht.per_hour_price}</span>
+                        <span className="text-xs font-light ml-1">/Day</span>
+                      </span>
+                    </div>
+                    <div className="flex justify-start items-center gap-1">
+                      <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
+                      <p className="font-semibold text-xs">{item.yacht.length || 0} ft</p>
+                      <Dot />
+                      <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                        <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
+                        <p>Guests</p>
+                        <p>{item.yacht.guest || 0}</p>
+                      </div>
+                      <Dot />
+                      <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                        <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
+                        <p>Cabins</p>
+                        <p>{item.yacht.number_of_cabin || 0}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                  {/* </Link> */}
+                </Card>
+              )
+            })
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-12">
+              <p className="text-gray-500 text-lg mb-4">No yachts found</p>
+              <Button
+                variant="outline"
+                onClick={resetFilters}
+                className="gap-2"
               >
-            {/* <Link href={`/dashboard/yachts/${item.yacht.id}`}> */}
-                <div className="relative">
-                  <Carousel className="w-full h-[221px]">
-                    <CarouselContent>
-                      {[
-                        item?.yacht?.yacht_image,
-                        item?.yacht?.image1,
-                        item?.yacht?.image2,
-                        item?.yacht?.image3,
-                        item?.yacht?.image4,
-                        item?.yacht?.image5,
-                        item?.yacht?.image6,
-                        item?.yacht?.image7,
-                        item?.yacht?.image8,
-                        item?.yacht?.image9,
-                        item?.yacht?.image10,
-                        item?.yacht?.image11,
-                        item?.yacht?.image12,
-                        item?.yacht?.image13,
-                        item?.yacht?.image14,
-                        item?.yacht?.image15,
-                        item?.yacht?.image16,
-                        item?.yacht?.image17,
-                        item?.yacht?.image18,
-                        item?.yacht?.image19,
-                        item?.yacht?.image20,
-                      ].filter(image => image !== null).map((image, index) => (
-                        <CarouselItem key={index}>
-                          <Image
-                            src={image ? `https://api.takeoffyachts.com${image}` : '/assets/images/fycht.jpg'}
-                            alt="not found"
-                            width={326}
-                            height={300}
-                            className="object-cover px-3 pt-3 rounded-3xl w-full h-[221px]"
-                            onError={(e) => {
-                              e.target.src = '/assets/images/fycht.jpg';
-                            }}
-                          />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
-                      <Button variant="icon" onClick={(e) => e.stopPropagation()}>
-                        <ChevronLeft />
-                      </Button>
-                    </CarouselPrevious>
-                    <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
-                      <Button variant="icon" onClick={(e) => e.stopPropagation()}>
-                        <ChevronRight />
-                      </Button>
-                    </CarouselNext>
-                  </Carousel>
-                  <Link href={`/dashboard/yachts/${item.yacht.id}`}> 
-                    <div className="absolute inset-0"></div>
-                  </Link>
-
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
-                    onClick={() => handleWishlistToggle(item.yacht.id)}
-                  >
-                    <Image 
-                      src={favorites.has(item.yacht.id) 
-                        ? "/assets/images/wishlist.svg" 
-                        : "/assets/images/unwishlist.svg"
-                      } 
-                      alt="wishlist" 
-                      width={20} 
-                      height={20} 
-                    />
-                  </Button>
-
-                  <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
-                  <span className="font-medium text-xs">
-                    AED <span className="font-bold text-lg text-primary">{item.yacht.per_hour_price}</span>
-                      <span className="text-xs font-light ml-1">/Hour</span>
-                  </span>
-                  </div>
-                </div>
-                <CardContent className="px-4 py-2">
-                  <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
-                    <MapPin className="size-3 mr-1" /> {item.yacht.location || "Location Not Available"}
-                  </p>
-                  <div className="flex justify-between items-center">
-                  <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item.yacht.name}</h3>
-                  <span className="font-medium text-xs">
-                    AED <span className="font-bold text-sm text-primary">{item.yacht.per_hour_price}</span>
-                      <span className="text-xs font-light ml-1">/Day</span>
-                  </span>
-                  </div>
-                  <div className="flex justify-start items-center gap-1">
-                  <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
-                    <p className="font-semibold text-xs">{item.yacht.length || 0} ft</p>
-                    <Dot />
-                    <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                    <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
-                      <p>Guests</p>
-                      <p>{item.yacht.guest || 0}</p>
-                    </div>
-                    <Dot />
-                    <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                    <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
-                      <p>Cabins</p>
-                      <p>{item.yacht.number_of_cabin || 0}</p>
-                    </div>
-                  </div>
-                </CardContent>
-            {/* </Link> */}
-              </Card>
-            )
-          })
-        ) : (
-          <div className="col-span-full flex flex-col items-center justify-center py-12">
-            <p className="text-gray-500 text-lg mb-4">No yachts found</p>
-            <Button 
-              variant="outline" 
-              onClick={resetFilters}
-              className="gap-2"
-            >
-              <X className="h-4 w-4" />
-              Reset Filters
-            </Button>
-          </div>
-        )}
+                <X className="h-4 w-4" />
+                Reset Filters
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </section>

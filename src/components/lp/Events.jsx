@@ -128,7 +128,7 @@ const Events = ({ limit = 4 }) => {
   return (
     <section className="py-8 px-2">
       <div className="max-w-5xl mx-auto">
-        <h1 className="md:text-4xl text-[24px] font-semibold">Events</h1>
+        <h1 className="md:text-4xl text-[24px] font-semibold text-start">Our Events</h1>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center my-8">
           {eventsToDisplay.map((item) => {
             if (!item?.event) {

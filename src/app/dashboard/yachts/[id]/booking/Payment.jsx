@@ -48,124 +48,48 @@ const PaymentForm = () => {
     return bookingData.isPartialPayment ? total * 0.25 : total;
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (!stripe || !elements) return;
-
-  //   if (!validateForm()) {
-  //     return;
-  //   }
-
-  //   setIsProcessing(true);
-  //   setError(null);
-
-  //   try {
-  //     const paymentAmount = calculatePaymentAmount();
-      
-  //     // Create source from card details
-  //     const { error: sourceError, source } = await stripe.createSource(
-  //       elements.getElement(CardElement),
-  //       {
-  //         type: 'card',
-  //         amount: Math.round(paymentAmount * 100), // Convert to cents and ensure it's a whole number
-  //         currency: 'aed',
-  //         owner: {
-  //           name: bookingData.fullName,
-  //           email: session.user.email,
-  //           phone: bookingData.phone,
-  //         },
-  //       }
-  //     );
-
-  //     if (sourceError) {
-  //       throw new Error(sourceError.message);
-  //     }
-
-  //     // Send booking details with source ID as payment token
-  //     const response = await fetch('https://api.takeoffyachts.com/yacht/process-payment/', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         // 'Authorization': `Bearer ${session?.accessToken}`
-  //       },
-  //       body: JSON.stringify({
-  //         payment_intent_id: source.id, // Using source.id as the payment token
-  //         booking_type: "yacht",
-  //         amount: paymentAmount, // Send the actual payment amount
-  //         user_id: session.user.userid,
-  //         email: session.user.email,
-  //         yacht_id: selectedYacht.yacht.id,
-  //         phone_number: bookingData.phone,
-  //         country: bookingData.country,
-  //         message: bookingData.notes,
-  //         adults: bookingData.adults,
-  //         kid_teen: bookingData.kids,
-  //         duration_hour: bookingData.duration,
-  //         selected_date: bookingData.date,
-  //         total_cost: calculateTotal(), // This remains the full amount
-  //         booking_time: bookingData.startTime,
-  //         guest: bookingData.adults + bookingData.kids,
-  //         extras: bookingData.extras || [],
-  //         is_partial_payment: bookingData.isPartialPayment
-  //       })
-  //     });
-
-  //     const bookingResult = await response.json();
-      
-  //     if (bookingResult.error) {
-  //       throw new Error(bookingResult.error);
-  //     }
-
-  //     // Payment successful
-  //     toast.success('Payment successful! Redirecting to success page...');
-  //     router.push('/dashboard/success');
-
-  //   } catch (error) {
-  //     console.error('Payment error:', error);
-  //     setError(error.message);
-  //     toast.error(error.message || 'Payment processing failed');
-  //   } finally {
-  //     setIsProcessing(false);
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) return;
-  
+
     if (!validateForm()) {
       return;
     }
-  
+
     setIsProcessing(true);
     setError(null);
-  
+
     try {
       const paymentAmount = calculatePaymentAmount();
-  
-      // Create payment method from card details
-      const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: elements.getElement(CardElement),
-        billing_details: {
-          name: bookingData.fullName,
-          email: session.user.email,
-          phone: bookingData.phone,
-        },
-      });
-  
-      if (paymentMethodError) {
-        throw new Error(paymentMethodError.message);
+      
+      // Create source from card details
+      const { error: sourceError, source } = await stripe.createSource(
+        elements.getElement(CardElement),
+        {
+          type: 'card',
+          amount: Math.round(paymentAmount * 100), // Convert to cents and ensure it's a whole number
+          currency: 'aed',
+          owner: {
+            name: bookingData.fullName,
+            email: session.user.email,
+            phone: bookingData.phone,
+          },
+        }
+      );
+
+      if (sourceError) {
+        throw new Error(sourceError.message);
       }
-  
-      // Send booking details with payment method ID
+
+      // Send booking details with source ID as payment token
       const response = await fetch('https://api.takeoffyachts.com/yacht/process-payment/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${session?.accessToken}` // Commented out as per your request
+          // 'Authorization': `Bearer ${session?.accessToken}`
         },
         body: JSON.stringify({
-          payment_method_id: paymentMethod.id, // Using paymentMethod.id as the payment token
+          payment_intent_id: source.id, // Using source.id as the payment token
           booking_type: "yacht",
           amount: paymentAmount, // Send the actual payment amount
           user_id: session.user.userid,
@@ -179,21 +103,25 @@ const PaymentForm = () => {
           duration_hour: bookingData.duration,
           selected_date: bookingData.date,
           total_cost: calculateTotal(), // This remains the full amount
+          booking_time: bookingData.startTime,
+          guest: bookingData.adults + bookingData.kids,
+          extras: bookingData.extras || [],
+          is_partial_payment: bookingData.isPartialPayment,
           per_day_price: selectedYacht?.yacht?.per_hour_price, // Added per_day_price
           per_hour_price: selectedYacht?.yacht?.per_hour_price // Added per_hour_price
         })
       });
-  
+
       const bookingResult = await response.json();
       
       if (bookingResult.error) {
         throw new Error(bookingResult.error);
       }
-  
+
       // Payment successful
       toast.success('Payment successful! Redirecting to success page...');
       router.push('/dashboard/success');
-  
+
     } catch (error) {
       console.error('Payment error:', error);
       setError(error.message);
@@ -202,6 +130,80 @@ const PaymentForm = () => {
       setIsProcessing(false);
     }
   };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!stripe || !elements) return;
+  
+  //   if (!validateForm()) {
+  //     return;
+  //   }
+  
+  //   setIsProcessing(true);
+  //   setError(null);
+  
+  //   try {
+  //     const paymentAmount = calculatePaymentAmount();
+  
+  //     // Create payment method from card details
+  //     const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
+  //       type: 'card',
+  //       card: elements.getElement(CardElement),
+  //       billing_details: {
+  //         name: bookingData.fullName,
+  //         email: session.user.email,
+  //         phone: bookingData.phone,
+  //       },
+  //     });
+  
+  //     if (paymentMethodError) {
+  //       throw new Error(paymentMethodError.message);
+  //     }
+  
+  //     // Send booking details with payment method ID
+  //     const response = await fetch('https://api.takeoffyachts.com/yacht/process-payment/', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         // 'Authorization': `Bearer ${session?.accessToken}` // Commented out as per your request
+  //       },
+  //       body: JSON.stringify({
+  //         payment_intent_id: paymentMethod.id, // Using paymentMethod.id as the payment token
+  //         booking_type: "yacht",
+  //         amount: paymentAmount, // Send the actual payment amount
+  //         user_id: session.user.userid,
+  //         email: session.user.email,
+  //         yacht_id: selectedYacht.yacht.id,
+  //         phone_number: bookingData.phone,
+  //         country: bookingData.country,
+  //         message: bookingData.notes,
+  //         adults: bookingData.adults,
+  //         kid_teen: bookingData.kids,
+  //         duration_hour: bookingData.duration,
+  //         selected_date: bookingData.date,
+  //         total_cost: calculateTotal(), // This remains the full amount
+  //         per_day_price: selectedYacht?.yacht?.per_hour_price, // Added per_day_price
+  //         per_hour_price: selectedYacht?.yacht?.per_hour_price // Added per_hour_price
+  //       })
+  //     });
+  
+  //     const bookingResult = await response.json();
+      
+  //     if (bookingResult.error) {
+  //       throw new Error(bookingResult.error);
+  //     }
+  
+  //     // Payment successful
+  //     toast.success('Payment successful! Redirecting to success page...');
+  //     router.push('/dashboard/success');
+  
+  //   } catch (error) {
+  //     console.error('Payment error:', error);
+  //     setError(error.message);
+  //     toast.error(error.message || 'Payment processing failed');
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
   return (
     <form onSubmit={handleSubmit} className='w-full space-y-6'>
       <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>
@@ -238,15 +240,28 @@ const PaymentForm = () => {
             />
           </div>
           <div className="flex flex-col space-y-2">
-             <div className="space-y-2 pl-1 mb-2">
+           
+            <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
+              <CheckCircle className='w-3 h-3 text-green-500' />
+              You are only charged if the owner accepts.
+            </p>
+            <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
+              <CheckCircle className='w-3 h-3 text-green-500' />
+              Guaranteed response within 24 hours
+            </p>
+          </div>
+          <div className='text-xs text-gray-500 dark:text-gray-400'>
+            We accept all major credit and debit cards including Visa, Mastercard, and American Express
+          </div>
+          <div className="space-y-2 pl-1 mb-2">
             <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="partial" 
-            checked={bookingData.isPartialPayment}
-            onCheckedChange={(checked) => {
-              updateBookingData({ isPartialPayment: checked });
-            }}
-          />
+              <Checkbox 
+                id="partial" 
+                checked={bookingData.isPartialPayment}
+                onCheckedChange={(checked) => {
+                  updateBookingData({ isPartialPayment: checked });
+                }}
+              />
               <Label htmlFor="partial" className="text-sm">
                 You want to do partial payment?
               </Label>
@@ -306,25 +321,13 @@ const PaymentForm = () => {
               </Dialog>
             </div>
           </div>
-            <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
-              <CheckCircle className='w-3 h-3 text-green-500' />
-              You are only charged if the owner accepts.
-            </p>
-            <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
-              <CheckCircle className='w-3 h-3 text-green-500' />
-              Guaranteed response within 24 hours
-            </p>
-          </div>
-          <div className='text-xs text-gray-500 dark:text-gray-400'>
-            We accept all major credit and debit cards including Visa, Mastercard, and American Express
-          </div>
         </div>
       </div>
 
       <Button 
         type='submit'
         disabled={isProcessing || !stripe || !cardComplete}
-        className='w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-10'
+        className='w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12'
       >
         {isProcessing ? 'Processing...' : `Pay ${bookingData.isPartialPayment ? '25%' : 'Full'} Amount (AED ${calculatePaymentAmount()})`}
       </Button>

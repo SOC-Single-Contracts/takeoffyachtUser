@@ -515,26 +515,6 @@ const Summary = ({ onNext, initialBookingId }) => {
           </TableBody>
         </Table>
 
-        {/* Partial Payment Toggle */}
-        <div className="bg-[#F4F0E4] w-full rounded-lg p-4 flex items-center justify-between">
-          <div>
-            <Label htmlFor="partial-payment" className="text-md font-semibold text-black">
-              Partial Payment
-            </Label>
-            <p className="text-sm text-gray-600">
-              Pay 25% now and the remaining amount later
-            </p>
-          </div>
-          <Switch
-            id="partial-payment"
-            className="data-[state=checked]:bg-[#BEA355] data-[state=unchecked]:bg-gray-300"
-            checked={isPartialPayment}
-            onCheckedChange={(checked) => setIsPartialPayment(checked)}
-            disabled={bookingDetails?.paid_cost > 0 || bookingDetails?.remaining_cost > 0} // Disable if there are paid or remaining amounts
-
-          />
-        </div>
-
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
             <TableRow>
@@ -562,6 +542,26 @@ const Summary = ({ onNext, initialBookingId }) => {
         </Table>
 
         {renderPriceSummary()}
+
+         {/* Partial Payment Toggle */}
+         <div className="bg-[#F4F0E4] w-full rounded-lg p-4 flex items-center justify-between">
+          <div>
+            <Label htmlFor="partial-payment" className="text-md font-semibold text-black">
+              Partial Payment
+            </Label>
+            <p className="text-sm text-gray-600">
+              Pay 25% now and the remaining amount later
+            </p>
+          </div>
+          <Switch
+            id="partial-payment"
+            className="data-[state=checked]:bg-[#BEA355] data-[state=unchecked]:bg-gray-300"
+            checked={isPartialPayment}
+            onCheckedChange={(checked) => setIsPartialPayment(checked)}
+            disabled={bookingDetails?.paid_cost > 0 || bookingDetails?.remaining_cost > 0} // Disable if there are paid or remaining amounts
+
+          />
+        </div>
 
         <div className="flex justify-end flex-wrap gap-2">
           <Button
