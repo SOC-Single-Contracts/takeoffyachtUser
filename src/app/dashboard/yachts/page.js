@@ -309,7 +309,7 @@ const Yachts = () => {
       setLoading(false);
     }
   };
-  // ... existing code ...
+
   const resetFilters = () => {
     setFilters({
       min_price: 1000,
