@@ -254,6 +254,8 @@ const SearchYacht = () => {
         body: JSON.stringify(payload),
       });
 
+      console.log("wwjwjwjwjwjjwjiji")
+
       const responseData = await response.json();
       if (responseData.error_code === 'pass') {
         setYachts(responseData.data || []);
@@ -367,20 +369,13 @@ const SearchYacht = () => {
             
           const params = {
             user_id: session?.user?.userid || 1,
-            created_on: format(new Date(), 'yyyy-MM-dd'),
             guest: parseInt(searchParams.get('guests')) || 1,
             location: searchParams.get('location'),
-            min_price: 1000,
-            max_price: 4000,
             capacity: parseInt(searchParams.get('guests')) || 1,
-            price_des: true,
-            price_asc: false,
-            cabin_des: false,
-            cabin_asc: true,
             name:searchParams.get('name') || ""
           };  
           const response = await yachtApi.checkYachts(params);
-          console.log("response",response)
+          console.log("response=>>>>",response)
           if (response.error_code === 'pass' && response.data) {
             setYachts(response.data);
           setOriginalYachts(response.data)
