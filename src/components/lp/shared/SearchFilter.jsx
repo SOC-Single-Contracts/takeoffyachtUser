@@ -365,7 +365,7 @@ const SearchFilter = () => {
                   }}
                 >
                   <TabsList
-                    className="relative grid grid-cols-2 sm:grid-cols-4 w-full mx-auto rounded-none border-b bg-[#EFF1F2] dark:bg-gray-800 h-auto md:h-[72px] rounded-full gap-1 sm:gap-4"
+                    className="relative grid grid-cols-2 sm:grid-cols-4 w-full mx-auto rounded-none border-b bg-[#EFF1F2] dark:bg-gray-800 h-auto md:h-[72px] rounded-[14px] md:rounded-full gap-1 sm:gap-4"
 
                   >
                     <TabsTrigger
@@ -399,18 +399,21 @@ const SearchFilter = () => {
                     <TabsTrigger
                       value="who"
                       // disabled={!selectedDate}
-                      className="py-1 md:py-3.5 w-[154px] md:w-[332px] text-xs md:text-sm rounded-full bg-transparent hover:bg-transparent text-[#BEA355] dark:text-[#BEA355] data-[state=active]:bg-white data-[state=active]:drop-shadow-2xl flex flex-col items-start"
+                      className="py-1 md:py-3.5 w-[130px] md:w-[150px] text-xs md:text-sm rounded-full bg-transparent hover:bg-transparent text-[#BEA355] dark:text-[#BEA355] data-[state=active]:bg-white data-[state=active]:drop-shadow-2xl flex flex-col items-start"
                     >
                       <div className="flex flex-col items-start md:pl-2 w-full">
                         <span className="font-semibold text-xs">Who</span>
                         <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">Add Guests</span>
                       </div>
                     </TabsTrigger>
+                    <div>
+                      
+                    </div>
                     <TabsTrigger
                       value="search"
                       onClick={handleSearch}
                       // disabled={!selectedCity || !selectedDate || loading}
-                      className="py-2 md:py-4 w-[80px] md:w-[120px] absolute right-2 text-[9px] md:text-sm rounded-full bg-[#BEA355] text-white hover:bg-[#a98a47] data-[state=disabled]:opacity-50"
+                      className="py-2 md:py-4 w-[80px] md:w-[120px] absolute  right-4 bottom-2 text-[9px] md:text-sm rounded-full bg-[#BEA355] text-white hover:bg-[#a98a47] data-[state=disabled]:opacity-50"
                     >
                       {loading ? (
                         <div className="flex items-center text-xs md:text-sm">
@@ -425,7 +428,7 @@ const SearchFilter = () => {
                     </TabsTrigger>
                     <TabsContent
                       value="who"
-                      className="absolute right-0 top-full mt-2 z-10 md:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
+                      className="absolute right-0 top-full mt-2 z-10 md:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl h-[300px] overflow-y-auto shadow-lg border border-gray-200 dark:border-gray-700"
                     >
                       <h3 className="text-xl font-semibold">Who&apos;s coming?</h3>
                       {Object.keys(guests).map(type => (
