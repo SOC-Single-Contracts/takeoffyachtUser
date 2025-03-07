@@ -270,7 +270,7 @@ const Summary = ({ onNext, initialBookingId }) => {
                 (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour}
             </TableCell>
           </TableRow>
-          {bookingDetails.extras.map((item) => (
+          {bookingDetails.extras_data && Array.isArray(bookingDetails.extras_data) && bookingDetails.extras_data.map((item) => (
             <TableRow key={item.extra_id}>
               <TableCell className="font-semibold">{item.name}</TableCell>
               <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
