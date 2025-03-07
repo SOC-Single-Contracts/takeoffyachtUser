@@ -22,13 +22,13 @@ import Image from 'next/image';
 const safeFormat = (dateString, formatString, fallback = 'N/A') => {
   try {
     if (!dateString) return fallback;
-    
+
     // Try parsing as ISO string first
     let parsedDate = parseISO(dateString);
     if (!isValid(parsedDate)) {
       parsedDate = parseISO(`1970-01-01T${dateString}`);
     }
-    
+
     return isValid(parsedDate) ? format(parsedDate, formatString) : fallback;
   } catch (error) {
     console.error('Date formatting error:', error);
@@ -98,10 +98,10 @@ const Summary = ({ onNext, initialBookingId }) => {
   const handleUpdateExtras = async () => {
     try {
       const bookingId = bookingDetails.id;
-      
+
       // Destructure to remove unwanted fields
       const { qr_code, ...payloadWithoutQrCode } = bookingDetails;
-      
+
       const payload = {
         ...payloadWithoutQrCode,
         extras: editableExtras,
@@ -140,13 +140,13 @@ const Summary = ({ onNext, initialBookingId }) => {
   const handleUpdatePartialPayment = async () => {
     try {
       const bookingId = bookingDetails.id;
-      
+
       // Destructure to remove unwanted fields
       const { qr_code, ...payloadWithoutQrCode } = bookingDetails;
-      
+
       // Calculate total cost
       const totalCost = bookingDetails.total_cost || calculateTotal();
-      
+
       const payload = {
         ...payloadWithoutQrCode,
         is_partial_payment: isPartialPayment,
@@ -171,7 +171,7 @@ const Summary = ({ onNext, initialBookingId }) => {
 
       const updatedDetails = await response.json();
       setBookingDetails(updatedDetails);
-      
+
       // Update booking context with partial payment status
       updateBookingData({
         isPartialPayment: isPartialPayment,
@@ -199,10 +199,10 @@ const Summary = ({ onNext, initialBookingId }) => {
     try {
       // First update the extras
       await handleUpdateExtras();
-      
+
       // Then update partial payment status
       await handleUpdatePartialPayment();
-      
+
       // Finally proceed to next step
       onNext();
     } catch (error) {
@@ -225,7 +225,7 @@ const Summary = ({ onNext, initialBookingId }) => {
     const bookingId = bookingDetails.id;
     const yachtId = selectedYacht?.yacht?.id || bookingData.yachtId;
     const bookingLink = `${window.location.origin}/dashboard/yachts/${yachtId}/guest-booking/?bookingId=${bookingId}`;
-    
+
     navigator.clipboard.writeText(bookingLink).then(() => {
       setIsCopied(true); // Set copied state to true
       toast({
@@ -265,12 +265,12 @@ const Summary = ({ onNext, initialBookingId }) => {
               {bookingDetails.is_new_year_booking && " - New Year's Eve Rate"}
             </TableCell>
             <TableCell className="font-medium">
-              AED {(bookingDetails.is_new_year_booking ? 
-                (selectedYacht?.yacht?.new_year_price || 0) : 
+              AED {(bookingDetails.is_new_year_booking ?
+                (selectedYacht?.yacht?.new_year_price || 0) :
                 (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour}
             </TableCell>
           </TableRow>
-          {bookingDetails.extras.map((item) => (
+          {bookingDetails.extras_data && Array.isArray(bookingDetails.extras_data) && bookingDetails.extras_data.map((item) => (
             <TableRow key={item.extra_id}>
               <TableCell className="font-semibold">{item.name}</TableCell>
               <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
@@ -317,7 +317,7 @@ const Summary = ({ onNext, initialBookingId }) => {
         </TableBody>
       </Table>
     );
-};
+  };
 
   if (loading) {
     return <div>Loading booking details...</div>;
@@ -330,7 +330,7 @@ const Summary = ({ onNext, initialBookingId }) => {
         <div className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {selectedYacht?.yacht?.yacht_image && (
-              <div 
+              <div
                 className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
                 onClick={() => {
                   Fancybox.show([
@@ -353,7 +353,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               const imageKey = `image${index + 1}`;
               if (selectedYacht?.yacht?.[imageKey]) {
                 return (
-                  <div 
+                  <div
                     key={imageKey}
                     className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
                     onClick={() => {
@@ -485,17 +485,17 @@ const Summary = ({ onNext, initialBookingId }) => {
                   <TableCell className="font-semibold">{extra.name}</TableCell>
                   <TableCell>
                     <div className="flex items-center">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => updateExtraQuantity(index, Math.max(0, extra.quantity - 1))}
                       >
                         -
                       </Button>
                       <span className="mx-2">{extra.quantity}</span>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => updateExtraQuantity(index, extra.quantity + 1)}
                       >
                         +
@@ -506,11 +506,11 @@ const Summary = ({ onNext, initialBookingId }) => {
                 </TableRow>
               ))
             ) : (
-                <TableRow>
-                  <TableCell colSpan={3} className="text-center text-gray-500 py-4">
-                    No optional extras available
-                  </TableCell>
-                </TableRow>
+              <TableRow>
+                <TableCell colSpan={3} className="text-center text-gray-500 py-4">
+                  No optional extras available
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>
@@ -528,8 +528,8 @@ const Summary = ({ onNext, initialBookingId }) => {
               <TableCell className="font-semibold">Your Booking Link:</TableCell>
               <TableCell className="font-medium">
                 <div className="flex items-center">
-                  <span 
-                    className="text-blue-500 cursor-pointer" 
+                  <span
+                    className="text-blue-500 cursor-pointer"
                     onClick={handleCopyLink}
                   >
                     {isCopied ? <Check className="h-5 w-5" /> : <Clipboard className="h-5 w-5" />}
@@ -543,8 +543,8 @@ const Summary = ({ onNext, initialBookingId }) => {
 
         {renderPriceSummary()}
 
-         {/* Partial Payment Toggle */}
-         <div className="bg-[#F4F0E4] w-full rounded-lg p-4 flex items-center justify-between">
+        {/* Partial Payment Toggle */}
+        {/* <div className="bg-[#F4F0E4] w-full rounded-lg p-4 flex items-center justify-between">
           <div>
             <Label htmlFor="partial-payment" className="text-md font-semibold text-black">
               Partial Payment
@@ -561,37 +561,43 @@ const Summary = ({ onNext, initialBookingId }) => {
             disabled={bookingDetails?.paid_cost > 0 || bookingDetails?.remaining_cost > 0} // Disable if there are paid or remaining amounts
 
           />
-        </div>
+        </div> */}
 
         <div className="flex justify-end flex-wrap gap-2">
           <Button
-          variant="secondary"
+            variant="secondary"
             onClick={handleUpdateExtras}
             className="px-6 py-2 text-xs rounded-full"
           >
             Update Extras
           </Button>
-          <Button
+          {/* <Button
             onClick={handleCopyLink}
             className="bg-blue-500 text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-blue-600"
           >
             Copy Booking Link
-          </Button>
-          {((bookingDetails?.paid_cost === 0 || bookingDetails?.paid_cost === undefined) || 
+          </Button> */}
+          {/* {((bookingDetails?.paid_cost === 0 || bookingDetails?.paid_cost === undefined) ||
             (bookingDetails?.remaining_cost > 0)) && (
-            <Button
-              onClick={handleProceedToPayment}
-              className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
-            >
-              {isPartialPayment && bookingDetails?.total_cost && !bookingDetails?.paid_cost && !bookingDetails?.remaining_cost
-                ? `Proceed to Payment (25% AED ${(bookingDetails.total_cost * 0.25).toFixed(2)})` 
-                : (bookingDetails?.remaining_cost > 0 
-                  ? `Proceed to Payment (Remaining AED ${bookingDetails.remaining_cost.toFixed(2)})`
-                  : bookingDetails?.total_cost 
-                    ? `Proceed to Payment (Total AED ${bookingDetails.total_cost.toFixed(2)})`
-                    : 'Proceed to Payment')}
-            </Button>
-          )}
+              <Button
+                onClick={handleProceedToPayment}
+                className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
+              >
+                {isPartialPayment && bookingDetails?.total_cost && !bookingDetails?.paid_cost && !bookingDetails?.remaining_cost
+                  ? `Proceed to Payment (25% AED ${(bookingDetails.total_cost * 0.25).toFixed(2)})`
+                  : (bookingDetails?.remaining_cost > 0
+                    ? `Proceed to Payment (Remaining AED ${bookingDetails.remaining_cost.toFixed(2)})`
+                    : bookingDetails?.total_cost
+                      ? `Proceed to Payment (Total AED ${bookingDetails.total_cost.toFixed(2)})`
+                      : 'Proceed to Payment')}
+              </Button>
+            )} */}
+             <Button
+                onClick={handleProceedToPayment}
+                className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
+              >
+                Proceed to Payment
+              </Button>
         </div>
       </div>
     </section>

@@ -211,7 +211,8 @@ const Selection = ({ onNext }) => {
           if (qty > 0) {
             const item = [...extras.food, ...extras.extra, ...extras.sport].find(i => i.id.toString() === id);
             if (item) {
-              acc.push({ id, quantity: qty, price: item.price, name: item.name });
+              // acc.push({ id, quantity: qty, price: item.price, name: item.name });
+              acc.push({ id: item.extra_id, quantity: qty, price: item.price, name: item.name });
             }
           }
           return acc;
