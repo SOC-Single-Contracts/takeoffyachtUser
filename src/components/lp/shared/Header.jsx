@@ -62,7 +62,7 @@ const callbackUrl = process.env.NEXT_PUBLIC_SITE_URL || '/login'
     }, 1000);
   
     return () => clearTimeout(timer);
-  }, []);
+  }, []);  
 
   useEffect(() => {
     const handleScroll = () => {
