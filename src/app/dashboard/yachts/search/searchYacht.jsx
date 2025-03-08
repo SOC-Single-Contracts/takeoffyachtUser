@@ -372,7 +372,8 @@ const SearchYacht = () => {
             guest: parseInt(searchParams.get('guests')) || 1,
             location: searchParams.get('location'),
             capacity: parseInt(searchParams.get('guests')) || 1,
-            name:searchParams.get('name') || ""
+            name:searchParams.get('name') || "",
+            // created_on:searchParams.get('date') || "" ,
           };  
           const response = await yachtApi.checkYachts(params);
           console.log("response=>>>>",response)

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Plus, Send, Mic, Camera, Smile, Search, Heart, Bell, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarChat } from "@/components/ui/avatar";
 import { db } from "@/lib/firebase";
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, where, getDocs } from "firebase/firestore";
 import { useSession } from "next-auth/react";
@@ -62,7 +62,7 @@ const Chat = () => {
           return;
         }
 
-        // console.log("message",message)
+        console.log("message", message)
 
         setMessages(prev => [...prev, {
           id: message.messageId,
@@ -71,6 +71,7 @@ const Chat = () => {
           timestamp: message.createdAt,
           senderName: message.sender.nickname || message.sender.userId,
           type: 'text'
+
         }]);
 
         setNewMessage('');
@@ -224,7 +225,8 @@ const Chat = () => {
               senderId: message.sender.userId,
               timestamp: message.createdAt,
               senderName: message.sender.nickname || message.sender.userId,
-              type: 'text'
+              type: message.messageType === 'file' ? 'image' : 'text',
+              url: message.url
             }]);
             setNewMessageAdded(true);
           };
@@ -411,9 +413,13 @@ const Chat = () => {
   //   console.log(Boolean(selectedImage),Boolean(newMessage.trim()))
   // }, [selectedImage, newMessage])
 
-  // useEffect(() => {
-  //   console.log("session",session)
-  // }, [session])
+  useEffect(() => {
+    console.log("session", session)
+  }, [session])
+
+  //   useEffect(()=>{
+  // console.log("messages",messages)
+  //   },[messages])
   // useEffect(() => {
   //     console.log("filteredParticipants",filteredParticipants)
   //   }, [filteredParticipants])
@@ -474,7 +480,14 @@ const Chat = () => {
       <aside className="w-full lg:w-1/4 border-b lg:border-r-2 border-black/20 overflow-y-auto">
         <div className="p-3">
           <div className="flex items-center mb-2 justify-between">
-            <h2 className="text-xl font-bold">Messages to Admin </h2>
+            <h2 className="text-xl font-bold">
+              Messages( User {currentUser?.nickname && currentUser?.nickname?.trim() !== ""
+                ? currentUser?.nickname
+                : `Guest ${currentUser?.userId ? `${currentUser?.userId}` : ""}`} ) to Admin
+            </h2>
+
+
+
             {/* <Plus className="h-6 w-6 cursor-pointer hover:text-[#BEA355] transition-colors" /> */}
           </div>
           {/* <div className="p-2 space-y-4">
@@ -507,11 +520,12 @@ const Chat = () => {
                     }`}
                 >
                   <div className="relative">
-                    <Avatar
+                    <AvatarChat
                       src={participant?.avatar}
                       alt={participant?.name}
                       className="h-10 w-10"
                     />
+                    
 
                     <span
                       className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${participant.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
@@ -536,7 +550,7 @@ const Chat = () => {
             <div className="flex items-center justify-between p-4 border-b">
               <div className="flex items-center space-x-4">
                 <div className="relative">
-                  <Avatar
+                  <AvatarChat
                     src={getSelectedParticipant()?.avatar}
                     alt={getSelectedParticipant()?.name}
                     className="h-10 w-10"
@@ -611,13 +625,13 @@ const Chat = () => {
             )}
             <form onSubmit={handleSendChat} className="border-t p-4">
               <div className="flex items-center space-x-2">
-                <Button
+                {/* <Button
                   variant="ghost"
                   className="p-2"
                   type="button"
                 >
                   <Smile className="h-6 w-6" />
-                </Button>
+                </Button> */}
                 <input
                   type="file"
                   ref={fileInputRef}

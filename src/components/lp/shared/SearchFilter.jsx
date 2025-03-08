@@ -139,6 +139,10 @@ const SearchFilter = () => {
     fetchCities();
   }, []);
 
+  useEffect(()=>{
+console.log("selectedDateRange",selectedDateRange)
+  },[selectedDateRange])
+
   const handleGuestChange = (type, action) => {
     setGuests(prev => ({
       ...prev,
@@ -152,8 +156,8 @@ const SearchFilter = () => {
     setLoading(true);
     try {
       const totalGuests = guests.adults + guests.children + guests.infants;
-      const formattedStartDate = selectedDateRange.from ? format(selectedDateRange.from, 'yyyy-MM-dd') : null;
-      const formattedEndDate = selectedDateRange.to ? format(selectedDateRange.to, 'yyyy-MM-dd') : null;
+      const formattedStartDate = selectedDateRange?.from ? format(selectedDateRange?.from, 'yyyy-MM-dd') : null;
+      const formattedEndDate = selectedDateRange?.to ? format(selectedDateRange?.to, 'yyyy-MM-dd') : null;
 
       // Check if at least one criterion is provided
       if (!selectedCity && !formattedStartDate && totalGuests === 0) {
@@ -283,8 +287,8 @@ const SearchFilter = () => {
               <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
                 <CalendarIcon className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
                 <span className="dark:text-gray-300 text-xs">
-                  {selectedDateRange.from && selectedDateRange.to
-                    ? `${format(selectedDateRange.from, 'MMM dd')} - ${format(selectedDateRange.to, 'MMM dd')}`
+                  {selectedDateRange?.from && selectedDateRange?.to
+                    ? `${format(selectedDateRange?.from, 'MMM dd')} - ${format(selectedDateRange?.to, 'MMM dd')}`
                     : "When?"}
                 </span>
               </div>
