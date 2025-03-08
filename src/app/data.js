@@ -63,7 +63,7 @@ import { Coffee, Droplet, Tv, Wifi } from "lucide-react";
       image: featuredyachts,
       hourlyRate: "$1,500",
       date: "Jun 23, 2024",
-      description: "Sail the azure waters in style aboard our meticulously crafted yacht, equipped with opulent amenities and a professional crew..."
+      description: "At YachtExplore, we believe that every journey is unique. Our extensive collection of luxury yachts includes motor yachts, sailing yachts, and superyachts, each designed to offer the best in luxury, speed, and comfort. "
     },
     {
      id: 2,
@@ -71,7 +71,7 @@ import { Coffee, Droplet, Tv, Wifi } from "lucide-react";
      image: featuredyachts,
      hourlyRate: "$1,500",
      date: "Jun 23, 2024",
-     description: "Sail the azure waters in style aboard our meticulously crafted yacht, equipped with opulent amenities and a professional crew..."
+     description: "At YachtExplore, we believe that every journey is unique. Our extensive collection of luxury yachts includes motor yachts, sailing yachts, and superyachts, each designed to offer the best in luxury, speed, and comfort. "
    },
    {
      id: 3,
@@ -79,7 +79,7 @@ import { Coffee, Droplet, Tv, Wifi } from "lucide-react";
      image: featuredyachts,
      hourlyRate: "$1,500",
      date: "Jun 23, 2024",
-     description: "Sail the azure waters in style aboard our meticulously crafted yacht, equipped with opulent amenities and a professional crew..."
+     description: "At YachtExplore, we believe that every journey is unique. Our extensive collection of luxury yachts includes motor yachts, sailing yachts, and superyachts, each designed to offer the best in luxury, speed, and comfort. "
    },
    {
      id: 4,
@@ -87,7 +87,7 @@ import { Coffee, Droplet, Tv, Wifi } from "lucide-react";
      image: featuredyachts,
      hourlyRate: "$1,500",
      date: "Jun 23, 2024",
-     description: "Sail the azure waters in style aboard our meticulously crafted yacht, equipped with opulent amenities and a professional crew..."
+     description: "At YachtExplore, we believe that every journey is unique. Our extensive collection of luxury yachts includes motor yachts, sailing yachts, and superyachts, each designed to offer the best in luxury, speed, and comfort. "
    },
    {
      id: 5,
@@ -95,7 +95,7 @@ import { Coffee, Droplet, Tv, Wifi } from "lucide-react";
      image: featuredyachts,
      hourlyRate: "$1,500",
      date: "Jun 23, 2024",
-     description: "Sail the azure waters in style aboard our meticulously crafted yacht, equipped with opulent amenities and a professional crew..."
+     description: "At YachtExplore, we believe that every journey is unique. Our extensive collection of luxury yachts includes motor yachts, sailing yachts, and superyachts, each designed to offer the best in luxury, speed, and comfort. "
    },
   ]
 

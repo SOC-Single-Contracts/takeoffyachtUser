@@ -31,7 +31,7 @@ const Hero = () => {
     //       The best yacht booking platform
     //     </h1>
     //     <p className="mt-6 text-md md:text-xl text-gray-300 leading-relaxed max-w-2xl">
-    //       Sail the azure waters in style aboard our meticulously crafted yacht, equipped with opulent amenities and a professional crew...
+    //       At YachtExplore, we believe that every journey is unique. Our extensive collection of luxury yachts includes motor yachts, sailing yachts, and superyachts, each designed to offer the best in luxury, speed, and comfort. 
     //     </p>
     //     <div className="mt-8">
     //       <Link href="/dashboard/yachts">
@@ -50,7 +50,7 @@ const Hero = () => {
       <div className="max-w-4xl px-4 mx-auto flex flex-col items-center text-center space-y-5">
         {/* <h1 className="lg:text-[48px] md:text-[46px] text-[32px] font-semibold text-black dark:text-white capitalize">The best yacht booking platform</h1> */}
         <p className="mt-4 text-black dark:text-white text-[16px] text-balance">
-        Sail the azure waters in style aboard our meticulously crafted yacht, equipped with opulent amenities and a professional crew...
+        At YachtExplore, we believe that every journey is unique. Our extensive collection of luxury yachts includes motor yachts, sailing yachts, and superyachts, each designed to offer the best in luxury, speed, and comfort. 
         </p>
         <Link href="/dashboard/yachts">
           <Button className="rounded-full h-10 px-10 py-4 bg-[#91908b] hover:bg-[#BEA355] dark:text-white transition duration-300 hover:shadow-2xl">Discover Yachts</Button>
