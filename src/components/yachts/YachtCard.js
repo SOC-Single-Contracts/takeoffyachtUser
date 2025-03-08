@@ -17,9 +17,9 @@ export default function YachtCard({ yacht }) {
   const handleWishlistToggle = async () => {
     try {
       if (isFavorite) {
-        // await removeFromWishlist(yachtData.id);
+        // await removeFromWishlist(yachtData?.id);
       } else {
-        await addToWishlist(session?.user?.userid, yachtData.id);
+        await addToWishlist(session?.user?.userid, yachtData?.id);
       }
       setIsFavorite(!isFavorite);
     } catch (error) {
@@ -32,13 +32,13 @@ export default function YachtCard({ yacht }) {
       <div className="relative">
         <Image
           src={
-            yachtData.yacht_image 
-              ? `https://api.takeoffyachts.com${yachtData.yacht_image}`
-              : yachtData.image1
-                ? `https://api.takeoffyachts.com${yachtData.image1}`
+            yachtData?.yacht_image 
+              ? `https://api.takeoffyachts.com${yachtData?.yacht_image}`
+              : yachtData?.image1
+                ? `https://api.takeoffyachts.com${yachtData?.image1}`
                 : '/assets/images/fycht.jpg'
           }
-          alt={yachtData.name}
+          alt={yachtData?.name}
           width={326}
           height={300}
           className="object-cover px-3 pt-3 rounded-3xl w-full h-[221px]"
@@ -47,7 +47,7 @@ export default function YachtCard({ yacht }) {
           }}
         />
 
-        <Link href={`/dashboard/yachts/${yachtData.id}`}>
+        <Link href={`/dashboard/yachts/${yachtData?.id}`}>
           <p className="absolute inset-0"></p>
         </Link>
 
@@ -70,7 +70,7 @@ export default function YachtCard({ yacht }) {
 
         <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
           <span className="font-medium text-xs">
-            AED <span className="font-bold text-lg text-primary">{yachtData.per_hour_price}</span>
+            AED <span className="font-bold text-lg text-primary">{yachtData?.per_hour_price}</span>
             <span className="text-xs font-light ml-1">/Hour</span>
           </span>
         </div>
@@ -78,14 +78,14 @@ export default function YachtCard({ yacht }) {
       
       <CardContent className="px-4 py-2">
         <div className="flex justify-between items-center">
-          <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{yachtData.name}</h3>
+          <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{yachtData?.name}</h3>
           <span className="font-medium text-xs">
-            AED <span className="font-bold text-sm text-primary">{yachtData.per_hour_price}</span>
+            AED <span className="font-bold text-sm text-primary">{yachtData?.per_hour_price}</span>
             <span className="text-xs font-light ml-1">/Day</span>
           </span>
         </div>
 
-        <div className="flex justify-start items-center gap-1">
+        <div className="flex justify-start items-center gap-1 flex-wrap">
           <Image 
             src="/assets/images/transfer.svg" 
             alt="length" 
@@ -93,7 +93,7 @@ export default function YachtCard({ yacht }) {
             height={9} 
             className="" 
           />
-          <p className="font-semibold text-xs">{yachtData.length || 0} ft</p>
+          <p className="font-semibold text-xs">{yachtData?.length || 0} ft</p>
           <Dot />
           <div className="text-center font-semibold flex items-center text-xs space-x-2">
             <Image 
@@ -104,7 +104,7 @@ export default function YachtCard({ yacht }) {
               className="dark:invert" 
             />
             <p>Guests</p>
-            <p>{yachtData.guest || 0}</p>
+            <p>{yachtData?.guest || 0}</p>
           </div>
           <Dot />
           <div className="text-center font-semibold flex items-center text-xs space-x-2">
@@ -116,7 +116,18 @@ export default function YachtCard({ yacht }) {
               className="dark:invert" 
             />
             <p>Cabins</p>
-            <p>{yachtData.number_of_cabin || 0}</p>
+            <p>{yachtData?.number_of_cabin || 0}</p>
+          </div>
+          <div className="text-center font-semibold flex items-center text-xs space-x-2">
+            <Image 
+              src="/assets/images/cabin.svg" 
+              alt="cabins" 
+              width={8} 
+              height={8} 
+              className="dark:invert" 
+            />
+            <p>Capacity</p>
+            <p>{yachtData?.capacity|| 0}</p>
           </div>
         </div>
       </CardContent>
