@@ -116,7 +116,7 @@ const SearchFilter = () => {
   }, [activeMainTab, session]);
 
   // Fetch cities from City API
-  useEffect(() => {
+  useEffect(() => { 
     const fetchCities = async () => {
       try {
         setIsCitiesLoading(true);
