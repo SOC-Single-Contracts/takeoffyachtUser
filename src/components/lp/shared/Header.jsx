@@ -150,7 +150,7 @@ const callbackUrl = process.env.NEXT_PUBLIC_SITE_URL || '/login'
   const handleLogout = () => {
     console.log("workkkk")
     signOut({ 
-      callbackUrl: callbackUrl,
+      callbackUrl: "https://yachtuser-kanwar.netlify.app",
       redirect: true 
     });
   };
