@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue,SelectTriggerSort } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectTriggerSort } from "@/components/ui/select";
 import { SlidersHorizontal, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +26,7 @@ const Yachts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
-  const [originalYachts, setOriginalYachts] = useState([]); 
+  const [originalYachts, setOriginalYachts] = useState([]);
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -57,6 +57,36 @@ const Yachts = () => {
     indoor: [],
   });
 
+  const initialFilterState = {
+    min_price: 1000,
+    max_price: 4000,
+    min_guest: "",
+    max_guest: "",
+    sleep_capacity: "",
+    capacity: "",
+    location: "",
+    category_name: [],
+    subcategory_name: [],
+    boat_category: [],
+    price_des: false,
+    price_asc: false,
+    cabin_des: false,
+    cabin_asc: false,
+    engine_type: "",
+    number_of_cabin: "",
+    created_on: "",
+    min_length: "",
+    max_length: "",
+    amenities: [],
+    outdoor_equipment: [],
+    kitchen: [],
+    energy: [],
+    leisure: [],
+    navigation: [],
+    extra_comforts: [],
+    indoor: [],
+  };
+
   const sortByOptions = [
     { value: "default", label: "Default" },
     { value: "Price-High-Low", label: "Price: High to Low" },
@@ -66,8 +96,10 @@ const Yachts = () => {
   ];
 
   const [selectedSortBy, setSelectedSortBy] = useState("default");
+  const [startSort, setStartSort] = useState(false);
 
   const handleChange = (value) => {
+    setStartSort(true)
     setSelectedSortBy(value);
   };
 
@@ -261,38 +293,46 @@ const Yachts = () => {
   //   }
   // };
   // ... existing code ...
-  const handleFilterChange = async () => {
+  const handleFilterChange = async (type) => {
     if (!userId) return;
 
-    const payload = {
-      user_id: userId,
-      min_price: filters.min_price.toString(),
-      max_price: filters.max_price.toString(),
-      guest: filters.max_guest,
-      sleep_capacity: filters.sleep_capacity,
-      number_of_cabin: filters.number_of_cabin,
-      categories: JSON.stringify(filters.category_name),
-      features: JSON.stringify(filters.amenities.concat(
-        filters.outdoor_equipment,
-        filters.kitchen,
-        filters.energy,
-        filters.leisure,
-        filters.navigation,
-        filters.extra_comforts,
-        filters.indoor
-      )),
-      price_asc: filters.price_asc,
-      price_des: filters.price_des,
-      cabin_asc: filters.cabin_asc,
-      cabin_des: filters.cabin_des,
-      created_on: filters.created_on,
-      location: filters?.location,
-      min_length: filters.min_length,
-      max_length: filters.max_length,
+    let payload;
+    if (type == "reset") {
+      payload = {
+        user_id: userId,
+      };
+    } else {
+      payload = {
+        user_id: userId,
+        min_price: filters.min_price.toString(),
+        max_price: filters.max_price.toString(),
+        guest: filters.max_guest,
+        sleep_capacity: filters.sleep_capacity,
+        number_of_cabin: filters.number_of_cabin,
+        categories: JSON.stringify(filters.category_name),
+        features: JSON.stringify(filters.amenities.concat(
+          filters.outdoor_equipment,
+          filters.kitchen,
+          filters.energy,
+          filters.leisure,
+          filters.navigation,
+          filters.extra_comforts,
+          filters.indoor
+        )),
+        price_asc: filters.price_asc,
+        price_des: filters.price_des,
+        cabin_asc: filters.cabin_asc,
+        cabin_des: filters.cabin_des,
+        created_on: filters.created_on,
+        location: filters?.location,
+        min_length: filters.min_length,
+        max_length: filters.max_length,
 
-      location: filters.location,
+        location: filters.location,
 
-    };
+      };
+    }
+
 
     try {
       setLoading(true);
@@ -308,18 +348,18 @@ const Yachts = () => {
       if (responseData.error_code === 'pass') {
 
         // Filter yachts based on price range
-        const filteredYachts = responseData.data.filter(item => {
-          const price = item.yacht.per_hour_price;
-          return price >= filters.min_price && price <= filters.max_price;
-        });
+        // const filteredYachts = responseData.data.filter(item => {
+        //   const price = item.yacht.per_hour_price;
+        //   return price >= filters.min_price && price <= filters.max_price;
+        // }); 
+        const filteredYachts = responseData.data;
 
 
         // Sort the filtered yachts if needed
-        const sortedYachts = filteredYachts.sort((a, b) => {
+        const sortedYachts = filteredYachts?.sort((a, b) => {
           return a.yacht.per_hour_price - b.yacht.per_hour_price;
         });
-
-        setYachts(sortedYachts);
+        setOriginalYachts(sortedYachts)
       } else {
         setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
@@ -333,44 +373,22 @@ const Yachts = () => {
   };
 
   const resetFilters = () => {
-    setFilters({
-      min_price: 1000,
-      max_price: 4000,
-      min_guest: "",
-      max_guest: "",
-      sleep_capacity: "",
-      capacity: "",
-      location: "",
-      category_name: [],
-      subcategory_name: [],
-      boat_category: [],
-      price_des: false,
-      price_asc: false,
-      cabin_des: false,
-      cabin_asc: false,
-      engine_type: "",
-      number_of_cabin: "",
-      created_on: "",
-      min_length: "",
-      max_length: "",
-      amenities: [],
-      outdoor_equipment: [],
-      kitchen: [],
-      energy: [],
-      leisure: [],
-      navigation: [],
-      extra_comforts: [],
-      indoor: [],
-    });
-    handleFilterChange();
+    setFilters(initialFilterState);
   };
+
+
+  useEffect(() => {
+    // console.log(JSON.stringify(filters))
+    if (JSON.stringify(filters) === JSON.stringify(initialFilterState)) {
+      handleFilterChange("reset");
+    }
+  }, [filters]);
 
   useEffect(() => {
     const getYachts = async () => {
       if (!userId) return;
       try {
         const data = await fetchYachts(userId);
-        setYachts(data);
         setOriginalYachts(data)
       } catch (err) {
         setError(err.message || 'Unexpected Error');
@@ -402,8 +420,12 @@ const Yachts = () => {
   };
 
   useEffect(() => {
+
+    if (!startSort) {
+      return; 
+    }
+
     let data = [...yachts]; 
-  
     if (selectedOption?.value === "default") {
       data = [...originalYachts]; 
     } 
@@ -416,16 +438,20 @@ const Yachts = () => {
     } else if (selectedOption?.value === "Capacity-Low-High") {
       data.sort((a, b) => a.yacht.capacity - b.yacht.capacity); 
     }
-  
+
     if (JSON.stringify(data) !== JSON.stringify(yachts)) {
-      setYachts(data); 
+      setYachts(data);
     }
-  }, [selectedOption, yachts]); 
+  }, [selectedOption]); 
+  useEffect(() => {
+    let data = [...originalYachts]
+    setYachts(data)
+  }, [originalYachts]);
   //test
   useEffect(() => {
-    // console.log("yachts", yachts);
-  }, [yachts]); 
-  
+    console.log("yachts", yachts);
+  }, [yachts]);
+
 
   if (loading) {
     return (
@@ -528,7 +554,7 @@ const Yachts = () => {
                     <Button
                       className="w-full bg-[#BEA355] mt-6 rounded-full"
                       onClick={() => {
-                        handleFilterChange();
+                        handleFilterChange("normal");
                       }}
                     >
                       Show Results
@@ -918,7 +944,7 @@ const Yachts = () => {
                       <Button
                         className="w-full bg-[#BEA355] mt-6 rounded-full"
                         onClick={() => {
-                          handleFilterChange();
+                          handleFilterChange("normal");
                         }}
                       >
                         Show Results

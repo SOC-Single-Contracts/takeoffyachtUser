@@ -254,8 +254,18 @@ console.log("selectedDateRange",selectedDateRange)
     setSelectedCity("");
     setSelectedDateRange({ from: null, to: null });
     setGuests({ adults: 1, children: 0, infants: 0 });
+    setsearchByName("")
   };
 
+  useEffect(() => {
+    console.log('State changes:', {
+      searchByName,
+      activeSearchTab,
+      selectedCity,
+      selectedDateRange,
+      guests
+    });
+  }, [searchByName, activeSearchTab, selectedCity, selectedDateRange, guests]);
   const handleTabChange = (value) => {
     setActiveMainTab(value);
   };
