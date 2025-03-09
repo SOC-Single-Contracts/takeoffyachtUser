@@ -68,8 +68,12 @@ const Summary = ({ onNext, initialBookingId }) => {
         }
 
         const details = await response.json();
+
+        // Filter extras with quantities > 0
+        const activeExtras = details.extras_data.filter(extra => extra.quantity > 0);
+
         setBookingDetails(details);
-        setEditableExtras(details.extras || []);
+        setEditableExtras(details.extras_data || []);
         setIsPartialPayment(details.is_partial_payment || false);
 
         // Update booking context with booking details
@@ -78,7 +82,8 @@ const Summary = ({ onNext, initialBookingId }) => {
           qrCodeUrl: details.qr_code,
           remainingCost: details.remaining_cost,
           totalCost: details.total_cost,
-          paidCost: details.paid_cost
+          paidCost: details.paid_cost,
+          extras: activeExtras
         });
       } catch (error) {
         console.error('Error fetching booking details:', error);
@@ -95,18 +100,88 @@ const Summary = ({ onNext, initialBookingId }) => {
     fetchBookingDetails();
   }, [initialBookingId, bookingData.bookingId]);
 
+  // const handleUpdateExtras = async () => {
+  //   try {
+  //     const bookingId = bookingDetails.id;
+
+  //     const { qr_code, ...payloadWithoutQrCode } = bookingDetails;
+
+  //     const formattedExtras = editableExtras.map(extra => ({
+  //       extra_id: extra.extra_id,
+  //       name: extra.name,
+  //       quantity: extra.quantity,
+  //       price: extra.price
+  //     }));
+
+  //     const payload = {
+  //       ...payloadWithoutQrCode,
+  //       extras_data: formattedExtras,
+  //     };
+
+  //     const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
+  //       method: 'PATCH',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorText = await response.text();
+  //       throw new Error(`Failed to update booking details: ${errorText}`);
+  //     }
+
+  //     const updatedDetails = await response.json();
+  //       setBookingDetails(updatedDetails);
+  //       setEditableExtras(updatedDetails.extras_data || []);      
+        
+  //       toast({
+  //       title: "Success",
+  //       description: "Booking details updated successfully",
+  //       variant: "success"
+  //     });
+  //   } catch (error) {
+  //     console.error('Error updating booking details:', error);
+  //     toast({
+  //       title: "Error",
+  //       description: error.message,
+  //       variant: "destructive"
+  //     });
+  //   }
+  // };
+
+  const calculateUpdatedTotalCost = () => {
+    // Calculate base cost (charter cost)
+    const baseHourlyRate = bookingDetails.is_new_year_booking
+      ? (selectedYacht?.yacht?.new_year_price || 0)
+      : (selectedYacht?.yacht?.per_hour_price || 0);
+    const charterCost = baseHourlyRate * bookingDetails.duration_hour;
+
+    // Calculate extras cost
+    const extrasCost = editableExtras.reduce((total, extra) => {
+      return total + (extra.price * extra.quantity);
+    }, 0);
+
+    return charterCost + extrasCost;
+  };
+
   const handleUpdateExtras = async () => {
     try {
       const bookingId = bookingDetails.id;
-
-      // Destructure to remove unwanted fields
-      const { qr_code, ...payloadWithoutQrCode } = bookingDetails;
-
+      const updatedTotalCost = calculateUpdatedTotalCost();
+  
+      // Create the correct payload structure
       const payload = {
-        ...payloadWithoutQrCode,
-        extras: editableExtras,
+        extras: editableExtras.map(extra => ({
+          extra_id: extra.extra_id,
+          name: extra.name,
+          quantity: parseInt(extra.quantity),
+          price: parseFloat(extra.price)
+        })),
+        total_cost: updatedTotalCost,
+        remaining_cost: bookingDetails.paid_cost > 0 ? updatedTotalCost - bookingDetails.paid_cost : 0
       };
-
+  
       const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
         method: 'PATCH',
         headers: {
@@ -114,21 +189,41 @@ const Summary = ({ onNext, initialBookingId }) => {
         },
         body: JSON.stringify(payload),
       });
-
+  
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to update booking details: ${errorText}`);
+        throw new Error('Failed to update booking details');
       }
-
-      const updatedDetails = await response.json();
-      // setBookingDetails(updatedDetails);
+  
+      const result = await response.json();
+      
+      // Update the local state with the new data
+      if (result.data) {
+        setBookingDetails(result.data);
+        setEditableExtras(result.data.extras_data);
+        
+        // Update booking context
+        updateBookingData({
+          extras: result.data.extras_data.filter(extra => extra.quantity > 0),
+          totalCost: result.data.total_cost,
+          remainingCost: result.data.remaining_cost,
+          paidCost: result.data.paid_cost
+        });
+      }
+  
       toast({
         title: "Success",
-        description: "Booking details updated successfully",
+        description: "Extras updated successfully",
         variant: "success"
       });
+  
+      // Refresh booking details
+      const refreshResponse = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`);
+      const refreshedData = await refreshResponse.json();
+      setBookingDetails(refreshedData);
+      setEditableExtras(refreshedData.extras_data);
+  
     } catch (error) {
-      console.error('Error updating booking details:', error);
+      console.error('Error updating extras:', error);
       toast({
         title: "Error",
         description: error.message,
@@ -198,10 +293,10 @@ const Summary = ({ onNext, initialBookingId }) => {
   const handleProceedToPayment = async () => {
     try {
       // First update the extras
-      await handleUpdateExtras();
+      // await handleUpdateExtras();
 
       // Then update partial payment status
-      await handleUpdatePartialPayment();
+      // await handleUpdatePartialPayment();
 
       // Finally proceed to next step
       onNext();
@@ -215,11 +310,21 @@ const Summary = ({ onNext, initialBookingId }) => {
     }
   };
 
+  // const updateExtraQuantity = (index, newQuantity) => {
+  //   const updatedExtras = [...editableExtras];
+  //   updatedExtras[index].quantity = newQuantity;
+  //   setEditableExtras(updatedExtras);
+  // };
   const updateExtraQuantity = (index, newQuantity) => {
-    const updatedExtras = [...editableExtras];
-    updatedExtras[index].quantity = newQuantity;
-    setEditableExtras(updatedExtras);
-  };
+  setEditableExtras(prev => {
+    const updated = [...prev];
+    updated[index] = {
+      ...updated[index],
+      quantity: parseInt(newQuantity)
+    };
+    return updated;
+  });
+};
 
   const handleCopyLink = () => {
     const bookingId = bookingDetails.id;
@@ -479,39 +584,31 @@ const Summary = ({ onNext, initialBookingId }) => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-white dark:bg-gray-800 text-xs">
-            {editableExtras.length > 0 ? (
-              editableExtras.map((extra, index) => (
-                <TableRow key={extra.id}>
-                  <TableCell className="font-semibold">{extra.name}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => updateExtraQuantity(index, Math.max(0, extra.quantity - 1))}
-                      >
-                        -
-                      </Button>
-                      <span className="mx-2">{extra.quantity}</span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => updateExtraQuantity(index, extra.quantity + 1)}
-                      >
-                        +
-                      </Button>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium">AED {extra.price * extra.quantity}</TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={3} className="text-center text-gray-500 py-4">
-                  No optional extras available
+            {editableExtras.map((extra, index) => (
+              <TableRow key={extra.extra_id}>
+                <TableCell className="font-semibold">{extra.name}</TableCell>
+                <TableCell>
+                  <div className="flex items-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateExtraQuantity(index, Math.max(0, extra.quantity - 1))}
+                    >
+                      -
+                    </Button>
+                    <span className="mx-2">{extra.quantity}</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateExtraQuantity(index, extra.quantity + 1)}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </TableCell>
+                <TableCell className="font-medium">AED {extra.price * extra.quantity}</TableCell>
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
 
