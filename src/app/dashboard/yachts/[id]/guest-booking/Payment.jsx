@@ -350,7 +350,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
         card: elements.getElement(CardElement),
         billing_details: {
           name: bookingData.fullName,
-          email: session.user.email,
+          email: bookingData.email,
           phone: bookingData.phone,
         },
       });
