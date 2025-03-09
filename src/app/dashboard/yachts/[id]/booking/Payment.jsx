@@ -6,12 +6,13 @@ import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialogHeader } from '@/components/ui/alert-dialog';
+import { format } from 'date-fns';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
@@ -20,7 +21,6 @@ const PaymentForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
-  // const { bookingData, selectedYacht, calculateTotal } = useBookingContext();
   const { bookingData, updateBookingData, selectedYacht, calculateTotal } = useBookingContext();
 
   const { data: session } = useSession();
@@ -29,6 +29,14 @@ const PaymentForm = () => {
   const [cardComplete, setCardComplete] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
 
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get("bookingId");
+  const remainingAmount = searchParams.get("amount");
+  const isRemainingPayment = Boolean(bookingId && remainingAmount);
+  const amount = searchParams.get("amount");
+  const isPartialPayment = searchParams.get("isPartialPayment") === "true";
+  const phone = searchParams.get("phone");
+  const name = searchParams.get("name");
 
   const handleCardChange = (event) => {
     setError(event.error ? event.error.message : null);
@@ -43,37 +51,300 @@ const PaymentForm = () => {
     return true;
   };
 
+  // const calculatePaymentAmount = () => {
+  //   const total = calculateTotal();
+  //   return bookingData.isPartialPayment ? total * 0.25 : total;
+  // };
   const calculatePaymentAmount = () => {
+    if (isRemainingPayment) {
+      return parseFloat(remainingAmount);
+    }
     const total = calculateTotal();
     return bookingData.isPartialPayment ? total * 0.25 : total;
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!stripe || !elements) return;
+
+  //   if (!validateForm()) {
+  //     return;
+  //   }
+
+  //   setIsProcessing(true);
+  //   setError(null);
+
+  //   try {
+  //     const paymentAmount = calculatePaymentAmount();
+      
+  //     // Create source from card details
+  //     const { error: sourceError, source } = await stripe.createSource(
+  //       elements.getElement(CardElement),
+  //       {
+  //         type: 'card',
+  //         amount: Math.round(paymentAmount * 100), // Convert to cents and ensure it's a whole number
+  //         currency: 'aed',
+  //         owner: {
+  //           name: bookingData.fullName,
+  //           email: session.user.email,
+  //           phone: bookingData.phone,
+  //         },
+  //       }
+  //     );
+
+  //     if (sourceError) {
+  //       throw new Error(sourceError.message);
+  //     }
+
+  //     // Send booking details with source ID as payment token
+  //     const response = await fetch('https://api.takeoffyachts.com/yacht/process-payment/', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         // 'Authorization': `Bearer ${session?.accessToken}`
+  //       },
+  //       body: JSON.stringify({
+  //         payment_intent_id: source.id, // Using source.id as the payment token
+  //         booking_type: "yacht",
+  //         amount: paymentAmount, // Send the actual payment amount
+  //         user_id: session.user.userid,
+  //         email: session.user.email,
+  //         yacht_id: selectedYacht.yacht.id,
+  //         phone_number: bookingData.phone,
+  //         country: bookingData.country,
+  //         message: bookingData.notes,
+  //         adults: bookingData.adults,
+  //         kid_teen: bookingData.kids,
+  //         duration_hour: bookingData.duration,
+  //         selected_date: bookingData.date,
+  //         total_cost: calculateTotal(), // This remains the full amount
+  //         booking_time: bookingData.startTime,
+  //         guest: bookingData.adults + bookingData.kids,
+  //         extras: bookingData.extras || [],
+  //         is_partial_payment: bookingData.isPartialPayment,
+  //         per_day_price: selectedYacht?.yacht?.per_hour_price, // Added per_day_price
+  //         per_hour_price: selectedYacht?.yacht?.per_hour_price // Added per_hour_price
+  //       })
+  //     });
+
+  //     const bookingResult = await response.json();
+      
+  //     if (bookingResult.error) {
+  //       throw new Error(bookingResult.error);
+  //     }
+
+  //     // Payment successful
+  //     toast.success('Payment successful! Redirecting to success page...');
+  //     router.push('/dashboard/success');
+
+  //   } catch (error) {
+  //     console.error('Payment error:', error);
+  //     setError(error.message);
+  //     toast.error(error.message || 'Payment processing failed');
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
+  // const createBookingPayload = (sourceId) => {
+  //   const basePayload = {
+  //     payment_intent_id: sourceId,
+  //     amount: calculatePaymentAmount(),
+  //     user_id: session.user.userid,
+  //     email: session.user.email,
+  //     yacht_id: selectedYacht.yacht.id,
+  //     phone_number: bookingData.phone,
+  //     country: bookingData.country,
+  //     message: bookingData.notes || "",
+  //     adults: bookingData.adults,
+  //     kid_teen: bookingData.kids,
+  //     guest: bookingData.adults + bookingData.kids,
+  //     extras: bookingData.extras?.map(item => ({
+  //       id: item.id.toString(),
+  //       quantity: item.quantity,
+  //       price: item.price,
+  //       name: item.name
+  //     })) || [],
+  //     total_cost: calculateTotal(),
+  //     is_partial_payment: bookingData.isPartialPayment,
+  //     per_day_price: selectedYacht?.yacht?.per_day_price || 0,
+  //     per_hour_price: selectedYacht?.yacht?.per_hour_price || 0
+  //   };
+
+  //   if (bookingData.endDate) {
+  //     // Date range booking
+  //     return {
+  //       ...basePayload,
+  //       booking_type: "date_range",
+  //       start_date: format(new Date(bookingData.date), "yyyy-MM-dd"),
+  //       end_date: format(new Date(bookingData.endDate), "yyyy-MM-dd"),
+  //       duration_days: Math.ceil(
+  //         (new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24)
+  //       ) + 1,
+  //       duration_hour: null,
+  //       selected_date: format(new Date(bookingData.date), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+  //       booking_time: null
+  //     };
+  //   }
+
+  //   // Hourly booking
+  //   return {
+  //     ...basePayload,
+  //     booking_type: "hourly",
+  //     duration_hour: bookingData.duration,
+  //     selected_date: format(new Date(bookingData.date), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+  //     booking_time: new Date(bookingData.startTime).getTime()
+  //   };
+  // };
+  // const createBookingPayload = (sourceId) => {
+  //   const basePayload = {
+  //     payment_intent_id: sourceId,
+  //     amount: calculatePaymentAmount(),
+  //     user_id: session.user.userid,
+  //     email: session.user.email,
+  //   };
+
+  //   if (isRemainingPayment) {
+  //     return {
+  //       ...basePayload,
+  //       booking_id: searchParams.get("bookingId"),
+  //       is_remaining_payment: true
+  //     };
+  //   }
+
+  //   // First-time booking payload
+  //   return {
+  //     ...basePayload,
+  //     yacht_id: selectedYacht.yacht.id,
+  //     phone_number: bookingData.phone,
+  //     country: bookingData.country,
+  //     message: bookingData.notes || "",
+  //     adults: bookingData.adults,
+  //     kid_teen: bookingData.kids,
+  //     guest: bookingData.adults + bookingData.kids,
+  //     extras: bookingData.extras?.map(item => ({
+  //       id: item.id.toString(),
+  //       quantity: item.quantity,
+  //       price: item.price,
+  //       name: item.name
+  //     })) || [],
+  //     total_cost: calculateTotal(),
+  //     is_partial_payment: bookingData.isPartialPayment,
+  //     per_day_price: selectedYacht?.yacht?.per_day_price || 0,
+  //     per_hour_price: selectedYacht?.yacht?.per_hour_price || 0,
+  //     booking_type: bookingData.endDate ? "date_range" : "hourly",
+  //     ...(bookingData.endDate ? {
+  //       start_date: format(new Date(bookingData.date), "yyyy-MM-dd"),
+  //       end_date: format(new Date(bookingData.endDate), "yyyy-MM-dd"),
+  //       duration_days: Math.ceil(
+  //         (new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24)
+  //       ) + 1,
+  //       selected_date: format(new Date(bookingData.date), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+  //     } : {
+  //       duration_hour: bookingData.duration,
+  //       selected_date: format(new Date(bookingData.date), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+  //       booking_time: new Date(bookingData.startTime).getTime()
+  //     })
+  //   };
+  // };
+
+  const createBookingPayload = (sourceId) => {
+    if (isRemainingPayment) {
+      return {
+        payment_intent_id: sourceId,
+        booking_id: bookingId,
+        amount: parseFloat(remainingAmount),
+        is_remaining_payment: true
+      };
+    }
+
+    // First-time booking payload
+    const basePayload = {
+      payment_intent_id: sourceId,
+      amount: calculatePaymentAmount(),
+      user_id: session.user.userid,
+      email: session.user.email,
+      yacht_id: selectedYacht.yacht.id,
+      phone_number: bookingData.phone,
+      country: bookingData.country,
+      message: bookingData.notes || "",
+      adults: bookingData.adults,
+      kid_teen: bookingData.kids,
+      guest: bookingData.adults + bookingData.kids,
+      extras: bookingData.extras?.map(item => ({
+        id: item.id.toString(),
+        quantity: item.quantity,
+        price: item.price,
+        name: item.name
+      })) || [],
+      total_cost: calculateTotal(),
+      is_partial_payment: bookingData.isPartialPayment,
+      per_day_price: selectedYacht?.yacht?.per_day_price || 0,
+      per_hour_price: selectedYacht?.yacht?.per_hour_price || 0
+    };
+
+    if (bookingData.endDate) {
+      return {
+        ...basePayload,
+        booking_type: "date_range",
+        start_date: format(new Date(bookingData.date), "yyyy-MM-dd"),
+        end_date: format(new Date(bookingData.endDate), "yyyy-MM-dd"),
+        duration_days: Math.ceil(
+          (new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24)
+        ) + 1,
+        selected_date: format(new Date(bookingData.date), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+      };
+    }
+
+    return {
+      ...basePayload,
+      booking_type: "hourly",
+      duration_hour: bookingData.duration,
+      selected_date: format(new Date(bookingData.date), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+      booking_time: new Date(bookingData.startTime).getTime()
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!stripe || !elements) return;
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!stripe || !elements || !validateForm()) return;
 
     setIsProcessing(true);
     setError(null);
 
     try {
       const paymentAmount = calculatePaymentAmount();
+
+      // Create owner object without phone if it's a remaining payment
+      const ownerDetails = {
+        name: isRemainingPayment ? name || session.user.name : bookingData.fullName,
+        email: session.user.email,
+      };
+
+      // Only add phone for new bookings
+      if (!isRemainingPayment && bookingData.phone) {
+        ownerDetails.phone = bookingData.phone;
+      }
       
-      // Create source from card details
+      // const { error: sourceError, source } = await stripe.createSource(
+      //   elements.getElement(CardElement),
+      //   {
+      //     type: 'card',
+      //     amount: Math.round(paymentAmount * 100),
+      //     currency: 'aed',
+      //     owner: {
+      //       name: isRemainingPayment ? session.user.name : bookingData.fullName,
+      //       email: session.user.email,
+      //       phone: isRemainingPayment ? '' : bookingData.phone,
+      //     },
+      //   }
+      // );
       const { error: sourceError, source } = await stripe.createSource(
         elements.getElement(CardElement),
         {
           type: 'card',
-          amount: Math.round(paymentAmount * 100), // Convert to cents and ensure it's a whole number
+          amount: Math.round(paymentAmount * 100),
           currency: 'aed',
-          owner: {
-            name: bookingData.fullName,
-            email: session.user.email,
-            phone: bookingData.phone,
-          },
+          owner: ownerDetails,
         }
       );
 
@@ -81,46 +352,25 @@ const PaymentForm = () => {
         throw new Error(sourceError.message);
       }
 
-      // Send booking details with source ID as payment token
+      const bookingPayload = createBookingPayload(source.id);
+      
       const response = await fetch('https://api.takeoffyachts.com/yacht/process-payment/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${session?.accessToken}`
         },
-        body: JSON.stringify({
-          payment_intent_id: source.id, // Using source.id as the payment token
-          booking_type: "yacht",
-          amount: paymentAmount, // Send the actual payment amount
-          user_id: session.user.userid,
-          email: session.user.email,
-          yacht_id: selectedYacht.yacht.id,
-          phone_number: bookingData.phone,
-          country: bookingData.country,
-          message: bookingData.notes,
-          adults: bookingData.adults,
-          kid_teen: bookingData.kids,
-          duration_hour: bookingData.duration,
-          selected_date: bookingData.date,
-          total_cost: calculateTotal(), // This remains the full amount
-          booking_time: bookingData.startTime,
-          guest: bookingData.adults + bookingData.kids,
-          extras: bookingData.extras || [],
-          is_partial_payment: bookingData.isPartialPayment,
-          per_day_price: selectedYacht?.yacht?.per_hour_price, // Added per_day_price
-          per_hour_price: selectedYacht?.yacht?.per_hour_price // Added per_hour_price
-        })
+        body: JSON.stringify(bookingPayload)
       });
 
       const bookingResult = await response.json();
       
-      if (bookingResult.error) {
-        throw new Error(bookingResult.error);
+      if (bookingResult.error_code === 'failed' || bookingResult.error) {
+        throw new Error(bookingResult.error || 'Payment processing failed');
       }
 
-      // Payment successful
       toast.success('Payment successful! Redirecting to success page...');
       router.push('/dashboard/success');
+      window.location.href = '/dashboard/success';
 
     } catch (error) {
       console.error('Payment error:', error);
@@ -130,6 +380,62 @@ const PaymentForm = () => {
       setIsProcessing(false);
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!stripe || !elements || !validateForm()) return;
+
+  //   setIsProcessing(true);
+  //   setError(null);
+
+  //   try {
+  //     const paymentAmount = calculatePaymentAmount();
+      
+  //     const { error: sourceError, source } = await stripe.createSource(
+  //       elements.getElement(CardElement),
+  //       {
+  //         type: 'card',
+  //         amount: Math.round(paymentAmount * 100),
+  //         currency: 'aed',
+  //         owner: {
+  //           name: bookingData.fullName,
+  //           email: session.user.email,
+  //           phone: bookingData.phone,
+  //         },
+  //       }
+  //     );
+
+  //     if (sourceError) {
+  //       throw new Error(sourceError.message);
+  //     }
+
+  //     const bookingPayload = createBookingPayload(source.id);
+      
+  //     const response = await fetch('https://api.takeoffyachts.com/yacht/process-payment/', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(bookingPayload)
+  //     });
+
+  //     const bookingResult = await response.json();
+      
+  //     if (bookingResult.error_code === 'failed' || bookingResult.error) {
+  //       throw new Error(bookingResult.error || 'Payment processing failed');
+  //     }
+
+  //     toast.success('Payment successful! Redirecting to success page...');
+  //     router.push('/dashboard/success');
+
+  //   } catch (error) {
+  //     console.error('Payment error:', error);
+  //     setError(error.message);
+  //     toast.error(error.message || 'Payment processing failed');
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
   //   if (!stripe || !elements) return;
@@ -253,6 +559,7 @@ const PaymentForm = () => {
           <div className='text-xs text-gray-500 dark:text-gray-400'>
             We accept all major credit and debit cards including Visa, Mastercard, and American Express
           </div>
+          {!isRemainingPayment && (
           <div className="space-y-2 pl-1 mb-2">
             <div className="flex items-center space-x-2">
               <Checkbox 
@@ -321,6 +628,7 @@ const PaymentForm = () => {
               </Dialog>
             </div>
           </div>
+          )}
         </div>
       </div>
 
@@ -329,14 +637,109 @@ const PaymentForm = () => {
         disabled={isProcessing || !stripe || !cardComplete}
         className='w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12'
       >
-        {isProcessing ? 'Processing...' : `Pay ${bookingData.isPartialPayment ? '25%' : 'Full'} Amount (AED ${calculatePaymentAmount()})`}
+        {/* {isProcessing ? 'Processing...' : `Pay ${bookingData.isPartialPayment ? '25%' : 'Full'} Amount (AED ${calculatePaymentAmount()})`} */}
+        {isProcessing ? 'Processing...' : `Pay ${isRemainingPayment ? 'Remaining' : bookingData.isPartialPayment ? '25%' : 'Full'} Amount (AED ${calculatePaymentAmount()})`}
       </Button>
     </form>
+  //    <form onSubmit={handleSubmit} className='w-full space-y-6'>
+  //    <div className="bg-white rounded-lg p-6 shadow-md">
+  //      <h2 className="text-xl font-semibold mb-4">
+  //        {isRemainingPayment ? 'Complete Remaining Payment' : 'Payment Details'}
+  //      </h2>
+  //      <div className="mb-4">
+  //        <p className="text-sm text-gray-600 mb-2">Amount to Pay: AED {calculatePaymentAmount()}</p>
+  //        {isRemainingPayment && (
+  //          <p className="text-sm text-gray-600">Booking ID: {bookingId}</p>
+  //        )}
+  //      </div>
+  //      <div className="border rounded-md p-4">
+  //        <CardElement 
+  //          onChange={(e) => setCardComplete(e.complete)}
+  //          options={{
+  //            style: {
+  //              base: {
+  //                fontSize: '16px',
+  //                color: '#424770',
+  //                '::placeholder': {
+  //                  color: '#aab7c4',
+  //                },
+  //              },
+  //              invalid: {
+  //                color: '#9e2146',
+  //              },
+  //            },
+  //          }}
+  //        />
+  //      </div>
+  //      {error && (
+  //        <div className="mt-4 text-red-500 text-sm">{error}</div>
+  //      )}
+  //    </div>
+
+  //    <Button 
+  //      type="submit"
+  //      disabled={isProcessing || !stripe || !cardComplete}
+  //      className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
+  //    >
+  //      {isProcessing ? 'Processing...' : `Pay AED ${calculatePaymentAmount()}`}
+  //    </Button>
+  //  </form>
   );
 };
 
 const Payment = () => {
   const { bookingData, selectedYacht, calculateTotal } = useBookingContext();
+  const [bookingSummary, setBookingSummary] = useState(null);
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get("bookingId");
+  const remainingAmount = searchParams.get("amount");
+  const isRemainingPayment = Boolean(bookingId && remainingAmount);
+
+  useEffect(() => {
+    const fetchBookingSummary = async () => {
+      if (bookingId) {
+        try {
+          const response = await fetch(`https://api.takeoffyachts.com/yacht/booking/${bookingId}/`);
+          const data = await response.json();
+          setBookingSummary(data);
+        } catch (error) {
+          console.error('Error fetching booking summary:', error);
+        }
+      }
+    };
+
+    fetchBookingSummary();
+  }, [bookingId]);
+
+  const getCharterText = () => {
+    if (bookingId && bookingSummary) {
+      return bookingSummary.booking_type === 'date_range' 
+        ? `Charter (${bookingSummary.duration_days} days)`
+        : `Charter (${bookingSummary.duration_hour} hours)`;
+    }
+    if (bookingData.endDate) {
+      const days = Math.ceil(
+        (new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24)
+      ) + 1;
+      return `Charter (${days} days)`;
+    }
+    return `Charter (${bookingData.duration} hours)`;
+  };
+
+  const getCharterAmount = () => {
+    if (bookingId && bookingSummary) {
+      return bookingSummary.total_cost;
+    }
+    if (bookingData.endDate) {
+      const days = Math.ceil(
+        (new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24)
+      ) + 1;
+      return (selectedYacht?.yacht?.per_day_price || 0) * days;
+    }
+    return (bookingData.isNewYearBooking ? 
+      (selectedYacht?.yacht?.new_year_price || 0) : 
+      (selectedYacht?.yacht?.per_hour_price || 0)) * bookingData.duration;
+  };
 
   return (
     <div className='mx-auto container flex justify-between md:flex-row flex-col items-start gap-8 px-2'>
@@ -346,21 +749,33 @@ const Payment = () => {
           <h2 className='text-xl font-semibold mb-4'>Order Summary</h2>
           
           <div className='space-y-3'>
-            <div className='flex justify-between text-sm'>
+          <div className='flex justify-between text-sm'>
+              <span>{getCharterText()}</span>
+              <span className='font-medium'>
+                AED {getCharterAmount()}
+              </span>
+            </div>
+            {!isRemainingPayment && bookingData.extras && bookingData.extras.map((item) => (
+              <div key={item.id} className='flex justify-between text-sm'>
+                <span>{item.name}</span>
+                <span className='font-medium'>AED {item.price * item.quantity}</span>
+              </div>
+            ))}
+            {/* <div className='flex justify-between text-sm'>
               <span>Charter ({bookingData.duration} hours)</span>
               <span className='font-medium'>
                 AED {(bookingData.isNewYearBooking ? 
                   (selectedYacht?.yacht?.new_year_price || 0) : 
                   (selectedYacht?.yacht?.per_hour_price || 0)) * bookingData.duration}
               </span>
-            </div>
+            </div> */}
             {bookingData.extras && bookingData.extras.map((item) => (
               <div key={item.id} className='flex justify-between text-sm'>
                 <span>{item.name}</span>
                 <span className='font-medium'>AED {item.price * item.quantity}</span>
               </div>
             ))}
-            <div className='border-t dark:border-gray-600 pt-3 mt-2'>
+            {/* <div className='border-t dark:border-gray-600 pt-3 mt-2'>
               <div className='flex justify-between font-semibold'>
                 <span>Total Amount</span>
                 <span>AED {calculateTotal()}</span>
@@ -370,6 +785,37 @@ const Payment = () => {
                   <span>Amount Due Now (25%)</span>
                   <span>AED {calculateTotal() * 0.25}</span>
                 </div>
+              )}
+            </div> */}
+            <div className='border-t dark:border-gray-600 pt-3 mt-2'>
+              {isRemainingPayment ? (
+                <>
+                  <div className='flex justify-between font-semibold'>
+                    <span>Total Booking Amount</span>
+                    <span>AED {bookingSummary?.total_cost || 0}</span>
+                  </div>
+                  <div className='flex justify-between text-gray-600 mt-1'>
+                    <span>Amount Paid</span>
+                    <span>AED {bookingSummary?.paid_cost || 0}</span>
+                  </div>
+                  <div className='flex justify-between text-blue-600 font-semibold mt-2'>
+                    <span>Remaining Amount</span>
+                    <span>AED {remainingAmount}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className='flex justify-between font-semibold'>
+                    <span>Total Amount</span>
+                    <span>AED {calculateTotal()}</span>
+                  </div>
+                  {bookingData.isPartialPayment && (
+                    <div className='flex justify-between text-blue-600 font-semibold mt-2'>
+                      <span>Amount Due Now (25%)</span>
+                      <span>AED {calculateTotal() * 0.25}</span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

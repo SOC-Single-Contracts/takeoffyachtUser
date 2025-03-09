@@ -328,21 +328,31 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || !validateForm()) return;
 
-    if (!validateForm()) {
-      return;
-    }
+    // if (!validateForm()) {
+    //   return;
+    // }
 
     setIsProcessing(true);
     setError(null);
 
     try {
-      const paymentAmount = calculatePaymentAmount();
+      const totalAmount = calculateTotal();
+      // const paymentAmount = calculatePaymentAmount();
+      // const paymentAmount = isPartialPayment ? totalAmount * 0.25 : totalAmount;
+      // const remainingAmount = isPartialPayment ? totalAmount * 0.75 : 0;
+      const paymentAmount = bookingData.isPartialPayment ? totalAmount * 0.25 : totalAmount;
+      const remainingAmount = bookingData.isPartialPayment ? totalAmount * 0.75 : 0;
 
       const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
         type: 'card',
         card: elements.getElement(CardElement),
+        billing_details: {
+          name: bookingData.fullName,
+          email: session.user.email,
+          phone: bookingData.phone,
+        },
       });
 
       if (paymentMethodError) {
@@ -358,8 +368,9 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
         
         body: JSON.stringify({
           payment_method_id: paymentMethod.id,
-          amount_charged: paymentAmount,
-          remaining_cost: isPartialPayment ? (calculateTotal() * 0.75) : 0,
+          // amount_charged: paymentAmount,
+          // remaining_cost: remainingAmount,
+          is_partial_payment: isPartialPayment
         }),
       });
 
@@ -369,7 +380,11 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
         throw new Error(result.error || 'Payment processing failed');
       }
 
-      toast.success('Payment processed successfully!');
+      // toast.success('Payment processed successfully!');
+      toast.success(isPartialPayment ? 
+        'Initial payment processed successfully! Remaining balance can be paid later.' : 
+        'Full payment processed successfully!'
+      );
       router.push('/dashboard/success');
 
     } catch (error) {
@@ -664,4 +679,3 @@ const Payment = () => {
 };
 
 export default Payment;
-

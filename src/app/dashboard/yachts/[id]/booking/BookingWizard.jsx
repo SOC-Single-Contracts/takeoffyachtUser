@@ -7,7 +7,7 @@ import Selection from './Selection';
 import Payment from './Payment';
 import Summary from './Summary';
 import { BookingProvider } from './BookingContext';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { fetchYachts } from '@/api/yachts';
 import { useSession } from 'next-auth/react';
 import { useBookingContext } from './BookingContext';
@@ -26,9 +26,14 @@ const BookingWizardContent = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const { id } = useParams();
   const { data: session, status } = useSession();
-  const { setSelectedYacht } = useBookingContext();
-  const router = useRouter();
+  const { setSelectedYacht, updateBookingData } = useBookingContext();
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get("bookingId");
+  const amount = searchParams.get("amount");
+  const isPartialPayment = searchParams.get("isPartialPayment") === "true";
   const { toast } = useToast();
+
+  const router = useRouter();
 
   // Authentication check
   useEffect(() => {
@@ -61,6 +66,18 @@ const BookingWizardContent = () => {
       getYachtDetails();
     }
   }, [id, session?.user?.userid, setSelectedYacht]);
+
+  useEffect(() => {
+    // If bookingId and amount are present in URL, go to payment step
+    if (bookingId && amount && isPartialPayment) {
+      setCurrentStep(4); // Set to payment step
+      updateBookingData({
+        bookingId,
+        remainingAmount: amount,
+        isPartialPayment: true
+      });
+    }
+  }, [bookingId, amount, isPartialPayment, updateBookingData]);
 
   // Show loading while checking session
   if (status === 'loading') {

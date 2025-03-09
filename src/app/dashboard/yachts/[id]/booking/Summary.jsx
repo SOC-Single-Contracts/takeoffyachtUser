@@ -124,13 +124,19 @@ const Summary = ({ onNext, onEditExtras  }) => {
             <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span className="font-semibold">Date</span>
+                {/* <span className="font-semibold">Date</span> */}
+                <span className="font-semibold">{bookingData.endDate ? 'Stay Period' : 'Date'}</span>
               </TableCell>
               <TableCell className="font-medium">
-                {format(new Date(bookingData.date), 'dd MMMM yyyy')}
+                {/* {format(new Date(bookingData.date), 'dd MMMM yyyy')} */}
+                {bookingData.endDate ? (
+        `${format(new Date(bookingData.date), 'dd MMMM yyyy')} - ${format(new Date(bookingData.endDate), 'dd MMMM yyyy')}`
+      ) : (
+        format(new Date(bookingData.date), 'dd MMMM yyyy')
+      )}
               </TableCell>
             </TableRow>
-            <TableRow>
+            {/* <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span className="font-semibold">Time & Duration</span>
@@ -138,7 +144,28 @@ const Summary = ({ onNext, onEditExtras  }) => {
               <TableCell className="font-medium">
                 {format(new Date(bookingData.startTime), 'hh:mm a')} ({bookingData.duration} hours)
               </TableCell>
-            </TableRow>
+            </TableRow> */}
+              {!bookingData.endDate ? (
+    <TableRow>
+      <TableCell className="flex items-center gap-2">
+        <Clock className="w-4 h-4" />
+        <span className="font-semibold">Time & Duration</span>
+      </TableCell>
+      <TableCell className="font-medium">
+        {format(new Date(bookingData.startTime), 'hh:mm a')} ({bookingData.duration} hours)
+      </TableCell>
+    </TableRow>
+  ) : (
+    <TableRow>
+      <TableCell className="flex items-center gap-2">
+        <Clock className="w-4 h-4" />
+        <span className="font-semibold">Duration</span>
+      </TableCell>
+      <TableCell className="font-medium">
+        {Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)} Days
+      </TableCell>
+    </TableRow>
+  )}
             <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
@@ -170,7 +197,7 @@ const Summary = ({ onNext, onEditExtras  }) => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-white dark:bg-gray-800 text-xs">
-            <TableRow>
+            {/* <TableRow>
               <TableCell className="font-semibold">
                 Charter ({bookingData.duration} hours)
                 {bookingData.isNewYearBooking && " - New Year's Eve Rate"}
@@ -180,7 +207,24 @@ const Summary = ({ onNext, onEditExtras  }) => {
                   (selectedYacht?.yacht?.new_year_price || 0) :
                   (selectedYacht?.yacht?.per_hour_price || 0)) * bookingData.duration}
               </TableCell>
-            </TableRow>
+            </TableRow> */}
+              <TableRow>
+    <TableCell className="font-semibold">
+      {bookingData.endDate ? (
+        `Charter (${Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)} days)`
+      ) : (
+        `Charter (${bookingData.duration} hours)${bookingData.isNewYearBooking ? " - New Year's Eve Rate" : ""}`
+      )}
+    </TableCell>
+    <TableCell className="font-medium">
+      AED {bookingData.endDate ? 
+        (selectedYacht?.yacht?.per_day_price || 0) * (Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)) :
+        (bookingData.isNewYearBooking ? 
+          (selectedYacht?.yacht?.new_year_price || 0) : 
+          (selectedYacht?.yacht?.per_hour_price || 0)) * bookingData.duration
+      }
+    </TableCell>
+  </TableRow>
             {bookingData.extras && bookingData.extras.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-semibold">{item.name}</TableCell>
