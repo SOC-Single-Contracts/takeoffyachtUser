@@ -35,6 +35,7 @@ const SearchYacht = () => {
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const [originalYachts, setOriginalYachts] = useState([]); 
+  const [startFilterWork,setStartFilterWork]  = useState(false)
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -64,7 +65,35 @@ const SearchYacht = () => {
     extra_comforts: [],
     indoor: [],
   });
-
+  const initialFilterState = {
+    min_price: 1000,
+    max_price: 4000,
+    min_guest: "",
+    max_guest: "",
+    sleep_capacity: "",
+    capacity: "",
+    location: "",
+    category_name: [],
+    subcategory_name: [],
+    boat_category: [],
+    price_des: false,
+    price_asc: false,
+    cabin_des: false,
+    cabin_asc: false,
+    engine_type: "",
+    number_of_cabin: "",
+    created_on: "",
+    min_length: "",
+    max_length: "",
+    amenities: [],
+    outdoor_equipment: [],
+    kitchen: [],
+    energy: [],
+    leisure: [],
+    navigation: [],
+    extra_comforts: [],
+    indoor: [],
+  };
   const sortByOptions = [
     { value: "default", label: "Default" },
     { value: "Price-High-Low", label: "Price: High to Low" },
@@ -74,8 +103,10 @@ const SearchYacht = () => {
   ];
 
   const [selectedSortBy, setSelectedSortBy] = useState("default");
+  const [startSort, setStartSort] = useState(false);
 
   const handleChange = (value) => {
+    setStartSort(true)
     setSelectedSortBy(value);
   };
 
@@ -216,33 +247,53 @@ const SearchYacht = () => {
     loadWishlist();
   }, [userId]);
 //hit
-  const handleFilterChange = async () => {
+  const handleFilterChange = async (type) => {
     if (!userId) return;
 
-    const payload = {
-      user_id: userId,
-      min_price: filters.min_price.toString(),
-      max_price: filters.max_price.toString(),
-      guest: filters.max_guest,
-      sleep_capacity: filters.sleep_capacity,
-      number_of_cabin: filters.number_of_cabin,
-      categories: JSON.stringify(filters.category_name),
-      features: JSON.stringify(filters.amenities.concat(
-        filters.outdoor_equipment,
-        filters.kitchen,
-        filters.energy,
-        filters.leisure,
-        filters.navigation,
-        filters.extra_comforts,
-        filters.indoor
-      )),
-      price_asc: filters.price_asc,
-      price_des: filters.price_des,
-      cabin_asc: filters.cabin_asc,
-      cabin_des: filters.cabin_des,
-      created_on: filters.created_on,
-      location: filters.location,
+    let payload = {
+        user_id: session?.user?.userid || 1,
+        guest: parseInt(searchParams.get('guests')) || 1,
+        location: searchParams.get('location'),
+        capacity: parseInt(searchParams.get('guests')) || 1,
+        name:searchParams.get('name') || "",
+        created_on:searchParams.get('date') || "" ,
     };
+    if (type == "reset&FirstRender") {
+        console.log("ifff")
+      payload = {
+        ...payload,
+        user_id: userId,
+
+      };
+    } else {
+        console.log("else")
+      payload = {
+     ...payload,   user_id: userId,
+        min_price: filters.min_price.toString(),
+        max_price: filters.max_price.toString(),
+        guest: filters.max_guest,
+        sleep_capacity: filters.sleep_capacity,
+        number_of_cabin: filters.number_of_cabin,
+        categories: JSON.stringify(filters.category_name),
+        features: JSON.stringify(filters.amenities.concat(
+          filters.outdoor_equipment,
+          filters.kitchen,
+          filters.energy,
+          filters.leisure,
+          filters.navigation,
+          filters.extra_comforts,
+          filters.indoor
+        )),
+        price_asc: filters.price_asc,
+        price_des: filters.price_des,
+        cabin_asc: filters.cabin_asc,
+        cabin_des: filters.cabin_des,
+        location: filters?.location,
+        min_length: filters.min_length,
+        max_length: filters.max_length,
+      };
+    }
+
 
     try {
       setLoading(true);
@@ -254,12 +305,23 @@ const SearchYacht = () => {
         body: JSON.stringify(payload),
       });
 
-      console.log("wwjwjwjwjwjjwjiji")
-
+      console.log("how many times")
       const responseData = await response.json();
       if (responseData.error_code === 'pass') {
-        setYachts(responseData.data || []);
-        setOriginalYachts(responseData.data || []);
+
+        // Filter yachts based on price range
+        // const filteredYachts = responseData.data.filter(item => {
+        //   const price = item.yacht.per_hour_price;
+        //   return price >= filters.min_price && price <= filters.max_price;
+        // }); 
+        const filteredYachts = responseData.data;
+
+
+        // Sort the filtered yachts if needed
+        const sortedYachts = filteredYachts?.sort((a, b) => {
+          return a.yacht.per_hour_price - b.yacht.per_hour_price;
+        });
+        setOriginalYachts(sortedYachts)
       } else {
         setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
@@ -273,38 +335,16 @@ const SearchYacht = () => {
   };
 
   const resetFilters = () => {
-    setFilters({
-      min_price: 1000,
-      max_price: 4000,
-      min_guest: "",
-      max_guest: "",
-      sleep_capacity: "",
-      capacity: "",
-      location: "",
-      category_name: [],
-      subcategory_name: [],
-      boat_category: [],
-      price_des: false,
-      price_asc: false,
-      cabin_des: false,
-      cabin_asc: false,
-      engine_type: "",
-      number_of_cabin: "",
-      created_on: "",
-      min_length: "",
-      max_length: "",
-      amenities: [], // Reset amenities filter
-      outdoor_equipment: [], // Reset outdoor equipment filter
-      kitchen: [], // Reset kitchen filter
-      energy: [], // Reset energy filter
-      leisure: [], // Reset leisure activities filter
-      navigation: [], // Reset navigation equipment filter
-      extra_comforts: [], // Reset extra comforts filter
-      indoor: [], // Reset indoor equipment filter
-    });
-    handleFilterChange();
+    setFilters(initialFilterState);
   };
 
+
+  useEffect(() => {
+    // console.log(JSON.stringify(filters))
+    if (JSON.stringify(filters) === JSON.stringify(initialFilterState)) {
+      handleFilterChange("reset&FirstRender");
+    }
+  }, [filters]);
 //   useEffect(() => {
 //     const getYachts = async () => {
 //       if (!userId) return;
@@ -342,8 +382,12 @@ const SearchYacht = () => {
   };
 
   useEffect(() => {
+
+    if (!startSort) {
+      return; 
+    }
+
     let data = [...yachts]; 
-  
     if (selectedOption?.value === "default") {
       data = [...originalYachts]; 
     } 
@@ -352,45 +396,50 @@ const SearchYacht = () => {
     } else if (selectedOption?.value === "Price-Low-High") {
       data.sort((a, b) => a.yacht?.per_hour_price - b.yacht?.per_hour_price); 
     } else if (selectedOption?.value === "Capacity-High-Low") {
-      data.sort((a, b) => b.yacht.capacity - a.yacht.capacity); 
+      data.sort((a, b) => b.yacht?.guest - a.yacht?.guest); 
     } else if (selectedOption?.value === "Capacity-Low-High") {
-      data.sort((a, b) => a.yacht.capacity - b.yacht.capacity); 
+      data.sort((a, b) => a.yacht?.guest - b.yacht?.guest); 
     }
-  
+
     if (JSON.stringify(data) !== JSON.stringify(yachts)) {
-      setYachts(data); 
+      setYachts(data);
     }
-  }, [selectedOption, yachts]); 
+  }, [selectedOption]); 
 
 ///hit //old search
-   useEffect(() => {
-      const fetchResults = async () => {
-        try {
+//    useEffect(() => {
+//       const fetchResults = async () => {
+//         try {
             
-          const params = {
-            user_id: session?.user?.userid || 1,
-            guest: parseInt(searchParams.get('guests')) || 1,
-            location: searchParams.get('location'),
-            capacity: parseInt(searchParams.get('guests')) || 1,
-            name:searchParams.get('name') || ""
-          };  
-          const response = await yachtApi.checkYachts(params);
-          console.log("response=>>>>",response)
-          if (response.error_code === 'pass' && response.data) {
-            setYachts(response.data);
-          setOriginalYachts(response.data)
-          } else {
-            setError(response.message || 'No results found');
-          }
-        } catch (err) {
-          setError(err.message || 'Failed to fetch results');
-        } finally {
-          setLoading(false);
-        }
-      };
+//           const params = {
+//             user_id: session?.user?.userid || 1,
+//             guest: parseInt(searchParams.get('guests')) || 1,
+//             location: searchParams.get('location'),
+//             capacity: parseInt(searchParams.get('guests')) || 1,
+//             name:searchParams.get('name') || "",
+//             // created_on:searchParams.get('date') || "" ,
+//           };  
+//           const response = await yachtApi.checkYachts(params);
+//           console.log("response=>>>>",response)
+//           if (response.error_code === 'pass' && response.data) {
+//           setOriginalYachts(response.data)
+//           } else {
+//             setError(response.message || 'No results found');
+//           }
+//         } catch (err) {
+//           setError(err.message || 'Failed to fetch results');
+//         } finally {
+//           setLoading(false);
+//         }
+//       };
   
-      fetchResults();
-    }, [searchParams, session]);
+//       fetchResults();
+//     }, [searchParams, session]);
+
+      useEffect(() => {
+        let data = [...originalYachts]
+        setYachts(data)
+      }, [originalYachts]);
   //test
   useEffect(() => {
     console.log("yachts", yachts,error);
@@ -408,6 +457,7 @@ const SearchYacht = () => {
       <EmptySearch
         type="yachts"
         searchParams={Object.fromEntries(searchParams.entries())}
+        filters={filters}
       />
     );
   }
@@ -425,7 +475,9 @@ const SearchYacht = () => {
               <Sheet>
                 <div className="flex justify-between w-full">
                   <SheetTrigger asChild>
-                    <Button variant="outline" className="gap-2">
+                    <Button
+                    //  onClick={()=>setStartFilterWork(true)}
+                      variant="outline" className="gap-2">
                       <SlidersHorizontal className="h-4 w-4" />
                       Filters
                     </Button>
@@ -459,7 +511,7 @@ const SearchYacht = () => {
                     <Button
                       className="w-full bg-[#BEA355] mt-6 rounded-full"
                       onClick={() => {
-                        handleFilterChange();
+                        handleFilterChange("normal");
                       }}
                     >
                       Show Results
@@ -849,7 +901,7 @@ const SearchYacht = () => {
                       <Button
                         className="w-full bg-[#BEA355] mt-6 rounded-full"
                         onClick={() => {
-                          handleFilterChange();
+                          handleFilterChange("normal");
                         }}
                       >
                         Show Results

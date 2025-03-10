@@ -21,15 +21,16 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import yachtApi from '@/services/api';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { API_BASE_URL } from '@/lib/api';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from "@/hooks/use-toast";
 
 
 const SearchFilter = () => {
   const router = useRouter();
+  const { toast } = useToast();
   const { data: session } = useSession();
   const [activeMainTab, setActiveMainTab] = useState("yachts");
   const [activeSearchTab, setActiveSearchTab] = useState("where");
@@ -40,9 +41,10 @@ const SearchFilter = () => {
     to: null
   });
   const [guests, setGuests] = useState({
-    adults: 1,
-    children: 0,
-    infants: 0
+    // adults: 1,
+    // children: 0,
+    // infants: 0,
+    capacity:1,
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -116,7 +118,7 @@ const SearchFilter = () => {
   }, [activeMainTab, session]);
 
   // Fetch cities from City API
-  useEffect(() => {
+  useEffect(() => { 
     const fetchCities = async () => {
       try {
         setIsCitiesLoading(true);
@@ -138,6 +140,10 @@ const SearchFilter = () => {
 
     fetchCities();
   }, []);
+//test
+//   useEffect(()=>{
+// console.log("guests",guests)
+//   },[guests])
 
   const handleGuestChange = (type, action) => {
     setGuests(prev => ({
@@ -151,13 +157,17 @@ const SearchFilter = () => {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const totalGuests = guests.adults + guests.children + guests.infants;
-      const formattedStartDate = selectedDateRange.from ? format(selectedDateRange.from, 'yyyy-MM-dd') : null;
-      const formattedEndDate = selectedDateRange.to ? format(selectedDateRange.to, 'yyyy-MM-dd') : null;
+      const totalGuests = guests?.capacity;
+      const formattedStartDate = selectedDateRange?.from ? format(selectedDateRange?.from, 'yyyy-MM-dd') : null;
+      const formattedEndDate = selectedDateRange?.to ? format(selectedDateRange?.to, 'yyyy-MM-dd') : null;
 
       // Check if at least one criterion is provided
       if (!selectedCity && !formattedStartDate && totalGuests === 0) {
-        toast.error('Please select at least one search criterion.');
+        toast({
+          title: "Error",
+          description: "Please select at least one search criterion.",
+          variant: "destructive",
+        });
         setLoading(false);
         return;
       }
@@ -229,29 +239,40 @@ const SearchFilter = () => {
   };
 
   const handleGuestSelection = (range) => {
-    let adults = 0;
-    let children = 0;
+    // let adults = 0;
+    // let children = 0;
+    let capacity = 0;
 
     if (range === "1 - 10") {
-      adults = 10;
+      capacity = 10;
     } else if (range === "10 - 30") {
-      adults = 30;
+      capacity = 30;
     } else if (range === "30 - 50") {
-      adults = 50;
+      capacity = 50;
     } else if (range === "50+") {
-      adults = 100;
+      capacity = 100;
     }
 
-    setGuests({ adults, children, infants: 0 });
+    setGuests({ capacity });
   };
 
   const resetSearch = () => {
     setActiveSearchTab("where");
     setSelectedCity("");
     setSelectedDateRange({ from: null, to: null });
-    setGuests({ adults: 1, children: 0, infants: 0 });
+    setGuests({ capacity:1 });
+    setsearchByName("")
   };
 
+  useEffect(() => {
+    console.log('State changes:', {
+      searchByName,
+      activeSearchTab,
+      selectedCity,
+      selectedDateRange,
+      guests
+    });
+  }, [searchByName, activeSearchTab, selectedCity, selectedDateRange, guests]);
   const handleTabChange = (value) => {
     setActiveMainTab(value);
   };
@@ -283,15 +304,15 @@ const SearchFilter = () => {
               <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
                 <CalendarIcon className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
                 <span className="dark:text-gray-300 text-xs">
-                  {selectedDateRange.from && selectedDateRange.to
-                    ? `${format(selectedDateRange.from, 'MMM dd')} - ${format(selectedDateRange.to, 'MMM dd')}`
+                  {selectedDateRange?.from && selectedDateRange?.to
+                    ? `${format(selectedDateRange?.from, 'MMM dd')} - ${format(selectedDateRange?.to, 'MMM dd')}`
                     : "When?"}
                 </span>
               </div>
               <div className="flex items-center px-2 md:px-4 py-1.5 md:py-3 text-sm">
                 <Users className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
                 <span className="dark:text-gray-300 text-xs">
-                  {guests.adults + guests.children + guests.infants} Guests
+                  {guests?.capacity} Guests
                 </span>
               </div>
             </div>
@@ -428,7 +449,7 @@ const SearchFilter = () => {
                     </TabsTrigger>
                     <TabsContent
                       value="who"
-                      className="absolute right-0 top-full mt-2 z-10 md:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl h-[300px] overflow-y-auto shadow-lg border border-gray-200 dark:border-gray-700"
+                      className="absolute right-0 top-full mt-2 z-10 md:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl h-[230px] overflow-y-auto shadow-lg border border-gray-200 dark:border-gray-700"
                     >
                       <h3 className="text-xl font-semibold">Who&apos;s coming?</h3>
                       {Object.keys(guests).map(type => (

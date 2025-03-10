@@ -63,7 +63,7 @@ export function ForgotPasswordForm({ className, ...props }) {
       setError("auth", { type: "manual", message: error.response?.data?.detail || error.message });
       toast({
         title: "Error",
-        description: error.response?.data?.detail || error.message,
+        description: error.response?.data?.message || error.message,
         variant: "destructive",
       });
     }

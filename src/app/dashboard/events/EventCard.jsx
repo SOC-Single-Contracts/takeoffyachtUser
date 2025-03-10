@@ -20,7 +20,6 @@ const EventCard = ({ event, packages, onClick }) => {
             onClick(event.id);
         }
     };
-
     return (
         <Card className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[298px] h-full max-h-[260px]">
             <div className="relative">

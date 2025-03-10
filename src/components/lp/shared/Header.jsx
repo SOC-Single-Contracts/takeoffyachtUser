@@ -55,14 +55,14 @@ const Header = () => {
   const [guest, setGuest] = useState('1');
   const [selectedDate, setSelectedDate] = useState('');
   const [scrolled, setScrolled] = useState(false);
-
+const callbackUrl = process.env.NEXT_PUBLIC_SITE_URL || '/login'
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1000);
   
     return () => clearTimeout(timer);
-  }, []);
+  }, []);  
 
   useEffect(() => {
     const handleScroll = () => {
@@ -148,12 +148,13 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+    console.log("workkkk")
     signOut({ 
-      callbackUrl: '/login',
+      callbackUrl: callbackUrl,
       redirect: true 
     });
   };
-
+  
   return (
     <nav className={`
       backdrop-blur-2xl 

@@ -36,12 +36,12 @@ export default function RootLayout({ children }) {
         className={`${inter.variable} ${jakarta.variable} antialiased bg-[#E2E2E2] text-black dark:bg-gray-900 dark:text-white`}
       >
         <Providers>
-          <ThemeProvider>
-              {isLoading && <GlobalLoading />}
-              {children}
-              <WhatsAppButton />
-              <Toaster />
-          </ThemeProvider>
+            <ThemeProvider>
+                {isLoading && <GlobalLoading />}
+                {children}
+                <WhatsAppButton />
+                <Toaster />
+            </ThemeProvider>
         </Providers>
       </body>
     </html>
