@@ -292,8 +292,9 @@ const Yachts = () => {
   //     setLoading(false);
   //   }
   // };
-  // ... existing code ...
+
   const handleFilterChange = async (type) => {
+
     if (!userId) return;
 
     let payload;

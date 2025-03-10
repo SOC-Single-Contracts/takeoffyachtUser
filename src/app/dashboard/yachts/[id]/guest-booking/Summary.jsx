@@ -22,13 +22,13 @@ import Image from 'next/image';
 const safeFormat = (dateString, formatString, fallback = 'N/A') => {
   try {
     if (!dateString) return fallback;
-    
+
     // Try parsing as ISO string first
     let parsedDate = parseISO(dateString);
     if (!isValid(parsedDate)) {
       parsedDate = parseISO(`1970-01-01T${dateString}`);
     }
-    
+
     return isValid(parsedDate) ? format(parsedDate, formatString) : fallback;
   } catch (error) {
     console.error('Date formatting error:', error);
@@ -68,8 +68,12 @@ const Summary = ({ onNext, initialBookingId }) => {
         }
 
         const details = await response.json();
+
+        // Filter extras with quantities > 0
+        const activeExtras = details.extras_data.filter(extra => extra.quantity > 0);
+
         setBookingDetails(details);
-        setEditableExtras(details.extras || []);
+        setEditableExtras(details.extras_data || []);
         setIsPartialPayment(details.is_partial_payment || false);
 
         // Update booking context with booking details
@@ -78,7 +82,8 @@ const Summary = ({ onNext, initialBookingId }) => {
           qrCodeUrl: details.qr_code,
           remainingCost: details.remaining_cost,
           totalCost: details.total_cost,
-          paidCost: details.paid_cost
+          paidCost: details.paid_cost,
+          extras: activeExtras
         });
       } catch (error) {
         console.error('Error fetching booking details:', error);
@@ -95,58 +100,180 @@ const Summary = ({ onNext, initialBookingId }) => {
     fetchBookingDetails();
   }, [initialBookingId, bookingData.bookingId]);
 
-  const handleUpdateExtras = async () => {
-    try {
-      const bookingId = bookingDetails.id;
-      
-      // Destructure to remove unwanted fields
-      const { qr_code, ...payloadWithoutQrCode } = bookingDetails;
-      
-      const payload = {
-        ...payloadWithoutQrCode,
-        extras: editableExtras,
-      };
 
-      const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+  const calculateUpdatedTotalCost = () => {
+    // Calculate base cost (charter cost)
+    const baseHourlyRate = bookingDetails.is_new_year_booking
+      ? (selectedYacht?.yacht?.new_year_price || 0)
+      : (selectedYacht?.yacht?.per_hour_price || 0);
+    const charterCost = baseHourlyRate * bookingDetails.duration_hour;
+
+    // Calculate extras cost
+    const extrasCost = editableExtras.reduce((total, extra) => {
+      return total + (extra.price * extra.quantity);
+    }, 0);
+
+    return charterCost + extrasCost;
+  };
+
+  // const handleUpdateExtras = async () => {
+  //   try {
+  //     const bookingId = bookingDetails.id;
+  //     const updatedTotalCost = calculateUpdatedTotalCost();
+  
+  //     const payload = {
+  //       extras: editableExtras.map(extra => ({
+  //         extra_id: extra.extra_id,
+  //         name: extra.name,
+  //         quantity: parseInt(extra.quantity),
+  //         price: parseFloat(extra.price)
+  //       })),
+  //       total_cost: updatedTotalCost,
+  //       remaining_cost: bookingDetails.paid_cost > 0 ? updatedTotalCost - bookingDetails.paid_cost : 0
+  //     };
+  
+  //     const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
+  //       method: 'PATCH',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
+  
+  //     if (!response.ok) {
+  //       throw new Error('Failed to update booking details');
+  //     }
+  
+  //     const result = await response.json();
+      
+  //     if (result.data) {
+  //       setBookingDetails(result.data);
+  //       setEditableExtras(result.data.extras_data);
+        
+  //       updateBookingData({
+  //         extras: result.data.extras_data.filter(extra => extra.quantity > 0),
+  //         totalCost: result.data.total_cost,
+  //         remainingCost: result.data.remaining_cost,
+  //         paidCost: result.data.paid_cost
+  //       });
+  //     }
+  
+  //     toast({
+  //       title: "Success",
+  //       description: "Extras updated successfully",
+  //       variant: "success"
+  //     });
+  
+  //     const refreshResponse = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`);
+  //     const refreshedData = await refreshResponse.json();
+  //     setBookingDetails(refreshedData);
+  //     setEditableExtras(refreshedData.extras_data);
+  
+  //   } catch (error) {
+  //     console.error('Error updating extras:', error);
+  //     toast({
+  //       title: "Error",
+  //       description: error.message,
+  //       variant: "destructive"
+  //     });
+  //   }
+  // };
+
+
+  // ... existing code ...
+
+// ... existing code ...
+
+const handleUpdateExtras = async () => {
+  try {
+    const bookingId = bookingDetails.id;
+
+    // Calculate base cost based on booking type
+    let baseCost = 0;
+    if (bookingDetails.booking_type === 'hourly') {
+      const hourlyRate = selectedYacht?.yacht?.per_hour_price || 0;
+      baseCost = hourlyRate * (bookingDetails.duration_hour || 3);
+    } else {
+      // Date range booking
+      const startDate = new Date(bookingDetails.selected_date);
+      const endDate = new Date(bookingDetails.end_date);
+      const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+      baseCost = (selectedYacht?.yacht?.per_day_price || 0) * days;
+    }
+
+    // Calculate extras cost
+    const extrasCost = editableExtras.reduce((total, extra) => {
+      return total + (parseFloat(extra.price) * parseInt(extra.quantity || 0));
+    }, 0);
+
+    // Calculate total cost
+    const totalCost = baseCost + extrasCost;
+
+    const payload = {
+      extras: editableExtras.map(extra => ({
+        extra_id: extra.extra_id,
+        name: extra.name,
+        quantity: parseInt(extra.quantity || 0),
+        price: parseFloat(extra.price)
+      })),
+      total_cost: totalCost,
+      remaining_cost: totalCost - (bookingDetails.paid_cost || 0)
+    };
+
+    const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update booking details');
+    }
+
+    const result = await response.json();
+    
+    if (result.data) {
+      setBookingDetails(result.data);
+      setEditableExtras(result.data.extras_data || []);
+      
+      // Update booking context with new data
+      updateBookingData({
+        extras: result.data.extras_data.filter(extra => extra.quantity > 0),
+        totalCost: result.data.total_cost,
+        remainingCost: result.data.remaining_cost,
+        paidCost: result.data.paid_cost
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to update booking details: ${errorText}`);
-      }
-
-      const updatedDetails = await response.json();
-      // setBookingDetails(updatedDetails);
       toast({
         title: "Success",
         description: "Booking details updated successfully",
         variant: "success"
       });
-    } catch (error) {
-      console.error('Error updating booking details:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
     }
-  };
+  } catch (error) {
+    console.error('Error updating booking details:', error);
+    toast({
+      title: "Error",
+      description: error.message,
+      variant: "destructive"
+    });
+  }
+};
+
+// ... rest of the code ...
 
   const handleUpdatePartialPayment = async () => {
     try {
       const bookingId = bookingDetails.id;
-      
+
       // Destructure to remove unwanted fields
       const { qr_code, ...payloadWithoutQrCode } = bookingDetails;
-      
+
       // Calculate total cost
       const totalCost = bookingDetails.total_cost || calculateTotal();
-      
+
       const payload = {
         ...payloadWithoutQrCode,
         is_partial_payment: isPartialPayment,
@@ -171,7 +298,7 @@ const Summary = ({ onNext, initialBookingId }) => {
 
       const updatedDetails = await response.json();
       setBookingDetails(updatedDetails);
-      
+
       // Update booking context with partial payment status
       updateBookingData({
         isPartialPayment: isPartialPayment,
@@ -197,13 +324,7 @@ const Summary = ({ onNext, initialBookingId }) => {
 
   const handleProceedToPayment = async () => {
     try {
-      // First update the extras
-      await handleUpdateExtras();
-      
-      // Then update partial payment status
-      await handleUpdatePartialPayment();
-      
-      // Finally proceed to next step
+
       onNext();
     } catch (error) {
       console.error('Error proceeding to payment:', error);
@@ -216,16 +337,21 @@ const Summary = ({ onNext, initialBookingId }) => {
   };
 
   const updateExtraQuantity = (index, newQuantity) => {
-    const updatedExtras = [...editableExtras];
-    updatedExtras[index].quantity = newQuantity;
-    setEditableExtras(updatedExtras);
-  };
+  setEditableExtras(prev => {
+    const updated = [...prev];
+    updated[index] = {
+      ...updated[index],
+      quantity: parseInt(newQuantity)
+    };
+    return updated;
+  });
+};
 
   const handleCopyLink = () => {
     const bookingId = bookingDetails.id;
     const yachtId = selectedYacht?.yacht?.id || bookingData.yachtId;
     const bookingLink = `${window.location.origin}/dashboard/yachts/${yachtId}/guest-booking/?bookingId=${bookingId}`;
-    
+
     navigator.clipboard.writeText(bookingLink).then(() => {
       setIsCopied(true); // Set copied state to true
       toast({
@@ -265,12 +391,12 @@ const Summary = ({ onNext, initialBookingId }) => {
               {bookingDetails.is_new_year_booking && " - New Year's Eve Rate"}
             </TableCell>
             <TableCell className="font-medium">
-              AED {(bookingDetails.is_new_year_booking ? 
-                (selectedYacht?.yacht?.new_year_price || 0) : 
+              AED {(bookingDetails.is_new_year_booking ?
+                (selectedYacht?.yacht?.new_year_price || 0) :
                 (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour}
             </TableCell>
           </TableRow>
-          {bookingDetails.extras.map((item) => (
+          {bookingDetails.extras_data && Array.isArray(bookingDetails.extras_data) && bookingDetails.extras_data.map((item) => (
             <TableRow key={item.extra_id}>
               <TableCell className="font-semibold">{item.name}</TableCell>
               <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
@@ -317,7 +443,7 @@ const Summary = ({ onNext, initialBookingId }) => {
         </TableBody>
       </Table>
     );
-};
+  };
 
   if (loading) {
     return <div>Loading booking details...</div>;
@@ -330,7 +456,7 @@ const Summary = ({ onNext, initialBookingId }) => {
         <div className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {selectedYacht?.yacht?.yacht_image && (
-              <div 
+              <div
                 className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
                 onClick={() => {
                   Fancybox.show([
@@ -353,7 +479,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               const imageKey = `image${index + 1}`;
               if (selectedYacht?.yacht?.[imageKey]) {
                 return (
-                  <div 
+                  <div
                     key={imageKey}
                     className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
                     onClick={() => {
@@ -479,39 +605,31 @@ const Summary = ({ onNext, initialBookingId }) => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-white dark:bg-gray-800 text-xs">
-            {editableExtras.length > 0 ? (
-              editableExtras.map((extra, index) => (
-                <TableRow key={extra.id}>
-                  <TableCell className="font-semibold">{extra.name}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => updateExtraQuantity(index, Math.max(0, extra.quantity - 1))}
-                      >
-                        -
-                      </Button>
-                      <span className="mx-2">{extra.quantity}</span>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => updateExtraQuantity(index, extra.quantity + 1)}
-                      >
-                        +
-                      </Button>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium">AED {extra.price * extra.quantity}</TableCell>
-                </TableRow>
-              ))
-            ) : (
-                <TableRow>
-                  <TableCell colSpan={3} className="text-center text-gray-500 py-4">
-                    No optional extras available
-                  </TableCell>
-                </TableRow>
-            )}
+            {editableExtras.map((extra, index) => (
+              <TableRow key={extra.extra_id}>
+                <TableCell className="font-semibold">{extra.name}</TableCell>
+                <TableCell>
+                  <div className="flex items-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateExtraQuantity(index, Math.max(0, extra.quantity - 1))}
+                    >
+                      -
+                    </Button>
+                    <span className="mx-2">{extra.quantity}</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateExtraQuantity(index, extra.quantity + 1)}
+                    >
+                      +
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium">AED {extra.price * extra.quantity}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
 
@@ -528,8 +646,8 @@ const Summary = ({ onNext, initialBookingId }) => {
               <TableCell className="font-semibold">Your Booking Link:</TableCell>
               <TableCell className="font-medium">
                 <div className="flex items-center">
-                  <span 
-                    className="text-blue-500 cursor-pointer" 
+                  <span
+                    className="text-blue-500 cursor-pointer"
                     onClick={handleCopyLink}
                   >
                     {isCopied ? <Check className="h-5 w-5" /> : <Clipboard className="h-5 w-5" />}
@@ -543,55 +661,22 @@ const Summary = ({ onNext, initialBookingId }) => {
 
         {renderPriceSummary()}
 
-         {/* Partial Payment Toggle */}
-         <div className="bg-[#F4F0E4] w-full rounded-lg p-4 flex items-center justify-between">
-          <div>
-            <Label htmlFor="partial-payment" className="text-md font-semibold text-black">
-              Partial Payment
-            </Label>
-            <p className="text-sm text-gray-600">
-              Pay 25% now and the remaining amount later
-            </p>
-          </div>
-          <Switch
-            id="partial-payment"
-            className="data-[state=checked]:bg-[#BEA355] data-[state=unchecked]:bg-gray-300"
-            checked={isPartialPayment}
-            onCheckedChange={(checked) => setIsPartialPayment(checked)}
-            disabled={bookingDetails?.paid_cost > 0 || bookingDetails?.remaining_cost > 0} // Disable if there are paid or remaining amounts
-
-          />
-        </div>
 
         <div className="flex justify-end flex-wrap gap-2">
           <Button
-          variant="secondary"
+            variant="secondary"
             onClick={handleUpdateExtras}
             className="px-6 py-2 text-xs rounded-full"
           >
             Update Extras
           </Button>
-          <Button
-            onClick={handleCopyLink}
-            className="bg-blue-500 text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-blue-600"
-          >
-            Copy Booking Link
-          </Button>
-          {((bookingDetails?.paid_cost === 0 || bookingDetails?.paid_cost === undefined) || 
-            (bookingDetails?.remaining_cost > 0)) && (
-            <Button
-              onClick={handleProceedToPayment}
-              className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
-            >
-              {isPartialPayment && bookingDetails?.total_cost && !bookingDetails?.paid_cost && !bookingDetails?.remaining_cost
-                ? `Proceed to Payment (25% AED ${(bookingDetails.total_cost * 0.25).toFixed(2)})` 
-                : (bookingDetails?.remaining_cost > 0 
-                  ? `Proceed to Payment (Remaining AED ${bookingDetails.remaining_cost.toFixed(2)})`
-                  : bookingDetails?.total_cost 
-                    ? `Proceed to Payment (Total AED ${bookingDetails.total_cost.toFixed(2)})`
-                    : 'Proceed to Payment')}
-            </Button>
-          )}
+
+             <Button
+                onClick={handleProceedToPayment}
+                className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
+              >
+                Proceed to Payment
+              </Button>
         </div>
       </div>
     </section>

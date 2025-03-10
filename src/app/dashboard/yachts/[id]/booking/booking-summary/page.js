@@ -10,9 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Download, ExternalLink, Mail, MapPin, Phone, Receipt, User } from "lucide-react";
+import { ArrowLeft, Check, Copy, CreditCard, Download, ExternalLink, Mail, MapPin, Phone, Receipt, User } from "lucide-react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import MapSectionWrapper from "@/components/shared/dashboard/MapSectionWrapper";
@@ -20,15 +20,18 @@ import { dubai, summaryimg } from "../../../../../../../public/assets/images";
 import Image from "next/image";
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
+import { format } from "date-fns";
 
 const BookingSummary = () => {
-  const { id } = useParams();
+  const params = useParams();
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
   const { data: session } = useSession();
-
+  const router = useRouter();
+  
   useEffect(() => {
     const fetchBookingDetails = async () => {
       if (!bookingId || !session?.user?.userid) return;
@@ -277,6 +280,25 @@ const BookingSummary = () => {
     }
   };
 
+
+  const handleProceedToPayment = () => {
+    if (booking?.remaining_cost > 0) {
+      // Pass user details along with payment info
+      router.push(`/dashboard/yachts/${params.id}/booking/?bookingId=${bookingId}&amount=${booking.remaining_cost}&isPartialPayment=true&phone=${encodeURIComponent(booking.phone_number)}&name=${encodeURIComponent(booking.full_name)}`);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    const bookingUrl = `${window.location.origin}/dashboard/yachts/${params.id}/booking/booking-summary?bookingId=${bookingId}`;
+    try {
+      await navigator.clipboard.writeText(bookingUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   return (
     <section className="py-8 px-2">
       <div className="max-w-5xl px-2 mx-auto flex items-center space-x-4">
@@ -291,17 +313,17 @@ const BookingSummary = () => {
       <Image src={summaryimg} className="w-full h-[300px] object-cover rounded-xl" alt="" />
       {booking.type === 'yacht' && (
         <Table>
-          <TableHeader className="bg-[#EBEBEB] dark:bg-gray-700">
+          <TableHeader className="bg-[#F4F0E4] dark:bg-gray-800">
             <TableRow>
-              <TableHead className="font-semibold text-black dark:text-gray-400 rounded-t-lg">
+              <TableHead className="font-semibold text-black dark:text-gray-200 rounded-t-lg">
                 {booking.yacht.title || 'Yacht Details'}
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="border border-gray-200 dark:border-gray-700 bg-white">
+          <TableBody className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700">
             <TableRow>
               <TableCell className="flex justify-between">
-                <span className="text-black dark:text-gray-400">Departure</span>
+                <span className="text-black dark:text-gray-200">Departure</span>
                 <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
                   {new Date(booking.selected_date).toLocaleString()}
                 </span>
@@ -309,14 +331,14 @@ const BookingSummary = () => {
             </TableRow>
             <TableRow>
               <TableCell className="flex justify-between">
-                <span className="text-black dark:text-gray-400">Duration</span>
-                <span className="font-medium text-xs text-gray-600 dark:text-gray-400">{booking.duration_hour} Hours</span>
+                <span className="text-black dark:text-gray-200">Duration</span>
+                <span className="font-medium text-xs text-gray-600 dark:text-gray-200">{booking.duration_hour} Hours</span>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="flex justify-between">
-                <span className="text-black dark:text-gray-400">Guests</span>
-                <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                <span className="text-black dark:text-gray-200">Guests</span>
+                <span className="font-medium text-xs text-gray-600 dark:text-gray-200">
                   {booking.adults + booking.kid_teen} 
                   <span className="text-xs ml-1">
                     (max {booking.yacht.capacity})
@@ -326,8 +348,8 @@ const BookingSummary = () => {
             </TableRow>
             <TableRow>
               <TableCell className="flex justify-between items-center">
-                <span className="text-black dark:text-gray-400">Location</span>
-                <span className="font-medium text-xs text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-1">
+                <span className="text-black dark:text-gray-200">Location</span>
+                <span className="font-medium text-xs text-gray-600 dark:text-gray-200 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-1">
                   <MapPin className="h-4 w-4 mr-1" />
                   {booking.yacht.location || 'Not Available'}
                 </span>
@@ -445,6 +467,122 @@ const BookingSummary = () => {
           </TableRow>
         </TableBody>
       </Table>
+      {/* Payment Summary */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <Receipt className="w-5 h-5" />
+            Payment Summary
+          </h2>
+          
+          <div className="space-y-4">
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-gray-600 dark:text-gray-400">Total Amount</span>
+              <span className="font-semibold">AED {booking?.total_cost?.toFixed(2)}</span>
+            </div>
+            
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-green-600">Paid Amount</span>
+              <span className="font-semibold text-green-600">AED {booking?.paid_cost?.toFixed(2)}</span>
+            </div>
+            
+            {booking?.remaining_cost > 0 && (
+              <div className="flex justify-between items-center py-2 border-b">
+                <span className="text-blue-600">Remaining Amount</span>
+                <span className="font-semibold text-blue-600">AED {booking?.remaining_cost?.toFixed(2)}</span>
+              </div>
+            )}
+
+            {booking?.remaining_cost > 0 && (
+              <div className="mt-6">
+                <Button 
+                  className="w-full bg-gradient-to-r from-[#BEA355] to-[#D4B96E] hover:from-[#D4B96E] hover:to-[#BEA355]"
+                  onClick={handleProceedToPayment}
+                >
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  Pay Remaining Amount
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <Receipt className="w-5 h-5" />
+            Payment History
+          </h2>
+      <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Receipt</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>
+                  {format(new Date(booking?.selected_date), "MMM dd, yyyy")}
+                </TableCell>
+                <TableCell>AED {booking?.paid_cost?.toFixed(2)}</TableCell>
+                <TableCell>
+                  <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">
+                    Paid
+                  </span>
+                </TableCell>
+                <TableCell>
+                  {booking?.qr_code ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full border-[#BEA355] text-[#BEA355] hover:bg-[#BEA355] hover:text-white"
+                      onClick={handleDownloadQRCode}
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                    </Button>
+                  ) : (
+                    <span className="text-gray-500 text-sm">N/A</span>
+                  )}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          </div>
+
+          <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-semibold text-md text-black dark:text-white">
+                Booking Information
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white dark:bg-gray-700">
+            <TableRow>
+              <TableCell className="flex justify-between items-center">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Booking Link</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full border-[#BEA355] text-[#BEA355] hover:bg-[#BEA355] hover:text-white flex items-center gap-2"
+                  onClick={handleCopyLink}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy Link</span>
+                    </>
+                  )}
+                </Button>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       
       {/* Conditionally render map if yacht booking */}
       {booking.type === 'yacht' && booking.yacht.longitude && booking.yacht.latitude && (

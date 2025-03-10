@@ -27,7 +27,9 @@ const Selection = ({ onNext }) => {
 
   const [loading, setLoading] = useState(false);
   const [availableDates, setAvailableDates] = useState([]); // State to track available dates
-  const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' }); // State for date range
+  // const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
+  const [dateRange, setDateRange] = useState({ from: null, to: null });
+
 
   const [extras, setExtras] = useState({
     food: [],
@@ -59,6 +61,31 @@ const Selection = ({ onNext }) => {
   
     return () => clearInterval(timer);
   }, []);
+
+  const handleDateSelect = (range) => {
+    setDateRange(range);
+    if (range?.from) {
+      if (range.to) {
+        // Date range booking
+        updateBookingData({
+          date: range.from,
+          endDate: range.to,
+          bookingType: 'date_range',
+          duration: null,
+          startTime: null
+        });
+      } else {
+        // Single day booking
+        updateBookingData({
+          date: range.from,
+          endDate: null,
+          bookingType: 'hourly',
+          duration: 3, // Default duration
+          startTime: new Date(range.from).setHours(9, 0, 0, 0)
+        });
+      }
+    }
+  };
 
   // useEffect(() => {
   //   const fetchAvailability = async () => {
@@ -160,36 +187,80 @@ const Selection = ({ onNext }) => {
     }, 0);
   };
 
-  const calculateTotal = () => {
-    const basePrice = selectedYacht?.yacht?.per_hour_price || 0;
-    const newYearPrice = selectedYacht?.yacht?.new_year_price || basePrice;
+  // const calculateTotal = () => {
+  //   const basePrice = selectedYacht?.yacht?.per_hour_price || 0;
+  //   const newYearPrice = selectedYacht?.yacht?.new_year_price || basePrice;
     
-    // Check if the selected date is New Year's Eve (December 31st)
-    const isNewYearsEve = bookingData.date && (
-      new Date(bookingData.date).getMonth() === 11 &&
-      new Date(bookingData.date).getDate() === 31
-    );
+  //   // Check if the selected date is New Year's Eve (December 31st)
+  //   const isNewYearsEve = bookingData.date && (
+  //     new Date(bookingData.date).getMonth() === 11 &&
+  //     new Date(bookingData.date).getDate() === 31
+  //   );
     
-    // Use New Year's price if it's December 31st
-    const hourlyRate = isNewYearsEve ? newYearPrice : basePrice;
+  //   // Use New Year's price if it's December 31st
+  //   const hourlyRate = isNewYearsEve ? newYearPrice : basePrice;
     
-    const totalExtras = Object.values(extras).reduce((total, category) => {
-      return total + calculateCategoryTotal(category);
-    }, 0);
+  //   const totalExtras = Object.values(extras).reduce((total, category) => {
+  //     return total + calculateCategoryTotal(category);
+  //   }, 0);
 
-    return (hourlyRate * bookingData.duration) + totalExtras;
-  };
+  //   return (hourlyRate * bookingData.duration) + totalExtras;
+  // };
 
+    const calculateTotal = () => {
+      if (!selectedYacht?.yacht) return 0;
+      
+      let basePrice = 0;
+      
+      if (bookingData.endDate) {
+        // Calculate for date range booking
+        const days = Math.ceil(
+          (new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24)
+        ) + 1;
+        basePrice = (selectedYacht.yacht.per_day_price || 0) * days;
+      } else {
+        // Calculate for hourly booking
+        const hourlyRate = bookingData.isNewYearBooking 
+          ? (selectedYacht.yacht.new_year_price || selectedYacht.yacht.per_hour_price || 0)
+          : (selectedYacht.yacht.per_hour_price || 0);
+        basePrice = hourlyRate * (bookingData.duration || 3);
+      }
+      
+      const extrasTotal = Object.values(extras).reduce((total, category) => {
+        return total + calculateCategoryTotal(category);
+      }, 0);
+  
+      return basePrice + extrasTotal;
+    };
+  
   const handleNext = async () => {
     setLoading(true);
     try {
-      if (!bookingData.date || !bookingData.startTime) {
-        toast.error('Please select date and time');
-        return;
-      }
+      // if (!bookingData.date || !bookingData.startTime) {
+      //   toast.error('Please select date and time');
+      //   return;
+      // }
 
       if (bookingData.adults + bookingData.kids === 0) {
         toast.error('Please add at least one guest');
+        return;
+      }
+
+      if (!bookingData.date) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Please select a date"
+        });
+        return;
+      }
+
+      if (!bookingData.endDate && !bookingData.startTime) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Please select a time"
+        });
         return;
       }
 
@@ -221,7 +292,11 @@ const Selection = ({ onNext }) => {
       onNext();
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Failed to proceed. Please try again.');
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Something went wrong"
+      });
     } finally {
       setLoading(false);
     }
@@ -541,12 +616,19 @@ const Selection = ({ onNext }) => {
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-[280px] justify-start text-left font-normal",
+                    "w-full max-w-[300px] justify-start text-left font-normal",
                     !bookingData.date && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {bookingData.date ? format(bookingData.date, "PPP") : <span>Pick a date</span>}
+                  <CalendarIcon className="mr-0 h-4 w-4" />
+                  {/* {bookingData.date ? format(bookingData.date, "PPP") : <span>Pick a date</span>} */}
+                  {bookingData.date ? (
+                      bookingData.endDate ? 
+                        `${format(bookingData.date, "PPP")} - ${format(bookingData.endDate, "PPP")}` :
+                        format(bookingData.date, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -571,20 +653,26 @@ const Selection = ({ onNext }) => {
               initialFocus
             /> */}
              <Calendar
-              mode="single"
-              selected={bookingData.date}
-              onSelect={(date) => {
-                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
-                  updateBookingData({ date });
-                } else {
-                  toast.error("Selected date is not available.");
-                }
-              }}
+              mode="range"
+              selected={dateRange}
+              // onSelect={(date) => {
+              //   if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
+              //     updateBookingData({ date });
+              //   } else {
+              //     toast.error("Selected date is not available.");
+              //   }
+              // }}
+              onSelect={handleDateSelect}
+              numberOfMonths={2}
+              // disabled={(date) => 
+              //   !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
+              //   date < new Date() || 
+              //   date < new Date(dateRange.start_date) || 
+              //   date > new Date(dateRange.end_date) // Disable dates outside the range
+              // }
               disabled={(date) => 
                 !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
-                date < new Date() || 
-                date < new Date(dateRange.start_date) || 
-                date > new Date(dateRange.end_date) // Disable dates outside the range
+                date < new Date()
               }
               initialFocus
             />
@@ -592,6 +680,7 @@ const Selection = ({ onNext }) => {
             </Popover>
           </div>
 
+          {bookingData.date && !bookingData.endDate && (
           <div className="flex justify-between items-start">
             <div className="flex flex-col space-y-2">
               <Label className="text-sm font-medium">
@@ -647,7 +736,9 @@ const Selection = ({ onNext }) => {
               </div>
             </div>
           </div>
+  )}
         </div>
+              
 
         {/* Guests Selection */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
@@ -799,15 +890,12 @@ const Selection = ({ onNext }) => {
         </div>
       </div>
       {/* Summary Card */}
-      <div className="w-full lg:w-1/2 max-w-[400px]">
+      {/* <div className="w-full lg:w-1/2 max-w-[400px]">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6 sticky top-4">
           <div className="space-y-2">
             <h2 className="text-lg font-semibold">
               AED <span className="text-2xl font-bold">{calculateTotal()}</span> for {bookingData.duration} hours
             </h2>
-            {/* <p className="text-gray-500 dark:text-gray-400 text-sm">
-              for {bookingData.duration} hours
-            </p> */}
           </div>
 
           <Table>
@@ -857,78 +945,100 @@ const Selection = ({ onNext }) => {
             </TableBody>
           </Table>
 
-          {/* <div className="bg-red-50 rounded-md p-2">
-            <p className="text-sm text-black">
-              You have <span className="font-semibold text-red-600">{formatTime(timeLeft)}</span> to complete your booking
-            </p>
-          </div> */}
+          <Button 
+            onClick={handleNext}
+            disabled={loading}
+            className="w-full bg-[#BEA355] text-white hover:bg-[#A68D3F] rounded-full"
+          >
+            {loading ? 'Checking availability...' : 'Continue'}
+          </Button>
+        </div>
+      </div> */}
+            {/* Summary Card */}
+            <div className="w-full lg:w-1/2 max-w-[400px]">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6 sticky top-4">
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold">
+              AED <span className="text-2xl font-bold">{calculateTotal()}</span>
+              {!bookingData.endDate && ` for ${bookingData.duration} hours`}
+              {bookingData.endDate && ` for ${Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)} days`}
+            </h2>
+          </div>
 
-          {/* <div className="space-y-2 pl-1">
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="partial" 
-                checked={bookingData.isPartialPayment}
-                onCheckedChange={(checked) => updateBookingData({ isPartialPayment: checked })}
-              />
-              <Label htmlFor="partial" className="text-sm">
-                You want to do partial payment?
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="terms"
-                className="checked:bg-[#BEA355] checked:border-[#BEA355]"
-                checked={bookingData.termsAccepted}
-                onCheckedChange={(checked) => updateBookingData({ termsAccepted: checked })}
-              />
-              <Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
-                <DialogTrigger asChild>
-                  <Label htmlFor="terms" className="text-sm cursor-pointer hover:text-[#BEA355]">
-                    I agree to terms & conditions
-                  </Label>
-                </DialogTrigger>
-                <DialogContent className="max-w-[800px] max-h-[80vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle className="text-xl font-semibold mb-4">Terms and Conditions</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 text-sm">
-                    <h3 className="font-semibold text-lg">1. Booking and Payment</h3>
-                    <p>• A deposit of 50% of the total charter fee is required to confirm your booking.</p>
-                    <p>• The remaining balance must be paid at least 7 days before the charter date.</p>
-                    <p>• All payments are non-refundable unless otherwise specified.</p>
-
-                    <h3 className="font-semibold text-lg">2. Cancellation Policy</h3>
-                    <p>• Cancellations made more than 30 days before the charter date: 80% refund</p>
-                    <p>• Cancellations made 15-30 days before: 50% refund</p>
-                    <p>• Cancellations made less than 15 days before: No refund</p>
-
-                    <h3 className="font-semibold text-lg">3. Charter Requirements</h3>
-                    <p>• The lead charterer must be at least 21 years of age.</p>
-                    <p>• Valid identification is required for all passengers.</p>
-                    <p>• The number of guests must not exceed the yacht's capacity.</p>
-
-                    <h3 className="font-semibold text-lg">4. Safety and Conduct</h3>
-                    <p>• All guests must follow safety instructions provided by the crew.</p>
-                    <p>• The captain has full authority to terminate the charter if safety is compromised.</p>
-                    <p>• No illegal activities or substances are permitted on board.</p>
-
-                    <h3 className="font-semibold text-lg">5. Weather Conditions</h3>
-                    <p>• The captain reserves the right to cancel or modify the itinerary due to weather.</p>
-                    <p>• Weather-related cancellations will be rescheduled at no additional cost.</p>
-
-                    <h3 className="font-semibold text-lg">6. Liability</h3>
-                    <p>• The company is not liable for any personal injury or loss of property.</p>
-                    <p>• Guests are advised to have appropriate insurance coverage.</p>
-
-                    <h3 className="font-semibold text-lg">7. Additional Charges</h3>
-                    <p>• Fuel surcharges may apply for extended cruising.</p>
-                    <p>• Additional hours will be charged at the standard hourly rate.</p>
-                    <p>• Damage to the vessel or equipment will be charged accordingly.</p>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div> */}
+          <Table>
+            <TableHeader className="bg-[#EBEBEB] dark:bg-gray-700">
+              <TableRow>
+                <TableHead className="font-semibold text-black dark:text-gray-400 rounded-t-lg">
+                  {selectedYacht?.yacht?.name || 'Yacht Details'}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="border border-gray-200 dark:border-gray-700">
+              <TableRow>
+                <TableCell className="flex justify-between">
+                  <span className="text-black dark:text-gray-400">
+                    {bookingData.endDate ? 'Stay Period' : 'Departure'}
+                  </span>
+                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                    {bookingData.endDate ? (
+                      `${format(new Date(bookingData.date), "MMM dd")} - ${format(new Date(bookingData.endDate), "MMM dd, yyyy")}`
+                    ) : (
+                      <>
+                        {bookingData.startTime && format(bookingData.startTime, "p")}, 
+                        {bookingData.date && format(bookingData.date, " MMM dd, yyyy")}
+                      </>
+                    )}
+                  </span>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="flex justify-between">
+                  <span className="text-black dark:text-gray-400">Duration</span>
+                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                    {bookingData.endDate ? (
+                      `${Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)} Days`
+                    ) : (
+                      `${bookingData.duration} Hours`
+                    )}
+                  </span>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="flex justify-between">
+                  <span className="text-black dark:text-gray-400">Rate</span>
+                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                    {bookingData.endDate ? (
+                      `AED ${selectedYacht?.yacht?.per_day_price || 0}/day`
+                    ) : (
+                      `AED ${bookingData.isNewYearBooking 
+                        ? (selectedYacht?.yacht?.new_year_price || selectedYacht?.yacht?.per_hour_price || 0)
+                        : (selectedYacht?.yacht?.per_hour_price || 0)}/hour`
+                    )}
+                  </span>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="flex justify-between">
+                  <span className="text-black dark:text-gray-400">Guests</span>
+                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                    {bookingData.adults + bookingData.kids} 
+                    <span className="text-xs ml-1">
+                      (max {selectedYacht?.yacht?.capacity || 0})
+                    </span>
+                  </span>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="flex justify-between items-center">
+                  <span className="text-black dark:text-gray-400">Location</span>
+                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-1">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {selectedYacht?.yacht?.location || 'Dubai'}
+                  </span>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
 
           <Button 
             onClick={handleNext}

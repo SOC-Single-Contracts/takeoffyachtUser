@@ -7,8 +7,10 @@ export const BookingProvider = ({ children }) => {
   const [selectedYacht, setSelectedYacht] = useState(null);
   const [bookingData, setBookingData] = useState({
     date: new Date(),
+    endDate: null,
     startTime: new Date(),
     duration: 3,
+    bookingType: 'hourly',
     adults: 0,
     kids: 0,
     fullName: '',
@@ -23,7 +25,6 @@ export const BookingProvider = ({ children }) => {
     waterSports: 0,
     misc: 0,
     extras: [],
-    // Payment related fields
     cardNumber: '',
     expiryMonth: '',
     expiryYear: '',
@@ -36,20 +37,45 @@ export const BookingProvider = ({ children }) => {
     setBookingData(prev => ({ ...prev, ...newData }));
   };
 
+  // const calculateTotal = () => {
+  //   if (!selectedYacht?.yacht) return 0;
+    
+  //   const basePrice = selectedYacht.yacht.per_hour_price || 0;
+  //   const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;
+  //   const hours = bookingData.duration || 3;
+    
+  //   const hourlyRate = bookingData.isNewYearBooking ? newYearPrice : basePrice;
+    
+  //   const extrasTotal = (bookingData.extras || []).reduce((total, item) => {
+  //     return total + (item.price * item.quantity);
+  //   }, 0);
+
+  //   return (hourlyRate * hours) + extrasTotal;
+  // };
   const calculateTotal = () => {
     if (!selectedYacht?.yacht) return 0;
     
-    const basePrice = selectedYacht.yacht.per_hour_price || 0;
-    const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;
-    const hours = bookingData.duration || 3;
+    let baseTotal = 0;
     
-    const hourlyRate = bookingData.isNewYearBooking ? newYearPrice : basePrice;
+    if (bookingData.bookingType === 'hourly') {
+      const basePrice = selectedYacht.yacht.per_hour_price || 0;
+      const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;
+      const hours = bookingData.duration || 3;
+      const hourlyRate = bookingData.isNewYearBooking ? newYearPrice : basePrice;
+      baseTotal = hourlyRate * hours;
+    } else {
+      // Date range booking
+      const startDate = new Date(bookingData.date);
+      const endDate = new Date(bookingData.endDate || bookingData.date);
+      const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+      baseTotal = (selectedYacht.yacht.per_day_price || 0) * days;
+    }
     
     const extrasTotal = (bookingData.extras || []).reduce((total, item) => {
       return total + (item.price * item.quantity);
     }, 0);
 
-    return (hourlyRate * hours) + extrasTotal;
+    return baseTotal + extrasTotal;
   };
 
   return (
