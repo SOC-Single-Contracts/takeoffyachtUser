@@ -100,55 +100,6 @@ const Summary = ({ onNext, initialBookingId }) => {
     fetchBookingDetails();
   }, [initialBookingId, bookingData.bookingId]);
 
-  // const handleUpdateExtras = async () => {
-  //   try {
-  //     const bookingId = bookingDetails.id;
-
-  //     const { qr_code, ...payloadWithoutQrCode } = bookingDetails;
-
-  //     const formattedExtras = editableExtras.map(extra => ({
-  //       extra_id: extra.extra_id,
-  //       name: extra.name,
-  //       quantity: extra.quantity,
-  //       price: extra.price
-  //     }));
-
-  //     const payload = {
-  //       ...payloadWithoutQrCode,
-  //       extras_data: formattedExtras,
-  //     };
-
-  //     const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
-  //       method: 'PATCH',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
-
-  //     if (!response.ok) {
-  //       const errorText = await response.text();
-  //       throw new Error(`Failed to update booking details: ${errorText}`);
-  //     }
-
-  //     const updatedDetails = await response.json();
-  //       setBookingDetails(updatedDetails);
-  //       setEditableExtras(updatedDetails.extras_data || []);      
-        
-  //       toast({
-  //       title: "Success",
-  //       description: "Booking details updated successfully",
-  //       variant: "success"
-  //     });
-  //   } catch (error) {
-  //     console.error('Error updating booking details:', error);
-  //     toast({
-  //       title: "Error",
-  //       description: error.message,
-  //       variant: "destructive"
-  //     });
-  //   }
-  // };
 
   const calculateUpdatedTotalCost = () => {
     // Calculate base cost (charter cost)
@@ -165,72 +116,153 @@ const Summary = ({ onNext, initialBookingId }) => {
     return charterCost + extrasCost;
   };
 
-  const handleUpdateExtras = async () => {
-    try {
-      const bookingId = bookingDetails.id;
-      const updatedTotalCost = calculateUpdatedTotalCost();
+  // const handleUpdateExtras = async () => {
+  //   try {
+  //     const bookingId = bookingDetails.id;
+  //     const updatedTotalCost = calculateUpdatedTotalCost();
   
-      // Create the correct payload structure
-      const payload = {
-        extras: editableExtras.map(extra => ({
-          extra_id: extra.extra_id,
-          name: extra.name,
-          quantity: parseInt(extra.quantity),
-          price: parseFloat(extra.price)
-        })),
-        total_cost: updatedTotalCost,
-        remaining_cost: bookingDetails.paid_cost > 0 ? updatedTotalCost - bookingDetails.paid_cost : 0
-      };
+  //     const payload = {
+  //       extras: editableExtras.map(extra => ({
+  //         extra_id: extra.extra_id,
+  //         name: extra.name,
+  //         quantity: parseInt(extra.quantity),
+  //         price: parseFloat(extra.price)
+  //       })),
+  //       total_cost: updatedTotalCost,
+  //       remaining_cost: bookingDetails.paid_cost > 0 ? updatedTotalCost - bookingDetails.paid_cost : 0
+  //     };
   
-      const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+  //     const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
+  //       method: 'PATCH',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
   
-      if (!response.ok) {
-        throw new Error('Failed to update booking details');
-      }
+  //     if (!response.ok) {
+  //       throw new Error('Failed to update booking details');
+  //     }
   
-      const result = await response.json();
+  //     const result = await response.json();
       
-      // Update the local state with the new data
-      if (result.data) {
-        setBookingDetails(result.data);
-        setEditableExtras(result.data.extras_data);
+  //     if (result.data) {
+  //       setBookingDetails(result.data);
+  //       setEditableExtras(result.data.extras_data);
         
-        // Update booking context
-        updateBookingData({
-          extras: result.data.extras_data.filter(extra => extra.quantity > 0),
-          totalCost: result.data.total_cost,
-          remainingCost: result.data.remaining_cost,
-          paidCost: result.data.paid_cost
-        });
-      }
+  //       updateBookingData({
+  //         extras: result.data.extras_data.filter(extra => extra.quantity > 0),
+  //         totalCost: result.data.total_cost,
+  //         remainingCost: result.data.remaining_cost,
+  //         paidCost: result.data.paid_cost
+  //       });
+  //     }
   
+  //     toast({
+  //       title: "Success",
+  //       description: "Extras updated successfully",
+  //       variant: "success"
+  //     });
+  
+  //     const refreshResponse = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`);
+  //     const refreshedData = await refreshResponse.json();
+  //     setBookingDetails(refreshedData);
+  //     setEditableExtras(refreshedData.extras_data);
+  
+  //   } catch (error) {
+  //     console.error('Error updating extras:', error);
+  //     toast({
+  //       title: "Error",
+  //       description: error.message,
+  //       variant: "destructive"
+  //     });
+  //   }
+  // };
+
+
+  // ... existing code ...
+
+// ... existing code ...
+
+const handleUpdateExtras = async () => {
+  try {
+    const bookingId = bookingDetails.id;
+
+    // Calculate base cost based on booking type
+    let baseCost = 0;
+    if (bookingDetails.booking_type === 'hourly') {
+      const hourlyRate = selectedYacht?.yacht?.per_hour_price || 0;
+      baseCost = hourlyRate * (bookingDetails.duration_hour || 3);
+    } else {
+      // Date range booking
+      const startDate = new Date(bookingDetails.selected_date);
+      const endDate = new Date(bookingDetails.end_date);
+      const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+      baseCost = (selectedYacht?.yacht?.per_day_price || 0) * days;
+    }
+
+    // Calculate extras cost
+    const extrasCost = editableExtras.reduce((total, extra) => {
+      return total + (parseFloat(extra.price) * parseInt(extra.quantity || 0));
+    }, 0);
+
+    // Calculate total cost
+    const totalCost = baseCost + extrasCost;
+
+    const payload = {
+      extras: editableExtras.map(extra => ({
+        extra_id: extra.extra_id,
+        name: extra.name,
+        quantity: parseInt(extra.quantity || 0),
+        price: parseFloat(extra.price)
+      })),
+      total_cost: totalCost,
+      remaining_cost: totalCost - (bookingDetails.paid_cost || 0)
+    };
+
+    const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update booking details');
+    }
+
+    const result = await response.json();
+    
+    if (result.data) {
+      setBookingDetails(result.data);
+      setEditableExtras(result.data.extras_data || []);
+      
+      // Update booking context with new data
+      updateBookingData({
+        extras: result.data.extras_data.filter(extra => extra.quantity > 0),
+        totalCost: result.data.total_cost,
+        remainingCost: result.data.remaining_cost,
+        paidCost: result.data.paid_cost
+      });
+
       toast({
         title: "Success",
-        description: "Extras updated successfully",
+        description: "Booking details updated successfully",
         variant: "success"
       });
-  
-      // Refresh booking details
-      const refreshResponse = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`);
-      const refreshedData = await refreshResponse.json();
-      setBookingDetails(refreshedData);
-      setEditableExtras(refreshedData.extras_data);
-  
-    } catch (error) {
-      console.error('Error updating extras:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
     }
-  };
+  } catch (error) {
+    console.error('Error updating booking details:', error);
+    toast({
+      title: "Error",
+      description: error.message,
+      variant: "destructive"
+    });
+  }
+};
+
+// ... rest of the code ...
 
   const handleUpdatePartialPayment = async () => {
     try {
@@ -292,13 +324,7 @@ const Summary = ({ onNext, initialBookingId }) => {
 
   const handleProceedToPayment = async () => {
     try {
-      // First update the extras
-      // await handleUpdateExtras();
 
-      // Then update partial payment status
-      // await handleUpdatePartialPayment();
-
-      // Finally proceed to next step
       onNext();
     } catch (error) {
       console.error('Error proceeding to payment:', error);
@@ -310,11 +336,6 @@ const Summary = ({ onNext, initialBookingId }) => {
     }
   };
 
-  // const updateExtraQuantity = (index, newQuantity) => {
-  //   const updatedExtras = [...editableExtras];
-  //   updatedExtras[index].quantity = newQuantity;
-  //   setEditableExtras(updatedExtras);
-  // };
   const updateExtraQuantity = (index, newQuantity) => {
   setEditableExtras(prev => {
     const updated = [...prev];
@@ -640,25 +661,6 @@ const Summary = ({ onNext, initialBookingId }) => {
 
         {renderPriceSummary()}
 
-        {/* Partial Payment Toggle */}
-        {/* <div className="bg-[#F4F0E4] w-full rounded-lg p-4 flex items-center justify-between">
-          <div>
-            <Label htmlFor="partial-payment" className="text-md font-semibold text-black">
-              Partial Payment
-            </Label>
-            <p className="text-sm text-gray-600">
-              Pay 25% now and the remaining amount later
-            </p>
-          </div>
-          <Switch
-            id="partial-payment"
-            className="data-[state=checked]:bg-[#BEA355] data-[state=unchecked]:bg-gray-300"
-            checked={isPartialPayment}
-            onCheckedChange={(checked) => setIsPartialPayment(checked)}
-            disabled={bookingDetails?.paid_cost > 0 || bookingDetails?.remaining_cost > 0} // Disable if there are paid or remaining amounts
-
-          />
-        </div> */}
 
         <div className="flex justify-end flex-wrap gap-2">
           <Button
@@ -668,27 +670,7 @@ const Summary = ({ onNext, initialBookingId }) => {
           >
             Update Extras
           </Button>
-          {/* <Button
-            onClick={handleCopyLink}
-            className="bg-blue-500 text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-blue-600"
-          >
-            Copy Booking Link
-          </Button> */}
-          {/* {((bookingDetails?.paid_cost === 0 || bookingDetails?.paid_cost === undefined) ||
-            (bookingDetails?.remaining_cost > 0)) && (
-              <Button
-                onClick={handleProceedToPayment}
-                className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
-              >
-                {isPartialPayment && bookingDetails?.total_cost && !bookingDetails?.paid_cost && !bookingDetails?.remaining_cost
-                  ? `Proceed to Payment (25% AED ${(bookingDetails.total_cost * 0.25).toFixed(2)})`
-                  : (bookingDetails?.remaining_cost > 0
-                    ? `Proceed to Payment (Remaining AED ${bookingDetails.remaining_cost.toFixed(2)})`
-                    : bookingDetails?.total_cost
-                      ? `Proceed to Payment (Total AED ${bookingDetails.total_cost.toFixed(2)})`
-                      : 'Proceed to Payment')}
-              </Button>
-            )} */}
+
              <Button
                 onClick={handleProceedToPayment}
                 className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
