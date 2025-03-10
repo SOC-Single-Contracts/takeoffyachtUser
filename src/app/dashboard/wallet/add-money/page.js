@@ -69,7 +69,7 @@ const AddMoneyForm = () => {
           throw new Error(paymentMethodError.message);
         }
   
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/wallet`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/wallet/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
