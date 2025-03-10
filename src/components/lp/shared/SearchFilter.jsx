@@ -40,9 +40,10 @@ const SearchFilter = () => {
     to: null
   });
   const [guests, setGuests] = useState({
-    adults: 1,
-    children: 0,
-    infants: 0
+    // adults: 1,
+    // children: 0,
+    // infants: 0,
+    capacity:1,
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -138,10 +139,10 @@ const SearchFilter = () => {
 
     fetchCities();
   }, []);
-
-  useEffect(()=>{
-console.log("selectedDateRange",selectedDateRange)
-  },[selectedDateRange])
+//test
+//   useEffect(()=>{
+// console.log("guests",guests)
+//   },[guests])
 
   const handleGuestChange = (type, action) => {
     setGuests(prev => ({
@@ -155,7 +156,7 @@ console.log("selectedDateRange",selectedDateRange)
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const totalGuests = guests.adults + guests.children + guests.infants;
+      const totalGuests = guests?.capacity;
       const formattedStartDate = selectedDateRange?.from ? format(selectedDateRange?.from, 'yyyy-MM-dd') : null;
       const formattedEndDate = selectedDateRange?.to ? format(selectedDateRange?.to, 'yyyy-MM-dd') : null;
 
@@ -233,27 +234,28 @@ console.log("selectedDateRange",selectedDateRange)
   };
 
   const handleGuestSelection = (range) => {
-    let adults = 0;
-    let children = 0;
+    // let adults = 0;
+    // let children = 0;
+    let capacity = 0;
 
     if (range === "1 - 10") {
-      adults = 10;
+      capacity = 10;
     } else if (range === "10 - 30") {
-      adults = 30;
+      capacity = 30;
     } else if (range === "30 - 50") {
-      adults = 50;
+      capacity = 50;
     } else if (range === "50+") {
-      adults = 100;
+      capacity = 100;
     }
 
-    setGuests({ adults, children, infants: 0 });
+    setGuests({ capacity });
   };
 
   const resetSearch = () => {
     setActiveSearchTab("where");
     setSelectedCity("");
     setSelectedDateRange({ from: null, to: null });
-    setGuests({ adults: 1, children: 0, infants: 0 });
+    setGuests({ capacity:1 });
     setsearchByName("")
   };
 
@@ -305,7 +307,7 @@ console.log("selectedDateRange",selectedDateRange)
               <div className="flex items-center px-2 md:px-4 py-1.5 md:py-3 text-sm">
                 <Users className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
                 <span className="dark:text-gray-300 text-xs">
-                  {guests.adults + guests.children + guests.infants} Guests
+                  {guests?.capacity} Guests
                 </span>
               </div>
             </div>

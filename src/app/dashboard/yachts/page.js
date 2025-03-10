@@ -1043,9 +1043,8 @@ const Yachts = () => {
               return (
                 <Card
                   key={item?.yacht?.id}
-                  className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                  className="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
                 >
-                  {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
                   <div className="relative">
                     <Carousel className="w-full h-[221px]">
                       <CarouselContent>
@@ -1082,7 +1081,7 @@ const Yachts = () => {
                               onError={(e) => {
                                 e.target.src = '/assets/images/fycht.jpg';
                               }}
-                            />
+                              />
                           </CarouselItem>
                         ))}
                       </CarouselContent>
@@ -1106,7 +1105,7 @@ const Yachts = () => {
                       size="icon"
                       className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
                       onClick={() => handleWishlistToggle(item?.yacht?.id)}
-                    >
+                      >
                       <Image
                         src={favorites.has(item?.yacht?.id)
                           ? "/assets/images/wishlist.svg"
@@ -1115,7 +1114,7 @@ const Yachts = () => {
                         alt="wishlist"
                         width={20}
                         height={20}
-                      />
+                        />
                     </Button>
 
                     <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
@@ -1125,6 +1124,7 @@ const Yachts = () => {
                       </span>
                     </div>
                   </div>
+                        <Link href={`/dashboard/yachts/${item?.yacht?.id}`}>
                   <CardContent className="px-4 py-2">
                     <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
                       <MapPin className="size-3 mr-1" /> {item?.yacht?.location || "Location Not Available"}
@@ -1160,7 +1160,7 @@ const Yachts = () => {
                     </div>
                     
                   </CardContent>
-                  {/* </Link> */}
+                  </Link>
                 </Card>
               )
             })
