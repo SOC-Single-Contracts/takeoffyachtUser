@@ -154,7 +154,7 @@ const callbackUrl = process.env.NEXT_PUBLIC_SITE_URL || '/login'
       redirect: true 
     });
   };
-
+  
   return (
     <nav className={`
       backdrop-blur-2xl 
