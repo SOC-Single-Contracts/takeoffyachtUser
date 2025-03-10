@@ -21,15 +21,16 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import yachtApi from '@/services/api';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { API_BASE_URL } from '@/lib/api';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from "@/hooks/use-toast";
 
 
 const SearchFilter = () => {
   const router = useRouter();
+  const { toast } = useToast();
   const { data: session } = useSession();
   const [activeMainTab, setActiveMainTab] = useState("yachts");
   const [activeSearchTab, setActiveSearchTab] = useState("where");
@@ -162,7 +163,11 @@ const SearchFilter = () => {
 
       // Check if at least one criterion is provided
       if (!selectedCity && !formattedStartDate && totalGuests === 0) {
-        toast.error('Please select at least one search criterion.');
+        toast({
+          title: "Error",
+          description: "Please select at least one search criterion.",
+          variant: "destructive",
+        });
         setLoading(false);
         return;
       }
