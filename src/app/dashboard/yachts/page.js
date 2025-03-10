@@ -19,6 +19,7 @@ import { addToWishlist, removeFromWishlist, fetchWishlist } from '@/api/wishlist
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import SearchFilter from '@/components/lp/shared/SearchFilter';
 
 const Yachts = () => {
   const { data: session } = useSession();
@@ -452,6 +453,9 @@ const Yachts = () => {
   useEffect(() => {
     console.log("yachts", yachts);
   }, [yachts]);
+  useEffect(() => {
+    console.log("filters", filters);
+  }, [filters]);
 
 
   if (loading) {
@@ -512,6 +516,7 @@ const Yachts = () => {
 
   return (
     <section className="py-4 px-2">
+   
       <div className="max-w-5xl mx-auto">
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
 
@@ -1120,7 +1125,7 @@ const Yachts = () => {
 
                     <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                       <span className="font-medium text-xs">
-                        AED <span className="font-bold text-lg text-primary">{item?.yacht?.per_hour_price}</span>
+                        AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_hour_price}</span>
                         <span className="text-xs font-light ml-1">/Hour</span>
                       </span>
                     </div>

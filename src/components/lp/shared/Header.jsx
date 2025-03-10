@@ -55,7 +55,6 @@ const Header = () => {
   const [guest, setGuest] = useState('1');
   const [selectedDate, setSelectedDate] = useState('');
   const [scrolled, setScrolled] = useState(false);
-const callbackUrl = process.env.NEXT_PUBLIC_SITE_URL || '/login'
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -150,7 +149,7 @@ const callbackUrl = process.env.NEXT_PUBLIC_SITE_URL || '/login'
   const handleLogout = () => {
     console.log("workkkk")
     signOut({ 
-      callbackUrl: callbackUrl,
+      callbackUrl: "/",
       redirect: true 
     });
   };
@@ -310,10 +309,10 @@ const callbackUrl = process.env.NEXT_PUBLIC_SITE_URL || '/login'
                   <SheetHeader className="text-start">
                     <SheetTitle>Menu</SheetTitle>
                   </SheetHeader>
-                  <div className="mt-4 mb-6">
+                  {/* <div className="mt-4 mb-6">
                     <SearchFilter />
-                  </div>
-                  <div className="flex flex-col space-y-4">
+                  </div> */}
+                  <div className=" mt-4 mb-6 flex flex-col space-y-4">
                     {/* <Link
                       href="/where"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
@@ -435,6 +434,11 @@ const callbackUrl = process.env.NEXT_PUBLIC_SITE_URL || '/login'
               </Sheet>
             </div>
           </div>
+      </div>
+      <div className="px-2">
+        <div className="md:hidden pb-4">
+          <SearchFilter />
+        </div>
       </div>
     </nav>
   );
