@@ -26,6 +26,7 @@ import { useSearchParams } from 'next/navigation';
 import EmptySearch from '@/components/shared/EmptySearch';
 import yachtApi from '@/services/api';
 import { format } from 'date-fns';
+import SearchFilter from '@/components/lp/shared/SearchFilter';
 
 const SearchYacht = () => {
   const { data: session } = useSession();
