@@ -206,7 +206,6 @@ const Selection = ({ onNext }) => {
 
   //   return (hourlyRate * bookingData.duration) + totalExtras;
   // };
-    // ... existing code ...
 
     const calculateTotal = () => {
       if (!selectedYacht?.yacht) return 0;
