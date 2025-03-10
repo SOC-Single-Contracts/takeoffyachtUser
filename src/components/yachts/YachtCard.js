@@ -117,17 +117,7 @@ export default function YachtCard({ yacht }) {
             <p>Cabins</p>
             <p>{yachtData?.number_of_cabin || 0}</p>
           </div>
-          <div className="text-center font-semibold flex items-center text-xs space-x-2">
-            <Image 
-              src="/assets/images/cabin.svg" 
-              alt="cabins" 
-              width={8} 
-              height={8} 
-              className="dark:invert" 
-              />
-            <p>Capacity</p>
-            <p>{yachtData?.capacity|| 0}</p>
-          </div>
+         
         </div>
       </CardContent>
               </Link>

@@ -396,9 +396,9 @@ const SearchYacht = () => {
     } else if (selectedOption?.value === "Price-Low-High") {
       data.sort((a, b) => a.yacht?.per_hour_price - b.yacht?.per_hour_price); 
     } else if (selectedOption?.value === "Capacity-High-Low") {
-      data.sort((a, b) => b.yacht.capacity - a.yacht.capacity); 
+      data.sort((a, b) => b.yacht?.guest - a.yacht?.guest); 
     } else if (selectedOption?.value === "Capacity-Low-High") {
-      data.sort((a, b) => a.yacht.capacity - b.yacht.capacity); 
+      data.sort((a, b) => a.yacht?.guest - b.yacht?.guest); 
     }
 
     if (JSON.stringify(data) !== JSON.stringify(yachts)) {

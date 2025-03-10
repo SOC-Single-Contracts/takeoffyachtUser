@@ -434,9 +434,9 @@ const Yachts = () => {
     } else if (selectedOption?.value === "Price-Low-High") {
       data.sort((a, b) => a.yacht?.per_hour_price - b.yacht?.per_hour_price); 
     } else if (selectedOption?.value === "Capacity-High-Low") {
-      data.sort((a, b) => b.yacht?.capacity - a.yacht?.capacity); 
+      data.sort((a, b) => b.yacht?.guest - a.yacht?.guest); 
     } else if (selectedOption?.value === "Capacity-Low-High") {
-      data.sort((a, b) => a.yacht?.capacity - b.yacht?.capacity); 
+      data.sort((a, b) => a.yacht?.guest - b.yacht?.guest); 
     }
 
     if (JSON.stringify(data) !== JSON.stringify(yachts)) {
@@ -1151,12 +1151,7 @@ const Yachts = () => {
                         <p>Cabins</p>
                         <p>{item?.yacht?.number_of_cabin || 0}</p>
                       </div>
-                      <Dot />
-                      <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                        <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
-                        <p>Capacity</p>
-                        <p>{item?.yacht?.capacity || 0}</p>
-                      </div>
+                 
                     </div>
                     
                   </CardContent>
