@@ -165,3 +165,24 @@ main {
     @apply bg-background text-foreground;
   }
 }
+
+/* Add this to your global styles or relevant CSS file */
+
+.embla__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.embla__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ccc;
+  transition: background-color 0.3s;
+}
+
+.embla__dot.is-selected {
+  background-color: #007aff; /* Blue color for selected dot */
+}
