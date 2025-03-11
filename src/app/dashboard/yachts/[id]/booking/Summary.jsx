@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Copy, Mail, Phone, User, Calendar, Clock, Users, Globe, MessageSquare, Check, Clipboard } from "lucide-react";
+import { Copy, Mail, Phone, User, Calendar, Clock, Users, Globe, MessageSquare, Check, Clipboard, CheckCheck } from "lucide-react";
 import { useBookingContext } from "./BookingContext";
 import { parseISO, format, isValid } from "date-fns";
 import { API_BASE_URL } from "@/lib/api";
@@ -871,33 +871,37 @@ const handleUpdateExtras = async () => {
 
         {renderPriceSummary()}
 
+        {bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost && (
+          <div className="flex items-center justify-between bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md mb-4">
+            <div className="flex items-center">
+              <CheckCheck className="w-6 h-6 mr-2" />
+              <div>
+                <strong className="font-bold">Thank You!</strong>
+                <span className="block sm:inline"> Your payment has been successfully received. We appreciate your business!</span>
+              </div>
+            </div>
+           
+          </div>
+        )}
 
-        <div className="flex justify-end flex-wrap gap-2">
-          <Button
-            variant="secondary"
-            onClick={handleUpdateExtras}
-            className="px-6 py-2 text-xs rounded-full"
-          >
-            Update Extras
-          </Button>
+{!(bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost) && (
+  <div className="flex justify-end flex-wrap gap-2">
+    <Button
+      variant="secondary"
+      onClick={handleUpdateExtras}
+      className="px-6 py-2 text-xs rounded-full"
+    >
+      Update Extras
+    </Button>
 
-             {/* <Button
-                onClick={handleProceedToPayment}
-                className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
-              >
-                Proceed to Payment
-              </Button> */}
-              <Button
-                onClick={handleProceedToPayment}
-                className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
-              >
-                {bookingDetails?.paid_cost > 0
-                  ? `Pay Remaining (AED ${bookingDetails.remaining_cost.toFixed(2)})`
-                  : isPartialPayment
-                  ? `Pay 25% (AED ${(bookingDetails.total_cost * 0.25).toFixed(2)})`
-                  : `Pay Full Amount (AED ${bookingDetails.total_cost.toFixed(2)})`}
-              </Button>
-        </div>
+    <Button
+      onClick={handleProceedToPayment}
+      className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
+    >
+      Proceed to Payment
+    </Button>
+  </div>
+)}
       </div>
     </section>
   );

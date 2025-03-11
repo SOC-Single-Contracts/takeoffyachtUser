@@ -53,7 +53,8 @@ const BookingCard = ({ booking }) => {
     duration: booking.duration_hour || 
               booking.package?.duration_hour || 
               booking.experience?.duration || 
-              'N/A'
+              'N/A',
+    booking_type: booking.booking_type || 'N/A'
   };
 
   // Determine the correct ID and type for routing
@@ -101,7 +102,7 @@ const BookingCard = ({ booking }) => {
         width={500}
         height={300}
       />  
-      <div className="p-4 dark:!bg-gray-800">
+      {/* <div className="p-4 dark:!bg-gray-800">
         <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
           {bookingDetails.name}
         </h2>
@@ -113,24 +114,35 @@ const BookingCard = ({ booking }) => {
             <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
           </div>
           <div className="flex flex-col space-y-1">
-            <span className="font-light text-gray-600 dark:text-gray-400">
-              {new Date(booking.selected_date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </span>
-            <span className="font-light text-gray-600 dark:text-gray-400">
-              {bookingDetails.duration} {booking.type === 'yacht' ? 'hours' : ''}
-            </span>
-            <span className="font-light text-gray-600 dark:text-gray-400">
-              {bookingDetails.guests}
-            </span>
-            <span className="font-light text-xs text-gray-700 dark:text-gray-300 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md flex items-center gap-1">
-              <MapPin className="size-3" />
-              {bookingDetails.location}
-            </span>
-          </div>
+  <span className="font-light text-gray-600 dark:text-gray-400">
+    {new Date(booking.selected_date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })}
+  </span>
+  {bookingDetails.booking_type === "hourly" ? (
+    <span className="font-light text-gray-600 dark:text-gray-400">
+      {bookingDetails.duration} hours
+    </span>
+  ) : (
+    <>
+      <span className="font-medium text-gray-600 dark:text-gray-400">
+        Duration: {bookingDetails.duration} hours
+      </span>
+      <span className="font-medium text-gray-600 dark:text-gray-400">
+        Date Range: {new Date(booking.yacht.from_date).toLocaleDateString()} - {new Date(booking.yacht.to_date).toLocaleDateString()}
+      </span>
+    </>
+  )}
+  <span className="font-light text-gray-600 dark:text-gray-400">
+    {bookingDetails.guests}
+  </span>
+  <span className="font-light text-xs text-gray-700 dark:text-gray-300 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md flex items-center gap-1">
+    <MapPin className="size-3" />
+    {bookingDetails.location}
+  </span>
+</div>
         </div>
         <Link href={`/dashboard/${type}/${id}/booking/booking-summary?bookingId=${booking.id}`}
         onClick={(e) => {
@@ -149,7 +161,135 @@ const BookingCard = ({ booking }) => {
             Booking Summary
           </Button>
         </Link>
-      </div>
+      </div> */}
+      {/* <div className="p-4 dark:bg-gray-800">
+  <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
+    {bookingDetails.name}
+  </h2>
+  <div className="flex flex-row justify-start gap-6 mb-4">
+  <div className="flex flex-col space-y-1">
+    <span className="font-medium text-gray-600 dark:text-gray-400">Departure:</span>
+    <span className="font-medium text-gray-600 dark:text-gray-400">Duration:</span>
+    <span className="font-medium text-gray-600 dark:text-gray-400">Dates:</span>
+    <span className="font-medium text-gray-600 dark:text-gray-400">Guests:</span>
+    <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
+  </div>
+  <div className="flex flex-col space-y-1">
+    <span className="font-light text-gray-600 dark:text-gray-400">
+      {new Date(booking.selected_date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}
+    </span>
+    {bookingDetails.booking_type === "hourly" ? (
+      <span className="font-light text-gray-600 dark:text-gray-400">
+        {bookingDetails.duration} hours
+      </span>
+    ) : (
+      <>
+        <span className="font-light text-gray-600 dark:text-gray-400">
+          {bookingDetails.duration} hours
+        </span>
+        {booking.yacht.from_date && booking.yacht.to_date ? (
+  <span className="font-light text-gray-600 dark:text-gray-400">
+    {new Date(booking.yacht.from_date).toLocaleDateString()} - {new Date(booking.yacht.to_date).toLocaleDateString()}
+  </span>
+) : 'No Dates'}
+      </>
+    )}
+    <span className="font-light text-gray-600 dark:text-gray-400">
+      {bookingDetails.guests}
+    </span>
+    <span className="font-light text-xs text-gray-700 dark:text-gray-300 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md flex items-center gap-1">
+      <MapPin className="size-3" />
+      {bookingDetails.location}
+    </span>
+  </div>
+</div>
+  <Link href={`/dashboard/${type}/${id}/booking/booking-summary?bookingId=${booking.id}`}
+        onClick={(e) => {
+          console.log('Booking Details:', {
+            type: booking.type,
+            id: id,
+            bookingId: booking.id,
+            booking: booking
+          });
+        }}
+  >
+    <Button
+      variant="outline"
+      className="w-full py-3 rounded-full border-2 border-black dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700"
+    >
+      Booking Summary
+    </Button>
+  </Link>
+</div> */}
+<div className="p-4 dark:bg-gray-800">
+  <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
+    {bookingDetails.name}
+  </h2>
+  <div className="flex flex-row justify-start gap-6 mb-4">
+    <div className="flex flex-col space-y-1">
+      <span className="font-medium text-gray-600 dark:text-gray-400">Departure:</span>
+      <span className="font-medium text-gray-600 dark:text-gray-400">Duration:</span>
+      <span className="font-medium text-gray-600 dark:text-gray-400">Dates:</span>
+      <span className="font-medium text-gray-600 dark:text-gray-400">Guests:</span>
+      <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
+    </div>
+    <div className="flex flex-col space-y-1">
+      <span className="font-light text-gray-600 dark:text-gray-400">
+        {new Date(booking.selected_date).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}
+      </span>
+      {bookingDetails.booking_type === "hourly" ? (
+        <span className="font-light text-gray-600 dark:text-gray-400">
+          {bookingDetails.duration} hours
+        </span>
+      ) : (
+        <>
+          <span className="font-light text-gray-600 dark:text-gray-400">
+            {bookingDetails.duration} hours
+          </span>
+          {booking.yacht.from_date && booking.yacht.to_date ? (
+  <span className="font-light text-gray-600 dark:text-gray-400">
+    {new Date(booking.yacht.from_date).toLocaleDateString()} - {new Date(booking.yacht.to_date).toLocaleDateString()}
+  </span>
+) : (
+  <span className="font-light text-gray-600 dark:text-gray-400">N/A</span>
+)}
+        </>
+      )}
+      <span className="font-light text-gray-600 dark:text-gray-400">
+        {bookingDetails.guests}
+      </span>
+      <span className="font-light text-xs text-gray-700 dark:text-gray-300 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md flex items-center gap-1">
+        <MapPin className="size-3" />
+        {bookingDetails.location}
+      </span>
+    </div>
+  </div>
+  <Link href={`/dashboard/${type}/${id}/booking/booking-summary?bookingId=${booking.id}`}
+        onClick={(e) => {
+          console.log('Booking Details:', {
+            type: booking.type,
+            id: id,
+            bookingId: booking.id,
+            booking: booking
+          });
+        }}
+  >
+    <Button
+      variant="outline"
+      className="w-full py-3 rounded-full border-2 border-black dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700"
+    >
+      Booking Summary
+    </Button>
+  </Link>
+</div>
     </div>
   );
 };

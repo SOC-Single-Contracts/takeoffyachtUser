@@ -487,27 +487,24 @@ const Selection = ({ onNext }) => {
         {selectedYacht?.subcategories?.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {selectedYacht.subcategories.map((sub, index) => (
-              <span 
-                key={index} 
-                className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
-              >
-                {sub.name}
-              </span>
+              <div key={index} className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md px-3 py-2 hover:shadow-lg transition-shadow duration-300">
+                <h3 className="text-gray-800 dark:text-gray-200 font-medium">{sub.name}</h3>
+              </div>
             ))}
           </div>
         ) : selectedYacht?.yacht?.features?.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {selectedYacht.yacht.features.map((feature, index) => (
-              <span 
-                key={index} 
-                className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
-              >
-                {feature}
-              </span>
+              <div key={index} className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md px-3 py-2 hover:shadow-lg transition-shadow duration-300">
+                <h3 className="text-gray-800 dark:text-gray-200 font-medium">{feature.name}</h3>
+                {feature.image && (
+                  <Image src={feature.image} alt={feature.name} width={20} height={20} className="inline-block ml-2" />
+                )}
+              </div>
             ))}
           </div>
         ) : (
-          <p className='text-xs'>No features available.</p>
+          <p className='text-gray-500 dark:text-gray-400 text-xs'>No features available.</p>
         )}
 
         {/* Inclusions */}

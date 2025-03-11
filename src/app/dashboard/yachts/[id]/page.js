@@ -729,12 +729,19 @@ const YachtDetail = () => {
               )}
               <section className="mt-4">
                 <h2 className="text-lg font-medium">Features</h2>
-                <div className="flex flex-wrap gap-4 mt-2">
+                <div className="flex flex-wrap gap-2 mt-2">
                   {selectedYacht.yacht.features && selectedYacht.yacht.features.length > 0 ? (
                     selectedYacht.yacht.features.map((feature, index) => (
-                      <Badge key={index} className="bg-[#BEA355]/10 dark:bg-gray-800 text-gray-700 dark:text-gray-400 font-medium text-sm rounded-full px-4 py-2 shadow-md hover:bg-[#BEA355]/20 transition duration-300">
-                        {feature}
-                      </Badge>
+                      <div key={index} className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md px-3 py-2 hover:shadow-lg transition-shadow duration-300">
+                        <div className="flex-shrink-0">
+                          {feature.image && (
+                            <Image src={feature.image} alt={feature.name} width={40} height={40} className="mr-2" />
+                          )}
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="text-gray-800 dark:text-gray-200 font-medium">{feature.name}</h3>
+                        </div>
+                      </div>
                     ))
                   ) : (
                     <p className="text-gray-500 dark:text-gray-400 text-xs">No features available</p>
