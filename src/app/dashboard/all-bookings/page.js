@@ -194,7 +194,7 @@ const AllBookings = () => {
                 </Button>
               </div>
             ) : (
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 <BookingCards 
                   bookings={upcomingBookings} 
                   loading={loading} 
@@ -218,7 +218,7 @@ const AllBookings = () => {
                 </Button>
               </div>
             ) : (
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 <BookingCards 
                   bookings={pastBookings} 
                   loading={loading} 
