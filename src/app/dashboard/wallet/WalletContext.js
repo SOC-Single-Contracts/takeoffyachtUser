@@ -1,5 +1,7 @@
 "use client";
-import { createContext, useContext, useState } from 'react';
+import { getWallet } from '@/api/wallet';
+import { useSession } from 'next-auth/react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const WalletContext = createContext();
 
@@ -9,6 +11,16 @@ export const WalletProvider = ({ children }) => {
     payment_intent_id: '',
     topupAmount:0
   });
+  const [walletResponse,setWalletResponse] = useState(null)
+    const { data: session, status } = useSession();
+  const userId = session?.user?.userid || 1;
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+  const [token, setToken] = useState(null); 
+
+
+  
+
 
   const updateWalletDetails = (newDetails) => {
     setwalletDetails(prev => {
@@ -17,13 +29,40 @@ export const WalletProvider = ({ children }) => {
     });
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setToken(localStorage.getItem("token"));
+    }
+  }, []);
+
+  useEffect(() => {
+    const getWalletResponse = async () => {
+      if (!userId && !token) return;
+      try {
+        const data = await getWallet(token);
+        console.log("data=>",data)
+        setWalletResponse(data)
+      } catch (err) {
+        setError(err.message || 'Unexpected Error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token && userId) {
+      getWalletResponse();
+    }
+  }, [userId,token]);
+
+
   
 
   return (
     <WalletContext.Provider 
       value={{ 
         walletDetails,
-        updateWalletDetails
+        updateWalletDetails,
+        walletResponse
       }}
     >
       {children}
