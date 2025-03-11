@@ -89,7 +89,7 @@ const AddMoneyForm = () => {
   
         // Payment successful
         toast.success('Payment processed successfully!');
-        router.push('/dashboard/success');
+        router.push('/dashboard/wallet/success');
   
       }
      catch (error) {

@@ -349,7 +349,7 @@ const SearchYacht = () => {
         if (JSON.stringify(filters) === JSON.stringify(initialFilterState)) {
             handleFilterChange("reset&FirstRender");
         }
-    }, [filters]);
+    }, [filters,searchParams, session]);
     // call onCancelEachFilter
     useEffect(() => {
         if (onCancelEachFilter) {
