@@ -421,8 +421,8 @@ const YachtDetail = () => {
                         variant="default"
                         size="icon"
                         className="rounded-full my-3 h-12 w-12 ml-2 bg-[#BEA355]"
-                        onClick={() => handleWallet(type)}
-                      >
+                        onClick={closeGalleryView}
+                        >
                         <X className="h-8 w-8 dark:invert" />
 
                       </Button>
