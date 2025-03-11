@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { addToWishlist, removeFromWishlist, fetchWishlist } from '@/api/wishlist';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchFilter from '@/components/lp/shared/SearchFilter';
 
@@ -1127,10 +1127,11 @@ const Yachts = () => {
                           <ChevronRight />
                         </Button>
                       </CarouselNext>
+                      <CarouselDots />
                     </Carousel>
-                    <Link href={`/dashboard/yachts/${item?.yacht?.id}`}>
+                    {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
                       <div className="absolute inset-0"></div>
-                    </Link>
+                    {/* </Link> */}
 
                     <Button
                       variant="secondary"
