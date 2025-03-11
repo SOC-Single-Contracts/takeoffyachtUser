@@ -745,28 +745,20 @@ const YachtDetail = () => {
                 </div>
               )}
               <section className="mt-4">
-                <h2 className="text-lg font-medium">Amenities</h2>
-                <div className="flex flex-wrap gap-4 mt-2">
-                  {console.log(selectedYacht?.yacht?.features)}
-                  {selectedYacht?.yacht?.features && selectedYacht?.yacht?.features.length > 0 ? (
-                    selectedYacht?.yacht?.features.map((feature, index) => (
-                      <p
-                      key={feature?.id}
-                      className="text-gray-700 dark:text-gray-400 font-semibold text-sm flex items-center bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-2"
-                    >
-                      <Image
-                        src={
-                          feature?.image  ? `${process.env.NEXT_PUBLIC_API_URL}${feature?.image}`
-                            : '/assets/images/f1.png'
-                        }
-                        width={20}
-                        height={20}
-                        alt={feature?.name}
-                        className="mr-2 dark:invert"
-                        quality={100}
-                      />
-                      {feature?.name}
-                    </p>
+                <h2 className="text-lg font-medium">Features</h2>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedYacht.yacht.features && selectedYacht.yacht.features.length > 0 ? (
+                    selectedYacht.yacht.features.map((feature, index) => (
+                      <div key={index} className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md px-3 py-2 hover:shadow-lg transition-shadow duration-300">
+                        <div className="flex-shrink-0">
+                          {feature.image && (
+                            <Image src={feature.image} alt={feature.name} width={40} height={40} className="mr-2" />
+                          )}
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="text-gray-800 dark:text-gray-200 font-medium">{feature.name}</h3>
+                        </div>
+                      </div>
                     ))
                   ) : (
                     <p className="text-gray-500 dark:text-gray-400 text-xs">No features available</p>
