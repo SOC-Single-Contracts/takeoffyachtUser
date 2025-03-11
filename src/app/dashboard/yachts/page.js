@@ -1130,7 +1130,7 @@ const Yachts = () => {
                       <CarouselDots />
                     </Carousel>
                     {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
-                      <div className="absolute inset-0"></div>
+                      {/* <div className="absolute inset-0"></div> */}
                     {/* </Link> */}
 
                     <Button

@@ -8,7 +8,7 @@ import { fetchYachts } from "@/api/yachts";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { addToWishlist, removeFromWishlist, fetchWishlist } from "@/api/wishlist";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
+import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
 
 // Empty State Component
 const EmptyYachtState = ({ onRetry }) => {
@@ -20,11 +20,11 @@ const EmptyYachtState = ({ onRetry }) => {
           No Yachts Available
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-          We're currently updating our yacht collection. 
+          We're currently updating our yacht collection.
           Please check back later or explore our other offerings.
         </p>
         <div className="flex justify-center space-x-4">
-          <Button 
+          <Button
             onClick={onRetry}
             className="rounded-full bg-[#BEA355] hover:bg-[#a68f4b] flex items-center"
           >
@@ -32,8 +32,8 @@ const EmptyYachtState = ({ onRetry }) => {
             Retry Loading
           </Button>
           <Link href="/dashboard/yachts">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="rounded-full border-[#BEA355] text-[#BEA355] hover:bg-[#BEA355]/10"
             >
               Explore All Yachts
@@ -95,7 +95,7 @@ const Featured = () => {
           <div className="w-full flex items-center justify-between mb-8">
             <div className="h-10 bg-gray-200 dark:bg-gray-700 w-1/3 rounded-md animate-pulse"></div>
           </div>
-          
+
           {/* Cards Grid Skeleton */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center">
             {Array.from({ length: 6 }).map((_, index) => (
@@ -113,11 +113,11 @@ const Featured = () => {
                   {/* Price Skeleton */}
                   <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
                 </div>
-                
+
                 <CardContent className="px-4 py-4 space-y-3">
                   {/* Yacht Name Skeleton */}
                   <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
-                  
+
                   {/* Specs Skeleton */}
                   <div className="flex justify-start items-center gap-2">
                     <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
@@ -144,8 +144,8 @@ const Featured = () => {
             <p className="text-red-600 dark:text-red-400 mb-6">
               {error}
             </p>
-            <Button 
-              onClick={getYachts} 
+            <Button
+              onClick={getYachts}
               className="bg-red-500 hover:bg-red-600 text-white rounded-full"
             >
               <RefreshCw className="mr-2 w-4 h-4" />
@@ -165,7 +165,7 @@ const Featured = () => {
   const handleWishlistToggle = async (yachtId) => {
     const updatedFavorites = new Set(favorites);
     if (updatedFavorites.has(yachtId)) {
-      await removeFromWishlist(data.user.userid, yachtId, 'yacht'); 
+      await removeFromWishlist(data.user.userid, yachtId, 'yacht');
       updatedFavorites.delete(yachtId);
     } else {
       updatedFavorites.add(yachtId);
@@ -214,7 +214,7 @@ const Featured = () => {
             return (
               <Card
                 key={yachtItem.yacht.id}
-                className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                className="overflow-hidden  cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
               >
                 <div className="relative">
                   <Carousel className="w-full h-[221px]">
@@ -248,25 +248,27 @@ const Featured = () => {
                         <ChevronRight />
                       </Button>
                     </CarouselNext>
+                    <CarouselDots />
+
                   </Carousel>
-                  <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}> 
+                  {/* <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}>
                     <div className="absolute inset-0"></div>
-                  </Link>
+                  </Link> */}
 
                   <Button
                     variant="secondary"
                     size="icon"
                     className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
-                      onClick={() => handleWishlistToggle(yachtItem.yacht.id)}
+                    onClick={() => handleWishlistToggle(yachtItem.yacht.id)}
                   >
-                    <Image 
-                      src={favorites.has(yachtItem.yacht.id) 
-                        ? "/assets/images/wishlist.svg" 
+                    <Image
+                      src={favorites.has(yachtItem.yacht.id)
+                        ? "/assets/images/wishlist.svg"
                         : "/assets/images/unwishlist.svg"
-                      } 
-                      alt="wishlist" 
-                      width={20} 
-                      height={20} 
+                      }
+                      alt="wishlist"
+                      width={20}
+                      height={20}
                     />
                   </Button>
 
@@ -277,34 +279,38 @@ const Featured = () => {
                     </span>
                   </div>
                 </div>
-                <CardContent className="px-4 py-2">
-                  <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
-                    <MapPin className="size-3 mr-1" /> {yachtItem.yacht.location || "Location Not Available"}
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{yachtItem.yacht.name}</h3>
-                    <span className="font-medium text-xs">
-                      AED <span className="font-bold text-sm text-primary">{yachtItem.yacht.per_hour_price}</span>
-                      <span className="text-xs font-light ml-1">/Day</span>
-                    </span>
-                  </div>
-                  <div className="flex justify-start items-center gap-1">
-                    <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
-                    <p className="font-semibold text-xs">{yachtItem.yacht.length || 0} ft</p>
-                    <Dot />
-                    <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                      <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
-                      <p>Guests</p>
-                      <p>{yachtItem.yacht.guest || 0}</p>
+                <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}>
+
+                  <CardContent className="px-4 py-2">
+                    <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
+                      <MapPin className="size-3 mr-1" /> {yachtItem.yacht.location || "Location Not Available"}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{yachtItem.yacht.name}</h3>
+                      <span className="font-medium text-xs">
+                        AED <span className="font-bold text-sm text-primary">{yachtItem.yacht.per_hour_price}</span>
+                        <span className="text-xs font-light ml-1">/Day</span>
+                      </span>
                     </div>
-                    <Dot />
-                    <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                      <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
-                      <p>Cabins</p>
-                      <p>{yachtItem.yacht.number_of_cabin || 0}</p>
+                    <div className="flex justify-start items-center gap-1">
+                      <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
+                      <p className="font-semibold text-xs">{yachtItem.yacht.length || 0} ft</p>
+                      <Dot />
+                      <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                        <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
+                        <p>Guests</p>
+                        <p>{yachtItem.yacht.guest || 0}</p>
+                      </div>
+                      <Dot />
+                      <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                        <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
+                        <p>Cabins</p>
+                        <p>{yachtItem.yacht.number_of_cabin || 0}</p>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
+                  </CardContent>
+                </Link>
+
               </Card>
             );
           })}
