@@ -174,8 +174,8 @@ const SearchFilter = () => {
 
       const baseParams = {
         user_id: session?.user?.userid || 1,
-        start_date: formattedStartDate,
-        end_date: formattedEndDate,
+        starting_date: formattedStartDate,
+        ending_date: formattedEndDate,
       };
 
       let searchResults;

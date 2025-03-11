@@ -273,18 +273,21 @@ const SearchYacht = () => {
         min_price: filters.min_price.toString(),
         max_price: filters.max_price.toString(),
         guest: filters.max_guest,
+        min_guest:filters?.min_guest,
+        max_guest:filters?.max_guest,
         sleep_capacity: filters.sleep_capacity,
         number_of_cabin: filters.number_of_cabin,
-        categories: JSON.stringify(filters.category_name),
-        features: JSON.stringify(filters.amenities.concat(
-          filters.outdoor_equipment,
-          filters.kitchen,
-          filters.energy,
-          filters.leisure,
-          filters.navigation,
-          filters.extra_comforts,
-          filters.indoor
-        )),
+        categories: filters.category_name,
+        features: [
+          ...filters.amenities,  // Include amenities first
+          ...filters.outdoor_equipment,  // Include outdoor equipment
+          ...filters.kitchen,  // Include kitchen
+          ...filters.energy,  // Include energy
+          ...filters.leisure,  // Include leisure
+          ...filters.navigation,  // Include navigation
+          ...filters.extra_comforts,  // Include extra comforts
+          ...filters.indoor  // Include indoor
+        ],
         price_asc: filters.price_asc,
         price_des: filters.price_des,
         cabin_asc: filters.cabin_asc,
