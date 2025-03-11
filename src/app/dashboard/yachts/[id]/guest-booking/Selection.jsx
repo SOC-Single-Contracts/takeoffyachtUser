@@ -23,11 +23,11 @@ import { Input } from '@/components/ui/input';
 const Selection = ({ onNext }) => {
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht } = useBookingContext();
-  const capacity = selectedYacht?.yacht?.capacity || 0; // Get the yacht's capacity
+  const capacity = selectedYacht?.yacht?.capacity || 0;
 
   const [loading, setLoading] = useState(false);
-  const [availableDates, setAvailableDates] = useState([]); // State to track available dates
-  const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' }); // State for date range
+  const [availableDates, setAvailableDates] = useState([]);
+  const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
 
   const [extras, setExtras] = useState({
     food: [],
@@ -59,31 +59,6 @@ const Selection = ({ onNext }) => {
   
     return () => clearInterval(timer);
   }, []);
-
-  // useEffect(() => {
-  //   const fetchAvailability = async () => {
-  //     if (!selectedYacht?.yacht?.id) {
-  //       toast.error('Yacht ID is not available.');
-  //       return; // Exit if yacht ID is not defined
-  //     }
-  
-  //     try {
-  //       const response = await fetch(`https://api.takeoffyachts.com/yacht/check_yacht_availability/?yacht_id=${selectedYacht.yacht.id}`);
-  //       const data = await response.json();
-  //       if (data.error_code === 'pass') {
-  //         const available = data.availability.filter(item => item.is_available).map(item => item.date);
-  //         setAvailableDates(available); // Store available dates
-  //       } else {
-  //         toast.error('Failed to check availability.');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error checking availability:', error);
-  //       toast.error('Error checking availability.');
-  //     }
-  //   };
-  
-  //   fetchAvailability();
-  // }, [selectedYacht]);
 
   // Fetch availability on component mount
   useEffect(() => {
@@ -161,24 +136,6 @@ const Selection = ({ onNext }) => {
     }, 0);
   };
 
-  // const calculateTotal = () => {
-  //   const basePrice = selectedYacht?.yacht?.per_hour_price || 0;
-  //   const newYearPrice = selectedYacht?.yacht?.new_year_price || basePrice;
-    
-  //   // Check if the selected date is New Year's Eve (December 31st)
-  //   const isNewYearsEve = bookingData.date && (
-  //     new Date(bookingData.date).getMonth() === 11 &&
-  //     new Date(bookingData.date).getDate() === 31
-  //   );
-    
-  //   const hourlyRate = isNewYearsEve ? newYearPrice : basePrice;
-    
-  //   const totalExtras = Object.values(extras).reduce((total, category) => {
-  //     return total + calculateCategoryTotal(category);
-  //   }, 0);
-
-  //   return (hourlyRate * bookingData.duration) + totalExtras;
-  // };
   const calculateTotal = () => {
     if (!selectedYacht?.yacht) return 0;
     
@@ -220,10 +177,10 @@ const Selection = ({ onNext }) => {
         return;
       }
 
-      if (bookingData.adults + bookingData.kids === 0) {
-        toast({ title: 'Error', description: 'Please add at least one guest' });
-        return;
-      }
+      // if (bookingData.adults + bookingData.kids === 0) {
+      //   toast({ title: 'Error', description: 'Please add at least one guest' });
+      //   return;
+      // }
 
       // Check if it's New Year's Eve
       const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 && 
@@ -989,79 +946,6 @@ const Selection = ({ onNext }) => {
         </TableRow>
       </TableBody>
     </Table>
-
-          {/* <div className="bg-red-50 rounded-md p-2">
-            <p className="text-sm text-black">
-              You have <span className="font-semibold text-red-600">{formatTime(timeLeft)}</span> to complete your booking
-            </p>
-          </div> */}
-
-          {/* <div className="space-y-2 pl-1">
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="partial" 
-                checked={bookingData.isPartialPayment}
-                onCheckedChange={(checked) => updateBookingData({ isPartialPayment: checked })}
-              />
-              <Label htmlFor="partial" className="text-sm">
-                You want to do partial payment?
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="terms"
-                className="checked:bg-[#BEA355] checked:border-[#BEA355]"
-                checked={bookingData.termsAccepted}
-                onCheckedChange={(checked) => updateBookingData({ termsAccepted: checked })}
-              />
-              <Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
-                <DialogTrigger asChild>
-                  <Label htmlFor="terms" className="text-sm cursor-pointer hover:text-[#BEA355]">
-                    I agree to terms & conditions
-                  </Label>
-                </DialogTrigger>
-                <DialogContent className="max-w-[800px] max-h-[80vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle className="text-xl font-semibold mb-4">Terms and Conditions</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 text-sm">
-                    <h3 className="font-semibold text-lg">1. Booking and Payment</h3>
-                    <p>• A deposit of 50% of the total charter fee is required to confirm your booking.</p>
-                    <p>• The remaining balance must be paid at least 7 days before the charter date.</p>
-                    <p>• All payments are non-refundable unless otherwise specified.</p>
-
-                    <h3 className="font-semibold text-lg">2. Cancellation Policy</h3>
-                    <p>• Cancellations made more than 30 days before the charter date: 80% refund</p>
-                    <p>• Cancellations made 15-30 days before: 50% refund</p>
-                    <p>• Cancellations made less than 15 days before: No refund</p>
-
-                    <h3 className="font-semibold text-lg">3. Charter Requirements</h3>
-                    <p>• The lead charterer must be at least 21 years of age.</p>
-                    <p>• Valid identification is required for all passengers.</p>
-                    <p>• The number of guests must not exceed the yacht's capacity.</p>
-
-                    <h3 className="font-semibold text-lg">4. Safety and Conduct</h3>
-                    <p>• All guests must follow safety instructions provided by the crew.</p>
-                    <p>• The captain has full authority to terminate the charter if safety is compromised.</p>
-                    <p>• No illegal activities or substances are permitted on board.</p>
-
-                    <h3 className="font-semibold text-lg">5. Weather Conditions</h3>
-                    <p>• The captain reserves the right to cancel or modify the itinerary due to weather.</p>
-                    <p>• Weather-related cancellations will be rescheduled at no additional cost.</p>
-
-                    <h3 className="font-semibold text-lg">6. Liability</h3>
-                    <p>• The company is not liable for any personal injury or loss of property.</p>
-                    <p>• Guests are advised to have appropriate insurance coverage.</p>
-
-                    <h3 className="font-semibold text-lg">7. Additional Charges</h3>
-                    <p>• Fuel surcharges may apply for extended cruising.</p>
-                    <p>• Additional hours will be charged at the standard hourly rate.</p>
-                    <p>• Damage to the vessel or equipment will be charged accordingly.</p>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div> */}
 
           <Button 
             onClick={handleNext}

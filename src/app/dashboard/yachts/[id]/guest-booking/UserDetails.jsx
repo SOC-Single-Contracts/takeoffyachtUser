@@ -44,26 +44,35 @@ const UserDetails = ({ onNext }) => {
     setLoading(true);
 
     try {
-      // Validate required fields
       const requiredFields = ['fullName', 'email', 'phone', 'country'];
       const missingFields = requiredFields.filter(field => !bookingData[field]);
 
       if (missingFields.length > 0) {
-        toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+        toast({
+          title: "Validation Error",
+          description: `Please fill in all required fields: ${missingFields.join(', ')}`,
+          variant: "destructive",
+        });
         return;
       }
-
-      // Validate email format
+  
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(bookingData.email)) {
-        toast.error('Please enter a valid email address');
+        toast({
+          title: "Validation Error",
+          description: 'Please enter a valid email address',
+          variant: "destructive",
+        });
         return;
       }
-
-      // Validate phone number
+  
       const phoneRegex = /^\+?[\d\s-]{8,}$/;
       if (!phoneRegex.test(bookingData.phone)) {
-        toast.error('Please enter a valid phone number');
+        toast({
+          title: "Validation Error",
+          description: 'Please enter a valid phone number',
+          variant: "destructive",
+        });
         return;
       }
 

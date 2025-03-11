@@ -23,13 +23,11 @@ import { Input } from '@/components/ui/input';
 const Selection = ({ onNext }) => {
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht } = useBookingContext();
-  const capacity = selectedYacht?.yacht?.capacity || 0; // Get the yacht's capacity
+  const capacity = selectedYacht?.yacht?.capacity || 0;
 
   const [loading, setLoading] = useState(false);
-  const [availableDates, setAvailableDates] = useState([]); // State to track available dates
-  // const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
-  const [dateRange, setDateRange] = useState({ from: null, to: null });
-
+  const [availableDates, setAvailableDates] = useState([]);
+  const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
 
   const [extras, setExtras] = useState({
     food: [],
@@ -62,64 +60,15 @@ const Selection = ({ onNext }) => {
     return () => clearInterval(timer);
   }, []);
 
-  const handleDateSelect = (range) => {
-    setDateRange(range);
-    if (range?.from) {
-      if (range.to) {
-        // Date range booking
-        updateBookingData({
-          date: range.from,
-          endDate: range.to,
-          bookingType: 'date_range',
-          duration: null,
-          startTime: null
-        });
-      } else {
-        // Single day booking
-        updateBookingData({
-          date: range.from,
-          endDate: null,
-          bookingType: 'hourly',
-          duration: 3, // Default duration
-          startTime: new Date(range.from).setHours(9, 0, 0, 0)
-        });
-      }
-    }
-  };
-
-  // useEffect(() => {
-  //   const fetchAvailability = async () => {
-  //     if (!selectedYacht?.yacht?.id) {
-  //       toast.error('Yacht ID is not available.');
-  //       return; // Exit if yacht ID is not defined
-  //     }
-  
-  //     try {
-  //       const response = await fetch(`https://api.takeoffyachts.com/yacht/check_yacht_availability/?yacht_id=${selectedYacht.yacht.id}`);
-  //       const data = await response.json();
-  //       if (data.error_code === 'pass') {
-  //         const available = data.availability.filter(item => item.is_available).map(item => item.date);
-  //         setAvailableDates(available); // Store available dates
-  //       } else {
-  //         toast.error('Failed to check availability.');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error checking availability:', error);
-  //       toast.error('Error checking availability.');
-  //     }
-  //   };
-  
-  //   fetchAvailability();
-  // }, [selectedYacht]);
-
   // Fetch availability on component mount
   useEffect(() => {
     const fetchAvailability = async () => {
       if (!selectedYacht?.yacht?.id) {
         toast.error('Yacht ID is not available.');
-        return; // Exit if yacht ID is not defined
+        return;
       }
 
+      setLoading(true);
       try {
         const response = await fetch(`https://api.takeoffyachts.com/yacht/check_yacht_availability/?yacht_id=${selectedYacht.yacht.id}`);
         const data = await response.json();
@@ -133,6 +82,8 @@ const Selection = ({ onNext }) => {
       } catch (error) {
         console.error('Error checking availability:', error);
         toast.error('Error checking availability.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -145,7 +96,6 @@ const Selection = ({ onNext }) => {
         const response = await fetch('https://api.takeoffyachts.com/yacht/food/');
         const data = await response.json();
         if (data.error_code === 'pass') {
-          // Organize items by category directly from the response
           const organizedExtras = {
             food: data.food.filter(item => item.price !== null && item.menucategory !== null),
             extra: data.extra.filter(item => item.price !== null && item.menucategory !== null),
@@ -153,6 +103,7 @@ const Selection = ({ onNext }) => {
           };
           
           setExtras(organizedExtras);
+          updateBookingData({ extras: organizedExtras });
         } else {
           toast.error('Failed to fetch extras.');
         }
@@ -187,82 +138,51 @@ const Selection = ({ onNext }) => {
     }, 0);
   };
 
-  // const calculateTotal = () => {
-  //   const basePrice = selectedYacht?.yacht?.per_hour_price || 0;
-  //   const newYearPrice = selectedYacht?.yacht?.new_year_price || basePrice;
+  const calculateTotal = () => {
+    if (!selectedYacht?.yacht) return 0;
     
-  //   // Check if the selected date is New Year's Eve (December 31st)
-  //   const isNewYearsEve = bookingData.date && (
-  //     new Date(bookingData.date).getMonth() === 11 &&
-  //     new Date(bookingData.date).getDate() === 31
-  //   );
+    let baseTotal = 0;
+    const basePrice = selectedYacht.yacht.per_hour_price || 0;
+    const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;
+    const perDayPrice = selectedYacht.yacht.per_day_price || 0;
     
-  //   // Use New Year's price if it's December 31st
-  //   const hourlyRate = isNewYearsEve ? newYearPrice : basePrice;
-    
-  //   const totalExtras = Object.values(extras).reduce((total, category) => {
-  //     return total + calculateCategoryTotal(category);
-  //   }, 0);
-
-  //   return (hourlyRate * bookingData.duration) + totalExtras;
-  // };
-
-    const calculateTotal = () => {
-      if (!selectedYacht?.yacht) return 0;
+    // Check if it's a date range booking
+    if (bookingData.endDate && bookingData.date) {
+      const startDate = new Date(bookingData.date);
+      const endDate = new Date(bookingData.endDate);
+      const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+      baseTotal = perDayPrice * days;
+    } else {
+      // Hourly booking
+      const hours = bookingData.duration || 3;
+      const isNewYearsEve = bookingData.date && 
+        new Date(bookingData.date).getMonth() === 11 && 
+        new Date(bookingData.date).getDate() === 31;
       
-      let basePrice = 0;
-      
-      if (bookingData.endDate) {
-        // Calculate for date range booking
-        const days = Math.ceil(
-          (new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24)
-        ) + 1;
-        basePrice = (selectedYacht.yacht.per_day_price || 0) * days;
-      } else {
-        // Calculate for hourly booking
-        const hourlyRate = bookingData.isNewYearBooking 
-          ? (selectedYacht.yacht.new_year_price || selectedYacht.yacht.per_hour_price || 0)
-          : (selectedYacht.yacht.per_hour_price || 0);
-        basePrice = hourlyRate * (bookingData.duration || 3);
-      }
-      
-      const extrasTotal = Object.values(extras).reduce((total, category) => {
-        return total + calculateCategoryTotal(category);
-      }, 0);
+      const hourlyRate = isNewYearsEve ? newYearPrice : basePrice;
+      baseTotal = hourlyRate * hours;
+    }
   
-      return basePrice + extrasTotal;
-    };
+    // Calculate extras total
+    const extrasTotal = Object.values(extras).reduce((total, category) => {
+      return total + calculateCategoryTotal(category);
+    }, 0);
   
+    return baseTotal + extrasTotal;
+  };
+
   const handleNext = async () => {
     setLoading(true);
     try {
-      // if (!bookingData.date || !bookingData.startTime) {
-      //   toast.error('Please select date and time');
+      if (!bookingData.date || !bookingData.startTime) {
+        toast({ title: 'Error', description: 'Please select date and time' });
+        return;
+      }
+
+      // if (bookingData.adults + bookingData.kids === 0) {
+      //   toast({ title: 'Error', description: 'Please add at least one guest' });
       //   return;
       // }
-
-      if (bookingData.adults + bookingData.kids === 0) {
-        toast.error('Please add at least one guest');
-        return;
-      }
-
-      if (!bookingData.date) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Please select a date"
-        });
-        return;
-      }
-
-      if (!bookingData.endDate && !bookingData.startTime) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Please select a time"
-        });
-        return;
-      }
 
       // Check if it's New Year's Eve
       const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 && 
@@ -275,13 +195,17 @@ const Selection = ({ onNext }) => {
         });
       }
 
+      const allExtras = [...extras.food, ...extras.extra, ...extras.sport];
+
       // Update booking data with quantities and pricing info
       updateBookingData({
-        extras: Object.entries(quantities).reduce((acc, [id, qty]) => {
+        extras: Object.entries(quantities).reduce((acc, [itemId, qty]) => {
           if (qty > 0) {
-            const item = [...extras.food, ...extras.extra, ...extras.sport].find(i => i.id.toString() === id);
+            // const item = [...extras.food, ...extras.extra, ...extras.sport].find(i => i.id === parseInt(id));
+            const item = allExtras.find(i => i.id === Number(itemId))
             if (item) {
-              acc.push({ id, quantity: qty, price: item.price, name: item.name });
+              // acc.push({ id, quantity: qty, price: item.price, name: item.name });
+              acc.push({ id: item.id.toString(), quantity: qty, price: item.price, name: item.name });
             }
           }
           return acc;
@@ -292,11 +216,7 @@ const Selection = ({ onNext }) => {
       onNext();
     } catch (error) {
       console.error('Error:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Something went wrong"
-      });
+      toast({ title: 'Error', description: 'Failed to proceed. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -387,9 +307,101 @@ const Selection = ({ onNext }) => {
     </div>
   );
 
+  const handleDateSelect = (range) => {
+    if (!range) return;
+
+  // Check if the selected date is available
+  const selectedDate = format(range.from, 'yyyy-MM-dd');
+  if (!availableDates.includes(selectedDate)) {
+    toast.error("Selected date is not available.");
+    return;
+  }
+
+  // If clicking the same date again or selecting first date
+  if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
+    updateBookingData({
+      date: range.from,
+      endDate: null,
+      bookingType: 'hourly'
+    });
+    return;
+  }
+
+  // For date range, validate both dates
+  if (range.to) {
+    const endDate = format(range.to, 'yyyy-MM-dd');
+    if (!availableDates.includes(endDate)) {
+      toast.error("End date is not available.");
+      return;
+    }
+
+    updateBookingData({
+      date: range.from,
+      endDate: range.to,
+      bookingType: 'date_range'
+    });
+  }
+};
+
+
   return (
     <>
     <div className="w-full mb-6">
+    {loading ? (
+        <div className="max-w-5xl mx-auto container px-2 space-y-6 mt-8">
+        {/* Skeleton for Yacht Images */}
+        <div className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="relative h-48 rounded-lg bg-gray-200 animate-pulse" />
+            ))}
+          </div>
+        </div>
+  
+        {/* Skeleton for Date and Time Selection */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6">
+          <div className="flex flex-col space-y-2">
+            <Label className="text-sm font-medium">Select Date</Label>
+            <div className="h-10 w-full bg-gray-200 animate-pulse rounded-lg" />
+          </div>
+          
+          <div className="flex justify-between items-start">
+            <div className="flex flex-col space-y-2">
+              <Label className="text-sm font-medium">Start Time</Label>
+              <div className="h-10 w-full bg-gray-200 animate-pulse rounded-lg" />
+            </div>
+            <div className="flex flex-col items-end space-y-2">
+              <Label className="text-sm font-medium">Duration</Label>
+              <div className="h-10 w-full bg-gray-200 animate-pulse rounded-lg" />
+            </div>
+          </div>
+        </div>
+  
+        {/* Skeleton for Guests Selection */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+          <Label className="text-sm font-medium mb-4 block">Number of Guests</Label>
+          <div className="flex flex-col space-y-4 items-end">
+            <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
+              <div className="h-8 w-24 bg-gray-200 animate-pulse rounded" />
+              <div className="h-8 w-24 bg-gray-200 animate-pulse rounded" />
+            </div>
+          </div>
+        </div>
+  
+        {/* Skeleton for Optional Extras */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+          <Label className="text-sm font-medium mb-4 block">Optional Extras</Label>
+          <div className="space-y-4">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="flex items-center justify-between p-4 bg-gray-200 rounded-lg animate-pulse">
+                <div className="h-4 w-32 bg-gray-300 animate-pulse" />
+                <div className="h-4 w-16 bg-gray-300 animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      ) : (
   <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
     {/* Yacht Images */}
     <div className="mb-6">
@@ -528,32 +540,32 @@ const Selection = ({ onNext }) => {
             ))}
           </div>
         </div> */}
-<h3 className="font-semibold mb-3">Features</h3>
-{selectedYacht?.subcategories?.length > 0 ? (
-  <div className="flex flex-wrap gap-2">
-    {selectedYacht.subcategories.map((sub, index) => (
-      <span 
-        key={index} 
-        className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
-      >
-        {sub.name}
-      </span>
-    ))}
-  </div>
-) : selectedYacht?.yacht?.features?.length > 0 ? (
-  <div className="flex flex-wrap gap-2">
-    {selectedYacht.yacht.features.map((feature, index) => (
-      <span 
-        key={index} 
-        className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
-      >
-        {feature}
-      </span>
-    ))}
-  </div>
-) : (
-  <p className='text-xs'>No features available.</p>
-)}
+        <h3 className="font-semibold mb-3">Features</h3>
+        {selectedYacht?.subcategories?.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {selectedYacht.subcategories.map((sub, index) => (
+              <span 
+                key={index} 
+                className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
+              >
+                {sub.name}
+              </span>
+            ))}
+          </div>
+        ) : selectedYacht?.yacht?.features?.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {selectedYacht.yacht.features.map((feature, index) => (
+              <span 
+                key={index} 
+                className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
+              >
+                {feature}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className='text-xs'>No features available.</p>
+        )}
 
         {/* Inclusions */}
         {/* <div>
@@ -602,6 +614,7 @@ const Selection = ({ onNext }) => {
       </div>
     </div>
   </div>
+      )}
 </div>
     <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-6">
       <div className="flex flex-col w-full lg:w-2/4 xl:w-2/3 gap-4">
@@ -620,15 +633,15 @@ const Selection = ({ onNext }) => {
                     !bookingData.date && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-0 h-4 w-4" />
+                  <CalendarIcon className="mr-1 h-4 w-4" />
                   {/* {bookingData.date ? format(bookingData.date, "PPP") : <span>Pick a date</span>} */}
                   {bookingData.date ? (
-                      bookingData.endDate ? 
-                        `${format(bookingData.date, "PPP")} - ${format(bookingData.endDate, "PPP")}` :
-                        format(bookingData.date, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
+                bookingData.endDate ? 
+                  `${format(bookingData.date, "PPP")} - ${format(bookingData.endDate, "PPP")}` :
+                  format(bookingData.date, "PPP")
+              ) : (
+                <span>Pick date(s)</span>
+              )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -652,35 +665,64 @@ const Selection = ({ onNext }) => {
               disabled={(date) => !availableDates.includes(format(date, 'yyyy-MM-dd')) || date < new Date()} // Disable booked dates and past dates
               initialFocus
             /> */}
-             <Calendar
-              mode="range"
-              selected={dateRange}
-              // onSelect={(date) => {
-              //   if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
-              //     updateBookingData({ date });
-              //   } else {
-              //     toast.error("Selected date is not available.");
-              //   }
-              // }}
-              onSelect={handleDateSelect}
-              numberOfMonths={2}
-              // disabled={(date) => 
-              //   !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
-              //   date < new Date() || 
-              //   date < new Date(dateRange.start_date) || 
-              //   date > new Date(dateRange.end_date) // Disable dates outside the range
-              // }
+             {/* <Calendar
+              mode="single"
+              selected={bookingData.date}
+              onSelect={(date) => {
+                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
+                  updateBookingData({ date });
+                } else {
+                  toast.error("Selected date is not available.");
+                }
+              }}
               disabled={(date) => 
                 !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
-                date < new Date()
+                date < new Date() || 
+                date < new Date(dateRange.start_date) || 
+                date > new Date(dateRange.end_date) // Disable dates outside the range
               }
               initialFocus
-            />
+            /> */}
+             <Calendar
+        mode="range"
+        selected={{
+          from: bookingData.date || undefined,
+          to: bookingData.endDate || undefined
+        }}
+        // onSelect={(range) => {
+        //   if (range?.from) {
+        //     const isDateRange = range.to && range.to !== range.from;
+        //     updateBookingData({
+        //       date: range.from,
+        //       endDate: range.to,
+        //       bookingType: isDateRange ? 'date_range' : 'hourly',
+        //       // Reset duration if switching to date range
+        //       duration: isDateRange ? undefined : bookingData.duration
+        //     });
+        //   }
+        // }}
+        onSelect={handleDateSelect}
+        // disabled={(date) => 
+        //   !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
+        //   date < new Date() || 
+        //   date < new Date(dateRange.start_date) || 
+        //   date > new Date(dateRange.end_date)
+        // }
+        disabled={(date) => 
+          date < new Date(new Date().setHours(0, 0, 0, 0)) || // Disable past dates
+          (dateRange?.start_date && date < new Date(dateRange.start_date)) || 
+          (dateRange?.end_date && date > new Date(dateRange.end_date)) ||
+          !availableDates.includes(format(date, 'yyyy-MM-dd'))
+        }
+        initialFocus
+      />
               </PopoverContent>
             </Popover>
           </div>
 
-          {bookingData.date && !bookingData.endDate && (
+          {/* Show duration and time only for hourly bookings */}
+        {(!bookingData.endDate || bookingData.bookingType === 'hourly') && (
+          <>
           <div className="flex justify-between items-start">
             <div className="flex flex-col space-y-2">
               <Label className="text-sm font-medium">
@@ -736,10 +778,9 @@ const Selection = ({ onNext }) => {
               </div>
             </div>
           </div>
-  )}
+          </>
+                )}
         </div>
-              
-
         {/* Guests Selection */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
           <div className="flex flex-col md:flex-row justify-between items-start space-y-4 md:space-y-0">
@@ -890,155 +931,79 @@ const Selection = ({ onNext }) => {
         </div>
       </div>
       {/* Summary Card */}
-      {/* <div className="w-full lg:w-1/2 max-w-[400px]">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6 sticky top-4">
-          <div className="space-y-2">
-            <h2 className="text-lg font-semibold">
-              AED <span className="text-2xl font-bold">{calculateTotal()}</span> for {bookingData.duration} hours
-            </h2>
-          </div>
+      <div className="w-full lg:w-1/2 max-w-[400px]">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6 sticky top-4">
+    <div className="space-y-2">
+      <h2 className="text-lg font-semibold">
+        AED <span className="text-2xl font-bold">{calculateTotal()}</span>
+        {bookingData.endDate ? (
+          <span className="text-sm ml-2">
+            for {Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)} days
+          </span>
+        ) : (
+          <span className="text-sm ml-2">for {bookingData.duration} hours</span>
+        )}
+      </h2>
+    </div>
 
-          <Table>
-            <TableHeader className="bg-[#EBEBEB] dark:bg-gray-700">
-              <TableRow>
-                <TableHead className="font-semibold text-black dark:text-gray-400 rounded-t-lg">
-                  {selectedYacht?.yacht?.name || 'Yacht Details'}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="border border-gray-200 dark:border-gray-700">
-              <TableRow>
-                <TableCell className="flex justify-between">
-                  <span className="text-black dark:text-gray-400">Departure</span>
-                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-                    {bookingData.startTime && format(bookingData.startTime, "p")}, 
-                    {bookingData.date && format(bookingData.date, " MMM dd, yyyy")}
-                  </span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="flex justify-between">
-                  <span className="text-black dark:text-gray-400">Duration</span>
-                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">{bookingData.duration} Hours</span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="flex justify-between">
-                  <span className="text-black dark:text-gray-400">Guests</span>
-                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-                    {bookingData.adults + bookingData.kids} 
-                    <span className="text-xs ml-1">
-                      (max {selectedYacht?.yacht?.capacity || 0})
-                    </span>
-                  </span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="flex justify-between items-center">
-                  <span className="text-black dark:text-gray-400">Location</span>
-                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-1">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {selectedYacht?.yacht?.location || 'Dubai'}
-                  </span>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-
-          <Button 
-            onClick={handleNext}
-            disabled={loading}
-            className="w-full bg-[#BEA355] text-white hover:bg-[#A68D3F] rounded-full"
-          >
-            {loading ? 'Checking availability...' : 'Continue'}
-          </Button>
-        </div>
-      </div> */}
-            {/* Summary Card */}
-            <div className="w-full lg:w-1/2 max-w-[400px]">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6 sticky top-4">
-          <div className="space-y-2">
-            <h2 className="text-lg font-semibold">
-              AED <span className="text-2xl font-bold">{calculateTotal()}</span>
-              {!bookingData.endDate && ` for ${bookingData.duration} hours`}
-              {bookingData.endDate && ` for ${Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)} days`}
-            </h2>
-          </div>
-
-          <Table>
-            <TableHeader className="bg-[#EBEBEB] dark:bg-gray-700">
-              <TableRow>
-                <TableHead className="font-semibold text-black dark:text-gray-400 rounded-t-lg">
-                  {selectedYacht?.yacht?.name || 'Yacht Details'}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="border border-gray-200 dark:border-gray-700">
-              <TableRow>
-                <TableCell className="flex justify-between">
-                  <span className="text-black dark:text-gray-400">
-                    {bookingData.endDate ? 'Stay Period' : 'Departure'}
-                  </span>
-                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-                    {bookingData.endDate ? (
-                      `${format(new Date(bookingData.date), "MMM dd")} - ${format(new Date(bookingData.endDate), "MMM dd, yyyy")}`
-                    ) : (
-                      <>
-                        {bookingData.startTime && format(bookingData.startTime, "p")}, 
-                        {bookingData.date && format(bookingData.date, " MMM dd, yyyy")}
-                      </>
-                    )}
-                  </span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="flex justify-between">
-                  <span className="text-black dark:text-gray-400">Duration</span>
-                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-                    {bookingData.endDate ? (
-                      `${Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)} Days`
-                    ) : (
-                      `${bookingData.duration} Hours`
-                    )}
-                  </span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="flex justify-between">
-                  <span className="text-black dark:text-gray-400">Rate</span>
-                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-                    {bookingData.endDate ? (
-                      `AED ${selectedYacht?.yacht?.per_day_price || 0}/day`
-                    ) : (
-                      `AED ${bookingData.isNewYearBooking 
-                        ? (selectedYacht?.yacht?.new_year_price || selectedYacht?.yacht?.per_hour_price || 0)
-                        : (selectedYacht?.yacht?.per_hour_price || 0)}/hour`
-                    )}
-                  </span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="flex justify-between">
-                  <span className="text-black dark:text-gray-400">Guests</span>
-                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-                    {bookingData.adults + bookingData.kids} 
-                    <span className="text-xs ml-1">
-                      (max {selectedYacht?.yacht?.capacity || 0})
-                    </span>
-                  </span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="flex justify-between items-center">
-                  <span className="text-black dark:text-gray-400">Location</span>
-                  <span className="font-medium text-xs text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-1">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {selectedYacht?.yacht?.location || 'Dubai'}
-                  </span>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+    <Table>
+      <TableHeader className="bg-[#EBEBEB] dark:bg-gray-700">
+        <TableRow>
+          <TableHead className="font-semibold text-black dark:text-gray-400 rounded-t-lg">
+            {selectedYacht?.yacht?.name || 'Yacht Details'}
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody className="border border-gray-200 dark:border-gray-700">
+        <TableRow>
+          <TableCell className="flex justify-between">
+            <span className="text-black dark:text-gray-400">
+              {bookingData.endDate ? 'Date Range' : 'Departure'}
+            </span>
+            <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+              {bookingData.endDate ? (
+                `${format(bookingData.date, "MMM dd, yyyy")} - ${format(bookingData.endDate, "MMM dd, yyyy")}`
+              ) : (
+                <>
+                  {bookingData.startTime && format(bookingData.startTime, "p")}, 
+                  {bookingData.date && format(bookingData.date, " MMM dd, yyyy")}
+                </>
+              )}
+            </span>
+          </TableCell>
+        </TableRow>
+        {!bookingData.endDate && (
+          <TableRow>
+            <TableCell className="flex justify-between">
+              <span className="text-black dark:text-gray-400">Duration</span>
+              <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                {bookingData.duration} Hours
+              </span>
+            </TableCell>
+          </TableRow>
+        )}
+        <TableRow>
+          <TableCell className="flex justify-between">
+            <span className="text-black dark:text-gray-400">Guests</span>
+            <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+              {bookingData.adults + bookingData.kids} 
+              <span className="text-xs ml-1">
+                (max {selectedYacht?.yacht?.capacity || 0})
+              </span>
+            </span>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="flex justify-between items-center">
+            <span className="text-black dark:text-gray-400">Location</span>
+            <span className="font-medium text-xs text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-1">
+              <MapPin className="h-4 w-4 mr-1" />
+              {selectedYacht?.yacht?.location || 'Dubai'}
+            </span>
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
 
           <Button 
             onClick={handleNext}
