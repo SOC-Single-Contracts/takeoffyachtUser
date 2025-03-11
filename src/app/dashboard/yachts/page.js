@@ -28,6 +28,7 @@ const Yachts = () => {
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const [originalYachts, setOriginalYachts] = useState([]);
+  const [onCancelEachFilter, setonCancelEachFilter] = useState(false);
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -391,12 +392,20 @@ const Yachts = () => {
     setFilters(initialFilterState);
   };
 
-
+/// calling on first render and reset
   useEffect(() => {
     if (JSON.stringify(filters) === JSON.stringify(initialFilterState)) {
       handleFilterChange("reset");
     }
   }, [filters]);
+
+  // call onCancelEachFilter
+  useEffect(() => {
+    if (onCancelEachFilter) {
+      handleFilterChange("normal");
+      setonCancelEachFilter(false); 
+    }
+  }, [filters, onCancelEachFilter]);
 
 
   useEffect(() => {
@@ -1038,7 +1047,7 @@ const Yachts = () => {
                             setFilters(prev => ({ ...prev, indoor: [] }));
                             break;
                         }
-                        handleFilterChange("normal"); // Call handleFilterChange after updating filters
+                        setonCancelEachFilter(true); 
                       }}
                     />
                   </Badge>
