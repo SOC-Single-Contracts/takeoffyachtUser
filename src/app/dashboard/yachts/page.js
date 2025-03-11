@@ -1128,9 +1128,9 @@ const Yachts = () => {
                         </Button>
                       </CarouselNext>
                     </Carousel>
-                    <Link href={`/dashboard/yachts/${item?.yacht?.id}`}>
+                    {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
                       <div className="absolute inset-0"></div>
-                    </Link>
+                    {/* </Link> */}
 
                     <Button
                       variant="secondary"
