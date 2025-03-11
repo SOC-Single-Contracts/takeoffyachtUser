@@ -717,30 +717,6 @@ const Selection = ({ onNext }) => {
         }
         initialFocus
       />
-      <Calendar
-    mode="range"
-    selected={{
-        from: bookingData.date || undefined,
-        to: bookingData.endDate || undefined
-    }}
-    onSelect={handleDateSelect}
-    disabled={(date) => {
-        const isPastDate = date < new Date(new Date().setHours(0, 0, 0, 0)); // Disable past dates
-        const isBeforeStartDate = dateRange?.start_date && date < new Date(dateRange.start_date);
-        const isAfterEndDate = dateRange?.end_date && date > new Date(dateRange.end_date);
-        const isNotAvailable = !availableDates.includes(format(date, 'yyyy-MM-dd'));
-
-        console.log('Checking date:', format(date, 'yyyy-MM-dd'), {
-            isPastDate,
-            isBeforeStartDate,
-            isAfterEndDate,
-            isNotAvailable,
-        });
-
-        return isPastDate || isBeforeStartDate || isAfterEndDate || isNotAvailable;
-    }}
-    initialFocus
-/>
               </PopoverContent>
             </Popover>
           </div>
