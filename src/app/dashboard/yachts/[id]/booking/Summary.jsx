@@ -398,7 +398,7 @@ const handleUpdateExtras = async () => {
   const handleCopyLink = () => {
     const bookingId = bookingDetails.id;
     const yachtId = selectedYacht?.yacht?.id || bookingData.yachtId;
-    const bookingLink = `${window.location.origin}/dashboard/yachts/${yachtId}/guest-booking/?bookingId=${bookingId}`;
+    const bookingLink = `${window.location.origin}/dashboard/yachts/${yachtId}/booking/?bookingId=${bookingId}`;
 
     navigator.clipboard.writeText(bookingLink).then(() => {
       setIsCopied(true); // Set copied state to true

@@ -75,6 +75,7 @@ const Selection = ({ onNext }) => {
         if (data.error_code === 'pass') {
           const available = data.availability.filter(item => item.is_available).map(item => item.date);
           setAvailableDates(available); // Store available dates
+          console.log('Available Dates:', available);
           setDateRange(data.date_range); // Store date range
         } else {
           toast.error('Failed to check availability.');
@@ -716,6 +717,30 @@ const Selection = ({ onNext }) => {
         }
         initialFocus
       />
+      <Calendar
+    mode="range"
+    selected={{
+        from: bookingData.date || undefined,
+        to: bookingData.endDate || undefined
+    }}
+    onSelect={handleDateSelect}
+    disabled={(date) => {
+        const isPastDate = date < new Date(new Date().setHours(0, 0, 0, 0)); // Disable past dates
+        const isBeforeStartDate = dateRange?.start_date && date < new Date(dateRange.start_date);
+        const isAfterEndDate = dateRange?.end_date && date > new Date(dateRange.end_date);
+        const isNotAvailable = !availableDates.includes(format(date, 'yyyy-MM-dd'));
+
+        console.log('Checking date:', format(date, 'yyyy-MM-dd'), {
+            isPastDate,
+            isBeforeStartDate,
+            isAfterEndDate,
+            isNotAvailable,
+        });
+
+        return isPastDate || isBeforeStartDate || isAfterEndDate || isNotAvailable;
+    }}
+    initialFocus
+/>
               </PopoverContent>
             </Popover>
           </div>

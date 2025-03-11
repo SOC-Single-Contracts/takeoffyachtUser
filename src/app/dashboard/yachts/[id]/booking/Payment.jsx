@@ -383,7 +383,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
 
       const endpoint = bookingData.remainingCost > 0
         ? `https://api.takeoffyachts.com/yacht/capture-remaining-payments/${bookingData.bookingId}/`
-        : `https://api.takeoffyachts.com/yacht/capture-initial-payment/${bookingData.bookingId}/`;
+        : `https://api.takeoffyachts.com/yacht/capture-initial-payments/${bookingData.bookingId}/`;
 
       const response = await fetch(endpoint, {
         method: 'POST',
