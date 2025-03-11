@@ -75,6 +75,7 @@ const Selection = ({ onNext }) => {
         if (data.error_code === 'pass') {
           const available = data.availability.filter(item => item.is_available).map(item => item.date);
           setAvailableDates(available); // Store available dates
+          console.log('Available Dates:', available);
           setDateRange(data.date_range); // Store date range
         } else {
           toast.error('Failed to check availability.');
