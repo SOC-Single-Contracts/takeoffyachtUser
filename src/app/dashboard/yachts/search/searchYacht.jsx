@@ -271,8 +271,8 @@ const SearchYacht = () => {
             console.log("else")
             payload = {
                 ...payload, user_id: userId,
-                min_price: filters.min_price.toString(),
-                max_price: filters.max_price.toString(),
+                min_per_hour: filters.min_price.toString(),
+                max_per_hour: filters.max_price.toString(),
                 guest: filters.max_guest,
                 min_guest: filters?.min_guest,
                 max_guest: filters?.max_guest,
