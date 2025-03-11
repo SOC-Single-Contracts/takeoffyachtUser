@@ -636,6 +636,44 @@ const Payment = () => {
     fetchBookingDetails();
   }, [bookingData.bookingId]);
 
+  if (loading) {
+    return (
+      <div className='mx-auto container flex justify-between md:flex-row flex-col items-start gap-8 px-2'>
+        <div className='w-full md:w-1/2 space-y-4'>
+          <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6 animate-pulse'>
+            <h2 className='text-xl font-semibold mb-4'>
+              <div className='h-6 bg-gray-200 rounded w-1/2'></div>
+            </h2>
+            <div className='space-y-3'>
+              <div className='flex justify-between text-sm'>
+                <div className='h-4 bg-gray-200 rounded w-1/4'></div>
+                <div className='h-4 bg-gray-200 rounded w-1/4'></div>
+              </div>
+              <div className='flex justify-between text-sm'>
+                <div className='h-4 bg-gray-200 rounded w-1/4'></div>
+                <div className='h-4 bg-gray-200 rounded w-1/4'></div>
+              </div>
+              <div className='border-t dark:border-gray-600 pt-4 mt-4'>
+                <div className='flex justify-between font-semibold text-lg'>
+                  <div className='h-4 bg-gray-200 rounded w-1/4'></div>
+                  <div className='h-4 bg-gray-200 rounded w-1/4'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className='w-full md:w-1/2 animate-pulse'>
+          <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>
+            <h2 className='text-xl font-semibold mb-4'>Payment Method</h2>
+            <div className='h-10 bg-gray-200 rounded'></div>
+            <div className='h-10 bg-gray-200 rounded mt-4'></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   const totalCost = bookingDetails ? bookingDetails.total_cost : calculateTotal();
   const initialPayment = totalCost * 0.25;
