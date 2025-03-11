@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   MapPin,
   Star,
+  X,
 } from "lucide-react";
 import {
   Accordion,
@@ -208,7 +209,7 @@ const YachtDetail = () => {
       console.warn('Invalid time provided to formatTimeTo12Hour:', time);
       return 'Invalid time'; // or return a default value
     }
-    
+
     const [hour, minute] = time.split(':');
     const formattedHour = hour % 12 || 12; // Convert to 12-hour format
     const ampm = hour >= 12 ? 'PM' : 'AM'; // Determine AM/PM
@@ -280,8 +281,8 @@ const YachtDetail = () => {
       notes,
       longitude,
       latitude,
-      ny_availability, 
-      ny_price, 
+      ny_availability,
+      ny_price,
       ny_firework,
       ny_status,
     },
@@ -412,9 +413,21 @@ const YachtDetail = () => {
                     }}
                   >
                     <div
-                      className="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex items-center justify-center p-4"
+                      className="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex flex-col items-end justify-center p-4"
                       onClick={closeGalleryView}
                     >
+                      <div>
+                      <Button
+                        variant="default"
+                        size="icon"
+                        className="rounded-full my-3 h-12 w-12 ml-2 bg-[#BEA355]"
+                        onClick={() => handleWallet(type)}
+                      >
+                        <X className="h-8 w-8 dark:invert" />
+
+                      </Button>
+                      </div>
+                    
                       <div
                         className="bg-white dark:bg-gray-900 p-4 rounded-lg max-w-5xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
@@ -501,28 +514,28 @@ const YachtDetail = () => {
               </div>
               <div className="flex justify-between flex-wrap items-center gap-2 my-4">
                 <div className="flex justify-start items-center gap-2">
-                <Image src="/assets/images/profile.png" quality={100} width={40} height={40} alt="" />
-                <div className="flex flex-col justify-start">
-                  <p className="text-gray-700 dark:text-gray-400 font-light text-sm">
-                    Hosted by{" "}
-                    <span className="text-black dark:text-white font-medium underline">
-                      {crew_member || "Unknown"}
-                    </span>
-                  </p>
-                  <div className="flex justify-start gap-1 items-center text-orange-300">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`size-3 fill-current`}
-                        aria-hidden="true"
-                      />
-                    ))}
-                    <p className="text-gray-700 font-semibold dark:text-gray-400 text-xs">5.0</p>
+                  <Image src="/assets/images/profile.png" quality={100} width={40} height={40} alt="" />
+                  <div className="flex flex-col justify-start">
+                    <p className="text-gray-700 dark:text-gray-400 font-light text-sm">
+                      Hosted by{" "}
+                      <span className="text-black dark:text-white font-medium underline">
+                        {crew_member || "Unknown"}
+                      </span>
+                    </p>
+                    <div className="flex justify-start gap-1 items-center text-orange-300">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`size-3 fill-current`}
+                          aria-hidden="true"
+                        />
+                      ))}
+                      <p className="text-gray-700 font-semibold dark:text-gray-400 text-xs">5.0</p>
+                    </div>
                   </div>
                 </div>
-                </div>
                 <Link href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
-                  <Button 
+                  <Button
                     // onClick={(e) => {
                     //   if (!session) {
                     //     e.preventDefault();
@@ -646,25 +659,25 @@ const YachtDetail = () => {
                 </AccordionItem>
               </Accordion>
               <section className="mt-4">
-                    <h2 className="text-lg font-medium">
-                    Crew Info
-                    </h2>
-                    <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        Crew Members
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        {crew_member || "N/A"}
-                      </p>
-                    </div>
-                    <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        Crew Languages
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        {crew_language || "N/A"}
-                      </p>
-                    </div>
+                <h2 className="text-lg font-medium">
+                  Crew Info
+                </h2>
+                <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                    Crew Members
+                  </p>
+                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                    {crew_member || "N/A"}
+                  </p>
+                </div>
+                <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                    Crew Languages
+                  </p>
+                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                    {crew_language || "N/A"}
+                  </p>
+                </div>
               </section>
               {ny_status && (ny_availability || ny_price || ny_firework) && (
                 <section className="mt-4">
@@ -672,15 +685,15 @@ const YachtDetail = () => {
                     New Year's Eve
                   </h2>
                   {ny_availability && (
-                      <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                          Time
-                        </p>
-                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                          {formatTimeTo12Hour(ny_availability.from)} - {formatTimeTo12Hour(ny_availability.to)}
-                        </p>
-                      </div>
-                    )}
+                    <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                        Time
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                        {formatTimeTo12Hour(ny_availability.from)} - {formatTimeTo12Hour(ny_availability.to)}
+                      </p>
+                    </div>
+                  )}
                   {ny_price && (
                     <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
                       <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
@@ -715,10 +728,10 @@ const YachtDetail = () => {
                         className="text-gray-700 dark:text-gray-400 font-semibold text-sm flex items-center bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-2"
                       >
                         <Image
-                         src={
-                          sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_API_URL}${sub?.dark_icon}`
-                          : '/assets/images/f1.png'
-                      }
+                          src={
+                            sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_API_URL}${sub?.dark_icon}`
+                              : '/assets/images/f1.png'
+                          }
                           width={20}
                           height={20}
                           alt={inclusion.name}
@@ -732,7 +745,7 @@ const YachtDetail = () => {
                 </div>
               )}
               <section className="mt-4">
-                <h2 className="text-lg font-medium">Amenities</h2> 
+                <h2 className="text-lg font-medium">Amenities</h2>
                 <div className="flex flex-wrap gap-4 mt-2">
                   {/* {console.log(selectedYacht?.yacht?.features)} */}
                   {selectedYacht?.yacht?.features && selectedYacht?.yacht?.features.length > 0 ? (
@@ -762,10 +775,10 @@ const YachtDetail = () => {
                           className="text-gray-700 dark:text-gray-400 font-semibold text-sm flex items-center bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-2"
                         >
                           <Image
-                        src={
-                          sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_API_URL}${sub?.dark_icon}`
-                          : '/assets/images/f1.png'
-                      }
+                            src={
+                              sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_API_URL}${sub?.dark_icon}`
+                                : '/assets/images/f1.png'
+                            }
                             width={20}
                             height={20}
                             alt={sub.name}
