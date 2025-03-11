@@ -129,7 +129,7 @@ const Carousel = React.forwardRef(
         </div>
 
         {/* Dot Navigation */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        {/* <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
           {scrollSnaps.map((_, index) => (
             <DotButton
               key={index}
@@ -137,7 +137,7 @@ const Carousel = React.forwardRef(
               onClick={() => handleDotClick(index)}
             />
           ))}
-        </div>
+        </div> */}
       </CarouselContext.Provider>
     );
   }
