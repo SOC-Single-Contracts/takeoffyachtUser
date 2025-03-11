@@ -1,12 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Icon, Snowflake,Eye,Plus } from "lucide-react";
+import { ArrowLeft, Icon, Snowflake, Eye, Plus } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Heart } from 'lucide-react';
-import { WalletProvider } from "./WalletContext";
+import { useWalletContext, WalletProvider } from "./WalletContext";
+import { getWallet } from "@/api/wallet";
 
 const SkeletonLoader = () => (
   <div className="animate-pulse flex flex-col space-y-4 p-4 border rounded-lg shadow">
@@ -18,77 +19,75 @@ const SkeletonLoader = () => (
   </div>
 );
 
-  const WalletOptions = () => {
+const WalletOptions = () => {
   const router = useRouter();
 
-    const detailsMap = [
-      {
-        type: "add-money",
-        text: `Add Money`,
-        condition: null
-      },
-      {
-        type: "freeze",
-        text: `Freeze`,
-        condition: null
-      },
-      {
-        type: "reveal",
-        text: `Reveal`,
-        condition: null
-      },
-    ];
+  const detailsMap = [
+    {
+      type: "add-money",
+      text: `Add Money`,
+      condition: null
+    },
+    {
+      type: "freeze",
+      text: `Freeze`,
+      condition: null
+    },
+    {
+      type: "reveal",
+      text: `Reveal`,
+      condition: null
+    },
+  ];
 
-    const handleWallet = (type)=>{
-      if(type == "add-money"){
-        router.push('./wallet/add-money')
+  const handleWallet = (type) => {
+    if (type == "add-money") {
+      router.push('./wallet/add-money')
 
 
-      }
-      console.log("hell",type)
     }
+    console.log("hell", type)
+  }
 
-    return detailsMap?.map(({ type, text }, index) => (
-        <div
-          key={index}
-          className="flex flex-col justify-center items-center w-full h-20 "
-        >
-          {/* <Image src={type} quality={100} alt={text} width={20} height={20} className="dark:invert" /> */}
-          <Button 
-              variant="default" 
-              size="icon" 
-              className="rounded-full h-12 w-12 ml-2 bg-[#BEA355]"
-              onClick={()=>handleWallet(type)}
-            >
+  return detailsMap?.map(({ type, text }, index) => (
+    <div
+      key={index}
+      className="flex flex-col justify-center items-center w-full h-20 "
+    >
+      {/* <Image src={type} quality={100} alt={text} width={20} height={20} className="dark:invert" /> */}
+      <Button
+        variant="default"
+        size="icon"
+        className="rounded-full h-12 w-12 ml-2 bg-[#BEA355]"
+        onClick={() => handleWallet(type)}
+      >
 
-              {type  == 'add-money' ?   <Plus className="h-8 w-8 dark:invert" />
-                : type == "freeze" ?     <Snowflake className="h-8 w-8 dark:invert" />
-                 : type == "reveal" ? <Eye className="h-8 w-8 dark:invert" />
-             
-                 :"" }
-            
-              
-              
+        {type == 'add-money' ? <Plus className="h-8 w-8 dark:invert" />
+          : type == "freeze" ? <Snowflake className="h-8 w-8 dark:invert" />
+            : type == "reveal" ? <Eye className="h-8 w-8 dark:invert" />
 
-            </Button>
+              : ""}
 
-          <p className="text-gray-700 text-center text-sm dark:text-gray-300 mt-2">{text}</p>
-        </div>
-      ));
-  };
+
+
+
+      </Button>
+
+      <p className="text-gray-700 text-center text-sm dark:text-gray-300 mt-2">{text}</p>
+    </div>
+  ));
+};
 const WalletWizardContent = () => {
   const { data: session, status } = useSession();
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
-
-
+  const { walletDetails, updateWalletDetails, walletResponse } = useWalletContext();
   // Get user ID, default to 1 if not available
   const userId = session?.user?.userid || 1;
 
-
+  console.log(walletResponse)
 
   // Show loading state while checking session
-  if (status === 'loading') {
+  if (status === 'loading'  || walletResponse== null) {
     return (
       <section className="py-10">
         <div className="max-w-5xl px-2 mx-auto flex items-center space-x-4">
@@ -125,7 +124,7 @@ const WalletWizardContent = () => {
   }
 
   return (
-    <section className="py-10">
+    <section className="py-10 mt-7">
       <div className="max-w-5xl px-2 mx-auto flex  flex-col space-x-4">
         <div className="flex items-center">
           <Button
@@ -142,14 +141,14 @@ const WalletWizardContent = () => {
           <div className="flex  justify-between">
 
             <h2 className="text-sm md:text-lg font-bold">Available Balance</h2>
-            <h2 className="text-sm md:text-lg font-bold">$14,680</h2>
+            <h2 className="text-sm md:text-lg font-bold">${walletResponse?.balance}</h2>
 
           </div>
 
           <div className="grid grid-cols-3  gap-4 my-3">
-             {/* {walletOptions()} */}
-             <WalletOptions/>
-          
+            {/* {walletOptions()} */}
+            <WalletOptions />
+
           </div>
 
 
