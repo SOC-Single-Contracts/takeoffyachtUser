@@ -40,42 +40,48 @@ const Cart = () => {
       try {
         const response = await fetch('https://api.takeoffyachts.com/wishlist/wishlistview/');
         const wishlistItems = await response.json();
+        const filterYac = wishlistItems.filter((item)=>item?.yacht == 55);
 
         const detailedItems = await Promise.all(wishlistItems.map(async (item, index) => {
           try {
-            if (item.yacht && item.yacht_details) {
-              const yacht = item.yacht_details;
+            if (item?.yacht && item?.yacht_details) {
+              const yacht = item?.yacht_details;
               return {
-                uniqueKey: `yacht-${yacht.id}-${index}`,
-                id: yacht.id,
-                wishlistId: item.id,
-                name: yacht.name || 'Unnamed Yacht',
-                description: yacht.description || 'No description available',
-                image: yacht.yacht_image ? `https://api.takeoffyachts.com${yacht.yacht_image}` : null,
-                features: yacht.features ? JSON.parse(yacht.features.replace(/'/g, '"')) : [],
-                pricePerHour: yacht.per_hour_price || 0,
-                minHours: yacht.duration_hour || 0,
+                uniqueKey: `yacht-${yacht?.id}-${index}`,
+                id: yacht?.id,
+                wishlistId: item?.id,
+                name: yacht?.name || 'Unnamed Yacht',
+                description: yacht?.description || 'No description available',
+                image: yacht?.yacht_image ? `https://api.takeoffyachts.com${yacht?.yacht_image}` : null,
+                features: yacht.features 
+                ? Object.keys(yacht.features).map(key => `${key}: ${yacht.features[key]}`).join(', ')
+                : [],              
+                pricePerHour: yacht?.per_hour_price || 0,
+                minHours: yacht?.duration_hour || 0,
                 type: 'yacht'
               };
-            } else if (item.experience && item.experience_details) {
-              const experience = item.experience_details;
+            } else if (item?.experience && item?.experience_details) {
+              const experience = item?.experience_details;
               return {
-                uniqueKey: `experience-${experience.id}-${index}`,
-                id: experience.id,
-                wishlistId: item.id,
-                name: experience.name || 'Unnamed Experience',
-                description: experience.description || 'No description available',
-                image: experience.experience_image ? `https://api.takeoffyachts.com${experience.experience_image}` : null,
-                features: experience.features ? JSON.parse(experience.features.replace(/'/g, '"')) : [],
-                pricePerHour: experience.per_hour_price || 0,
-                minHours: experience.duration_hour || 0,
+                uniqueKey: `experience-${experience?.id}-${index}`,
+                id: experience?.id,
+                wishlistId: item?.id,
+                name: experience?.name || 'Unnamed Experience',
+                description: experience?.description || 'No description available',
+                image: experience?.experience_image ? `https://api.takeoffyachts.com${experience?.experience_image}` : null,
+                features: experience.features 
+                ? Object.keys(experience.features).map(key => `${key}: ${experience.features[key]}`).join(', ')
+                : [],
+              
+                pricePerHour: experience?.per_hour_price || 0,
+                minHours: experience?.duration_hour || 0,
                 type: 'experience'
               };
-            } else if (item.event) {
+            } else if (item?.event) {
               return {
-                uniqueKey: `event-${item.event}-${index}`,
-                id: item.event,
-                wishlistId: item.id,
+                uniqueKey: `event-${item?.event}-${index}`,
+                id: item?.event,
+                wishlistId: item?.id,
                 name: 'Event',
                 description: 'Event Details',
                 image: null,
@@ -101,6 +107,14 @@ const Cart = () => {
 
     loadWishlist();
   }, [session, status]);
+
+  ///test
+  // useEffect(()=>{
+// console.log("cartItems",cartItems)
+// const filterYaccart = cartItems.filter((item)=>item?.id == 55);
+// console.log("filterYaccart",filterYaccart)
+
+//   },[cartItems])
 
   // Show loading state while checking session
   if (status === 'loading') {
@@ -158,7 +172,7 @@ const Cart = () => {
         ) : cartItems.length > 0 ? (
           cartItems.map((yacht) => (
             <CartItem 
-              key={yacht.uniqueKey} 
+              key={yacht?.uniqueKey} 
               yacht={yacht} 
             />
           ))

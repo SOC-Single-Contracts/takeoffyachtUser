@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   MapPin,
   Star,
+  X,
 } from "lucide-react";
 import {
   Accordion,
@@ -92,27 +93,27 @@ const YachtDetail = () => {
     const detailsMap = [
       {
         imgSrc: "/assets/images/person.svg",
-        text: `${yacht.capacity} Max`,
-        condition: yacht.capacity
+        text: `${yacht?.capacity} Max`,
+        condition: yacht?.capacity
       },
       {
         imgSrc: "/assets/images/sleeping.svg",
-        text: `${yacht.sleep_capacity} Max`,
-        condition: yacht.sleep_capacity
+        text: `${yacht?.sleep_capacity} Max`,
+        condition: yacht?.sleep_capacity
       },
       {
         imgSrc: "/assets/images/ft.svg",
-        text: yacht.length ? `${yacht.length} ft.` : "N/A",
-        condition: yacht.length
+        text: yacht?.length ? `${yacht?.length} ft.` : "N/A",
+        condition: yacht?.length
       },
       {
         imgSrc: "/assets/images/cabin.svg",
-        text: yacht.number_of_cabin ? `${yacht.number_of_cabin} Cabins` : "N/A",
-        condition: yacht.number_of_cabin
+        text: yacht?.number_of_cabin ? `${yacht?.number_of_cabin} Cabins` : "N/A",
+        condition: yacht?.number_of_cabin
       },
       {
         imgSrc: "/assets/images/pilot.svg",
-        text: yacht.crew_member ? `${yacht.crew_member} Crew` : "Included",
+        text: yacht?.crew_member ? `${yacht?.crew_member} Crew` : "Included",
         condition: true
       },
       // {
@@ -126,8 +127,8 @@ const YachtDetail = () => {
         condition: true
       },
       {
-        imgSrc: "/assets/images/yacht.svg",
-        text: selectedYacht.categories[0] ? selectedYacht.categories[0].replace(/'/g, '') : "Super Yacht", // Show first category or default to "Super Yacht"
+        imgSrc: "/assets/images/yacht?.svg",
+        text: selectedYacht?.categories[0] ? selectedYacht?.categories[0].replace(/'/g, '') : "Super Yacht", // Show first category or default to "Super Yacht"
         condition: true
       }
     ];
@@ -162,9 +163,9 @@ const YachtDetail = () => {
 
   const getInclusionIcon = (name) => {
     const iconMap = {
-      'water': "/assets/images/water.svg",
+      'water drop': "/assets/images/water.svg",
       'ice': "/assets/images/ice-cube.svg",
-      'wifi': "/assets/images/wifi.svg",
+      'water drop': "/assets/images/Icon_Wi-Fi.svg",
       'fruit plater': "/assets/images/fruits.svg",
       'ny water': "/assets/images/water.svg",
       'ny ice': "/assets/images/ice-cube.svg",
@@ -208,7 +209,7 @@ const YachtDetail = () => {
       console.warn('Invalid time provided to formatTimeTo12Hour:', time);
       return 'Invalid time'; // or return a default value
     }
-    
+
     const [hour, minute] = time.split(':');
     const formattedHour = hour % 12 || 12; // Convert to 12-hour format
     const ampm = hour >= 12 ? 'PM' : 'AM'; // Determine AM/PM
@@ -280,8 +281,8 @@ const YachtDetail = () => {
       notes,
       longitude,
       latitude,
-      ny_availability, 
-      ny_price, 
+      ny_availability,
+      ny_price,
       ny_firework,
       ny_status,
     },
@@ -289,35 +290,35 @@ const YachtDetail = () => {
   } = selectedYacht;
 
   const yachtImages = [
-    selectedYacht.yacht.yacht_image,
-    selectedYacht.yacht.image1,
-    selectedYacht.yacht.image2,
-    selectedYacht.yacht.image3,
-    selectedYacht.yacht.image4,
-    selectedYacht.yacht.image5,
-    selectedYacht.yacht.image6,
-    selectedYacht.yacht.image7,
-    selectedYacht.yacht.image8,
-    selectedYacht.yacht.image9,
-    selectedYacht.yacht.image10,
-    selectedYacht.yacht.image11,
-    selectedYacht.yacht.image12,
-    selectedYacht.yacht.image13,
-    selectedYacht.yacht.image14,
-    selectedYacht.yacht.image15,
-    selectedYacht.yacht.image16,
-    selectedYacht.yacht.image17,
-    selectedYacht.yacht.image18,
-    selectedYacht.yacht.image19,
-    selectedYacht.yacht.image20,
+    selectedYacht?.yacht?.yacht_image,
+    selectedYacht?.yacht?.image1,
+    selectedYacht?.yacht?.image2,
+    selectedYacht?.yacht?.image3,
+    selectedYacht?.yacht?.image4,
+    selectedYacht?.yacht?.image5,
+    selectedYacht?.yacht?.image6,
+    selectedYacht?.yacht?.image7,
+    selectedYacht?.yacht?.image8,
+    selectedYacht?.yacht?.image9,
+    selectedYacht?.yacht?.image10,
+    selectedYacht?.yacht?.image11,
+    selectedYacht?.yacht?.image12,
+    selectedYacht?.yacht?.image13,
+    selectedYacht?.yacht?.image14,
+    selectedYacht?.yacht?.image15,
+    selectedYacht?.yacht?.image16,
+    selectedYacht?.yacht?.image17,
+    selectedYacht?.yacht?.image18,
+    selectedYacht?.yacht?.image19,
+    selectedYacht?.yacht?.image20,
   ].filter(Boolean);
 
   const allInclusions = [
-    ...(selectedYacht.inclusion || []),
+    ...(selectedYacht?.inclusion || []),
     // ...(selectedYacht['New year inclusion'] || [])
   ];
 
-  const uniqueYachtImages = [...new Set([selectedYacht.yacht.yacht_image, ...yachtImages])].filter(Boolean);
+  const uniqueYachtImages = [...new Set([selectedYacht?.yacht?.yacht_image, ...yachtImages])].filter(Boolean);
 
   // const parseNYAvailability = (availability) => {
   //   try {
@@ -341,6 +342,7 @@ const YachtDetail = () => {
       return 'N/A';
     }
   };
+
 
   return (
     <>
@@ -411,9 +413,21 @@ const YachtDetail = () => {
                     }}
                   >
                     <div
-                      className="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex items-center justify-center p-4"
+                      className="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex flex-col items-end justify-center p-4"
                       onClick={closeGalleryView}
                     >
+                      <div>
+                      <Button
+                        variant="default"
+                        size="icon"
+                        className="rounded-full my-3 h-12 w-12 ml-2 bg-[#BEA355]"
+                        onClick={closeGalleryView}
+                        >
+                        <X className="h-8 w-8 dark:invert" />
+
+                      </Button>
+                      </div>
+                    
                       <div
                         className="bg-white dark:bg-gray-900 p-4 rounded-lg max-w-5xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
@@ -493,35 +507,35 @@ const YachtDetail = () => {
                 <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_hour_price}</span>/hour</p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-                {getYachtDetailsGrid(selectedYacht.yacht)}
+                {getYachtDetailsGrid(selectedYacht?.yacht)}
                 <div className="flex justify-center items-center w-full h-20 border border-gray-300 rounded-lg shadow-sm">
                   <Image src="/assets/images/logoround.svg" quality={100} width={60} height={60} alt="Logo" />
                 </div>
               </div>
               <div className="flex justify-between flex-wrap items-center gap-2 my-4">
                 <div className="flex justify-start items-center gap-2">
-                <Image src="/assets/images/profile.png" quality={100} width={40} height={40} alt="" />
-                <div className="flex flex-col justify-start">
-                  <p className="text-gray-700 dark:text-gray-400 font-light text-sm">
-                    Hosted by{" "}
-                    <span className="text-black dark:text-white font-medium underline">
-                      {crew_member || "Unknown"}
-                    </span>
-                  </p>
-                  <div className="flex justify-start gap-1 items-center text-orange-300">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`size-3 fill-current`}
-                        aria-hidden="true"
-                      />
-                    ))}
-                    <p className="text-gray-700 font-semibold dark:text-gray-400 text-xs">5.0</p>
+                  <Image src="/assets/images/profile.png" quality={100} width={40} height={40} alt="" />
+                  <div className="flex flex-col justify-start">
+                    <p className="text-gray-700 dark:text-gray-400 font-light text-sm">
+                      Hosted by{" "}
+                      <span className="text-black dark:text-white font-medium underline">
+                        {crew_member || "Unknown"}
+                      </span>
+                    </p>
+                    <div className="flex justify-start gap-1 items-center text-orange-300">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`size-3 fill-current`}
+                          aria-hidden="true"
+                        />
+                      ))}
+                      <p className="text-gray-700 font-semibold dark:text-gray-400 text-xs">5.0</p>
+                    </div>
                   </div>
                 </div>
-                </div>
                 <Link href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
-                  <Button 
+                  <Button
                     // onClick={(e) => {
                     //   if (!session) {
                     //     e.preventDefault();
@@ -645,25 +659,25 @@ const YachtDetail = () => {
                 </AccordionItem>
               </Accordion>
               <section className="mt-4">
-                    <h2 className="text-lg font-medium">
-                    Crew Info
-                    </h2>
-                    <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        Crew Members
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        {crew_member || "N/A"}
-                      </p>
-                    </div>
-                    <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        Crew Languages
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        {crew_language || "N/A"}
-                      </p>
-                    </div>
+                <h2 className="text-lg font-medium">
+                  Crew Info
+                </h2>
+                <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                    Crew Members
+                  </p>
+                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                    {crew_member || "N/A"}
+                  </p>
+                </div>
+                <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                    Crew Languages
+                  </p>
+                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                    {crew_language || "N/A"}
+                  </p>
+                </div>
               </section>
               {ny_status && (ny_availability || ny_price || ny_firework) && (
                 <section className="mt-4">
@@ -671,15 +685,15 @@ const YachtDetail = () => {
                     New Year's Eve
                   </h2>
                   {ny_availability && (
-                      <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                          Time
-                        </p>
-                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                          {formatTimeTo12Hour(ny_availability.from)} - {formatTimeTo12Hour(ny_availability.to)}
-                        </p>
-                      </div>
-                    )}
+                    <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                        Time
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                        {formatTimeTo12Hour(ny_availability.from)} - {formatTimeTo12Hour(ny_availability.to)}
+                      </p>
+                    </div>
+                  )}
                   {ny_price && (
                     <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
                       <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
@@ -714,7 +728,10 @@ const YachtDetail = () => {
                         className="text-gray-700 dark:text-gray-400 font-semibold text-sm flex items-center bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-2"
                       >
                         <Image
-                          src={getInclusionIcon(inclusion.name)}
+                          src={
+                            sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_API_URL}${sub?.dark_icon}`
+                              : '/assets/images/f1.png'
+                          }
                           width={20}
                           height={20}
                           alt={inclusion.name}
@@ -764,7 +781,10 @@ const YachtDetail = () => {
                           className="text-gray-700 dark:text-gray-400 font-semibold text-sm flex items-center bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-2"
                         >
                           <Image
-                            src={getInclusionIcon(sub.name)}
+                            src={
+                              sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_API_URL}${sub?.dark_icon}`
+                                : '/assets/images/f1.png'
+                            }
                             width={20}
                             height={20}
                             alt={sub.name}

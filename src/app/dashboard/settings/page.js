@@ -151,7 +151,7 @@ const Settings = () => {
 
       await signOut({
         redirect: true,
-        callbackUrl: "/login"
+        callbackUrl: "/"
       });
 
       toast({
@@ -167,7 +167,7 @@ const Settings = () => {
       });
       await signOut({
         redirect: true,
-        callbackUrl: "/login"
+        callbackUrl: "/"
       });
     }
   };

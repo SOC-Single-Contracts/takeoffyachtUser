@@ -11,9 +11,11 @@ import {
   LogOut,
   Menu,
   MessageSquareText,
+  Proportions,
   Search,
   Ship,
   SquareArrowOutUpRight,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -53,14 +55,13 @@ const Header = () => {
   const [guest, setGuest] = useState('1');
   const [selectedDate, setSelectedDate] = useState('');
   const [scrolled, setScrolled] = useState(false);
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1000);
   
     return () => clearTimeout(timer);
-  }, []);
+  }, []);  
 
   useEffect(() => {
     const handleScroll = () => {
@@ -146,12 +147,13 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+    console.log("workkkk")
     signOut({ 
-      callbackUrl: '/login',
+      callbackUrl: "/",
       redirect: true 
     });
   };
-
+  
   return (
     <nav className={`
       backdrop-blur-2xl 
@@ -213,6 +215,18 @@ const Header = () => {
                       <Link className="flex items-center space-x-2" href="/dashboard/messages">
                         <MessageSquareText className="w-4 h-4 mr-2" />
                         Messages
+                      </Link>
+                    </MenubarItem>
+                    <MenubarItem>
+                      <Link className="flex items-center space-x-2" href="/dashboard/wallet">
+                        <Wallet className="w-4 h-4 mr-2" />
+                        Wallet
+                      </Link>
+                    </MenubarItem>
+                    <MenubarItem>
+                      <Link className="flex items-center space-x-2" href="/dashboard/partner-discounts">
+                        <Proportions className="w-4 h-4 mr-2" />
+                        Discounts
                       </Link>
                     </MenubarItem>
                     <MenubarItem>
@@ -295,10 +309,10 @@ const Header = () => {
                   <SheetHeader className="text-start">
                     <SheetTitle>Menu</SheetTitle>
                   </SheetHeader>
-                  <div className="mt-4 mb-6">
+                  {/* <div className="mt-4 mb-6">
                     <SearchFilter />
-                  </div>
-                  <div className="flex flex-col space-y-4">
+                  </div> */}
+                  <div className=" mt-4 mb-6 flex flex-col space-y-4">
                     {/* <Link
                       href="/where"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
@@ -342,7 +356,18 @@ const Header = () => {
                     >
                       <CircleUserRound className="w-4 h-4" /> <span>Profile</span>
                     </Link>
-                    
+                    <Link
+                      href="/dashboard/wallet"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
+                    >
+                      <Wallet className="w-4 h-4" /> <span>Wallet</span>
+                    </Link>
+                    <Link
+                      href="/dashboard/partner-discounts"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
+                    >
+                      <Proportions className="w-4 h-4" /> <span>Discounts</span>
+                    </Link>
                     <Separator />
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
@@ -409,6 +434,11 @@ const Header = () => {
               </Sheet>
             </div>
           </div>
+      </div>
+      <div className="px-2">
+        <div className="md:hidden pb-4">
+          <SearchFilter />
+        </div>
       </div>
     </nav>
   );

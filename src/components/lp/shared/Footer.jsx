@@ -19,6 +19,10 @@ const Footer = () => {
     };
     getReviews();
   }, []);
+//test
+  // useEffect(() => {
+  //  console.log("reviews",reviews)
+  // }, [reviews]);
 
  return (
    <footer className="text-black dark:text-white bg-[#E2E2E2] dark:bg-gray-700">
@@ -47,7 +51,7 @@ const Footer = () => {
            <nav className="flex flex-col space-y-2 text-sm">
              <Link href="/privacy" className="text-gray-600 dark:text-gray-200 hover:text-gray-800 transition ease-in duration-200">Privacy Policy</Link>
              <Link href="/terms" className="text-gray-600 dark:text-gray-200 hover:text-gray-800 transition ease-in duration-200">Terms of Service</Link>
-             <Link href="#" className="text-gray-600 dark:text-gray-200 hover:text-gray-800 transition ease-in duration-200">Cookie Policy</Link>
+             <Link href="/cookie-policy" className="text-gray-600 dark:text-gray-200 hover:text-gray-800 transition ease-in duration-200">Cookie Policy</Link>
            </nav>
          </div>
          <div className='space-y-3 w-full max-w-[190px]'>

@@ -5,7 +5,7 @@ import React from 'react';
 const PrivacyContent = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 mt-28 py-8">
-      <h1 className="text-4xl font-bold mb-6">Content Policy</h1>
+      <h1 className="text-4xl font-bold mb-6">Cancellation Policy</h1>
 
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>

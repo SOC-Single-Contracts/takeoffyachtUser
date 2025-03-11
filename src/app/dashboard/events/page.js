@@ -288,6 +288,7 @@ const Events = ({ limit }) => {
               }
 
               const { event } = item;
+              // console.log(`https://api.takeoffyachts.com${event.event_image}`)
               return (
                 <Card
                   key={event.id}

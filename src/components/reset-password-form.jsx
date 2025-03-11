@@ -82,7 +82,7 @@ export function ResetPasswordForm({ token }) {
             <h2 className="text-2xl font-bold mb-4">Reset Password</h2>
         </div>
       <div className="mb-4">
-        <Label htmlFor="newpassword">
+        <Label className="text-black" htmlFor="newpassword">
           New Password <span className="text-red-500">*</span>
         </Label>
         <div className="relative">
@@ -92,6 +92,7 @@ export function ResetPasswordForm({ token }) {
               {...register("new_password")}
               placeholder="******"
               disabled={isSubmitting}
+              className="text-black"
             />
             <button
               type="button"
@@ -106,8 +107,8 @@ export function ResetPasswordForm({ token }) {
         )}
       </div>
       <div className="mb-4">
-        <Label htmlFor="resetpassword">
-          Confirm New Password <span className="text-red-500">*</span>
+        <Label className="text-black" htmlFor="resetpassword">
+          Confirm New Password <span className=" text-red-500">*</span>
         </Label>
         <div className="relative">
         <Input
@@ -116,7 +117,8 @@ export function ResetPasswordForm({ token }) {
           {...register("reset_password")}
           placeholder="******"
           required
-          className="w-full px-3 py-2 border rounded"
+          className=" text-black w-full px-3 py-2 border rounded "
+
         />
         <button
               type="button"
@@ -132,7 +134,7 @@ export function ResetPasswordForm({ token }) {
       </div>
       <Button
         type="submit"
-        className="w-full bg-[#BEA355] rounded-full text-white py-2"
+        className="w-full bg-[#BEA355] dark:bg-[#BEA355] rounded-full text-white py-2"
         disabled={isSubmitting}
       >
         {isSubmitting ? "Resetting..." : "Reset Password"}

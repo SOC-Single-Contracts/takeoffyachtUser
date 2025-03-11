@@ -109,7 +109,10 @@ export function SignupForm({ className, ...props }) {
       {...props}
     >
       <div className="flex flex-col items-center gap-2 text-center">
-        <Image src={logo} width={200} height={200} alt="Logo" />
+        <Image
+        //  src={logo}
+        src={`/assets/images/logo.png`} 
+          width={200} height={200} alt="Logo" />
         <h1 className="text-3xl font-bold my-5">Sign Up</h1>
       </div>
       <div className="grid gap-6">

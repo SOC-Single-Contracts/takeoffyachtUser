@@ -25,7 +25,9 @@ export default function SearchResults() {
           user_id: session?.user?.userid || 1,
           created_on: format(new Date(), 'yyyy-MM-dd'),
           guest: totalGuests,
-          location: location
+          location: location,
+          name:searchParams.get('name') || ""
+
         };
 
         const response = await yachtApi.checkExperiences(params);

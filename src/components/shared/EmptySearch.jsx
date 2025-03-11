@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
-const EmptySearch = ({ type = 'yachts', searchParams }) => {
+const EmptySearch = ({ type = 'yachts', searchParams,filters }) => {
   const router = useRouter();
 
   const content = {
@@ -26,9 +26,9 @@ const EmptySearch = ({ type = 'yachts', searchParams }) => {
   const { title, description, image } = content[type] || content.yachts;
 
   const searchDetails = [
-    { label: 'Location', value: searchParams?.location },
+    { label: 'Location', value: filters?.location ? filters?.location :  searchParams?.location },
     { label: 'Date', value: searchParams?.date ? new Date(searchParams.date).toLocaleDateString() : null },
-    { label: 'Guests', value: searchParams?.guests }
+    { label: 'Guests', value: filters?.max_guest ? filters?.max_guest : searchParams?.guests }
   ].filter(detail => detail.value);
 
   return (

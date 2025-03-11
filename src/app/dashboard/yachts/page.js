@@ -3,22 +3,23 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Dot, MapPin } from 'lucide-react';
+import { Dot, FilterIcon, MapPin, SortAscIcon } from 'lucide-react';
 import Link from 'next/link';
 import { fetchYachts } from '@/api/yachts';
 import { useSession } from 'next-auth/react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectTriggerSort } from "@/components/ui/select";
 import { SlidersHorizontal, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { addToWishlist, removeFromWishlist, fetchWishlist } from '@/api/wishlist';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import SearchFilter from '@/components/lp/shared/SearchFilter';
 
 const Yachts = () => {
   const { data: session } = useSession();
@@ -26,6 +27,8 @@ const Yachts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
+  const [originalYachts, setOriginalYachts] = useState([]);
+  const [onCancelEachFilter, setonCancelEachFilter] = useState(false);
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -55,6 +58,55 @@ const Yachts = () => {
     extra_comforts: [],
     indoor: [],
   });
+
+  const initialFilterState = {
+    min_price: 1000,
+    max_price: 4000,
+    min_guest: "",
+    max_guest: "",
+    sleep_capacity: "",
+    capacity: "",
+    location: "",
+    category_name: [],
+    subcategory_name: [],
+    boat_category: [],
+    price_des: false,
+    price_asc: false,
+    cabin_des: false,
+    cabin_asc: false,
+    engine_type: "",
+    number_of_cabin: "",
+    created_on: "",
+    min_length: "",
+    max_length: "",
+    amenities: [],
+    outdoor_equipment: [],
+    kitchen: [],
+    energy: [],
+    leisure: [],
+    navigation: [],
+    extra_comforts: [],
+    indoor: [],
+  };
+
+  const sortByOptions = [
+    { value: "default", label: "Default" },
+    { value: "Price-High-Low", label: "Price: High to Low" },
+    { value: "Price-Low-High", label: "Price: Low to High" },
+    { value: "Capacity-High-Low", label: "Capacity: High to Low" },
+    { value: "Capacity-Low-High", label: "Capacity: Low to High" }
+  ];
+
+  const [selectedSortBy, setSelectedSortBy] = useState("default");
+  const [startSort, setStartSort] = useState(false);
+
+  const handleChange = (value) => {
+    setStartSort(true)
+    setSelectedSortBy(value);
+  };
+
+  const selectedOption = sortByOptions.find(option => option.value === selectedSortBy);
+
 
   const userId = session?.user?.userid || 1;
 
@@ -179,7 +231,7 @@ const Yachts = () => {
       if (userId) {
         try {
           const wishlistItems = await fetchWishlist(userId);
-          const wishlistIds = new Set(wishlistItems.map(item => item.yacht));
+          const wishlistIds = new Set(wishlistItems.map(item => item?.yacht));
           setFavorites(wishlistIds);
         } catch (err) {
           console.error('Wishlist loading error:', err);
@@ -243,35 +295,60 @@ const Yachts = () => {
   //   }
   // };
 
-  const handleFilterChange = async () => {
+  const handleFilterChange = async (type) => {
+
     if (!userId) return;
 
-    const payload = {
-      user_id: userId,
-      min_price: filters.min_price.toString(),
-      max_price: filters.max_price.toString(),
-      guest: filters.max_guest,
-      sleep_capacity: filters.sleep_capacity,
-      number_of_cabin: filters.number_of_cabin,
-      categories: JSON.stringify(filters.category_name),
-      features: JSON.stringify(filters.amenities.concat(
-        filters.outdoor_equipment,
-        filters.kitchen,
-        filters.energy,
-        filters.leisure,
-        filters.navigation,
-        filters.extra_comforts,
-        filters.indoor
-      )),
-      price_asc: filters.price_asc,
-      price_des: filters.price_des,
-      cabin_asc: filters.cabin_asc,
-      cabin_des: filters.cabin_des,
-      created_on: filters.created_on,
-      location: filters?.location,
-      min_length: filters.min_length,
-      max_length: filters.max_length,
-    };
+    let payload;
+    if (type == "reset") {
+      payload = {
+        user_id: userId,
+      };
+    } else {
+      payload = {
+        user_id: userId,
+        min_per_hour: filters.min_price.toString(),
+        max_per_hour: filters.max_price.toString(),
+        guest: filters.max_guest,
+        min_guest:filters?.min_guest,
+        max_guest:filters?.max_guest,
+        sleep_capacity: filters.sleep_capacity,
+        number_of_cabin: filters.number_of_cabin,
+        // categories: JSON.stringify(filters.category_name),
+        // features: JSON.stringify(filters.amenities.concat(
+        //   filters.outdoor_equipment,
+        //   filters.kitchen,
+        //   filters.energy,
+        //   filters.leisure,
+        //   filters.navigation,
+        //   filters.extra_comforts,
+        //   filters.indoor
+        // )),
+        categories: filters.category_name,
+        features: [
+          ...filters.amenities,  // Include amenities first
+          ...filters.outdoor_equipment,  // Include outdoor equipment
+          ...filters.kitchen,  // Include kitchen
+          ...filters.energy,  // Include energy
+          ...filters.leisure,  // Include leisure
+          ...filters.navigation,  // Include navigation
+          ...filters.extra_comforts,  // Include extra comforts
+          ...filters.indoor  // Include indoor
+        ],
+        price_asc: filters.price_asc,
+        price_des: filters.price_des,
+        cabin_asc: filters.cabin_asc,
+        cabin_des: filters.cabin_des,
+        created_on: filters.created_on,
+        location: filters?.location,
+        min_length: filters.min_length,
+        max_length: filters.max_length,
+
+        location: filters.location,
+
+      };
+    }
+
 
     try {
       setLoading(true);
@@ -285,19 +362,20 @@ const Yachts = () => {
 
       const responseData = await response.json();
       if (responseData.error_code === 'pass') {
+
         // Filter yachts based on price range
-        const filteredYachts = responseData.data.filter(item => {
-          const price = item.yacht.per_hour_price;
-          return price >= filters.min_price && price <= filters.max_price;
-        });
+        // const filteredYachts = responseData.data.filter(item => {
+        //   const price = item?.yacht?.per_hour_price;
+        //   return price >= filters.min_price && price <= filters.max_price;
+        // }); 
+        const filteredYachts = responseData.data;
 
 
         // Sort the filtered yachts if needed
-        const sortedYachts = filteredYachts.sort((a, b) => {
-          return a.yacht.per_hour_price - b.yacht.per_hour_price;
+        const sortedYachts = filteredYachts?.sort((a, b) => {
+          return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
         });
-
-        setYachts(sortedYachts);
+        setOriginalYachts(sortedYachts)
       } else {
         setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
@@ -311,44 +389,31 @@ const Yachts = () => {
   };
 
   const resetFilters = () => {
-    setFilters({
-      min_price: 1000,
-      max_price: 4000,
-      min_guest: "",
-      max_guest: "",
-      sleep_capacity: "",
-      capacity: "",
-      location: "",
-      category_name: [],
-      subcategory_name: [],
-      boat_category: [],
-      price_des: false,
-      price_asc: false,
-      cabin_des: false,
-      cabin_asc: false,
-      engine_type: "",
-      number_of_cabin: "",
-      created_on: "",
-      min_length: "",
-      max_length: "",
-      amenities: [],
-      outdoor_equipment: [],
-      kitchen: [],
-      energy: [],
-      leisure: [],
-      navigation: [],
-      extra_comforts: [],
-      indoor: [],
-    });
-    handleFilterChange();
+    setFilters(initialFilterState);
   };
+
+/// calling on first render and reset
+  useEffect(() => {
+    if (JSON.stringify(filters) === JSON.stringify(initialFilterState)) {
+      handleFilterChange("reset");
+    }
+  }, [filters]);
+
+  // call onCancelEachFilter
+  useEffect(() => {
+    if (onCancelEachFilter) {
+      handleFilterChange("normal");
+      setonCancelEachFilter(false); 
+    }
+  }, [filters, onCancelEachFilter]);
+
 
   useEffect(() => {
     const getYachts = async () => {
       if (!userId) return;
       try {
         const data = await fetchYachts(userId);
-        setYachts(data);
+        setOriginalYachts(data)
       } catch (err) {
         setError(err.message || 'Unexpected Error');
       } finally {
@@ -377,6 +442,43 @@ const Yachts = () => {
       console.error('Error toggling wishlist:', error);
     }
   };
+
+  useEffect(() => {
+
+    if (!startSort) {
+      return;
+    }
+
+    let data = [...yachts];
+    if (selectedOption?.value === "default") {
+      data = [...originalYachts];
+    }
+    else if (selectedOption?.value === "Price-High-Low") {
+      data.sort((a, b) => b.yacht?.per_hour_price - a.yacht?.per_hour_price);
+    } else if (selectedOption?.value === "Price-Low-High") {
+      data.sort((a, b) => a.yacht?.per_hour_price - b.yacht?.per_hour_price);
+    } else if (selectedOption?.value === "Capacity-High-Low") {
+      data.sort((a, b) => b.yacht?.guest - a.yacht?.guest);
+    } else if (selectedOption?.value === "Capacity-Low-High") {
+      data.sort((a, b) => a.yacht?.guest - b.yacht?.guest);
+    }
+
+    if (JSON.stringify(data) !== JSON.stringify(yachts)) {
+      setYachts(data);
+    }
+  }, [selectedOption]);
+  useEffect(() => {
+    let data = [...originalYachts]
+    setYachts(data)
+  }, [originalYachts]);
+  //test
+  useEffect(() => {
+    console.log("yachts", yachts);
+  }, [yachts]);
+  useEffect(() => {
+    console.log("filters", filters);
+  }, [filters]);
+
 
   if (loading) {
     return (
@@ -436,19 +538,42 @@ const Yachts = () => {
 
   return (
     <section className="py-4 px-2">
+
       <div className="max-w-5xl mx-auto">
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
 
         <div className="flex flex-col space-y-4 mb-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center  w-full gap-2 flex-wrap">
               <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    <SlidersHorizontal className="h-4 w-4" />
-                    Filters
-                  </Button>
-                </SheetTrigger>
+                <div className="flex justify-between w-full">
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="gap-2">
+                      <SlidersHorizontal className="h-4 w-4" />
+                      Filters
+                    </Button>
+                  </SheetTrigger>
+
+                  <span>
+
+                    <div className="space-y-2">
+                      <Select value={selectedSortBy} onValueChange={handleChange}>
+                        <SelectTriggerSort className="w-full">
+                          <SelectValue placeholder="Sort By" />
+                        </SelectTriggerSort>
+                        <SelectContent>
+                          {sortByOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                  </span>
+                </div>
+
                 <SheetContent side="left" className="w-full sm:w-[540px]">
                   <SheetHeader>
                     <SheetTitle>Filters</SheetTitle>
@@ -457,7 +582,7 @@ const Yachts = () => {
                     <Button
                       className="w-full bg-[#BEA355] mt-6 rounded-full"
                       onClick={() => {
-                        handleFilterChange();
+                        handleFilterChange("normal");
                       }}
                     >
                       Show Results
@@ -847,7 +972,7 @@ const Yachts = () => {
                       <Button
                         className="w-full bg-[#BEA355] mt-6 rounded-full"
                         onClick={() => {
-                          handleFilterChange();
+                          handleFilterChange("normal");
                         }}
                       >
                         Show Results
@@ -865,62 +990,66 @@ const Yachts = () => {
                     className="px-3 py-1 flex items-center gap-1"
                   >
                     {filter}
-                    <X className="h-3 w-3 cursor-pointer" onClick={() => {
-                      const [type] = filter.split(':');
-                      switch (type) {
-                        case 'Price':
-                          setFilters(prev => ({ ...prev, min_price: 1000, max_price: 4000 }));
-                          break;
-                        case 'Guests':
-                          setFilters(prev => ({ ...prev, min_guest: '', max_guest: '' }));
-                          break;
-                        case 'Location':
-                          setFilters(prev => ({ ...prev, location: '' }));
-                          break;
-                        case 'Categories':
-                          setFilters(prev => ({ ...prev, category_name: [] }));
-                          break;
-                        case 'Boat Categories':
-                          setFilters(prev => ({ ...prev, boat_category: [] }));
-                          break;
-                        case 'Type':
-                          setFilters(prev => ({ ...prev, engine_type: '' }));
-                          break;
-                        case 'Length':
-                          setFilters(prev => ({ ...prev, min_length: '', max_length: '' }));
-                          break;
-                        case 'Min No. of Cabins':
-                          setFilters(prev => ({ ...prev, number_of_cabin: '' }));
-                          break;
-                        case 'Min Sleeping Capacity':
-                          setFilters(prev => ({ ...prev, sleep_capacity: '' }));
-                          break;
-                        case 'Amenities':
-                          setFilters(prev => ({ ...prev, amenities: [] })); // Added amenities filter
-                          break;
-                        case 'Outdoor Equipment':
-                          setFilters(prev => ({ ...prev, outdoor_equipment: [] })); // Added outdoor equipment filter
-                          break;
-                        case 'Kitchen':
-                          setFilters(prev => ({ ...prev, kitchen: [] })); // Added kitchen filter
-                          break;
-                        case 'Onboard Energy':
-                          setFilters(prev => ({ ...prev, energy: [] })); // Added energy filter
-                          break;
-                        case 'Leisure Activities':
-                          setFilters(prev => ({ ...prev, leisure: [] })); // Added leisure activities filter
-                          break;
-                        case 'Navigation Equipment':
-                          setFilters(prev => ({ ...prev, navigation: [] })); // Added navigation equipment filter
-                          break;
-                        case 'Extra Comforts':
-                          setFilters(prev => ({ ...prev, extra_comforts: [] })); // Added extra comforts filter
-                          break;
-                        case 'Indoor Equipment':
-                          setFilters(prev => ({ ...prev, indoor: [] })); // Added indoor equipment filter
-                          break;
-                      }
-                    }} />
+                    <X
+                      className="h-3 w-3 cursor-pointer"
+                      onClick={() => {
+                        const [type] = filter.split(':');
+                        switch (type) {
+                          case 'Price':
+                            setFilters(prev => ({ ...prev, min_price: 1000, max_price: 4000 }));
+                            break;
+                          case 'Guests':
+                            setFilters(prev => ({ ...prev, min_guest: '', max_guest: '' }));
+                            break;
+                          case 'Location':
+                            setFilters(prev => ({ ...prev, location: '' }));
+                            break;
+                          case 'Categories':
+                            setFilters(prev => ({ ...prev, category_name: [] }));
+                            break;
+                          case 'Boat Categories':
+                            setFilters(prev => ({ ...prev, boat_category: [] }));
+                            break;
+                          case 'Type':
+                            setFilters(prev => ({ ...prev, engine_type: '' }));
+                            break;
+                          case 'Length':
+                            setFilters(prev => ({ ...prev, min_length: '', max_length: '' }));
+                            break;
+                          case 'Min No. of Cabins':
+                            setFilters(prev => ({ ...prev, number_of_cabin: '' }));
+                            break;
+                          case 'Min Sleeping Capacity':
+                            setFilters(prev => ({ ...prev, sleep_capacity: '' }));
+                            break;
+                          case 'Amenities':
+                            setFilters(prev => ({ ...prev, amenities: [] }));
+                            break;
+                          case 'Outdoor Equipment':
+                            setFilters(prev => ({ ...prev, outdoor_equipment: [] }));
+                            break;
+                          case 'Kitchen':
+                            setFilters(prev => ({ ...prev, kitchen: [] }));
+                            break;
+                          case 'Onboard Energy':
+                            setFilters(prev => ({ ...prev, energy: [] }));
+                            break;
+                          case 'Leisure Activities':
+                            setFilters(prev => ({ ...prev, leisure: [] }));
+                            break;
+                          case 'Navigation Equipment':
+                            setFilters(prev => ({ ...prev, navigation: [] }));
+                            break;
+                          case 'Extra Comforts':
+                            setFilters(prev => ({ ...prev, extra_comforts: [] }));
+                            break;
+                          case 'Indoor Equipment':
+                            setFilters(prev => ({ ...prev, indoor: [] }));
+                            break;
+                        }
+                        setonCancelEachFilter(true); 
+                      }}
+                    />
                   </Badge>
                 ))}
                 {activeFilters.length > 0 && (
@@ -942,13 +1071,12 @@ const Yachts = () => {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {yachts.length > 0 ? (
             yachts.map((item) => {
-              if (!item || !item.yacht) return null;
+              if (!item || !item?.yacht) return null;
               return (
                 <Card
-                  key={item.yacht.id}
-                  className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                  key={item?.yacht?.id}
+                  className="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
                 >
-                  {/* <Link href={`/dashboard/yachts/${item.yacht.id}`}> */}
                   <div className="relative">
                     <Carousel className="w-full h-[221px]">
                       <CarouselContent>
@@ -999,19 +1127,20 @@ const Yachts = () => {
                           <ChevronRight />
                         </Button>
                       </CarouselNext>
+                      <CarouselDots />
                     </Carousel>
-                    <Link href={`/dashboard/yachts/${item.yacht.id}`}>
+                    {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
                       <div className="absolute inset-0"></div>
-                    </Link>
+                    {/* </Link> */}
 
                     <Button
                       variant="secondary"
                       size="icon"
                       className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
-                      onClick={() => handleWishlistToggle(item.yacht.id)}
+                      onClick={() => handleWishlistToggle(item?.yacht?.id)}
                     >
                       <Image
-                        src={favorites.has(item.yacht.id)
+                        src={favorites.has(item?.yacht?.id)
                           ? "/assets/images/wishlist.svg"
                           : "/assets/images/unwishlist.svg"
                         }
@@ -1023,40 +1152,43 @@ const Yachts = () => {
 
                     <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                       <span className="font-medium text-xs">
-                        AED <span className="font-bold text-lg text-primary">{item.yacht.per_hour_price}</span>
+                        AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_hour_price}</span>
                         <span className="text-xs font-light ml-1">/Hour</span>
                       </span>
                     </div>
                   </div>
-                  <CardContent className="px-4 py-2">
-                    <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
-                      <MapPin className="size-3 mr-1" /> {item.yacht.location || "Location Not Available"}
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item.yacht.name}</h3>
-                      <span className="font-medium text-xs">
-                        AED <span className="font-bold text-sm text-primary">{item.yacht.per_hour_price}</span>
-                        <span className="text-xs font-light ml-1">/Day</span>
-                      </span>
-                    </div>
-                    <div className="flex justify-start items-center gap-1">
-                      <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
-                      <p className="font-semibold text-xs">{item.yacht.length || 0} ft</p>
-                      <Dot />
-                      <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                        <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
-                        <p>Guests</p>
-                        <p>{item.yacht.guest || 0}</p>
+                  <Link href={`/dashboard/yachts/${item?.yacht?.id}`}>
+                    <CardContent className="px-4 py-2">
+                      <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
+                        <MapPin className="size-3 mr-1" /> {item?.yacht?.location || "Location Not Available"}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item?.yacht?.name}</h3>
+                        <span className="font-medium text-xs">
+                          AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_hour_price}</span>
+                          <span className="text-xs font-light ml-1">/Day</span>
+                        </span>
                       </div>
-                      <Dot />
-                      <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                        <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
-                        <p>Cabins</p>
-                        <p>{item.yacht.number_of_cabin || 0}</p>
+                      <div className="flex justify-start items-center gap-1 flex-wrap">
+                        <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
+                        <p className="font-semibold text-xs">{item?.yacht?.length || 0} ft</p>
+                        <Dot />
+                        <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                          <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
+                          <p>Guests</p>
+                          <p>{item?.yacht?.guest || 0}</p>
+                        </div>
+                        <Dot />
+                        <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                          <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
+                          <p>Cabins</p>
+                          <p>{item?.yacht?.number_of_cabin || 0}</p>
+                        </div>
+
                       </div>
-                    </div>
-                  </CardContent>
-                  {/* </Link> */}
+
+                    </CardContent>
+                  </Link>
                 </Card>
               )
             })
