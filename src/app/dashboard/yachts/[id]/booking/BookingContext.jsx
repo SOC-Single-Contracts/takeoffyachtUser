@@ -10,6 +10,7 @@ export const BookingProvider = ({ children }) => {
     endDate: null,
     startTime: new Date(),
     duration: 3,
+    bookingType: 'hourly',
     adults: 0,
     kids: 0,
     fullName: '',
@@ -24,7 +25,6 @@ export const BookingProvider = ({ children }) => {
     waterSports: 0,
     misc: 0,
     extras: [],
-    // Payment related fields
     cardNumber: '',
     expiryMonth: '',
     expiryYear: '',
@@ -49,33 +49,33 @@ export const BookingProvider = ({ children }) => {
   //   const extrasTotal = (bookingData.extras || []).reduce((total, item) => {
   //     return total + (item.price * item.quantity);
   //   }, 0);
-    
+
   //   return (hourlyRate * hours) + extrasTotal;
   // };
   const calculateTotal = () => {
     if (!selectedYacht?.yacht) return 0;
     
-    let basePrice = 0;
+    let baseTotal = 0;
     
-    if (bookingData.endDate) {
-      // Calculate for date range booking
-      const days = Math.ceil(
-        (new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24)
-      ) + 1;
-      basePrice = (selectedYacht.yacht.per_day_price || 0) * days;
+    if (bookingData.bookingType === 'hourly') {
+      const basePrice = selectedYacht.yacht.per_hour_price || 0;
+      const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;
+      const hours = bookingData.duration || 3;
+      const hourlyRate = bookingData.isNewYearBooking ? newYearPrice : basePrice;
+      baseTotal = hourlyRate * hours;
     } else {
-      // Calculate for hourly booking
-      const hourlyRate = bookingData.isNewYearBooking 
-        ? (selectedYacht.yacht.new_year_price || selectedYacht.yacht.per_hour_price || 0)
-        : (selectedYacht.yacht.per_hour_price || 0);
-      basePrice = hourlyRate * (bookingData.duration || 3);
+      // Date range booking
+      const startDate = new Date(bookingData.date);
+      const endDate = new Date(bookingData.endDate || bookingData.date);
+      const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+      baseTotal = (selectedYacht.yacht.per_day_price || 0) * days;
     }
     
     const extrasTotal = (bookingData.extras || []).reduce((total, item) => {
       return total + (item.price * item.quantity);
     }, 0);
-    
-    return basePrice + extrasTotal;
+
+    return baseTotal + extrasTotal;
   };
 
   return (

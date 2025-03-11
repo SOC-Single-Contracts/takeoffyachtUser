@@ -180,10 +180,6 @@ const Summary = ({ onNext, initialBookingId }) => {
   // };
 
 
-  // ... existing code ...
-
-// ... existing code ...
-
 const handleUpdateExtras = async () => {
   try {
     const bookingId = bookingDetails.id;
@@ -322,10 +318,59 @@ const handleUpdateExtras = async () => {
     }
   };
 
+  // const handleProceedToPayment = async () => {
+  //   try {
+
+  //     onNext();
+  //   } catch (error) {
+  //     console.error('Error proceeding to payment:', error);
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to proceed to payment. Please try again.",
+  //       variant: "destructive"
+  //     });
+  //   }
+  // };
   const handleProceedToPayment = async () => {
     try {
-
+      const bookingId = bookingDetails.id;
+      
+      // First, update extras if they were modified
+      await handleUpdateExtras();
+  
+      // Calculate payment amounts
+      const totalCost = bookingDetails.total_cost || calculateTotal();
+      const paidCost = bookingDetails.paid_cost || 0;
+      const remainingCost = bookingDetails.remaining_cost || 0;
+  
+      // Determine payment amount based on booking state
+      let paymentAmount;
+      let isRemainingPayment = false;
+  
+      if (paidCost > 0) {
+        // This is a remaining payment
+        paymentAmount = remainingCost;
+        isRemainingPayment = true;
+      } else {
+        // This is a new payment
+        paymentAmount = isPartialPayment ? totalCost * 0.25 : totalCost;
+      }
+  
+      // Update booking context with payment information
+      updateBookingData({
+        bookingId: bookingId,
+        totalCost: totalCost,
+        remainingCost: remainingCost,
+        paidCost: paidCost,
+        isPartialPayment: isPartialPayment,
+        isRemainingPayment: isRemainingPayment,
+        paymentAmount: paymentAmount,
+        extras: editableExtras.filter(extra => extra.quantity > 0)
+      });
+  
+      // Proceed to payment step
       onNext();
+  
     } catch (error) {
       console.error('Error proceeding to payment:', error);
       toast({
@@ -335,6 +380,7 @@ const handleUpdateExtras = async () => {
       });
     }
   };
+  
 
   const updateExtraQuantity = (index, newQuantity) => {
   setEditableExtras(prev => {
@@ -446,11 +492,88 @@ const handleUpdateExtras = async () => {
   };
 
   if (loading) {
-    return <div>Loading booking details...</div>;
+    return (
+      <div className="max-w-5xl mx-auto container px-2 space-y-6 mt-8">
+        {/* Skeleton for Yacht Images */}
+        <div className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="relative h-48 rounded-lg bg-gray-200 animate-pulse" />
+            ))}
+          </div>
+        </div>
+  
+        {/* Skeleton for Contact Details Table */}
+        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-semibold text-md text-black">Your Contact Details</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white dark:bg-gray-800 text-xs">
+            {[...Array(4)].map((_, index) => (
+              <TableRow key={index}>
+                <TableCell className="flex items-center gap-2">
+                  <div className="h-4 w-24 bg-gray-200 animate-pulse" />
+                </TableCell>
+                <TableCell className="font-medium">
+                  <div className="h-4 w-32 bg-gray-200 animate-pulse" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+  
+        {/* Skeleton for Booking Details Table */}
+        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-semibold text-md text-black">Booking Details</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white dark:bg-gray-800 text-xs">
+            {[...Array(4)].map((_, index) => (
+              <TableRow key={index}>
+                <TableCell className="flex items-center gap-2">
+                  <div className="h-4 w-24 bg-gray-200 animate-pulse" />
+                </TableCell>
+                <TableCell className="font-medium">
+                  <div className="h-4 w-32 bg-gray-200 animate-pulse" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+  
+        {/* Skeleton for Extras Table */}
+        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-semibold text-md text-black">Optional Extras</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white dark:bg-gray-800 text-xs">
+            {[...Array(4)].map((_, index) => (
+              <TableRow key={index}>
+                <TableCell className="font-semibold">
+                  <div className="h-4 w-32 bg-gray-200 animate-pulse" />
+                </TableCell>
+                <TableCell>
+                  <div className="h-4 w-16 bg-gray-200 animate-pulse" />
+                </TableCell>
+                <TableCell className="font-medium">
+                  <div className="h-4 w-24 bg-gray-200 animate-pulse" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
   }
 
   return (
-    <section className="">
+    <section>
       <div className="max-w-5xl mx-auto container px-2 space-y-6 mt-8">
         {/* Yacht Images */}
         <div className="mb-6">
@@ -671,11 +794,21 @@ const handleUpdateExtras = async () => {
             Update Extras
           </Button>
 
-             <Button
+             {/* <Button
                 onClick={handleProceedToPayment}
                 className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
               >
                 Proceed to Payment
+              </Button> */}
+              <Button
+                onClick={handleProceedToPayment}
+                className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
+              >
+                {bookingDetails?.paid_cost > 0
+                  ? `Pay Remaining (AED ${bookingDetails.remaining_cost.toFixed(2)})`
+                  : isPartialPayment
+                  ? `Pay 25% (AED ${(bookingDetails.total_cost * 0.25).toFixed(2)})`
+                  : `Pay Full Amount (AED ${bookingDetails.total_cost.toFixed(2)})`}
               </Button>
         </div>
       </div>

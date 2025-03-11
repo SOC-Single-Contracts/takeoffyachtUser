@@ -7,7 +7,7 @@ import Selection from './Selection';
 import Payment from './Payment';
 import Summary from './Summary';
 import { BookingProvider } from './BookingContext';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { fetchYachts } from '@/api/yachts';
 import { useSession } from 'next-auth/react';
 import { useBookingContext } from './BookingContext';
@@ -22,35 +22,30 @@ const steps = [
   { id: 4, title: 'Make Payment', component: Payment },
 ];
 
-const BookingWizardContent = () => {
+const BookingWizardContent = ({ initialBookingId }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const { id } = useParams();
   const { data: session, status } = useSession();
   const { setSelectedYacht, updateBookingData } = useBookingContext();
-  const searchParams = useSearchParams();
-  const bookingId = searchParams.get("bookingId");
-  const amount = searchParams.get("amount");
-  const isPartialPayment = searchParams.get("isPartialPayment") === "true";
+  const router = useRouter();
   const { toast } = useToast();
 
-  const router = useRouter();
-
   // Authentication check
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      toast({
-        title: "Login Required",
-        description: "You need to be logged in to book a yacht",
-        variant: "destructive"
-      });
-      router.push('/login');
-    }
-  }, [status, toast, router]);
+  // useEffect(() => {
+  //   if (status === 'unauthenticated') {
+  //     toast({
+  //       title: "Login Required",
+  //       description: "You need to be logged in to book a yacht",
+  //       variant: "destructive"
+  //     });
+  //     router.push('/login');
+  //   }
+  // }, [status, toast, router]);
 
   useEffect(() => {
     const getYachtDetails = async () => {
       try {
-        const yachts = await fetchYachts(session?.user?.userid);
+        const yachts = await fetchYachts(1);
         const yacht = yachts.find(
           (item) => item.yacht.id.toString() === id
         );
@@ -62,22 +57,18 @@ const BookingWizardContent = () => {
       }
     };
 
-    if (session?.user?.userid && id) {
+    if (id) {
       getYachtDetails();
     }
-  }, [id, session?.user?.userid, setSelectedYacht]);
+  }, [id, setSelectedYacht]);
 
+  // If initialBookingId is provided, update booking data
   useEffect(() => {
-    // If bookingId and amount are present in URL, go to payment step
-    if (bookingId && amount && isPartialPayment) {
-      setCurrentStep(4); // Set to payment step
-      updateBookingData({
-        bookingId,
-        remainingAmount: amount,
-        isPartialPayment: true
-      });
+    if (initialBookingId) {
+      updateBookingData({ bookingId: initialBookingId });
+      setCurrentStep(3); // Move directly to Summary step
     }
-  }, [bookingId, amount, isPartialPayment, updateBookingData]);
+  }, [initialBookingId]);
 
   // Show loading while checking session
   if (status === 'loading') {
@@ -85,13 +76,9 @@ const BookingWizardContent = () => {
   }
 
   // Prevent rendering if not authenticated
-  if (status === 'unauthenticated') {
-    return null;
-  }
-
-  const handleEditExtras = () => {
-    setCurrentStep(1); // Navigate back to the Selection step
-  };
+  // if (status === 'unauthenticated') {
+  //   return null;
+  // }
 
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, steps.length));
@@ -104,8 +91,8 @@ const BookingWizardContent = () => {
   const CurrentStepComponent = steps[currentStep - 1].component;
 
   return (
-    <section className="py-10">
-      <div className="max-w-5xl mx-auto px-4">
+    <section className="py-6 md:py-10">
+      <div className="max-w-5xl mx-auto px-2">
         <div className="flex items-center space-x-4 mb-8">
           {currentStep > 1 && (
             <Button
@@ -126,17 +113,20 @@ const BookingWizardContent = () => {
         </div>
 
         <div className="mt-8">
-          <CurrentStepComponent onNext={handleNext} onEditExtras={handleEditExtras} />
+          <CurrentStepComponent 
+            onNext={handleNext} 
+            initialBookingId={initialBookingId} 
+          />
         </div>
       </div>
     </section>
   );
 };
 
-const BookingWizard = () => {
+const BookingWizard = ({ initialBookingId }) => {
   return (
     <BookingProvider>
-      <BookingWizardContent />
+      <BookingWizardContent initialBookingId={initialBookingId} />
     </BookingProvider>
   );
 };
