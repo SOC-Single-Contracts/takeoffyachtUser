@@ -120,7 +120,7 @@ const Summary = ({ onNext, initialBookingId }) => {
   //   try {
   //     const bookingId = bookingDetails.id;
   //     const updatedTotalCost = calculateUpdatedTotalCost();
-  
+
   //     const payload = {
   //       extras: editableExtras.map(extra => ({
   //         extra_id: extra.extra_id,
@@ -131,7 +131,7 @@ const Summary = ({ onNext, initialBookingId }) => {
   //       total_cost: updatedTotalCost,
   //       remaining_cost: bookingDetails.paid_cost > 0 ? updatedTotalCost - bookingDetails.paid_cost : 0
   //     };
-  
+
   //     const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
   //       method: 'PATCH',
   //       headers: {
@@ -139,17 +139,17 @@ const Summary = ({ onNext, initialBookingId }) => {
   //       },
   //       body: JSON.stringify(payload),
   //     });
-  
+
   //     if (!response.ok) {
   //       throw new Error('Failed to update booking details');
   //     }
-  
+
   //     const result = await response.json();
-      
+
   //     if (result.data) {
   //       setBookingDetails(result.data);
   //       setEditableExtras(result.data.extras_data);
-        
+
   //       updateBookingData({
   //         extras: result.data.extras_data.filter(extra => extra.quantity > 0),
   //         totalCost: result.data.total_cost,
@@ -157,18 +157,18 @@ const Summary = ({ onNext, initialBookingId }) => {
   //         paidCost: result.data.paid_cost
   //       });
   //     }
-  
+
   //     toast({
   //       title: "Success",
   //       description: "Extras updated successfully",
   //       variant: "success"
   //     });
-  
+
   //     const refreshResponse = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`);
   //     const refreshedData = await refreshResponse.json();
   //     setBookingDetails(refreshedData);
   //     setEditableExtras(refreshedData.extras_data);
-  
+
   //   } catch (error) {
   //     console.error('Error updating extras:', error);
   //     toast({
@@ -180,85 +180,85 @@ const Summary = ({ onNext, initialBookingId }) => {
   // };
 
 
-const handleUpdateExtras = async () => {
-  try {
-    const bookingId = bookingDetails.id;
+  const handleUpdateExtras = async () => {
+    try {
+      const bookingId = bookingDetails.id;
 
-    // Calculate base cost based on booking type
-    let baseCost = 0;
-    if (bookingDetails.booking_type === 'hourly') {
-      const hourlyRate = selectedYacht?.yacht?.per_hour_price || 0;
-      baseCost = hourlyRate * (bookingDetails.duration_hour || 3);
-    } else {
-      // Date range booking
-      const startDate = new Date(bookingDetails.selected_date);
-      const endDate = new Date(bookingDetails.end_date);
-      const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-      baseCost = (selectedYacht?.yacht?.per_day_price || 0) * days;
-    }
+      // Calculate base cost based on booking type
+      let baseCost = 0;
+      if (bookingDetails.booking_type === 'hourly') {
+        const hourlyRate = selectedYacht?.yacht?.per_hour_price || 0;
+        baseCost = hourlyRate * (bookingDetails.duration_hour || 3);
+      } else {
+        // Date range booking
+        const startDate = new Date(bookingDetails.selected_date);
+        const endDate = new Date(bookingDetails.end_date);
+        const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        baseCost = (selectedYacht?.yacht?.per_day_price || 0) * days;
+      }
 
-    // Calculate extras cost
-    const extrasCost = editableExtras.reduce((total, extra) => {
-      return total + (parseFloat(extra.price) * parseInt(extra.quantity || 0));
-    }, 0);
+      // Calculate extras cost
+      const extrasCost = editableExtras.reduce((total, extra) => {
+        return total + (parseFloat(extra.price) * parseInt(extra.quantity || 0));
+      }, 0);
 
-    // Calculate total cost
-    const totalCost = baseCost + extrasCost;
+      // Calculate total cost
+      const totalCost = baseCost + extrasCost;
 
-    const payload = {
-      extras: editableExtras.map(extra => ({
-        extra_id: extra.extra_id,
-        name: extra.name,
-        quantity: parseInt(extra.quantity || 0),
-        price: parseFloat(extra.price)
-      })),
-      total_cost: totalCost,
-      remaining_cost: totalCost - (bookingDetails.paid_cost || 0)
-    };
+      const payload = {
+        extras: editableExtras.map(extra => ({
+          extra_id: extra.extra_id,
+          name: extra.name,
+          quantity: parseInt(extra.quantity || 0),
+          price: parseFloat(extra.price)
+        })),
+        total_cost: totalCost,
+        remaining_cost: totalCost - (bookingDetails.paid_cost || 0)
+      };
 
-    const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update booking details');
-    }
-
-    const result = await response.json();
-    
-    if (result.data) {
-      setBookingDetails(result.data);
-      setEditableExtras(result.data.extras_data || []);
-      
-      // Update booking context with new data
-      updateBookingData({
-        extras: result.data.extras_data.filter(extra => extra.quantity > 0),
-        totalCost: result.data.total_cost,
-        remainingCost: result.data.remaining_cost,
-        paidCost: result.data.paid_cost
+      const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to update booking details');
+      }
+
+      const result = await response.json();
+
+      if (result.data) {
+        setBookingDetails(result.data);
+        setEditableExtras(result.data.extras_data || []);
+
+        // Update booking context with new data
+        updateBookingData({
+          extras: result.data.extras_data.filter(extra => extra.quantity > 0),
+          totalCost: result.data.total_cost,
+          remainingCost: result.data.remaining_cost,
+          paidCost: result.data.paid_cost
+        });
+
+        toast({
+          title: "Success",
+          description: "Booking details updated successfully",
+          variant: "success"
+        });
+      }
+    } catch (error) {
+      console.error('Error updating booking details:', error);
       toast({
-        title: "Success",
-        description: "Booking details updated successfully",
-        variant: "success"
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
       });
     }
-  } catch (error) {
-    console.error('Error updating booking details:', error);
-    toast({
-      title: "Error",
-      description: error.message,
-      variant: "destructive"
-    });
-  }
-};
+  };
 
-// ... rest of the code ...
+  // ... rest of the code ...
 
   const handleUpdatePartialPayment = async () => {
     try {
@@ -334,19 +334,19 @@ const handleUpdateExtras = async () => {
   const handleProceedToPayment = async () => {
     try {
       const bookingId = bookingDetails.id;
-      
+
       // First, update extras if they were modified
       await handleUpdateExtras();
-  
+
       // Calculate payment amounts
       const totalCost = bookingDetails.total_cost || calculateTotal();
       const paidCost = bookingDetails.paid_cost || 0;
       const remainingCost = bookingDetails.remaining_cost || 0;
-  
+
       // Determine payment amount based on booking state
       let paymentAmount;
       let isRemainingPayment = false;
-  
+
       if (paidCost > 0) {
         // This is a remaining payment
         paymentAmount = remainingCost;
@@ -355,7 +355,7 @@ const handleUpdateExtras = async () => {
         // This is a new payment
         paymentAmount = isPartialPayment ? totalCost * 0.25 : totalCost;
       }
-  
+
       // Update booking context with payment information
       updateBookingData({
         bookingId: bookingId,
@@ -367,10 +367,10 @@ const handleUpdateExtras = async () => {
         paymentAmount: paymentAmount,
         extras: editableExtras.filter(extra => extra.quantity > 0)
       });
-  
+
       // Proceed to payment step
       onNext();
-  
+
     } catch (error) {
       console.error('Error proceeding to payment:', error);
       toast({
@@ -380,18 +380,18 @@ const handleUpdateExtras = async () => {
       });
     }
   };
-  
+
 
   const updateExtraQuantity = (index, newQuantity) => {
-  setEditableExtras(prev => {
-    const updated = [...prev];
-    updated[index] = {
-      ...updated[index],
-      quantity: parseInt(newQuantity)
-    };
-    return updated;
-  });
-};
+    setEditableExtras(prev => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        quantity: parseInt(newQuantity)
+      };
+      return updated;
+    });
+  };
 
   const handleCopyLink = () => {
     const bookingId = bookingDetails.id;
@@ -433,6 +433,23 @@ const handleUpdateExtras = async () => {
         <TableBody className="bg-white dark:bg-gray-800 text-xs">
           <TableRow>
             <TableCell className="font-semibold">
+              {bookingDetails.end_date
+                ? `${safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')} - ${safeFormat(bookingDetails.end_date, 'dd MMMM yyyy')}`
+                : safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')
+              }
+              {bookingDetails.is_new_year_booking && " - New Year's Eve Rate"}
+            </TableCell>
+            <TableCell className="font-medium">
+              AED {bookingDetails.end_date
+                ? (selectedYacht?.yacht?.per_day_price || 0) * (Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1))
+                : (bookingDetails.is_new_year_booking
+                  ? (selectedYacht?.yacht?.new_year_price || 0)
+                  : (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour
+              }
+            </TableCell>
+          </TableRow>
+          {/* <TableRow>
+            <TableCell className="font-semibold">
               Charter ({bookingDetails.duration_hour} hours)
               {bookingDetails.is_new_year_booking && " - New Year's Eve Rate"}
             </TableCell>
@@ -441,7 +458,7 @@ const handleUpdateExtras = async () => {
                 (selectedYacht?.yacht?.new_year_price || 0) :
                 (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour}
             </TableCell>
-          </TableRow>
+          </TableRow> */}
           {bookingDetails.extras_data && Array.isArray(bookingDetails.extras_data) && bookingDetails.extras_data.map((item) => (
             <TableRow key={item.extra_id}>
               <TableCell className="font-semibold">{item.name}</TableCell>
@@ -502,7 +519,7 @@ const handleUpdateExtras = async () => {
             ))}
           </div>
         </div>
-  
+
         {/* Skeleton for Contact Details Table */}
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
@@ -523,7 +540,7 @@ const handleUpdateExtras = async () => {
             ))}
           </TableBody>
         </Table>
-  
+
         {/* Skeleton for Booking Details Table */}
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
@@ -544,7 +561,7 @@ const handleUpdateExtras = async () => {
             ))}
           </TableBody>
         </Table>
-  
+
         {/* Skeleton for Extras Table */}
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
@@ -679,7 +696,7 @@ const handleUpdateExtras = async () => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-white dark:bg-gray-800 text-xs">
-            <TableRow>
+            {/* <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <span className="font-semibold">Date</span>
@@ -687,14 +704,44 @@ const handleUpdateExtras = async () => {
               <TableCell className="font-medium">
                 {safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')}
               </TableCell>
-            </TableRow>
-            <TableRow>
+            </TableRow> */}
+            {/* <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span className="font-semibold">Time & Duration</span>
               </TableCell>
               <TableCell className="font-medium">
                 {safeFormat(bookingDetails.starting_time, 'hh:mm a')} ({bookingDetails.duration_hour} hours)
+              </TableCell>
+            </TableRow> */}
+            <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span className="font-semibold">Date</span>
+              </TableCell>
+              <TableCell className="font-medium">
+                {bookingDetails.end_date
+                  ? `${safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')} - ${safeFormat(bookingDetails.end_date, 'dd MMMM yyyy')}`
+                  : safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')
+                }
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span className="font-semibold">
+                  {bookingDetails.end_date ? 'Duration' : 'Time & Duration'}
+                </span>
+              </TableCell>
+              <TableCell className="font-medium">
+                {/* {bookingDetails.end_date 
+                  ? ${Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days
+                  : ${safeFormat(bookingDetails.starting_time, 'hh:mm a')} (${bookingDetails.duration_hour} hours)
+                } */}
+                {bookingDetails.end_date
+                  ? `${Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days`
+                  : `${safeFormat(bookingDetails.starting_time, 'hh:mm a')} (${bookingDetails.duration_hour} hours)`
+                }
               </TableCell>
             </TableRow>
             <TableRow>
@@ -794,22 +841,22 @@ const handleUpdateExtras = async () => {
             Update Extras
           </Button>
 
-             {/* <Button
+          {/* <Button
                 onClick={handleProceedToPayment}
                 className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
               >
                 Proceed to Payment
               </Button> */}
-              <Button
-                onClick={handleProceedToPayment}
-                className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
-              >
-                {bookingDetails?.paid_cost > 0
-                  ? `Pay Remaining (AED ${bookingDetails.remaining_cost.toFixed(2)})`
-                  : isPartialPayment
-                  ? `Pay 25% (AED ${(bookingDetails.total_cost * 0.25).toFixed(2)})`
-                  : `Pay Full Amount (AED ${bookingDetails.total_cost.toFixed(2)})`}
-              </Button>
+          <Button
+            onClick={handleProceedToPayment}
+            className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
+          >
+            {bookingDetails?.paid_cost > 0
+              ? `Pay Remaining (AED ${bookingDetails.remaining_cost.toFixed(2)})`
+              : isPartialPayment
+                ? `Pay 25% (AED ${(bookingDetails.total_cost * 0.25).toFixed(2)})`
+                : `Pay Full Amount (AED ${bookingDetails.total_cost.toFixed(2)})`}
+          </Button>
         </div>
       </div>
     </section>

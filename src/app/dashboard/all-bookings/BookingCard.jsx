@@ -158,7 +158,7 @@ const BookingCards = ({ bookings, loading }) => {
   // If loading, show skeleton loaders
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 w-full space-x-4">
+      <div className="flex flex-wrap w-full space-x-4">
         {Array.from({ length: 4 }).map((_, index) => (
           <BookingSkeleton key={index} />
         ))}

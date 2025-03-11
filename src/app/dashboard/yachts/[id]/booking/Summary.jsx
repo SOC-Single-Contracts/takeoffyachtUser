@@ -433,7 +433,7 @@ const handleUpdateExtras = async () => {
           </TableRow>
         </TableHeader>
         <TableBody className="bg-white dark:bg-gray-800 text-xs">
-          <TableRow>
+          {/* <TableRow>
             <TableCell className="font-semibold">
               Charter ({bookingDetails.duration_hour} hours)
               {bookingDetails.is_new_year_booking && " - New Year's Eve Rate"}
@@ -442,6 +442,23 @@ const handleUpdateExtras = async () => {
               AED {(bookingDetails.is_new_year_booking ?
                 (selectedYacht?.yacht?.new_year_price || 0) :
                 (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour}
+            </TableCell>
+          </TableRow> */}
+           <TableRow>
+            <TableCell className="font-semibold">
+              {bookingDetails.end_date
+                ? `${safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')} - ${safeFormat(bookingDetails.end_date, 'dd MMMM yyyy')}`
+                : safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')
+              }
+              {bookingDetails.is_new_year_booking && " - New Year's Eve Rate"}
+            </TableCell>
+            <TableCell className="font-medium">
+              AED {bookingDetails.end_date
+                ? (selectedYacht?.yacht?.per_day_price || 0) * (Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1))
+                : (bookingDetails.is_new_year_booking
+                  ? (selectedYacht?.yacht?.new_year_price || 0)
+                  : (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour
+              }
             </TableCell>
           </TableRow>
           {bookingDetails.extras_data && Array.isArray(bookingDetails.extras_data) && bookingDetails.extras_data.map((item) => (
@@ -681,7 +698,7 @@ const handleUpdateExtras = async () => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-white dark:bg-gray-800 text-xs">
-            <TableRow>
+            {/* <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <span className="font-semibold">Date</span>
@@ -689,14 +706,44 @@ const handleUpdateExtras = async () => {
               <TableCell className="font-medium">
                 {safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')}
               </TableCell>
-            </TableRow>
+            </TableRow> */}
             <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span className="font-semibold">Date</span>
+              </TableCell>
+              <TableCell className="font-medium">
+                {bookingDetails.end_date
+                  ? `${safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')} - ${safeFormat(bookingDetails.end_date, 'dd MMMM yyyy')}`
+                  : safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')
+                }
+              </TableCell>
+            </TableRow>
+            {/* <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span className="font-semibold">Time & Duration</span>
               </TableCell>
               <TableCell className="font-medium">
                 {safeFormat(bookingDetails.starting_time, 'hh:mm a')} ({bookingDetails.duration_hour} hours)
+              </TableCell>
+            </TableRow> */}
+            <TableRow>
+              <TableCell className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span className="font-semibold">
+                  {bookingDetails.end_date ? 'Duration' : 'Time & Duration'}
+                </span>
+              </TableCell>
+              <TableCell className="font-medium">
+                {/* {bookingDetails.end_date 
+                  ? ${Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days
+                  : ${safeFormat(bookingDetails.starting_time, 'hh:mm a')} (${bookingDetails.duration_hour} hours)
+                } */}
+                {bookingDetails.end_date
+                  ? `${Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days`
+                  : `${safeFormat(bookingDetails.starting_time, 'hh:mm a')} (${bookingDetails.duration_hour} hours)`
+                }
               </TableCell>
             </TableRow>
             <TableRow>
@@ -721,7 +768,7 @@ const handleUpdateExtras = async () => {
         </Table>
 
         {/* Extras Table with Editable Quantities */}
-        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+        {/* <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
             <TableRow>
               <TableHead className="font-semibold text-md text-black">
@@ -756,7 +803,45 @@ const handleUpdateExtras = async () => {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+        </Table> */}
+        <Table className="bg-[#F4F0E4] w-full rounded-lg shadow-lg">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="font-semibold text-md text-black">
+        Optional Extras
+      </TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody className="bg-white dark:bg-gray-800 text-xs">
+    {editableExtras.map((extra, index) => (
+      <TableRow key={extra.extra_id} className="hover:bg-gray-100 transition-colors duration-200">
+        <TableCell className="font-semibold">{extra.name}</TableCell>
+        <TableCell>
+          <div className="flex items-center">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => updateExtraQuantity(index, Math.max(0, extra.quantity - 1))}
+              className="bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+            >
+              -
+            </Button>
+            <span className="mx-2 font-medium">{extra.quantity}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => updateExtraQuantity(index, extra.quantity + 1)}
+              className="bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+            >
+              +
+            </Button>
+          </div>
+        </TableCell>
+        <TableCell className="font-medium">AED {extra.price * extra.quantity}</TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
 
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
