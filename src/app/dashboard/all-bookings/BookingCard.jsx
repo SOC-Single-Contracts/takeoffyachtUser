@@ -230,48 +230,48 @@ const BookingCard = ({ booking }) => {
     {bookingDetails.name}
   </h2>
   <div className="flex flex-row justify-start gap-6 mb-4">
-    <div className="flex flex-col space-y-1">
-      <span className="font-medium text-gray-600 dark:text-gray-400">Departure:</span>
-      <span className="font-medium text-gray-600 dark:text-gray-400">Duration:</span>
-      <span className="font-medium text-gray-600 dark:text-gray-400">Dates:</span>
-      <span className="font-medium text-gray-600 dark:text-gray-400">Guests:</span>
-      <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
-    </div>
-    <div className="flex flex-col space-y-1">
+  <div className="flex flex-col space-y-1">
+    <span className="font-medium text-gray-600 dark:text-gray-400">Departure:</span>
+    <span className="font-medium text-gray-600 dark:text-gray-400">Duration:</span>
+    <span className="font-medium text-gray-600 dark:text-gray-400">Dates:</span>
+    <span className="font-medium text-gray-600 dark:text-gray-400">Guests:</span>
+    <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
+  </div>
+  <div className="flex flex-col space-y-1">
+    <span className="font-light text-gray-600 dark:text-gray-400">
+      {new Date(booking.selected_date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}
+    </span>
+    {bookingDetails.booking_type === "hourly" ? (
       <span className="font-light text-gray-600 dark:text-gray-400">
-        {new Date(booking.selected_date).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })}
+        {bookingDetails.duration} hours
       </span>
-      {bookingDetails.booking_type === "hourly" ? (
+    ) : (
+      <>
         <span className="font-light text-gray-600 dark:text-gray-400">
           {bookingDetails.duration} hours
         </span>
-      ) : (
-        <>
-          <span className="font-light text-gray-600 dark:text-gray-400">
-            {bookingDetails.duration} hours
-          </span>
+        <span className="font-light text-gray-600 dark:text-gray-400">
           {booking.yacht.from_date && booking.yacht.to_date ? (
-  <span className="font-light text-gray-600 dark:text-gray-400">
-    {new Date(booking.yacht.from_date).toLocaleDateString()} - {new Date(booking.yacht.to_date).toLocaleDateString()}
-  </span>
-) : (
-  <span className="font-light text-gray-600 dark:text-gray-400">N/A</span>
-)}
-        </>
-      )}
-      <span className="font-light text-gray-600 dark:text-gray-400">
-        {bookingDetails.guests}
-      </span>
-      <span className="font-light text-xs text-gray-700 dark:text-gray-300 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md flex items-center gap-1">
-        <MapPin className="size-3" />
-        {bookingDetails.location}
-      </span>
-    </div>
+            `${new Date(booking.yacht.from_date).toLocaleDateString()} - ${new Date(booking.yacht.to_date).toLocaleDateString()}`
+          ) : (
+            'N/A'
+          )}
+        </span>
+      </>
+    )}
+    <span className="font-light text-gray-600 dark:text-gray-400">
+      {bookingDetails.guests}
+    </span>
+    <span className="font-light text-xs text-gray-700 dark:text-gray-300 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md flex items-center gap-1">
+      <MapPin className="size-3" />
+      {bookingDetails.location}
+    </span>
   </div>
+</div>
   <Link href={`/dashboard/${type}/${id}/booking/booking-summary?bookingId=${booking.id}`}
         onClick={(e) => {
           console.log('Booking Details:', {
