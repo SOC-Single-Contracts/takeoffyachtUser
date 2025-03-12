@@ -376,6 +376,7 @@ const Yachts = () => {
           return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
         });
         setOriginalYachts(sortedYachts)
+
       } else {
         setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
@@ -408,21 +409,22 @@ const Yachts = () => {
   }, [filters, onCancelEachFilter]);
 
 
-  useEffect(() => {
-    const getYachts = async () => {
-      if (!userId) return;
-      try {
-        const data = await fetchYachts(userId);
-        setOriginalYachts(data)
-      } catch (err) {
-        setError(err.message || 'Unexpected Error');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const getYachts = async () => {
+  //     if (!userId) return;
+  //     try {
+  //       const data = await fetchYachts(userId);
+  //       console.log("its works 1")
+  //       setOriginalYachts(data)
+  //     } catch (err) {
+  //       setError(err.message || 'Unexpected Error');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    getYachts();
-  }, [userId]);
+  //   getYachts();
+  // }, [userId]);
 
   const handleWishlistToggle = async (yachtId) => {
     if (!userId) return;
@@ -1070,7 +1072,7 @@ const Yachts = () => {
         {/* Cards Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {yachts.length > 0 ? (
-            yachts.map((item) => {
+            yachts.map((item,ind) => {
               if (!item || !item?.yacht) return null;
               const images = [
                 item?.yacht?.yacht_image,
@@ -1095,6 +1097,8 @@ const Yachts = () => {
                 item?.yacht?.image19,
                 item?.yacht?.image20,
               ].filter((image) => typeof image === "string" && image.trim() !== "");
+              // console.log("item",ind,item,images)
+
               return (
                 <Card
                   key={item?.yacht?.id}

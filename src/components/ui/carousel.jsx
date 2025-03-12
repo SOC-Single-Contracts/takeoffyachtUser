@@ -197,7 +197,7 @@ const CarouselDots = React.forwardRef(({ className, ...props }, ref) => {
   React.useEffect(() => {
     if (!api) return
     setSlideCount(api.scrollSnapList().length)
-  }, [api])
+  }, [api,selectedIndex])
 
   return (
     <div
