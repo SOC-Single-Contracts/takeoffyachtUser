@@ -1072,6 +1072,29 @@ const Yachts = () => {
           {yachts.length > 0 ? (
             yachts.map((item) => {
               if (!item || !item?.yacht) return null;
+              const images = [
+                item?.yacht?.yacht_image,
+                item?.yacht?.image1,
+                item?.yacht?.image2,
+                item?.yacht?.image3,
+                item?.yacht?.image4,
+                item?.yacht?.image5,
+                item?.yacht?.image6,
+                item?.yacht?.image7,
+                item?.yacht?.image8,
+                item?.yacht?.image9,
+                item?.yacht?.image10,
+                item?.yacht?.image11,
+                item?.yacht?.image12,
+                item?.yacht?.image13,
+                item?.yacht?.image14,
+                item?.yacht?.image15,
+                item?.yacht?.image16,
+                item?.yacht?.image17,
+                item?.yacht?.image18,
+                item?.yacht?.image19,
+                item?.yacht?.image20,
+              ].filter((image) => typeof image === "string" && image.trim() !== "");
               return (
                 <Card
                   key={item?.yacht?.id}
@@ -1080,29 +1103,7 @@ const Yachts = () => {
                   <div className="relative">
                     <Carousel className="w-full h-[221px]">
                       <CarouselContent>
-                        {[
-                          item?.yacht?.yacht_image,
-                          item?.yacht?.image1,
-                          item?.yacht?.image2,
-                          item?.yacht?.image3,
-                          item?.yacht?.image4,
-                          item?.yacht?.image5,
-                          item?.yacht?.image6,
-                          item?.yacht?.image7,
-                          item?.yacht?.image8,
-                          item?.yacht?.image9,
-                          item?.yacht?.image10,
-                          item?.yacht?.image11,
-                          item?.yacht?.image12,
-                          item?.yacht?.image13,
-                          item?.yacht?.image14,
-                          item?.yacht?.image15,
-                          item?.yacht?.image16,
-                          item?.yacht?.image17,
-                          item?.yacht?.image18,
-                          item?.yacht?.image19,
-                          item?.yacht?.image20,
-                        ].filter(image => image !== null).map((image, index) => (
+                        {images?.filter(image => image !== null).map((image, index) => (
                           <CarouselItem key={index}>
                             <Image
                               src={image ? `https://api.takeoffyachts.com${image}` : '/assets/images/fycht.jpg'}
@@ -1127,7 +1128,8 @@ const Yachts = () => {
                           <ChevronRight />
                         </Button>
                       </CarouselNext>
-                      <CarouselDots />
+                      <CarouselDots yId={item?.yacht?.id} />
+                      
                     </Carousel>
                     {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
                       {/* <div className="absolute inset-0"></div> */}

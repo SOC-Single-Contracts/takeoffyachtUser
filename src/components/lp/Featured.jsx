@@ -188,28 +188,28 @@ const Featured = () => {
           {yachts.slice(0, 6).map((yachtItem) => {
             // Collect all image URLs
             const images = [
-              yachtItem.yacht.yacht_image,
-              yachtItem.yacht.image1,
-              yachtItem.yacht.image2,
-              yachtItem.yacht.image3,
-              yachtItem.yacht.image4,
-              yachtItem.yacht.image5,
-              yachtItem.yacht.image6,
-              yachtItem.yacht.image7,
-              yachtItem.yacht.image8,
-              yachtItem.yacht.image9,
-              yachtItem.yacht.image10,
-              yachtItem.yacht.image11,
-              yachtItem.yacht.image12,
-              yachtItem.yacht.image13,
-              yachtItem.yacht.image14,
-              yachtItem.yacht.image15,
-              yachtItem.yacht.image16,
-              yachtItem.yacht.image17,
-              yachtItem.yacht.image18,
-              yachtItem.yacht.image19,
-              yachtItem.yacht.image20,
-            ].filter(image => image !== null); // Filter out null images
+              yachtItem?.yacht?.yacht_image,
+              yachtItem?.yacht?.image1,
+              yachtItem?.yacht?.image2,
+              yachtItem?.yacht?.image3,
+              yachtItem?.yacht?.image4,
+              yachtItem?.yacht?.image5,
+              yachtItem?.yacht?.image6,
+              yachtItem?.yacht?.image7,
+              yachtItem?.yacht?.image8,
+              yachtItem?.yacht?.image9,
+              yachtItem?.yacht?.image10,
+              yachtItem?.yacht?.image11,
+              yachtItem?.yacht?.image12,
+              yachtItem?.yacht?.image13,
+              yachtItem?.yacht?.image14,
+              yachtItem?.yacht?.image15,
+              yachtItem?.yacht?.image16,
+              yachtItem?.yacht?.image17,
+              yachtItem?.yacht?.image18,
+              yachtItem?.yacht?.image19,
+              yachtItem?.yacht?.image20,
+            ].filter((image) => typeof image === "string" && image.trim() !== "");
 
             return (
               <Card
@@ -219,7 +219,7 @@ const Featured = () => {
                 <div className="relative">
                   <Carousel className="w-full h-[221px]">
                     <CarouselContent>
-                      {images.map((image, index) => (
+                      {images?.map((image, index) => (
                         <CarouselItem key={index}>
                           <Image
                             src={image ? `https://api.takeoffyachts.com${image}` : '/assets/images/fycht.jpg'}
