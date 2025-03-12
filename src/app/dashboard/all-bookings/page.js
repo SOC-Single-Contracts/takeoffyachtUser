@@ -122,7 +122,6 @@ const AllBookings = () => {
     [bookings]
   );
 
-  // Render login prompt if not authenticated
   if (status === "loading") {
     return <Loading />;
   }
@@ -146,7 +145,6 @@ const AllBookings = () => {
     );
   }
 
-  // Render error state
   if (error) {
     return <div className="text-center text-red-500">Error loading bookings. Please try again later.</div>;
   }

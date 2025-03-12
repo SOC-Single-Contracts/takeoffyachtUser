@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { MapPin, Sailboat } from "lucide-react";
+import { MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -31,7 +31,17 @@ const BookingSkeleton = () => {
 };
 
 const BookingCard = ({ booking }) => {
-  // Determine the booking details based on type
+  const getDisplayDate = (booking) => {
+    const date = booking.from_date || booking.selected_date;
+    if (!date) return 'Date not available';
+
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
   const bookingDetails = {
     name: booking.yacht?.name ||
           booking.package?.event_name || 
@@ -57,7 +67,6 @@ const BookingCard = ({ booking }) => {
     booking_type: booking.booking_type || 'N/A'
   };
 
-  // Determine the correct ID and type for routing
   const getRouteParams = () => {
     switch (booking.type) {
       case 'yacht':
@@ -88,7 +97,7 @@ const BookingCard = ({ booking }) => {
   return (
     <div
       key={booking.id}
-      className="relative w-full max-w-[400px] mx-auto bg-white dark:!bg-gray-800 shadow-md rounded-2xl overflow-hidden mt-6"
+      className="relative w-full max-w-[400px] mx-auto bg-white dark:!bg-gray-800 shadow-md rounded-2xl overflow-hidden mt-4"
     >
       {booking.daysLeft > 0 && (
         <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-normal px-2 py-1 rounded-sm">
@@ -102,200 +111,130 @@ const BookingCard = ({ booking }) => {
         width={500}
         height={300}
       />  
-      {/* <div className="p-4 dark:!bg-gray-800">
-        <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
-          {bookingDetails.name}
-        </h2>
-        <div className="flex flex-row justify-start gap-6 mb-4">
-          <div className="flex flex-col space-y-1">
-            <span className="font-medium text-gray-600 dark:text-gray-400">Departure:</span>
-            <span className="font-medium text-gray-600 dark:text-gray-400">Duration:</span>
-            <span className="font-medium text-gray-600 dark:text-gray-400">Guests:</span>
-            <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
+    {/* <div className="p-4 dark:bg-gray-800">
+      <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
+        {bookingDetails.name}
+      </h2>
+      <div className="flex flex-row justify-start gap-6 mb-4">
+      <div className="flex flex-col space-y-1">
+        <span className="font-medium text-gray-600 dark:text-gray-400">Departure:</span>
+        <span className="font-medium text-gray-600 dark:text-gray-400">Duration:</span>
+        <span className="font-medium text-gray-600 dark:text-gray-400">Dates:</span>
+        <span className="font-medium text-gray-600 dark:text-gray-400">Guests:</span>
+        <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
+      </div>
+      <div className="flex flex-col space-y-1">
+        <span className="font-light text-gray-600 dark:text-gray-400">
+        {getDisplayDate(booking)}
+        </span>
+        {bookingDetails.booking_type === "hourly" ? (
+          <span className="font-light text-gray-600 dark:text-gray-400">
+            {bookingDetails.duration} hours
+          </span>
+        ) : (
+          <>
+            <span className="font-light text-gray-600 dark:text-gray-400">
+              {bookingDetails.duration} hours
+            </span>
+            <span className="font-light text-gray-600 dark:text-gray-400">
+              {booking?.yacht?.from_date && booking?.yacht?.to_date ? (
+                `${new Date(booking?.yacht?.from_date).toLocaleDateString()} - ${new Date(booking?.yacht?.to_date).toLocaleDateString()}`
+              ) : (
+                'N/A'
+              )}
+            </span>
+          </>
+        )}
+        <span className="font-light text-gray-600 dark:text-gray-400">
+          {bookingDetails.guests}
+        </span>
+        <span className="font-light text-xs text-gray-700 dark:text-gray-300 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md flex items-center gap-1">
+          <MapPin className="size-3" />
+          {bookingDetails.location}
+        </span>
+      </div>
+    </div>
+      <Link href={`/dashboard/${type}/${id}/booking/booking-summary?bookingId=${booking.id}`}
+            onClick={(e) => {
+              console.log('Booking Details:', {
+                type: booking.type,
+                id: id,
+                bookingId: booking.id,
+                booking: booking
+              });
+            }}
+      >
+        <Button
+          variant="outline"
+          className="w-full py-3 rounded-full border-2 border-black dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          Booking Summary
+        </Button>
+      </Link>
+    </div> */}
+    <div className="px-4 py-2 dark:bg-gray-800">
+      <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+        {bookingDetails.name}
+      </h2>
+      
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center text-sm gap-2">
+            <span className="text-gray-600 dark:text-gray-400 font-medium">Departure:</span>
+            <span className="text-gray-600 dark:text-gray-400">{getDisplayDate(booking)}</span>
           </div>
-          <div className="flex flex-col space-y-1">
-  <span className="font-light text-gray-600 dark:text-gray-400">
-    {new Date(booking.selected_date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })}
-  </span>
-  {bookingDetails.booking_type === "hourly" ? (
-    <span className="font-light text-gray-600 dark:text-gray-400">
-      {bookingDetails.duration} hours
-    </span>
-  ) : (
-    <>
-      <span className="font-medium text-gray-600 dark:text-gray-400">
-        Duration: {bookingDetails.duration} hours
-      </span>
-      <span className="font-medium text-gray-600 dark:text-gray-400">
-        Date Range: {new Date(booking.yacht.from_date).toLocaleDateString()} - {new Date(booking.yacht.to_date).toLocaleDateString()}
-      </span>
-    </>
-  )}
-  <span className="font-light text-gray-600 dark:text-gray-400">
-    {bookingDetails.guests}
-  </span>
-  <span className="font-light text-xs text-gray-700 dark:text-gray-300 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md flex items-center gap-1">
-    <MapPin className="size-3" />
-    {bookingDetails.location}
-  </span>
-</div>
         </div>
-        <Link href={`/dashboard/${type}/${id}/booking/booking-summary?bookingId=${booking.id}`}
-        onClick={(e) => {
-          console.log('Booking Details:', {
-            type: booking.type,
-            id: id,
-            bookingId: booking.id,
-            booking: booking
-          });
-        }}
->
-          <Button
-            variant="outline"
-            className="w-full py-3 rounded-full border-2 border-black dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700"
-          >
-            Booking Summary
-          </Button>
-        </Link>
-      </div> */}
-      {/* <div className="p-4 dark:bg-gray-800">
-  <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
-    {bookingDetails.name}
-  </h2>
-  <div className="flex flex-row justify-start gap-6 mb-4">
-  <div className="flex flex-col space-y-1">
-    <span className="font-medium text-gray-600 dark:text-gray-400">Departure:</span>
-    <span className="font-medium text-gray-600 dark:text-gray-400">Duration:</span>
-    <span className="font-medium text-gray-600 dark:text-gray-400">Dates:</span>
-    <span className="font-medium text-gray-600 dark:text-gray-400">Guests:</span>
-    <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
-  </div>
-  <div className="flex flex-col space-y-1">
-    <span className="font-light text-gray-600 dark:text-gray-400">
-      {new Date(booking.selected_date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })}
-    </span>
-    {bookingDetails.booking_type === "hourly" ? (
-      <span className="font-light text-gray-600 dark:text-gray-400">
-        {bookingDetails.duration} hours
-      </span>
-    ) : (
-      <>
-        <span className="font-light text-gray-600 dark:text-gray-400">
-          {bookingDetails.duration} hours
-        </span>
-        {booking.yacht.from_date && booking.yacht.to_date ? (
-  <span className="font-light text-gray-600 dark:text-gray-400">
-    {new Date(booking.yacht.from_date).toLocaleDateString()} - {new Date(booking.yacht.to_date).toLocaleDateString()}
-  </span>
-) : 'No Dates'}
-      </>
-    )}
-    <span className="font-light text-gray-600 dark:text-gray-400">
-      {bookingDetails.guests}
-    </span>
-    <span className="font-light text-xs text-gray-700 dark:text-gray-300 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md flex items-center gap-1">
-      <MapPin className="size-3" />
-      {bookingDetails.location}
-    </span>
-  </div>
-</div>
-  <Link href={`/dashboard/${type}/${id}/booking/booking-summary?bookingId=${booking.id}`}
-        onClick={(e) => {
-          console.log('Booking Details:', {
-            type: booking.type,
-            id: id,
-            bookingId: booking.id,
-            booking: booking
-          });
-        }}
-  >
-    <Button
-      variant="outline"
-      className="w-full py-3 rounded-full border-2 border-black dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700"
-    >
-      Booking Summary
-    </Button>
-  </Link>
-</div> */}
-<div className="p-4 dark:bg-gray-800">
-  <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
-    {bookingDetails.name}
-  </h2>
-  <div className="flex flex-row justify-start gap-6 mb-4">
-  <div className="flex flex-col space-y-1">
-    <span className="font-medium text-gray-600 dark:text-gray-400">Departure:</span>
-    <span className="font-medium text-gray-600 dark:text-gray-400">Duration:</span>
-    <span className="font-medium text-gray-600 dark:text-gray-400">Dates:</span>
-    <span className="font-medium text-gray-600 dark:text-gray-400">Guests:</span>
-    <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
-  </div>
-  <div className="flex flex-col space-y-1">
-    <span className="font-light text-gray-600 dark:text-gray-400">
-      {new Date(booking.selected_date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })}
-    </span>
-    {bookingDetails.booking_type === "hourly" ? (
-      <span className="font-light text-gray-600 dark:text-gray-400">
-        {bookingDetails.duration} hours
-      </span>
-    ) : (
-      <>
-        <span className="font-light text-gray-600 dark:text-gray-400">
-          {bookingDetails.duration} hours
-        </span>
-        <span className="font-light text-gray-600 dark:text-gray-400">
-          {booking.yacht.from_date && booking.yacht.to_date ? (
-            `${new Date(booking.yacht.from_date).toLocaleDateString()} - ${new Date(booking.yacht.to_date).toLocaleDateString()}`
-          ) : (
-            'N/A'
-          )}
-        </span>
-      </>
-    )}
-    <span className="font-light text-gray-600 dark:text-gray-400">
-      {bookingDetails.guests}
-    </span>
-    <span className="font-light text-xs text-gray-700 dark:text-gray-300 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md flex items-center gap-1">
-      <MapPin className="size-3" />
-      {bookingDetails.location}
-    </span>
-  </div>
-</div>
-  <Link href={`/dashboard/${type}/${id}/booking/booking-summary?bookingId=${booking.id}`}
-        onClick={(e) => {
-          console.log('Booking Details:', {
-            type: booking.type,
-            id: id,
-            bookingId: booking.id,
-            booking: booking
-          });
-        }}
-  >
-    <Button
-      variant="outline"
-      className="w-full py-3 rounded-full border-2 border-black dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700"
-    >
-      Booking Summary
-    </Button>
-  </Link>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center text-sm gap-2">
+            <span className="text-gray-600 dark:text-gray-400 font-medium">Duration:</span>
+            <span className="text-gray-600 dark:text-gray-400">{bookingDetails.duration} hours</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center text-sm gap-2">
+            <span className="text-gray-600 dark:text-gray-400 font-medium">Dates:</span>
+            <span className="text-gray-600 dark:text-gray-400">
+              {booking?.yacht?.from_date && booking?.yacht?.to_date
+                ? `${new Date(booking.yacht.from_date).toLocaleDateString()} - ${new Date(booking.yacht.to_date).toLocaleDateString()}`
+                : 'N/A'}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center text-sm gap-2">
+            <span className="text-gray-600 dark:text-gray-400 font-medium">Guests:</span>
+            <span className="text-gray-600 dark:text-gray-400">{bookingDetails.guests}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md">
+            <MapPin className="size-4 text-gray-600 dark:text-gray-400" />
+            <span className="text-gray-600 text-sm dark:text-gray-400">{bookingDetails.location}</span>
+          </div>
+        </div>
+      </div>
+
+      <Link 
+        href={`/dashboard/${type}/${id}/booking/booking-summary?bookingId=${booking.id}`}
+        className="mt-4 block"
+      >
+        <Button
+          variant="outline"
+          className="w-full py-3 rounded-full border-2 border-black dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          Booking Summary
+        </Button>
+      </Link>
 </div>
     </div>
   );
 };
 
 const BookingCards = ({ bookings, loading }) => {
-  // If loading, show skeleton loaders
   if (loading) {
     return (
       <div className="flex flex-wrap w-full space-x-4">
