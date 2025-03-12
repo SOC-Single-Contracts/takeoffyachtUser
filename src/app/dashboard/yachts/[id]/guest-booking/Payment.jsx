@@ -320,16 +320,16 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
   //   const totalCost = bookingData.totalCost || calculateTotal();
   //   return isPartialPayment ? totalCost * 0.25 : totalCost;
   // };
-  const calculatePaymentAmount = () => {
-    // If there's a remaining cost, use that
-    if (bookingData.remainingCost > 0) {
-      return bookingData.remainingCost;
-    }
+  // const calculatePaymentAmount = () => {
+  //   // If there's a remaining cost, use that
+  //   if (bookingData.remainingCost > 0) {
+  //     return bookingData.remainingCost;
+  //   }
     
-    // Otherwise calculate based on total cost and partial payment
-    const totalCost = bookingData.totalCost || calculateTotal();
-    return bookingData.isPartialPayment ? totalCost * 0.25 : totalCost;
-  };
+  //   // Otherwise calculate based on total cost and partial payment
+  //   const totalCost = bookingData.totalCost || calculateTotal();
+  //   return bookingData.isPartialPayment ? totalCost * 0.25 : totalCost;
+  // };
 
 
   // const getPaymentButtonText = () => {
@@ -337,20 +337,49 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
   //   const paymentAmount = calculatePaymentAmount();
   //   return `Pay Now (AED ${paymentAmount.toFixed(2)})`;
   // };
+  // const getPaymentButtonText = () => {
+  //   if (isProcessing) return 'Processing...';
+    
+  //   // Show remaining amount if it exists
+  //   if (bookingData.remainingCost > 0) {
+  //     return `Pay Remaining Amount (AED ${bookingData.remainingCost.toFixed(2)})`;
+  //   }
+
+  //   const paymentAmount = calculatePaymentAmount();
+  //   return bookingData.isPartialPayment 
+  //     ? `Pay 25% (AED ${paymentAmount.toFixed(2)})`
+  //     : `Pay Full Amount (AED ${paymentAmount.toFixed(2)})`;
+  // };
+
+  const calculatePaymentAmount = () => {
+    // If there's a remaining cost, use that
+    if (bookingData.remainingCost > 0) {
+      return bookingData.remainingCost;
+    }
+    
+    // Calculate based on total cost and partial payment
+    const totalCost = bookingData.totalCost || calculateTotal();
+    return isPartialPayment ? totalCost * 0.25 : totalCost;
+  };
+  
   const getPaymentButtonText = () => {
     if (isProcessing) return 'Processing...';
     
-    // Show remaining amount if it exists
-    if (bookingData.remainingCost > 0) {
-      return `Pay Remaining Amount (AED ${bookingData.remainingCost.toFixed(2)})`;
-    }
-
     const paymentAmount = calculatePaymentAmount();
-    return bookingData.isPartialPayment 
-      ? `Pay 25% (AED ${paymentAmount.toFixed(2)})`
-      : `Pay Full Amount (AED ${paymentAmount.toFixed(2)})`;
+    
+    // If there's a remaining balance to be paid
+    if (bookingData.remainingCost > 0) {
+      return `Pay Balance Due (AED ${bookingData.remainingCost.toFixed(2)})`;
+    }
+    
+    // For new bookings
+    if (isPartialPayment) {
+      return `Pay Deposit (AED ${(calculateTotal() * 0.25).toFixed(2)})`;
+    }
+    
+    return `Pay Full Amount (AED ${calculateTotal().toFixed(2)})`;
   };
-
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -485,7 +514,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
           </div>
         </div>
         <div className="space-y-2 pl-1 mt-4">
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <Checkbox 
                 id="partial-payment" 
                 checked={isPartialPayment}
@@ -494,7 +523,20 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
               <Label htmlFor="partial-payment" className="text-sm">
                 You want to do partial payment?
               </Label>
-            </div>
+            </div> */}
+            {(!bookingData.remainingCost || bookingData.remainingCost === 0) && (
+    <div className="flex items-center space-x-2">
+      <Checkbox 
+        id="partial-payment" 
+        checked={isPartialPayment}
+        onCheckedChange={(checked) => setIsPartialPayment(checked)}
+      />
+      <Label htmlFor="partial-payment" className="text-sm">
+        You want to do partial payment?
+      </Label>
+    </div>
+  )}
+
             <div className="flex items-center space-x-2">
               <Checkbox 
                 id="terms"
@@ -594,6 +636,17 @@ const Payment = () => {
   const [isPartialPayment, setIsPartialPayment] = useState(false);
   const [bookingDetails, setBookingDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const calculateDays = () => {
+    if (!bookingData.date || !bookingData.endDate) return 1;
+    
+    const startDate = new Date(bookingData.date);
+    const endDate = new Date(bookingData.endDate);
+    const diffTime = Math.abs(endDate - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays + 1; // Adding 1 to include both start and end dates
+  }
 
   useEffect(() => {
     const bookingId = new URLSearchParams(window.location.search).get('bookingId');
@@ -746,14 +799,29 @@ const Payment = () => {
           <h2 className='text-xl font-semibold mb-4'>Order Summary</h2>
           
           <div className='space-y-3'>
-            <div className='flex justify-between text-sm'>
+            {/* <div className='flex justify-between text-sm'>
               <span>Charter ({bookingDetails?.duration_hour || bookingData.duration} hours)</span>
               <span className='font-medium'>
                 AED {(bookingData.isNewYearBooking ? 
                   (selectedYacht?.yacht?.new_year_price || 0) : 
                   (selectedYacht?.yacht?.per_hour_price || 0)) * bookingData.duration}
               </span>
-            </div>
+            </div> */}
+            <div className='flex justify-between text-sm'>
+      {bookingData.bookingType === 'date_range' ? (
+        <span>Charter ({calculateDays()} days)</span>
+      ) : (
+        <span>Charter ({bookingData.duration} hours)</span>
+      )}
+      <span className='font-medium'>
+        AED {bookingData.bookingType === 'date_range' 
+          ? (selectedYacht?.yacht?.per_day_price || 0) * calculateDays()
+          : (bookingData.isNewYearBooking 
+              ? (selectedYacht?.yacht?.new_year_price || 0) 
+              : (selectedYacht?.yacht?.per_hour_price || 0)) * bookingData.duration
+        }
+      </span>
+    </div>
             {(bookingDetails?.extras_data || bookingData.extras)?.map((item) => (
               item.quantity > 0 && (
                 <div key={item.extra_id || item.id} className='flex justify-between text-sm'>
@@ -861,7 +929,8 @@ const Payment = () => {
   )}
 </div>
           </div>
-        </div>
+         
+</div>
 <div className='bg-gray-50 dark:bg-[#24262F] space-y-2 p-4 rounded-xl'>
           <p className='text-sm text-gray-800 dark:text-gray-400'>
             Your payment information is securely processed by Stripe. We never store your card details.
