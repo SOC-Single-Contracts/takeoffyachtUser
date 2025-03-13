@@ -103,12 +103,12 @@ const YachtDetail = () => {
       },
       {
         imgSrc: "/assets/images/ft.svg",
-        text: yacht?.length ? `${yacht?.length} ft.` : "N/A",
+        text: yacht?.length ? `${yacht?.length} ft.` : "",
         condition: yacht?.length
       },
       {
         imgSrc: "/assets/images/cabin.svg",
-        text: yacht?.number_of_cabin ? `${yacht?.number_of_cabin} Cabins` : "N/A",
+        text: yacht?.number_of_cabin ? `${yacht?.number_of_cabin} Cabins` : "",
         condition: yacht?.number_of_cabin
       },
       {
@@ -267,6 +267,7 @@ const YachtDetail = () => {
       name,
       location,
       per_hour_price,
+      per_day_price,
       yacht_image,
       capacity,
       sleep_capacity,
@@ -362,7 +363,7 @@ const YachtDetail = () => {
                     onClick={openGalleryView}
                   />
                 </div> */}
-                <Carousel className="w-full">
+                <Carousel className="w-full mt-4">
                   <CarouselContent>
                     {uniqueYachtImages.map((image, index) => (
                       <CarouselItem key={index}>
@@ -417,17 +418,17 @@ const YachtDetail = () => {
                       onClick={closeGalleryView}
                     >
                       <div>
-                      <Button
-                        variant="default"
-                        size="icon"
-                        className="rounded-full my-3 h-12 w-12 ml-2 bg-[#BEA355]"
-                        onClick={closeGalleryView}
+                        <Button
+                          variant="default"
+                          size="icon"
+                          className="rounded-full my-3 h-12 w-12 ml-2 bg-[#BEA355]"
+                          onClick={closeGalleryView}
                         >
-                        <X className="h-8 w-8 dark:invert" />
+                          <X className="h-8 w-8 dark:invert" />
 
-                      </Button>
+                        </Button>
                       </div>
-                    
+
                       <div
                         className="bg-white dark:bg-gray-900 p-4 rounded-lg max-w-5xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
@@ -504,7 +505,7 @@ const YachtDetail = () => {
               </Badge>
               <div className="flex justify-between items-center mt-2">
                 <h2 className="text-xl md:text-2xl font-bold">{name}</h2>
-                <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_hour_price}</span>/hour</p>
+                <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>/hour</p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
                 {getYachtDetailsGrid(selectedYacht?.yacht)}
@@ -607,22 +608,27 @@ const YachtDetail = () => {
                         {number_of_cabin}
                       </p>
                     </div>
-                    <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        Length
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        {length ? `${length} ft.` : "N/A"}
-                      </p>
-                    </div>
-                    <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        Power
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        {power || "N/A"}
-                      </p>
-                    </div>
+                    {length && (
+                      <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                          Length
+                        </p>
+                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                          {`${length} ft.`}
+                        </p>
+                      </div>
+                    )}
+                    {power && (
+                      <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                          Power
+                        </p>
+                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                          {power}
+                        </p>
+                      </div>
+                    )}
+
                     {/* <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
                       <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
                         Engine Type
@@ -631,54 +637,72 @@ const YachtDetail = () => {
                         {engine_type || "N/A"}
                       </p>
                     </div> */}
-                    <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        Flag
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        {flag || "N/A"}
-                      </p>
-                    </div>
+                    {flag && (
+                      <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                          Flag
+                        </p>
+                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                          {flag}
+                        </p>
+                      </div>
+                    )}
+
+                    {crew_member && (
+                      <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                          Crew Members
+                        </p>
+                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                          {crew_member}
+                        </p>
+                      </div>
+                    )}
+
+                    {crew_language && (
+                      <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
+                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                          Crew Languages
+                        </p>
+                        <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
+                          {crew_language}
+                        </p>
+                      </div>
+                    )}
+
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+              {(crew_member || crew_language) && (
+                <section className="mt-4">
+                  <h2 className="text-lg font-medium">
+                    Crew Info
+                  </h2>
+
+                  {crew_member && (
                     <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
                       <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
                         Crew Members
                       </p>
                       <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        {crew_member || "N/A"}
+                        {crew_member}
                       </p>
                     </div>
+                  )}
+
+                  {crew_language && (
                     <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
                       <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
                         Crew Languages
                       </p>
                       <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        {crew_language || "N/A"}
+                        {crew_language}
                       </p>
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-              <section className="mt-4">
-                <h2 className="text-lg font-medium">
-                  Crew Info
-                </h2>
-                <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                    Crew Members
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                    {crew_member || "N/A"}
-                  </p>
-                </div>
-                <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
-                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                    Crew Languages
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                    {crew_language || "N/A"}
-                  </p>
-                </div>
-              </section>
+                  )}
+                </section>
+              )}
+
               {ny_status && (ny_availability || ny_price || ny_firework) && (
                 <section className="mt-4">
                   <h2 className="text-lg font-medium">
@@ -842,6 +866,31 @@ const YachtDetail = () => {
             </Link>
           </div> */}
       </section>
+      {/* <div>
+        
+      </div> */}
+      <div className="relative md:hidden">
+  {/* Other content */}
+  <Link href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
+                  <Button
+                    // onClick={(e) => {
+                    //   if (!session) {
+                    //     e.preventDefault();
+                    //     toast({
+                    //       title: "Login Required",
+                    //       description: "Please login to book a yacht",
+                    //       variant: "destructive"
+                    //     });
+                    //     router.push('/login');
+                    //   }
+                    // }}
+                    className= "fixed bottom-4 z-999 left-1/2 transform -translate-x-1/2 rounded-full bg-[#BEA355] w-full max-w-[300px]} mx-auto text-white h-12 shadow-lg"
+                  >
+                    Book Now
+                  </Button>
+                </Link>
+
+</div>
     </>
   );
 };

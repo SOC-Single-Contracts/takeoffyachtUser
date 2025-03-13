@@ -57,7 +57,7 @@ const UserDetails = ({ onNext }) => {
         });
         return;
       }
-  
+
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(bookingData.email)) {
         toast({
@@ -67,7 +67,7 @@ const UserDetails = ({ onNext }) => {
         });
         return;
       }
-  
+
       const phoneRegex = /^\+?[\d\s-]{8,}$/;
       if (!phoneRegex.test(bookingData.phone)) {
         toast({
@@ -86,7 +86,7 @@ const UserDetails = ({ onNext }) => {
       const formattedExtras = bookingData.extras.map(extra => ({
         ...extra,
         id: extra.id
-      }));  
+      }));
 
       const bookingPayload = {
         user_id: session?.user?.userid,
@@ -126,7 +126,7 @@ const UserDetails = ({ onNext }) => {
         toast.error('Yacht ID is missing. Please select a yacht.');
         return;
       }
-  
+
       // Send POST request
       const response = await fetch(`${API_BASE_URL}/yacht/yacht_bookings/`, {
         method: 'POST',
@@ -135,12 +135,12 @@ const UserDetails = ({ onNext }) => {
         },
         body: JSON.stringify(bookingPayload),
       });
-  
+
       if (!response.ok) {
         const errorResult = await response.json(); // Parse the error response
         throw new Error(errorResult.error || 'Failed to create booking');
       }
-  
+
       const result = await response.json();
       toast({
         title: "Temporary Booking Created",
@@ -238,7 +238,7 @@ const UserDetails = ({ onNext }) => {
         <Label htmlFor="country" className="block text-sm font-medium">
           Country <span className="text-red-500">*</span>
         </Label>
-        <Select 
+        <Select
           value={bookingData.country}
           onValueChange={(value) => updateBookingData({ country: value })}
         >
@@ -262,22 +262,26 @@ const UserDetails = ({ onNext }) => {
         <Input
           id="phone"
           type="tel"
-          placeholder="Enter your phone number"
+          placeholder="+971 4 XXX XXXX"
           required
           value={bookingData.phone}
-          onChange={(e) => updateBookingData({ phone: e.target.value })}
+          onChange={(e) => {
+            const value = e.target.value;
+            const sanitizedValue = value.replace(/[^0-9+]/g, ""); 
+            updateBookingData({ phone: sanitizedValue });
+          }}
           className="mt-1 block w-full"
         />
       </div>
 
       <div className="col-span-2 flex justify-end">
-      <Button 
-        type="submit"
-        disabled={loading}
-        className="rounded-full bg-[#BEA355] px-6 py-2 text-white"
-      >
-        {loading ? 'Saving...' : 'Next'}
-      </Button>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="rounded-full bg-[#BEA355] px-6 py-2 text-white"
+        >
+          {loading ? 'Saving...' : 'Next'}
+        </Button>
       </div>
     </form>
   );

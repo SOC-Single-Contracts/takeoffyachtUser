@@ -372,12 +372,16 @@ const Summary = ({ onNext, initialBookingId }) => {
               }
             </TableCell>
           </TableRow>
-          {bookingDetails.extras_data && Array.isArray(bookingDetails.extras_data) && bookingDetails.extras_data.map((item) => (
-            <TableRow key={item.extra_id}>
-              <TableCell className="font-semibold">{item.name}</TableCell>
-              <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
-            </TableRow>
-          ))}
+             {bookingDetails.extras_data &&
+                   Array.isArray(bookingDetails.extras_data) &&
+                   bookingDetails.extras_data
+                     .filter((item) => item.quantity > 0) 
+                     .map((item) => (
+                       <TableRow key={item.extra_id}>
+                         <TableCell className="font-semibold">{item.name}</TableCell>
+                         <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
+                       </TableRow>
+                     ))}
           <TableRow>
             <TableCell className="font-bold">Total Amount</TableCell>
             <TableCell className="font-bold">

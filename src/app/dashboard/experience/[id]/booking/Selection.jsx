@@ -210,145 +210,145 @@ const Selection = ({ onNext }) => {
 
   return (
     <>
-    <div className="w-full mb-6">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-        {/* Experience Images */}
-        <div className="mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {selectedExperience?.experience?.experience_image && (
-              <div className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
+{/*
+<div className="w-full mb-6">
+  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+    
+    <div className="mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {selectedExperience?.experience?.experience_image && (
+          <div className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
+            onClick={() => {
+              Fancybox.show([
+                {
+                  src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedExperience.experience.experience_image}`,
+                  type: "image",
+                }
+              ]);
+            }}
+          >
+            <Image
+              src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedExperience.experience.experience_image}`}
+              alt={selectedExperience.experience.name}
+              fill
+              className="object-cover hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        )}
+        {[...Array(20)].map((_, index) => {
+          const imageKey = `image${index + 1}`;
+          if (selectedExperience?.experience?.[imageKey]) {
+            return (
+              <div 
+                key={imageKey}
+                className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
                 onClick={() => {
                   Fancybox.show([
                     {
-                      src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedExperience.experience.experience_image}`,
+                      src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedExperience.experience[imageKey]}`,
                       type: "image",
                     }
                   ]);
                 }}
               >
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedExperience.experience.experience_image}`}
-                  alt={selectedExperience.experience.name}
+                  src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedExperience.experience[imageKey]}`}
+                  alt={`${selectedExperience.experience.name} - ${index + 1}`}
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-300"
                 />
               </div>
-            )}
-            {[...Array(20)].map((_, index) => {
-              const imageKey = `image${index + 1}`;
-              if (selectedExperience?.experience?.[imageKey]) {
-                return (
-                  <div 
-                    key={imageKey}
-                    className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
-                    onClick={() => {
-                      Fancybox.show([
-                        {
-                          src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedExperience.experience[imageKey]}`,
-                          type: "image",
-                        }
-                      ]);
-                    }}
-                  >
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedExperience.experience[imageKey]}`}
-                      alt={`${selectedExperience.experience.name} - ${index + 1}`}
-                      fill
-                      className="object-cover hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                );
-              }
-              return null;
-            })}
+            );
+          }
+          return null;
+        })}
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h2 className="text-2xl font-semibold mb-2">{selectedExperience?.experience?.name}</h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">{selectedExperience?.experience?.description}</p>
+        
+        <div className="space-y-4">
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell className="font-medium">Type</TableCell>
+                <TableCell>{selectedExperience?.experience?.type}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Location</TableCell>
+                <TableCell>{selectedExperience?.experience?.location}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Duration</TableCell>
+                <TableCell>{selectedExperience?.experience?.duration_hour}h {selectedExperience?.experience?.duration_minutes}m</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Available Seats</TableCell>
+                <TableCell>{selectedExperience?.experience?.left_seats || 0} / {selectedExperience?.experience?.total_seats || 0}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Adult Price</TableCell>
+                <TableCell>AED {selectedExperience?.experience?.adult_price}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Child Price</TableCell>
+                <TableCell>AED {selectedExperience?.experience?.child_price}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        
+        <div>
+          <h3 className="font-semibold mb-3">Categories</h3>
+          <div className="flex flex-wrap gap-2">
+            {selectedExperience?.categories?.map((category) => (
+              <span 
+                key={category.id} 
+                className="bg-[#BEA355]/10 text-[#BEA355] px-3 py-1 rounded-full text-sm"
+              >
+                {category.name}
+              </span>
+            ))}
           </div>
         </div>
 
-        {/* Experience Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">{selectedExperience?.experience?.name}</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">{selectedExperience?.experience?.description}</p>
-            
-            <div className="space-y-4">
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">Type</TableCell>
-                    <TableCell>{selectedExperience?.experience?.type}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Location</TableCell>
-                    <TableCell>{selectedExperience?.experience?.location}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Duration</TableCell>
-                    <TableCell>{selectedExperience?.experience?.duration_hour}h {selectedExperience?.experience?.duration_minutes}m</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Available Seats</TableCell>
-                    <TableCell>{selectedExperience?.experience?.left_seats || 0} / {selectedExperience?.experience?.total_seats || 0}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Adult Price</TableCell>
-                    <TableCell>AED {selectedExperience?.experience?.adult_price}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Child Price</TableCell>
-                    <TableCell>AED {selectedExperience?.experience?.child_price}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
+        <div>
+          <h3 className="font-semibold mb-3">Features</h3>
+          <div className="flex flex-wrap gap-2">
+            {selectedExperience?.subcategories?.map((sub) => (
+              <span 
+                key={sub.id} 
+                className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
+              >
+                {sub.name}
+              </span>
+            ))}
           </div>
+        </div>
 
-          <div className="space-y-6">
-            {/* Categories */}
-            <div>
-              <h3 className="font-semibold mb-3">Categories</h3>
-              <div className="flex flex-wrap gap-2">
-                {selectedExperience?.categories?.map((category) => (
-                  <span 
-                    key={category.id} 
-                    className="bg-[#BEA355]/10 text-[#BEA355] px-3 py-1 rounded-full text-sm"
-                  >
-                    {category.name}
-                  </span>
-                ))}
+        <div>
+          <h3 className="font-semibold mb-3">Included in Experience</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {selectedExperience?.inclusion?.map((item) => (
+              <div key={item.id} className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-[#BEA355] rounded-full"></div>
+                <span className="text-sm capitalize">{item.name}</span>
               </div>
-            </div>
-
-            {/* Features */}
-            <div>
-              <h3 className="font-semibold mb-3">Features</h3>
-              <div className="flex flex-wrap gap-2">
-                {selectedExperience?.subcategories?.map((sub) => (
-                  <span 
-                    key={sub.id} 
-                    className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
-                  >
-                    {sub.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Inclusions */}
-            <div>
-              <h3 className="font-semibold mb-3">Included in Experience</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {selectedExperience?.inclusion?.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-[#BEA355] rounded-full"></div>
-                    <span className="text-sm capitalize">{item.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
+*/}
+
     <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-6">
       <div className="flex flex-col w-full lg:w-2/3 gap-6">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6">

@@ -607,7 +607,7 @@ const SearchYacht = () => {
 
                                             {/* Boat Length */}
                                             <div className="space-y-2">
-                                                <Label className="text-sm">Boat Length (m)</Label>
+                                                <Label className="text-sm">Boat Length (ft)</Label>
                                                 <div className="flex gap-4">
                                                     <div className="flex-1">
                                                         <Input

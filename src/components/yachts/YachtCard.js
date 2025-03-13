@@ -67,7 +67,7 @@ export default function YachtCard({ yacht }) {
             />
         </Button>
 
-        <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+        <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
           <span className="font-medium text-xs">
             AED <span className="font-bold font-medium  text-primary">{yachtData?.per_hour_price}</span>
             <span className="text-xs font-light ml-1">/Hour</span>

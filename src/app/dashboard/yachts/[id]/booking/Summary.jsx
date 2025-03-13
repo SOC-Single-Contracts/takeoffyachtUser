@@ -128,84 +128,84 @@ const Summary = ({ onNext, initialBookingId }) => {
   };
 
 
-const handleUpdateExtras = async () => {
-  try {
-    const bookingId = bookingDetails.id;
+  const handleUpdateExtras = async () => {
+    try {
+      const bookingId = bookingDetails.id;
 
-    // Calculate base cost based on booking type
-    let baseCost = 0;
-    if (bookingDetails.booking_type === 'hourly') {
-      const hourlyRate = selectedYacht?.yacht?.per_hour_price || 0;
-      baseCost = hourlyRate * (bookingDetails.duration_hour || 3);
-    } else {
-      // Date range booking
-      const startDate = new Date(bookingDetails.selected_date);
-      const endDate = new Date(bookingDetails.end_date);
-      const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-      baseCost = (selectedYacht?.yacht?.per_day_price || 0) * days;
-    }
+      // Calculate base cost based on booking type
+      let baseCost = 0;
+      if (bookingDetails.booking_type === 'hourly') {
+        const hourlyRate = selectedYacht?.yacht?.per_hour_price || 0;
+        baseCost = hourlyRate * (bookingDetails.duration_hour || 3);
+      } else {
+        // Date range booking
+        const startDate = new Date(bookingDetails.selected_date);
+        const endDate = new Date(bookingDetails.end_date);
+        const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        baseCost = (selectedYacht?.yacht?.per_day_price || 0) * days;
+      }
 
-    // Calculate extras cost
-    const extrasCost = editableExtras.reduce((total, extra) => {
-      return total + (parseFloat(extra.price) * parseInt(extra.quantity || 0));
-    }, 0);
+      // Calculate extras cost
+      const extrasCost = editableExtras.reduce((total, extra) => {
+        return total + (parseFloat(extra.price) * parseInt(extra.quantity || 0));
+      }, 0);
 
-    // Calculate total cost
-    const totalCost = baseCost + extrasCost;
+      // Calculate total cost
+      const totalCost = baseCost + extrasCost;
 
-    const payload = {
-      user_id: bookingDetails.user_id || session?.user?.userid,
-      extras: editableExtras.map(extra => ({
-        extra_id: extra.extra_id,
-        name: extra.name,
-        quantity: parseInt(extra.quantity || 0),
-        price: parseFloat(extra.price)
-      })),
-      total_cost: totalCost,
-      remaining_cost: totalCost - (bookingDetails.paid_cost || 0)
-    };
+      const payload = {
+        user_id: bookingDetails.user_id || session?.user?.userid,
+        extras: editableExtras.map(extra => ({
+          extra_id: extra.extra_id,
+          name: extra.name,
+          quantity: parseInt(extra.quantity || 0),
+          price: parseFloat(extra.price)
+        })),
+        total_cost: totalCost,
+        remaining_cost: totalCost - (bookingDetails.paid_cost || 0)
+      };
 
-    const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingId}/`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update booking details');
-    }
-
-    const result = await response.json();
-    
-    if (result.data) {
-      setBookingDetails(result.data);
-      setEditableExtras(result.data.extras_data || []);
-      
-      // Update booking context with new data
-      updateBookingData({
-        extras: result.data.extras_data.filter(extra => extra.quantity > 0),
-        totalCost: result.data.total_cost,
-        remainingCost: result.data.remaining_cost,
-        paidCost: result.data.paid_cost
+      const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingId}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to update booking details');
+      }
+
+      const result = await response.json();
+
+      if (result.data) {
+        setBookingDetails(result.data);
+        setEditableExtras(result.data.extras_data || []);
+
+        // Update booking context with new data
+        updateBookingData({
+          extras: result.data.extras_data.filter(extra => extra.quantity > 0),
+          totalCost: result.data.total_cost,
+          remainingCost: result.data.remaining_cost,
+          paidCost: result.data.paid_cost
+        });
+
+        toast({
+          title: "Success",
+          description: "Booking details updated successfully",
+          variant: "success"
+        });
+      }
+    } catch (error) {
+      console.error('Error updating booking details:', error);
       toast({
-        title: "Success",
-        description: "Booking details updated successfully",
-        variant: "success"
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
       });
     }
-  } catch (error) {
-    console.error('Error updating booking details:', error);
-    toast({
-      title: "Error",
-      description: error.message,
-      variant: "destructive"
-    });
-  }
-};
+  };
 
   const handleUpdatePartialPayment = async () => {
     try {
@@ -269,19 +269,19 @@ const handleUpdateExtras = async () => {
   const handleProceedToPayment = async () => {
     try {
       const bookingId = bookingDetails.id;
-      
+
       // First, update extras if they were modified
       await handleUpdateExtras();
-  
+
       // Calculate payment amounts
       const totalCost = bookingDetails.total_cost || calculateTotal();
       const paidCost = bookingDetails.paid_cost || 0;
       const remainingCost = bookingDetails.remaining_cost || 0;
-  
+
       // Determine payment amount based on booking state
       let paymentAmount;
       let isRemainingPayment = false;
-  
+
       if (paidCost > 0) {
         // This is a remaining payment
         paymentAmount = remainingCost;
@@ -290,7 +290,7 @@ const handleUpdateExtras = async () => {
         // This is a new payment
         paymentAmount = isPartialPayment ? totalCost * 0.25 : totalCost;
       }
-  
+
       // Update booking context with payment information
       updateBookingData({
         bookingId: bookingId,
@@ -302,10 +302,10 @@ const handleUpdateExtras = async () => {
         paymentAmount: paymentAmount,
         extras: editableExtras.filter(extra => extra.quantity > 0)
       });
-  
+
       // Proceed to payment step
       onNext();
-  
+
     } catch (error) {
       console.error('Error proceeding to payment:', error);
       toast({
@@ -315,18 +315,18 @@ const handleUpdateExtras = async () => {
       });
     }
   };
-  
+
 
   const updateExtraQuantity = (index, newQuantity) => {
-  setEditableExtras(prev => {
-    const updated = [...prev];
-    updated[index] = {
-      ...updated[index],
-      quantity: parseInt(newQuantity)
-    };
-    return updated;
-  });
-};
+    setEditableExtras(prev => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        quantity: parseInt(newQuantity)
+      };
+      return updated;
+    });
+  };
 
   const handleCopyLink = () => {
     const bookingId = bookingDetails.id;
@@ -366,7 +366,7 @@ const handleUpdateExtras = async () => {
           </TableRow>
         </TableHeader>
         <TableBody className="bg-white dark:bg-gray-800 text-xs">
-           <TableRow>
+          <TableRow>
             <TableCell className="font-semibold">
               {bookingDetails.end_date
                 ? `${safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')} - ${safeFormat(bookingDetails.end_date, 'dd MMMM yyyy')}`
@@ -383,12 +383,17 @@ const handleUpdateExtras = async () => {
               }
             </TableCell>
           </TableRow>
-          {bookingDetails.extras_data && Array.isArray(bookingDetails.extras_data) && bookingDetails.extras_data.map((item) => (
-            <TableRow key={item.extra_id}>
-              <TableCell className="font-semibold">{item.name}</TableCell>
-              <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
-            </TableRow>
-          ))}
+          {bookingDetails.extras_data &&
+            Array.isArray(bookingDetails.extras_data) &&
+            bookingDetails.extras_data
+              .filter((item) => item.quantity > 0)
+              .map((item) => (
+                <TableRow key={item.extra_id}>
+                  <TableCell className="font-semibold">{item.name}</TableCell>
+                  <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
+                </TableRow>
+              ))}
+
           <TableRow>
             <TableCell className="font-bold">Total Amount</TableCell>
             <TableCell className="font-bold">
@@ -443,7 +448,7 @@ const handleUpdateExtras = async () => {
             ))}
           </div>
         </div>
-  
+
         {/* Skeleton for Contact Details Table */}
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
@@ -464,7 +469,7 @@ const handleUpdateExtras = async () => {
             ))}
           </TableBody>
         </Table>
-  
+
         {/* Skeleton for Booking Details Table */}
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
@@ -485,7 +490,7 @@ const handleUpdateExtras = async () => {
             ))}
           </TableBody>
         </Table>
-  
+
         {/* Skeleton for Extras Table */}
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
@@ -668,43 +673,43 @@ const handleUpdateExtras = async () => {
         </Table>
 
         <Table className="bg-[#F4F0E4] w-full rounded-lg shadow-lg">
-  <TableHeader>
-    <TableRow>
-      <TableHead className="font-semibold text-md text-black">
-        Optional Extras
-      </TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody className="bg-white dark:bg-gray-800 text-xs">
-    {editableExtras.map((extra, index) => (
-      <TableRow key={extra.extra_id} className="hover:bg-gray-100 transition-colors duration-200">
-        <TableCell className="font-semibold">{extra.name}</TableCell>
-        <TableCell>
-          <div className="flex items-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => updateExtraQuantity(index, Math.max(0, extra.quantity - 1))}
-              className="bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
-            >
-              -
-            </Button>
-            <span className="mx-2 font-medium">{extra.quantity}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => updateExtraQuantity(index, extra.quantity + 1)}
-              className="bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
-            >
-              +
-            </Button>
-          </div>
-        </TableCell>
-        <TableCell className="font-medium">AED {extra.price * extra.quantity}</TableCell>
-      </TableRow>
-    ))}
-  </TableBody>
-</Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-semibold text-md text-black">
+                Optional Extras
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white dark:bg-gray-800 text-xs">
+            {editableExtras.map((extra, index) => (
+              <TableRow key={extra.extra_id} className="hover:bg-gray-100 transition-colors duration-200">
+                <TableCell className="font-semibold">{extra.name}</TableCell>
+                <TableCell>
+                  <div className="flex items-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateExtraQuantity(index, Math.max(0, extra.quantity - 1))}
+                      className="bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+                    >
+                      -
+                    </Button>
+                    <span className="mx-2 font-medium">{extra.quantity}</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateExtraQuantity(index, extra.quantity + 1)}
+                      className="bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+                    >
+                      +
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium">AED {extra.price * extra.quantity}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
 
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
@@ -743,29 +748,29 @@ const handleUpdateExtras = async () => {
                 <span className="block sm:inline"> Your payment has been successfully received. We appreciate your business!</span>
               </div>
             </div>
-           
+
           </div>
         )}
 
-{!(bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost) && (
-  <div className="flex justify-end flex-wrap gap-2">
-    <Button
-      variant="secondary"
-      onClick={handleUpdateExtras}
-      className="px-6 py-2 text-xs rounded-full"
-    >
-      Update Extras
-    </Button>
+        {!(bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost) && (
+          <div className="flex justify-end flex-wrap gap-2">
+            <Button
+              variant="secondary"
+              onClick={handleUpdateExtras}
+              className="px-6 py-2 text-xs rounded-full"
+            >
+              Update Extras
+            </Button>
 
-    <Button
-      // onClick={handleProceedToPayment}
-      onClick={handleNext}
-      className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
-    >
-      Proceed to Payment
-    </Button>
-  </div>
-)}
+            <Button
+              // onClick={handleProceedToPayment}
+              onClick={handleNext}
+              className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
+            >
+              Proceed to Payment
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

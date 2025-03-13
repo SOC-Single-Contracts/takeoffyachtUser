@@ -347,273 +347,103 @@ const Selection = ({ onNext }) => {
 
   return (
     <>
-    <div className="w-full mb-6">
+   {/* 
+<div className="w-full mb-6">
     {loading ? (
         <div className="max-w-5xl mx-auto container px-2 space-y-6 mt-8">
-        {/* Skeleton for Yacht Images */}
-        <div className="mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...Array(3)].map((_, index) => (
-              <div key={index} className="relative h-48 rounded-lg bg-gray-200 animate-pulse" />
-            ))}
-          </div>
-        </div>
-  
-        {/* Skeleton for Date and Time Selection */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6">
-          <div className="flex flex-col space-y-2">
-            <Label className="text-sm font-medium">Select Date</Label>
-            <div className="h-10 w-full bg-gray-200 animate-pulse rounded-lg" />
-          </div>
-          
-          <div className="flex justify-between items-start">
-            <div className="flex flex-col space-y-2">
-              <Label className="text-sm font-medium">Start Time</Label>
-              <div className="h-10 w-full bg-gray-200 animate-pulse rounded-lg" />
-            </div>
-            <div className="flex flex-col items-end space-y-2">
-              <Label className="text-sm font-medium">Duration</Label>
-              <div className="h-10 w-full bg-gray-200 animate-pulse rounded-lg" />
-            </div>
-          </div>
-        </div>
-  
-        {/* Skeleton for Guests Selection */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-          <Label className="text-sm font-medium mb-4 block">Number of Guests</Label>
-          <div className="flex flex-col space-y-4 items-end">
-            <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
-              <div className="h-8 w-24 bg-gray-200 animate-pulse rounded" />
-              <div className="h-8 w-24 bg-gray-200 animate-pulse rounded" />
-            </div>
-          </div>
-        </div>
-  
-        {/* Skeleton for Optional Extras */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-          <Label className="text-sm font-medium mb-4 block">Optional Extras</Label>
-          <div className="space-y-4">
-            {[...Array(3)].map((_, index) => (
-              <div key={index} className="flex items-center justify-between p-4 bg-gray-200 rounded-lg animate-pulse">
-                <div className="h-4 w-32 bg-gray-300 animate-pulse" />
-                <div className="h-4 w-16 bg-gray-300 animate-pulse" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      ) : (
-  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-    {/* Yacht Images */}
-    <div className="mb-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {selectedYacht?.yacht?.yacht_image && (
-          <div className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
-            onClick={() => {
-              Fancybox.show([
-                {
-                  src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.yacht_image}`,
-                  type: "image",
-                }
-              ]);
-            }}
-          >
-            <Image
-              src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.yacht_image}`}
-              alt={selectedYacht.yacht.name}
-              fill
-              className="object-cover hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-        )}
-        {[...Array(20)].map((_, index) => {
-          const imageKey = `image${index + 1}`;
-          if (selectedYacht?.yacht?.[imageKey]) {
-            return (
-              <div 
-                key={imageKey}
-                className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
-                onClick={() => {
-                  Fancybox.show([
-                    {
-                      src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht[imageKey]}`,
-                      type: "image",
-                    }
-                  ]);
-                }}
-              >
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht[imageKey]}`}
-                  alt={`${selectedYacht.yacht.name} - ${index + 1}`}
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            );
-          }
-          return null;
-        })}
-      </div>
-    </div>
-
-    {/* Yacht Details */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <h2 className="text-2xl font-semibold mb-2">{selectedYacht?.yacht?.name}</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">{selectedYacht?.yacht?.description}</p>
-        
-        <div className="space-y-4">
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">Type</TableCell>
-                <TableCell>{selectedYacht?.yacht?.type}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Length</TableCell>
-                <TableCell>{selectedYacht?.yacht?.length} ft</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Cabins</TableCell>
-                <TableCell>{selectedYacht?.yacht?.number_of_cabin}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Sleep Capacity</TableCell>
-                <TableCell>{selectedYacht?.yacht?.sleep_capacity} persons</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Guest Capacity</TableCell>
-                <TableCell>{selectedYacht?.yacht?.capacity} persons</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Crew</TableCell>
-                <TableCell>{selectedYacht?.yacht?.crew_member} ({selectedYacht?.yacht?.crew_language})</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        {/* Categories */}
-        {/* <div>
-          <h3 className="font-semibold mb-3">Categories</h3>
-          <div className="flex flex-wrap gap-2">
-            {selectedYacht?.categories?.map((category) => (
-              <span 
-                key={category.id} 
-                className="bg-[#BEA355]/10 text-[#BEA355] px-3 py-1 rounded-full text-sm"
-              >
-                {category.name}
-              </span>
-            ))}
-          </div>
-        </div> */}
-        <div>
-          <h3 className="font-semibold mb-3">Categories</h3>
-          {selectedYacht?.categories?.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {selectedYacht.categories.map((category, index) => (
-                <span 
-                  key={index} 
-                  className="bg-[#BEA355]/10 text-[#BEA355] px-3 py-1 rounded-full text-sm"
-                >
-                  {category.replace(/'/g, '')}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p>No categories available.</p>
-          )}
-        </div>
-
-        {/* Features */}
-        {/* <div>
-          <h3 className="font-semibold mb-3">Features</h3>
-          <div className="flex flex-wrap gap-2">
-            {selectedYacht?.subcategories?.map((sub) => (
-              <span 
-                key={sub.id} 
-                className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
-              >
-                {sub.name}
-              </span>
-            ))}
-          </div>
-        </div> */}
-        <h3 className="font-semibold mb-3">Features</h3>
-{selectedYacht?.subcategories?.length > 0 ? (
-  <div className="flex flex-wrap gap-2">
-    {selectedYacht.subcategories.map((sub, index) => (
-      <div key={index} className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md px-3 py-2 hover:shadow-lg transition-shadow duration-300">
-        <h3 className="text-gray-800 dark:text-gray-200 font-medium">{sub.name}</h3>
-      </div>
-    ))}
-  </div>
-) : selectedYacht?.yacht?.features?.length > 0 ? (
-  <div className="flex flex-wrap gap-2">
-    {selectedYacht.yacht.features.map((feature, index) => (
-      <div key={index} className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md px-3 py-2 hover:shadow-lg transition-shadow duration-300">
-        <h3 className="text-gray-800 dark:text-gray-200 font-medium">{feature.name}</h3>
-        {feature.image && (
-          <Image src={feature.image} alt={feature.name} width={20} height={20} className="inline-block ml-2" />
-        )}
-      </div>
-    ))}
-  </div>
-) : (
-  <p className='text-gray-500 dark:text-gray-400 text-xs'>No features available.</p>
-)}
-
-        {/* Inclusions */}
-        {/* <div>
-          <h3 className="font-semibold mb-3">Included in Charter</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {selectedYacht?.inclusion?.map((item) => (
-              <div key={item.id} className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-[#BEA355] rounded-full"></div>
-                <span className="text-sm capitalize">{item.name}</span>
-              </div>
-            ))}
-          </div>
-        </div> */}
-        <div>
-          <h3 className="font-semibold mb-3">Included in Charter</h3>
-          {selectedYacht?.inclusion?.length > 0 ? (
-            <div className="grid grid-cols-2 gap-2">
-              {selectedYacht.inclusion.map((item) => (
-                <div key={item.id} className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-[#BEA355] rounded-full"></div>
-                  <span className="text-sm capitalize">{item.name}</span>
+            <div className="mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[...Array(3)].map((_, index) => (
+                        <div key={index} className="relative h-48 rounded-lg bg-gray-200 animate-pulse" />
+                    ))}
                 </div>
-              ))}
             </div>
-          ) : (
-            <p className='text-xs'>No inclusions available.</p>
-          )}
-        </div>
 
-        {/* New Year Inclusions */}
-        {bookingData.date && 
-         new Date(bookingData.date).getMonth() === 11 && 
-         new Date(bookingData.date).getDate() === 31 && (
-          <div>
-            <h3 className="font-semibold mb-3">New Year's Eve Special Inclusions</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {selectedYacht?.['New year inclusion']?.map((item) => (
-                <div key={item.id} className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-[#BEA355] rounded-full"></div>
-                  <span className="text-sm">{item.name}</span>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6">
+                <div className="flex flex-col space-y-2">
+                    <Label className="text-sm font-medium">Select Date</Label>
+                    <div className="h-10 w-full bg-gray-200 animate-pulse rounded-lg" />
                 </div>
-              ))}
+
+                <div className="flex justify-between items-start">
+                    <div className="flex flex-col space-y-2">
+                        <Label className="text-sm font-medium">Start Time</Label>
+                        <div className="h-10 w-full bg-gray-200 animate-pulse rounded-lg" />
+                    </div>
+                    <div className="flex flex-col items-end space-y-2">
+                        <Label className="text-sm font-medium">Duration</Label>
+                        <div className="h-10 w-full bg-gray-200 animate-pulse rounded-lg" />
+                    </div>
+                </div>
             </div>
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-      )}
+
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                <Label className="text-sm font-medium mb-4 block">Number of Guests</Label>
+                <div className="flex flex-col space-y-4 items-end">
+                    <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
+                        <div className="h-8 w-24 bg-gray-200 animate-pulse rounded" />
+                        <div className="h-8 w-24 bg-gray-200 animate-pulse rounded" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    ) : (
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+            <div className="mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {selectedYacht?.yacht?.yacht_image && (
+                        <div className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
+                            onClick={() => {
+                                Fancybox.show([
+                                    {
+                                        src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.yacht_image}`,
+                                        type: "image",
+                                    }
+                                ]);
+                            }}
+                        >
+                            <Image
+                                src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.yacht_image}`}
+                                alt={selectedYacht.yacht.name}
+                                fill
+                                className="object-cover hover:scale-105 transition-transform duration-300"
+                            />
+                        </div>
+                    )}
+                    {[...Array(20)].map((_, index) => {
+                        const imageKey = `image${index + 1}`;
+                        if (selectedYacht?.yacht?.[imageKey]) {
+                            return (
+                                <div 
+                                    key={imageKey}
+                                    className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
+                                    onClick={() => {
+                                        Fancybox.show([
+                                            {
+                                                src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht[imageKey]}`,
+                                                type: "image",
+                                            }
+                                        ]);
+                                    }}
+                                >
+                                    <Image
+                                        src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht[imageKey]}`}
+                                        alt={`${selectedYacht.yacht.name} - ${index + 1}`}
+                                        fill
+                                        className="object-cover hover:scale-105 transition-transform duration-300"
+                                    />
+                                </div>
+                            );
+                        }
+                        return null;
+                    })}
+                </div>
+            </div>
+        </div>
+    )}
 </div>
+*/}
+
     <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-6">
       <div className="flex flex-col w-full lg:w-2/4 xl:w-2/3 gap-4">
         {/* Date and Time Selection */}

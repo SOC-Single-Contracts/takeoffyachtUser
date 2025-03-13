@@ -50,6 +50,8 @@ export const BookingProvider = ({ children }) => {
     setBookingData(prev => ({ ...prev, ...newData }));
   };
 
+  console.log(bookingData)
+
   const calculateTotal = () => {
     if (!selectedYacht?.yacht) return 0;
     

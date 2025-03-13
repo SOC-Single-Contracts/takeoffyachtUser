@@ -666,7 +666,7 @@ const Yachts = () => {
 
                       {/* Boat Length */}
                       <div className="space-y-2">
-                        <Label className="text-sm">Boat Length (m)</Label>
+                        <Label className="text-sm">Boat Length (ft)</Label>
                         <div className="flex gap-4">
                           <div className="flex-1">
                             <Input
@@ -1194,7 +1194,7 @@ const Yachts = () => {
                       />
                     </Button>
 
-                    <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                    <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
                       <span className="font-medium text-xs">
                         AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_hour_price}</span>
                         <span className="text-xs font-light ml-1">/Hour</span>
