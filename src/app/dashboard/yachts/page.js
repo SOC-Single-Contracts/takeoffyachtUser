@@ -301,17 +301,20 @@ const Yachts = () => {
 
     let payload;
     if (type == "reset") {
+      console.log("ifff simple Yacht")
+
       payload = {
         user_id: userId,
       };
     } else {
+      console.log("else simple Yacht")
       payload = {
         user_id: userId,
         min_per_hour: filters.min_price.toString(),
         max_per_hour: filters.max_price.toString(),
         guest: filters.max_guest,
-        min_guest:filters?.min_guest,
-        max_guest:filters?.max_guest,
+        min_guest: filters?.min_guest,
+        max_guest: filters?.max_guest,
         sleep_capacity: filters.sleep_capacity,
         number_of_cabin: filters.number_of_cabin,
         // categories: JSON.stringify(filters.category_name),
@@ -391,20 +394,22 @@ const Yachts = () => {
 
   const resetFilters = () => {
     setFilters(initialFilterState);
+    handleFilterChange("reset");
+
   };
 
-/// calling on first render and reset
+  /// calling on first render only
   useEffect(() => {
-    if (JSON.stringify(filters) === JSON.stringify(initialFilterState)) {
-      handleFilterChange("reset");
-    }
-  }, [filters]);
+    console.log("calling on first render only")
+    handleFilterChange("reset");
+  }, []);
+
 
   // call onCancelEachFilter
   useEffect(() => {
     if (onCancelEachFilter) {
       handleFilterChange("normal");
-      setonCancelEachFilter(false); 
+      setonCancelEachFilter(false);
     }
   }, [filters, onCancelEachFilter]);
 
@@ -597,7 +602,7 @@ const Yachts = () => {
                           <div className="flex-1">
                             <Input
                               type="number"
-                               min="0"
+                              min="0"
                               placeholder="Min"
                               value={filters.min_price}
                               onChange={(e) => {
@@ -612,7 +617,7 @@ const Yachts = () => {
                           <div className="flex-1">
                             <Input
                               type="number"
-                               min="0"
+                              min="0"
                               placeholder="Max"
                               value={filters.max_price}
                               onChange={(e) => {
@@ -634,7 +639,7 @@ const Yachts = () => {
                           <div className="flex-1">
                             <Input
                               type="number"
-                               min="0"
+                              min="0"
                               placeholder="Min"
                               value={filters.min_guest}
                               onChange={(e) => {
@@ -649,7 +654,7 @@ const Yachts = () => {
                           <div className="flex-1">
                             <Input
                               type="number"
-                               min="0"
+                              min="0"
                               placeholder="Max"
                               value={filters.max_guest}
                               onChange={(e) => {
@@ -671,7 +676,7 @@ const Yachts = () => {
                           <div className="flex-1">
                             <Input
                               type="number"
-                               min="0"
+                              min="0"
                               placeholder="Min"
                               value={filters.min_length}
                               onChange={(e) => {
@@ -686,7 +691,7 @@ const Yachts = () => {
                           <div className="flex-1">
                             <Input
                               type="number"
-                               min="0"
+                              min="0"
                               placeholder="Max"
                               value={filters.max_length}
                               onChange={(e) => {
@@ -713,9 +718,10 @@ const Yachts = () => {
                           </Button>
                           <Input
                             type="number"
-                             min="0"
+                            min="0"
                             value={filters.sleep_capacity || 0}
                             onChange={(e) => setFilters(prev => ({ ...prev, sleep_capacity: Math.max(0, parseInt(e.target.value) || 0) }))}
+
                             className="w-16 text-center"
                           />
                           <Button
@@ -739,7 +745,7 @@ const Yachts = () => {
                           </Button>
                           <Input
                             type="number"
-                             min="0"
+                            min="0"
                             value={filters.number_of_cabin || 0}
                             onChange={(e) => setFilters(prev => ({ ...prev, number_of_cabin: Math.max(0, parseInt(e.target.value) || 0) }))}
                             className="w-16 text-center"
@@ -814,7 +820,9 @@ const Yachts = () => {
                                       {outdoorEquipment.map(({ name, icon }) => (
                                         <div key={name} className="flex items-center justify-between space-x-2">
                                           <div className="flex items-center space-x-2">
-                                            <Image src={icon} alt={`${name} icon`} width={5} height={5} className="w-5 h-5" />
+                                            <Image src={icon} alt={`${name} icon`} width={25} height={25}
+                                            //  className="w-5 h-5"
+                                            />
                                             <label htmlFor={name} className="text-sm">{name}</label>
                                           </div>
                                           <Checkbox
@@ -844,7 +852,9 @@ const Yachts = () => {
                                     {kitchenOptions.map((option) => (
                                       <div key={option.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={option.icon} alt={`${option.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                          <Image src={option.icon} alt={`${option.name} icon`} width={25} height={25}
+                                          //  className="w-5 h-5"
+                                          />
                                           <label htmlFor={option.name} className="text-sm">{option.name}</label>
                                         </div>
                                         <Checkbox
@@ -872,7 +882,9 @@ const Yachts = () => {
                                     {energyOptions.map((option) => (
                                       <div key={option.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={option.icon} alt={`${option.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                          <Image src={option.icon} alt={`${option.name} icon`} width={25} height={25}
+                                          //  className="w-5 h-5"
+                                          />
                                           <label htmlFor={option.name} className="text-sm">{option.name}</label>
                                         </div>
                                         <Checkbox
@@ -900,7 +912,9 @@ const Yachts = () => {
                                     {leisureActivities.map((activity) => (
                                       <div key={activity.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={activity.icon} alt={`${activity.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                          <Image src={activity.icon} alt={`${activity.name} icon`} width={25} height={25}
+                                          // className="w-5 h-5"
+                                          />
                                           <label htmlFor={activity.name} className="text-sm">{activity.name}</label>
                                         </div>
                                         <Checkbox
@@ -928,7 +942,9 @@ const Yachts = () => {
                                     {navigationEquipment.map((equipment) => (
                                       <div key={equipment.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={equipment.icon} alt={`${equipment.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                          <Image src={equipment.icon} alt={`${equipment.name} icon`} width={25} height={25}
+                                          //  className="w-5 h-5"
+                                          />
                                           <label htmlFor={equipment.name} className="text-sm">{equipment.name}</label>
                                         </div>
                                         <Checkbox
@@ -956,7 +972,9 @@ const Yachts = () => {
                                     {extraComforts.map((comfort) => (
                                       <div key={comfort.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={comfort.icon} alt={`${comfort.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                          <Image src={comfort.icon} alt={`${comfort.name} icon`} width={25} height={25}
+                                          //  className="w-5 h-5"
+                                          />
                                           <label htmlFor={comfort.name} className="text-sm">{comfort.name}</label>
                                         </div>
                                         <Checkbox
@@ -984,7 +1002,9 @@ const Yachts = () => {
                                     {indoorEquipment.map((equipment) => (
                                       <div key={equipment.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={equipment.icon} alt={`${equipment.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                          <Image src={equipment.icon} alt={`${equipment.name} icon`} width={25} height={25}
+                                          //  className="w-5 h-5"
+                                          />
                                           <label htmlFor={equipment.name} className="text-sm">{equipment.name}</label>
                                         </div>
                                         <Checkbox
@@ -1087,7 +1107,7 @@ const Yachts = () => {
                             setFilters(prev => ({ ...prev, indoor: [] }));
                             break;
                         }
-                        setonCancelEachFilter(true); 
+                        setonCancelEachFilter(true);
                       }}
                     />
                   </Badge>
@@ -1110,7 +1130,7 @@ const Yachts = () => {
         {/* Cards Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {yachts.length > 0 ? (
-            yachts.map((item,ind) => {
+            yachts.map((item, ind) => {
               if (!item || !item?.yacht) return null;
               const images = [
                 item?.yacht?.yacht_image,
@@ -1171,10 +1191,10 @@ const Yachts = () => {
                         </Button>
                       </CarouselNext>
                       <CarouselDots yId={item?.yacht?.id} />
-                      
+
                     </Carousel>
                     {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
-                      {/* <div className="absolute inset-0"></div> */}
+                    {/* <div className="absolute inset-0"></div> */}
                     {/* </Link> */}
 
                     <Button

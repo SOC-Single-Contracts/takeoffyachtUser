@@ -162,7 +162,7 @@ const SearchFilter = () => {
       const formattedEndDate = selectedDateRange?.to ? format(selectedDateRange?.to, 'yyyy-MM-dd') : null;
 
       // Check if at least one criterion is provided
-      if (!selectedCity && !formattedStartDate && totalGuests === 0) {
+      if (!selectedCity && !formattedStartDate && (totalGuests === 0 || totalGuests == "") ) {
         toast({
           title: "Error",
           description: "Please select at least one search criterion.",
@@ -471,12 +471,27 @@ const SearchFilter = () => {
                               type="number"
                               min="0"
                               value={guests[type]}
+                              // onChange={(e) => {
+                              //   const value = parseInt(e.target.value, 10) || 0;
+                              //   setGuests(prev => ({
+                              //     ...prev,
+                              //     [type]: Math.max(0, value)
+                              //   }));
+                              // }}
                               onChange={(e) => {
-                                const value = parseInt(e.target.value, 10) || 0;
-                                setGuests(prev => ({
-                                  ...prev,
-                                  [type]: Math.max(0, value)
-                                }));
+                                const value = e.target.value;
+                                if (value === "") {
+                                  setGuests(prev => ({
+                                    ...prev,
+                                    [type]: "" // Allow empty input temporarily
+                                  }));
+                                } else {
+                                  const parsedValue = Math.max(0, parseInt(value, 10)); // Remove leading 0s
+                                  setGuests(prev => ({
+                                    ...prev,
+                                    [type]: parsedValue // Ensure no leading zeroes
+                                  }));
+                                }
                               }}
                               className="w-14 text-center text-lg font-medium border rounded-md px-1 py-1 focus:outline-none focus:ring-0 focus:ring-[#BEA355] dark:bg-gray-700 dark:text-white dark:border-gray-600"
                             />

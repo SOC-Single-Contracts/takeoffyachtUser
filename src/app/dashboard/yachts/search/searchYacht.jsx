@@ -755,7 +755,7 @@ const SearchYacht = () => {
                                                                             {outdoorEquipment.map(({ name, icon }) => (
                                                                                 <div key={name} className="flex items-center justify-between space-x-2">
                                                                                     <div className="flex items-center space-x-2">
-                                                                                        <Image src={icon} alt={`${name} icon`} width={5} height={5} className="w-5 h-5" />
+                                                                                        <Image src={icon} alt={`${name} icon`} width={25} height={25} className="" />
                                                                                         <label htmlFor={name} className="text-sm">{name}</label>
                                                                                     </div>
                                                                                     <Checkbox
@@ -785,7 +785,7 @@ const SearchYacht = () => {
                                                                         {kitchenOptions.map((option) => (
                                                                             <div key={option.name} className="flex items-center justify-between space-x-2">
                                                                                 <div className="flex items-center space-x-2">
-                                                                                    <Image src={option.icon} alt={`${option.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                                                                    <Image src={option.icon} alt={`${option.name} icon`} width={25} height={25} className="" />
                                                                                     <label htmlFor={option.name} className="text-sm">{option.name}</label>
                                                                                 </div>
                                                                                 <Checkbox
@@ -813,7 +813,7 @@ const SearchYacht = () => {
                                                                         {energyOptions.map((option) => (
                                                                             <div key={option.name} className="flex items-center justify-between space-x-2">
                                                                                 <div className="flex items-center space-x-2">
-                                                                                    <Image src={option.icon} alt={`${option.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                                                                    <Image src={option.icon} alt={`${option.name} icon`} width={25} height={25} className="" />
                                                                                     <label htmlFor={option.name} className="text-sm">{option.name}</label>
                                                                                 </div>
                                                                                 <Checkbox
@@ -841,7 +841,7 @@ const SearchYacht = () => {
                                                                         {leisureActivities.map((activity) => (
                                                                             <div key={activity.name} className="flex items-center justify-between space-x-2">
                                                                                 <div className="flex items-center space-x-2">
-                                                                                    <Image src={activity.icon} alt={`${activity.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                                                                    <Image src={activity.icon} alt={`${activity.name} icon`} width={25} height={25} className="" />
                                                                                     <label htmlFor={activity.name} className="text-sm">{activity.name}</label>
                                                                                 </div>
                                                                                 <Checkbox
@@ -869,7 +869,7 @@ const SearchYacht = () => {
                                                                         {navigationEquipment.map((equipment) => (
                                                                             <div key={equipment.name} className="flex items-center justify-between space-x-2">
                                                                                 <div className="flex items-center space-x-2">
-                                                                                    <Image src={equipment.icon} alt={`${equipment.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                                                                    <Image src={equipment.icon} alt={`${equipment.name} icon`} width={25} height={25} className="" />
                                                                                     <label htmlFor={equipment.name} className="text-sm">{equipment.name}</label>
                                                                                 </div>
                                                                                 <Checkbox
@@ -897,7 +897,7 @@ const SearchYacht = () => {
                                                                         {extraComforts.map((comfort) => (
                                                                             <div key={comfort.name} className="flex items-center justify-between space-x-2">
                                                                                 <div className="flex items-center space-x-2">
-                                                                                    <Image src={comfort.icon} alt={`${comfort.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                                                                    <Image src={comfort.icon} alt={`${comfort.name} icon`} width={25} height={25} className="" />
                                                                                     <label htmlFor={comfort.name} className="text-sm">{comfort.name}</label>
                                                                                 </div>
                                                                                 <Checkbox
@@ -925,7 +925,7 @@ const SearchYacht = () => {
                                                                         {indoorEquipment.map((equipment) => (
                                                                             <div key={equipment.name} className="flex items-center justify-between space-x-2">
                                                                                 <div className="flex items-center space-x-2">
-                                                                                    <Image src={equipment.icon} alt={`${equipment.name} icon`} width={5} height={5} className="w-5 h-5" />
+                                                                                    <Image src={equipment.icon} alt={`${equipment.name} icon`} width={25} height={25} className="" />
                                                                                     <label htmlFor={equipment.name} className="text-sm">{equipment.name}</label>
                                                                                 </div>
                                                                                 <Checkbox
