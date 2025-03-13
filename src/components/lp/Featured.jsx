@@ -272,12 +272,18 @@ const Featured = () => {
                     />
                   </Button>
 
-                  <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                  {/* <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                     <span className="font-medium text-xs">
                       AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_hour_price}</span>
                       <span className="text-xs font-light ml-1">/Hour</span>
                     </span>
-                  </div>
+                  </div> */}
+                  <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
+                      <span className="font-medium text-xs">
+                        AED <span className="font-bold font-medium text-primary">{yachtItem.yacht.per_hour_price}</span>
+                        <span className="text-xs font-light ml-1">/Hour</span>
+                      </span>
+                    </div>
                 </div>
                 <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}>
 

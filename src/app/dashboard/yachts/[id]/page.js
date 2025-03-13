@@ -535,7 +535,7 @@ const YachtDetail = () => {
                     </div>
                   </div>
                 </div>
-                <Link href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
+                <Link className="hidden md:block" href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
                   <Button
                     // onClick={(e) => {
                     //   if (!session) {
@@ -866,31 +866,19 @@ const YachtDetail = () => {
             </Link>
           </div> */}
       </section>
-      {/* <div>
-        
-      </div> */}
-      <div className="relative md:hidden">
-  {/* Other content */}
-  <Link href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
-                  <Button
-                    // onClick={(e) => {
-                    //   if (!session) {
-                    //     e.preventDefault();
-                    //     toast({
-                    //       title: "Login Required",
-                    //       description: "Please login to book a yacht",
-                    //       variant: "destructive"
-                    //     });
-                    //     router.push('/login');
-                    //   }
-                    // }}
-                    className= "fixed bottom-4 z-999 left-1/2 transform -translate-x-1/2 rounded-full bg-[#BEA355] w-full max-w-[300px]} mx-auto text-white h-12 shadow-lg"
-                  >
-                    Book Now
-                  </Button>
-                </Link>
+      <div className="fixed md:hidden bottom-0 left-0 w-full bg-white shadow-md z-50 p-4">
+        <div className="relative  flex justify-center">
+          <Link className="w-full" href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
+            <Button
+              className="rounded-full bg-[#BEA355] w-full min-w-[210px]} mx-auto text-white h-12"
+            >
+              Book Now
+            </Button>
+          </Link>
+        </div>
+      </div>
 
-</div>
+
     </>
   );
 };
