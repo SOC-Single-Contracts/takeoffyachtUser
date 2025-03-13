@@ -154,7 +154,7 @@ const Cart = () => {
   }
 
   return (
-    <section className="py-10">
+    <section className="py-10 mt-10 md:mt-0">
       <div className="max-w-5xl px-2 mx-auto flex items-center space-x-4">
         <Button 
           onClick={() => router.back()}

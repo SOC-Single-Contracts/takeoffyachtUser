@@ -597,18 +597,30 @@ const Yachts = () => {
                           <div className="flex-1">
                             <Input
                               type="number"
+                               min="0"
                               placeholder="Min"
                               value={filters.min_price}
-                              onChange={(e) => setFilters(prev => ({ ...prev, min_price: e.target.value }))}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
+                                  setFilters((prev) => ({ ...prev, min_price: value }));
+                                }
+                              }}
                               className="w-full"
                             />
                           </div>
                           <div className="flex-1">
                             <Input
                               type="number"
+                               min="0"
                               placeholder="Max"
                               value={filters.max_price}
-                              onChange={(e) => setFilters(prev => ({ ...prev, max_price: e.target.value }))}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
+                                  setFilters((prev) => ({ ...prev, max_price: value }));
+                                }
+                              }}
                               className="w-full"
                             />
                           </div>
@@ -622,18 +634,30 @@ const Yachts = () => {
                           <div className="flex-1">
                             <Input
                               type="number"
+                               min="0"
                               placeholder="Min"
                               value={filters.min_guest}
-                              onChange={(e) => setFilters(prev => ({ ...prev, min_guest: e.target.value }))}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
+                                  setFilters((prev) => ({ ...prev, min_guest: value }));
+                                }
+                              }}
                               className="w-full"
                             />
                           </div>
                           <div className="flex-1">
                             <Input
                               type="number"
+                               min="0"
                               placeholder="Max"
                               value={filters.max_guest}
-                              onChange={(e) => setFilters(prev => ({ ...prev, max_guest: e.target.value }))}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
+                                  setFilters((prev) => ({ ...prev, max_guest: value }));
+                                }
+                              }}
                               className="w-full"
                             />
                           </div>
@@ -647,18 +671,30 @@ const Yachts = () => {
                           <div className="flex-1">
                             <Input
                               type="number"
+                               min="0"
                               placeholder="Min"
                               value={filters.min_length}
-                              onChange={(e) => setFilters(prev => ({ ...prev, min_length: e.target.value }))}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
+                                  setFilters((prev) => ({ ...prev, min_length: value }));
+                                }
+                              }}
                               className="w-full"
                             />
                           </div>
                           <div className="flex-1">
                             <Input
                               type="number"
+                               min="0"
                               placeholder="Max"
                               value={filters.max_length}
-                              onChange={(e) => setFilters(prev => ({ ...prev, max_length: e.target.value }))}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
+                                  setFilters((prev) => ({ ...prev, max_length: value }));
+                                }
+                              }}
                               className="w-full"
                             />
                           </div>
@@ -677,6 +713,7 @@ const Yachts = () => {
                           </Button>
                           <Input
                             type="number"
+                             min="0"
                             value={filters.sleep_capacity || 0}
                             onChange={(e) => setFilters(prev => ({ ...prev, sleep_capacity: Math.max(0, parseInt(e.target.value) || 0) }))}
                             className="w-16 text-center"
@@ -702,6 +739,7 @@ const Yachts = () => {
                           </Button>
                           <Input
                             type="number"
+                             min="0"
                             value={filters.number_of_cabin || 0}
                             onChange={(e) => setFilters(prev => ({ ...prev, number_of_cabin: Math.max(0, parseInt(e.target.value) || 0) }))}
                             className="w-16 text-center"
