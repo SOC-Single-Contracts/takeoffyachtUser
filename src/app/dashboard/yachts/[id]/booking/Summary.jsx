@@ -102,9 +102,18 @@ const Summary = ({ onNext, initialBookingId }) => {
     fetchBookingDetails();
   }, [initialBookingId, bookingData.bookingId]);
 
+  const handleNext = () => {
+    updateBookingData({
+      ...bookingData,
+      paymentType: 'initial',
+      remainingCost: 0,
+      paidAmount: 0,
+      isPartialPayment: false
+    });
+    onNext();
+  };
 
   const calculateUpdatedTotalCost = () => {
-    // Calculate base cost (charter cost)
     const baseHourlyRate = bookingDetails.is_new_year_booking
       ? (selectedYacht?.yacht?.new_year_price || 0)
       : (selectedYacht?.yacht?.per_hour_price || 0);
@@ -117,69 +126,6 @@ const Summary = ({ onNext, initialBookingId }) => {
 
     return charterCost + extrasCost;
   };
-
-  // const handleUpdateExtras = async () => {
-  //   try {
-  //     const bookingId = bookingDetails.id;
-  //     const updatedTotalCost = calculateUpdatedTotalCost();
-  
-  //     const payload = {
-  //       extras: editableExtras.map(extra => ({
-  //         extra_id: extra.extra_id,
-  //         name: extra.name,
-  //         quantity: parseInt(extra.quantity),
-  //         price: parseFloat(extra.price)
-  //       })),
-  //       total_cost: updatedTotalCost,
-  //       remaining_cost: bookingDetails.paid_cost > 0 ? updatedTotalCost - bookingDetails.paid_cost : 0
-  //     };
-  
-  //     const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
-  //       method: 'PATCH',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
-  
-  //     if (!response.ok) {
-  //       throw new Error('Failed to update booking details');
-  //     }
-  
-  //     const result = await response.json();
-      
-  //     if (result.data) {
-  //       setBookingDetails(result.data);
-  //       setEditableExtras(result.data.extras_data);
-        
-  //       updateBookingData({
-  //         extras: result.data.extras_data.filter(extra => extra.quantity > 0),
-  //         totalCost: result.data.total_cost,
-  //         remainingCost: result.data.remaining_cost,
-  //         paidCost: result.data.paid_cost
-  //       });
-  //     }
-  
-  //     toast({
-  //       title: "Success",
-  //       description: "Extras updated successfully",
-  //       variant: "success"
-  //     });
-  
-  //     const refreshResponse = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`);
-  //     const refreshedData = await refreshResponse.json();
-  //     setBookingDetails(refreshedData);
-  //     setEditableExtras(refreshedData.extras_data);
-  
-  //   } catch (error) {
-  //     console.error('Error updating extras:', error);
-  //     toast({
-  //       title: "Error",
-  //       description: error.message,
-  //       variant: "destructive"
-  //     });
-  //   }
-  // };
 
 
 const handleUpdateExtras = async () => {
@@ -320,19 +266,6 @@ const handleUpdateExtras = async () => {
     }
   };
 
-  // const handleProceedToPayment = async () => {
-  //   try {
-
-  //     onNext();
-  //   } catch (error) {
-  //     console.error('Error proceeding to payment:', error);
-  //     toast({
-  //       title: "Error",
-  //       description: "Failed to proceed to payment. Please try again.",
-  //       variant: "destructive"
-  //     });
-  //   }
-  // };
   const handleProceedToPayment = async () => {
     try {
       const bookingId = bookingDetails.id;
@@ -433,17 +366,6 @@ const handleUpdateExtras = async () => {
           </TableRow>
         </TableHeader>
         <TableBody className="bg-white dark:bg-gray-800 text-xs">
-          {/* <TableRow>
-            <TableCell className="font-semibold">
-              Charter ({bookingDetails.duration_hour} hours)
-              {bookingDetails.is_new_year_booking && " - New Year's Eve Rate"}
-            </TableCell>
-            <TableCell className="font-medium">
-              AED {(bookingDetails.is_new_year_booking ?
-                (selectedYacht?.yacht?.new_year_price || 0) :
-                (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour}
-            </TableCell>
-          </TableRow> */}
            <TableRow>
             <TableCell className="font-semibold">
               {bookingDetails.end_date
@@ -698,15 +620,6 @@ const handleUpdateExtras = async () => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-white dark:bg-gray-800 text-xs">
-            {/* <TableRow>
-              <TableCell className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <span className="font-semibold">Date</span>
-              </TableCell>
-              <TableCell className="font-medium">
-                {safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')}
-              </TableCell>
-            </TableRow> */}
             <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
@@ -719,15 +632,6 @@ const handleUpdateExtras = async () => {
                 }
               </TableCell>
             </TableRow>
-            {/* <TableRow>
-              <TableCell className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span className="font-semibold">Time & Duration</span>
-              </TableCell>
-              <TableCell className="font-medium">
-                {safeFormat(bookingDetails.starting_time, 'hh:mm a')} ({bookingDetails.duration_hour} hours)
-              </TableCell>
-            </TableRow> */}
             <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
@@ -736,10 +640,6 @@ const handleUpdateExtras = async () => {
                 </span>
               </TableCell>
               <TableCell className="font-medium">
-                {/* {bookingDetails.end_date 
-                  ? ${Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days
-                  : ${safeFormat(bookingDetails.starting_time, 'hh:mm a')} (${bookingDetails.duration_hour} hours)
-                } */}
                 {bookingDetails.end_date
                   ? `${Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days`
                   : `${safeFormat(bookingDetails.starting_time, 'hh:mm a')} (${bookingDetails.duration_hour} hours)`
@@ -767,43 +667,6 @@ const handleUpdateExtras = async () => {
           </TableBody>
         </Table>
 
-        {/* Extras Table with Editable Quantities */}
-        {/* <Table className="bg-[#F4F0E4] w-full rounded-lg">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="font-semibold text-md text-black">
-                Optional Extras
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="bg-white dark:bg-gray-800 text-xs">
-            {editableExtras.map((extra, index) => (
-              <TableRow key={extra.extra_id}>
-                <TableCell className="font-semibold">{extra.name}</TableCell>
-                <TableCell>
-                  <div className="flex items-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateExtraQuantity(index, Math.max(0, extra.quantity - 1))}
-                    >
-                      -
-                    </Button>
-                    <span className="mx-2">{extra.quantity}</span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateExtraQuantity(index, extra.quantity + 1)}
-                    >
-                      +
-                    </Button>
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">AED {extra.price * extra.quantity}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table> */}
         <Table className="bg-[#F4F0E4] w-full rounded-lg shadow-lg">
   <TableHeader>
     <TableRow>
@@ -895,7 +758,8 @@ const handleUpdateExtras = async () => {
     </Button>
 
     <Button
-      onClick={handleProceedToPayment}
+      // onClick={handleProceedToPayment}
+      onClick={handleNext}
       className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
     >
       Proceed to Payment

@@ -25,6 +25,9 @@ export const BookingProvider = ({ children }) => {
     waterSports: 0,
     misc: 0,
     extras: [],
+    paymentType: 'initial',
+    paidAmount: 0,
+    remainingAmount: 0,
     cardNumber: '',
     expiryMonth: '',
     expiryYear: '',
@@ -33,25 +36,19 @@ export const BookingProvider = ({ children }) => {
     paymentProcessing: false
   });
 
+  const resetPaymentState = () => {
+    setBookingData(prev => ({
+      ...prev,
+      paymentType: 'initial',
+      paidAmount: 0,
+      remainingAmount: 0
+    }));
+  };
+
   const updateBookingData = (newData) => {
     setBookingData(prev => ({ ...prev, ...newData }));
   };
 
-  // const calculateTotal = () => {
-  //   if (!selectedYacht?.yacht) return 0;
-    
-  //   const basePrice = selectedYacht.yacht.per_hour_price || 0;
-  //   const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;
-  //   const hours = bookingData.duration || 3;
-    
-  //   const hourlyRate = bookingData.isNewYearBooking ? newYearPrice : basePrice;
-    
-  //   const extrasTotal = (bookingData.extras || []).reduce((total, item) => {
-  //     return total + (item.price * item.quantity);
-  //   }, 0);
-
-  //   return (hourlyRate * hours) + extrasTotal;
-  // };
   const calculateTotal = () => {
     if (!selectedYacht?.yacht) return 0;
     
@@ -80,11 +77,12 @@ export const BookingProvider = ({ children }) => {
 
   return (
     <BookingContext.Provider value={{
+      resetPaymentState,
       bookingData,
       updateBookingData,
       selectedYacht,
       setSelectedYacht,
-      calculateTotal
+      calculateTotal,
     }}>
       {children}
     </BookingContext.Provider>

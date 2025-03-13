@@ -23,7 +23,6 @@ const safeFormat = (dateString, formatString, fallback = 'N/A') => {
   try {
     if (!dateString) return fallback;
 
-    // Try parsing as ISO string first
     let parsedDate = parseISO(dateString);
     if (!isValid(parsedDate)) {
       parsedDate = parseISO(`1970-01-01T${dateString}`);
@@ -48,7 +47,6 @@ const Summary = ({ onNext, initialBookingId }) => {
   useEffect(() => {
     const fetchBookingDetails = async () => {
       try {
-        // Prioritize initialBookingId, then bookingId from context
         const currentBookingId = initialBookingId || bookingData.bookingId;
 
         if (!currentBookingId) {
@@ -69,14 +67,12 @@ const Summary = ({ onNext, initialBookingId }) => {
 
         const details = await response.json();
 
-        // Filter extras with quantities > 0
         const activeExtras = details.extras_data.filter(extra => extra.quantity > 0);
 
         setBookingDetails(details);
         setEditableExtras(details.extras_data || []);
         setIsPartialPayment(details.is_partial_payment || false);
 
-        // Update booking context with booking details
         updateBookingData({
           bookingId: details.id,
           qrCodeUrl: details.qr_code,
@@ -100,9 +96,18 @@ const Summary = ({ onNext, initialBookingId }) => {
     fetchBookingDetails();
   }, [initialBookingId, bookingData.bookingId]);
 
+  const handleNext = () => {
+    updateBookingData({
+      ...bookingData,
+      paymentType: 'initial',
+      remainingCost: 0,
+      paidAmount: 0,
+      isPartialPayment: false
+    });
+    onNext();
+  };
 
   const calculateUpdatedTotalCost = () => {
-    // Calculate base cost (charter cost)
     const baseHourlyRate = bookingDetails.is_new_year_booking
       ? (selectedYacht?.yacht?.new_year_price || 0)
       : (selectedYacht?.yacht?.per_hour_price || 0);
@@ -116,75 +121,10 @@ const Summary = ({ onNext, initialBookingId }) => {
     return charterCost + extrasCost;
   };
 
-  // const handleUpdateExtras = async () => {
-  //   try {
-  //     const bookingId = bookingDetails.id;
-  //     const updatedTotalCost = calculateUpdatedTotalCost();
-
-  //     const payload = {
-  //       extras: editableExtras.map(extra => ({
-  //         extra_id: extra.extra_id,
-  //         name: extra.name,
-  //         quantity: parseInt(extra.quantity),
-  //         price: parseFloat(extra.price)
-  //       })),
-  //       total_cost: updatedTotalCost,
-  //       remaining_cost: bookingDetails.paid_cost > 0 ? updatedTotalCost - bookingDetails.paid_cost : 0
-  //     };
-
-  //     const response = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`, {
-  //       method: 'PATCH',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('Failed to update booking details');
-  //     }
-
-  //     const result = await response.json();
-
-  //     if (result.data) {
-  //       setBookingDetails(result.data);
-  //       setEditableExtras(result.data.extras_data);
-
-  //       updateBookingData({
-  //         extras: result.data.extras_data.filter(extra => extra.quantity > 0),
-  //         totalCost: result.data.total_cost,
-  //         remainingCost: result.data.remaining_cost,
-  //         paidCost: result.data.paid_cost
-  //       });
-  //     }
-
-  //     toast({
-  //       title: "Success",
-  //       description: "Extras updated successfully",
-  //       variant: "success"
-  //     });
-
-  //     const refreshResponse = await fetch(`${API_BASE_URL}/yacht/booking/${bookingId}/`);
-  //     const refreshedData = await refreshResponse.json();
-  //     setBookingDetails(refreshedData);
-  //     setEditableExtras(refreshedData.extras_data);
-
-  //   } catch (error) {
-  //     console.error('Error updating extras:', error);
-  //     toast({
-  //       title: "Error",
-  //       description: error.message,
-  //       variant: "destructive"
-  //     });
-  //   }
-  // };
-
-
   const handleUpdateExtras = async () => {
     try {
       const bookingId = bookingDetails.id;
 
-      // Calculate base cost based on booking type
       let baseCost = 0;
       if (bookingDetails.booking_type === 'hourly') {
         const hourlyRate = selectedYacht?.yacht?.per_hour_price || 0;
@@ -258,8 +198,6 @@ const Summary = ({ onNext, initialBookingId }) => {
     }
   };
 
-  // ... rest of the code ...
-
   const handleUpdatePartialPayment = async () => {
     try {
       const bookingId = bookingDetails.id;
@@ -318,24 +256,10 @@ const Summary = ({ onNext, initialBookingId }) => {
     }
   };
 
-  // const handleProceedToPayment = async () => {
-  //   try {
-
-  //     onNext();
-  //   } catch (error) {
-  //     console.error('Error proceeding to payment:', error);
-  //     toast({
-  //       title: "Error",
-  //       description: "Failed to proceed to payment. Please try again.",
-  //       variant: "destructive"
-  //     });
-  //   }
-  // };
   const handleProceedToPayment = async () => {
     try {
       const bookingId = bookingDetails.id;
 
-      // First, update extras if they were modified
       await handleUpdateExtras();
 
       // Calculate payment amounts
@@ -399,13 +323,13 @@ const Summary = ({ onNext, initialBookingId }) => {
     const bookingLink = `${window.location.origin}/dashboard/yachts/${yachtId}/guest-booking/?bookingId=${bookingId}`;
 
     navigator.clipboard.writeText(bookingLink).then(() => {
-      setIsCopied(true); // Set copied state to true
+      setIsCopied(true);
       toast({
         title: "Link Copied",
         description: "The booking link has been copied to your clipboard.",
         variant: "success",
       });
-      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+      setTimeout(() => setIsCopied(false), 2000);
     }).catch(err => {
       console.error('Failed to copy: ', err);
       toast({
@@ -448,17 +372,6 @@ const Summary = ({ onNext, initialBookingId }) => {
               }
             </TableCell>
           </TableRow>
-          {/* <TableRow>
-            <TableCell className="font-semibold">
-              Charter ({bookingDetails.duration_hour} hours)
-              {bookingDetails.is_new_year_booking && " - New Year's Eve Rate"}
-            </TableCell>
-            <TableCell className="font-medium">
-              AED {(bookingDetails.is_new_year_booking ?
-                (selectedYacht?.yacht?.new_year_price || 0) :
-                (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour}
-            </TableCell>
-          </TableRow> */}
           {bookingDetails.extras_data && Array.isArray(bookingDetails.extras_data) && bookingDetails.extras_data.map((item) => (
             <TableRow key={item.extra_id}>
               <TableCell className="font-semibold">{item.name}</TableCell>
@@ -696,24 +609,6 @@ const Summary = ({ onNext, initialBookingId }) => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-white dark:bg-gray-800 text-xs">
-            {/* <TableRow>
-              <TableCell className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <span className="font-semibold">Date</span>
-              </TableCell>
-              <TableCell className="font-medium">
-                {safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')}
-              </TableCell>
-            </TableRow> */}
-            {/* <TableRow>
-              <TableCell className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span className="font-semibold">Time & Duration</span>
-              </TableCell>
-              <TableCell className="font-medium">
-                {safeFormat(bookingDetails.starting_time, 'hh:mm a')} ({bookingDetails.duration_hour} hours)
-              </TableCell>
-            </TableRow> */}
             <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
@@ -734,10 +629,6 @@ const Summary = ({ onNext, initialBookingId }) => {
                 </span>
               </TableCell>
               <TableCell className="font-medium">
-                {/* {bookingDetails.end_date 
-                  ? ${Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days
-                  : ${safeFormat(bookingDetails.starting_time, 'hh:mm a')} (${bookingDetails.duration_hour} hours)
-                } */}
                 {bookingDetails.end_date
                   ? `${Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days`
                   : `${safeFormat(bookingDetails.starting_time, 'hh:mm a')} (${bookingDetails.duration_hour} hours)`
@@ -833,7 +724,7 @@ const Summary = ({ onNext, initialBookingId }) => {
         {bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost && (
           <div className="flex items-center justify-between bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md mb-4">
             <div className="flex items-center">
-              <CheckCheck className="w-6 h-6 mr-2" /> {/* Optional icon for visual appeal */}
+              <CheckCheck className="w-6 h-6 mr-2" />
               <div>
                 <strong className="font-bold">Thank You!</strong>
                 <span className="block sm:inline"> Your payment has been successfully received. We appreciate your business!</span>
@@ -843,24 +734,6 @@ const Summary = ({ onNext, initialBookingId }) => {
         )}
 
         <div className="flex justify-end flex-wrap gap-2">
-
-
-          {/* <Button
-                onClick={handleProceedToPayment}
-                className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
-              >
-                Proceed to Payment
-              </Button> */}
-          {/* <Button
-            onClick={handleProceedToPayment}
-            className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
-          >
-            {bookingDetails?.paid_cost > 0
-              ? `Pay Remaining (AED ${bookingDetails.remaining_cost.toFixed(2)})`
-              : isPartialPayment
-                ? `Pay 25% (AED ${(bookingDetails.total_cost * 0.25).toFixed(2)})`
-                : `Pay Full Amount (AED ${bookingDetails.total_cost.toFixed(2)})`}
-          </Button> */}
           <div className="flex justify-end flex-wrap gap-2">
             {(bookingDetails?.remaining_cost > 0 || !bookingDetails?.paid_cost) && (
               <>
@@ -872,7 +745,8 @@ const Summary = ({ onNext, initialBookingId }) => {
                   Update Extras
                 </Button>
                 <Button
-                  onClick={handleProceedToPayment}
+                  onClick={handleNext}
+                  // onClick={handleProceedToPayment}
                   className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
                 >
                   Proceed to Payment
