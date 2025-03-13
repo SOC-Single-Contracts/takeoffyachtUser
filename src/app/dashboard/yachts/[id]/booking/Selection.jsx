@@ -460,7 +460,7 @@ const Selection = ({ onNext }) => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <h2 className="text-2xl font-semibold mb-2">{selectedYacht?.yacht?.name}</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">{selectedYacht?.yacht?.description}</p>
+        <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">{selectedYacht?.yacht?.description}</p>
         
         <div className="space-y-4">
           <Table>

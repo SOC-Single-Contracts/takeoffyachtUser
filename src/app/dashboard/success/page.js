@@ -7,7 +7,7 @@ export default function SuccessPage() {
   const router = useRouter();
 
   return (
-    <div className="md:min-h-[90vh] py-10 md:py-0 flex items-center justify-center">
+    <div className="md:min-h-[90vh] py-10 md:py-0 flex items-center justify-center ">
       <div className="bg-white dark:bg-gray-800 p-3 md:p-8 rounded-lg shadow-lg max-w-md md:max-w-lg w-full mx-2 md:mx-4">
         <div className="text-center">
           <div className="relative w-24 h-24 mx-auto my-6">

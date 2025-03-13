@@ -49,7 +49,7 @@ const Hero = () => {
     <section className="mt-24 md:mt-28 overflow-hidden flex items-center">
       <div className="max-w-4xl px-4 mx-auto flex flex-col items-center text-center space-y-5">
         {/* <h1 className="lg:text-[48px] md:text-[46px] text-[32px] font-semibold text-black dark:text-white capitalize">The best yacht booking platform</h1> */}
-        <p className="mt-4 text-black dark:text-white text-[16px] text-balance">
+        <p className="mt-24 md:mt-2 text-black dark:text-white text-[16px] text-balance">
         At YachtExplore, we believe that every journey is unique. Our extensive collection of luxury yachts includes motor yachts, sailing yachts, and superyachts, each designed to offer the best in luxury, speed, and comfort. 
         </p>
         <Link href="/dashboard/yachts">

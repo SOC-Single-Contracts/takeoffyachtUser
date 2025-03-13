@@ -91,7 +91,7 @@ const BookingWizardContent = ({ initialBookingId }) => {
   const CurrentStepComponent = steps[currentStep - 1].component;
 
   return (
-    <section className="py-6 md:py-10">
+    <section className="py-6 md:py-10 ">
       <div className="max-w-5xl mx-auto px-2">
         <div className="flex items-center space-x-4 mb-8">
           {currentStep > 1 && (

@@ -10,8 +10,11 @@ export default function BlogPage() {
   return (
     <main className="bg-[#E2E2E2] dark:bg-gray-900">
     <Header />
-    <DetailedBlog blogId={id} />
-    <Footer />
+          <div className="mt-10 md:mt-0">
+          <DetailedBlog blogId={id} />
+          <Footer />
+            </div>
+
     </main>
   );
 }

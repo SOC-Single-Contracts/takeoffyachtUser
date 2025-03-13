@@ -118,8 +118,11 @@ const Privacy = () => {
   return (
     <>
       <Header />
-      <PrivacyContent/>
-      <Footer />
+          <div className="mt-10 md:mt-0">
+          <PrivacyContent/>
+          <Footer />
+                  </div>
+  
     </>
   );
 };

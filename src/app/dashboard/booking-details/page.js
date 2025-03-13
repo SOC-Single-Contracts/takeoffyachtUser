@@ -46,7 +46,7 @@ const BookingDetails = () => {
   if (error) return <div>Error loading booking details</div>;
 
   return (
-    <section className="py-6 px-2">
+    <section className="py-6 px-2 ">
       <div className="max-w-5xl px-2 mx-auto flex items-center space-x-4">
         <Button className="bg-[#F8F8F8] hover:bg-[#F8F8F8] shadow-md rounded-full flex items-center justify-center w-10 h-10">
           <ArrowLeft className="w-4 h-4 text-black" />
