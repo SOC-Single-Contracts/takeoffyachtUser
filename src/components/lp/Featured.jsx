@@ -97,7 +97,7 @@ const Featured = () => {
           </div>
 
           {/* Cards Grid Skeleton */}
-          <div className="grid grid-cols-1 gap-6 xs:grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 place-items-center">
+          <div className="grid grid-cols-1 gap-[0.6rem] xs:grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 place-items-center">
             {Array.from({ length: 6 }).map((_, index) => (
               <Card
                 key={index}
@@ -184,7 +184,7 @@ const Featured = () => {
           </h2>
         </div>
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 gap-6 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
+        <div className="grid grid-cols-1 gap-[0.6rem] xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {yachts.slice(0, 6).map((yachtItem) => {
             // Collect all image URLs
             const images = [
