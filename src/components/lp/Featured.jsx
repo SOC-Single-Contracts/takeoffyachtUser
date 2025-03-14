@@ -176,7 +176,7 @@ const Featured = () => {
 
   return (
     <section className="md:py-20 py-8 ">
-      <div className="max-w-5xl px-4 mx-auto">
+      <div className="max-w-5xl px-2 mx-auto">
         {/* Heading Section */}
         <div className="w-full flex items-center justify-between">
           <h2 className=" text-[24px] font-semibold tracking-tight md:text-4xl">
@@ -184,7 +184,7 @@ const Featured = () => {
           </h2>
         </div>
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
+        <div className="grid grid-cols-1 gap-6 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {yachts.slice(0, 6).map((yachtItem) => {
             // Collect all image URLs
             const images = [
@@ -214,7 +214,7 @@ const Featured = () => {
             return (
               <Card
                 key={yachtItem.yacht.id}
-                className="overflow-hidden  cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                className="overflow-hidden  cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px]] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
               >
                 <div className="relative">
                   <Carousel className="w-full h-[221px]">
