@@ -97,11 +97,11 @@ const Featured = () => {
           </div>
 
           {/* Cards Grid Skeleton */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center">
+          <div className="grid grid-cols-1 gap-6 xs:grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 place-items-center">
             {Array.from({ length: 6 }).map((_, index) => (
               <Card
                 key={index}
-                className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
+                className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px]] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
               >
                 <div className="relative">
                   {/* Image Skeleton */}

@@ -304,6 +304,7 @@ const Yachts = () => {
       console.log("ifff simple Yacht")
 
       payload = {
+        source:"simpleYacht",
         user_id: userId,
       };
     } else {
@@ -359,6 +360,8 @@ const Yachts = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          "Referer": window.location.href
+
         },
         body: JSON.stringify(payload),
       });
@@ -497,7 +500,7 @@ const Yachts = () => {
           </div>
 
           {/* Cards Grid Skeleton */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center">
+          <div className="grid grid-cols-1 gap-6 xs:grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 place-items-center">
             {Array.from({ length: 6 }).map((_, index) => (
               <Card
                 key={index}
@@ -1128,7 +1131,7 @@ const Yachts = () => {
         </div>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
+        <div className="grid grid-cols-1 gap-6 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {yachts.length > 0 ? (
             yachts.map((item, ind) => {
               if (!item || !item?.yacht) return null;
@@ -1160,7 +1163,7 @@ const Yachts = () => {
               return (
                 <Card
                   key={item?.yacht?.id}
-                  className="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                  className="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px]] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
                 >
                   <div className="relative">
                     <Carousel className="w-full h-[221px]">
