@@ -30,8 +30,9 @@ const Carousel = React.forwardRef((
   const [carouselRef, api] = useEmblaCarousel({
     ...opts,
     axis: orientation === "horizontal" ? "x" : "y",
-    dragFree: true,
+    dragFree: false,
     containScroll: "trimSnaps",
+    slidesToScroll: 1,
   }, plugins)
   const [canScrollPrev, setCanScrollPrev] = React.useState(false)
   const [canScrollNext, setCanScrollNext] = React.useState(false)
@@ -132,7 +133,7 @@ const CarouselItem = React.forwardRef(({ className, ...props }, ref) => {
       aria-roledescription="slide"
       className={cn(
         "min-w-0 shrink-0 grow-0 basis-full",
-        orientation === "horizontal" ? "pl-4" : "pt-4",
+        orientation === "horizontal" ? "pl-2" : "pt-4",
         className
       )}
       {...props} />
@@ -191,19 +192,19 @@ const CarouselNext = React.forwardRef(({ className, variant = "outline", size = 
 CarouselNext.displayName = "CarouselNext"
 
 const CarouselDots = React.forwardRef(({ className, ...props }, ref) => {
-  const { api, selectedIndex } = useCarousel()
-  const [slideCount, setSlideCount] = React.useState(0)
+  const { api, selectedIndex } = useCarousel();
+  const [slideCount, setSlideCount] = React.useState(0);
 
   React.useEffect(() => {
-    if (!api) return
-    setSlideCount(api.scrollSnapList().length)
-  }, [api,selectedIndex])
+    if (!api) return;
+    setSlideCount(api.scrollSnapList().length);
+  }, [api, selectedIndex]);
 
   return (
     <div
       ref={ref}
       className={cn(
-        "absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-50",
+        "absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-50", // Reduce gap for better spacing
         className
       )}
       {...props}
@@ -212,18 +213,20 @@ const CarouselDots = React.forwardRef(({ className, ...props }, ref) => {
         <button
           key={index}
           className={cn(
-            "h-2 w-2 rounded-full transition-all",
-            selectedIndex === index 
-              ? "bg-white scale-125" 
-              : "bg-white/50 hover:bg-white/75"
+            "h-1.5 w-1.5 rounded-full transition-all", // Smaller dots
+            selectedIndex === index
+              ? "bg-white" // Active dot fully visible
+              : "bg-white/50 hover:bg-white/75" // Inactive dots slightly faded
           )}
           onClick={() => api?.scrollTo(index)}
         />
       ))}
     </div>
-  )
-})
-CarouselDots.displayName = "CarouselDots"
+  );
+});
+
+CarouselDots.displayName = "CarouselDots";
+
 
 export {
   Carousel,

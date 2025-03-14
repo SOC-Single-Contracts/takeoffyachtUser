@@ -385,6 +385,19 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       >
         {getPaymentButtonText()}
       </Button>
+
+      {/* {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
+    <div className="flex items-center space-x-2">
+      <Checkbox 
+        id="partial-payment" 
+        checked={isPartialPayment}
+        onCheckedChange={(checked) => setIsPartialPayment(checked)}
+      />
+      <Label htmlFor="partial-payment" className="text-sm">
+        You want to do partial payment?
+      </Label>
+    </div>
+  )} */}
     </form>
   );
 };

@@ -5,6 +5,7 @@ export const fetchYachts = async (id) => {
   try {
     const response = await axios.get(`https://api.takeoffyachts.com/yacht/get_yacht/1`);
 
+    
     if (response.data.error_code === "pass") {
       return response.data.data;
     }

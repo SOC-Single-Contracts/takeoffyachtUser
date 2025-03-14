@@ -26,7 +26,7 @@ const BookingWizardContent = ({ initialBookingId }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const { id } = useParams();
   const { data: session, status } = useSession();
-  const { setSelectedYacht, updateBookingData } = useBookingContext();
+  const { setSelectedYacht, updateBookingData,bookingData } = useBookingContext();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -89,6 +89,16 @@ const BookingWizardContent = ({ initialBookingId }) => {
   };
 
   const CurrentStepComponent = steps[currentStep - 1].component;
+
+///test
+  useEffect(()=>{
+    console.log("CurrentStepComponent",CurrentStepComponent)
+
+  },[CurrentStepComponent])
+  
+  useEffect(()=>{
+    console.log("bookingData=>",bookingData)
+  },[bookingData])
 
   return (
     <section className="py-6 md:py-10 ">

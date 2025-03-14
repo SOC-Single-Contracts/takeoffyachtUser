@@ -60,7 +60,7 @@ const YachtDetail = () => {
 
       try {
         const newData = await fetchYachts(session?.user?.userid || 1);
-        const yacht = newData.find(
+        const yacht = newData?.find(
           (item) => item.yacht && item.yacht.id.toString() === id
         );
 
@@ -76,6 +76,7 @@ const YachtDetail = () => {
 
         setFeaturedYachts(featured);
       } catch (err) {
+        console.log(err)
         setError(err.message || 'Unexpected Error');
       } finally {
         setLoading(false);
@@ -343,7 +344,8 @@ const YachtDetail = () => {
       return 'N/A';
     }
   };
-
+//test
+  // console.log(selectedYacht)
 
   return (
     <>
@@ -370,7 +372,7 @@ const YachtDetail = () => {
                         <Image
                           src={`https://api.takeoffyachts.com${image}`}
                           alt={`Yacht Image ${index + 1}`}
-                          className="w-full h-[320px] object-cover rounded-md shadow-md cursor-pointer"
+                          className="w-full h-[180px] md:h-[320px] object-cover rounded-md shadow-md cursor-pointer"
                           width={800}
                           height={500}
                           quality={100}
@@ -769,14 +771,14 @@ const YachtDetail = () => {
                 </div>
               )}
               <section className="mt-4">
-                <h2 className="text-lg font-medium">Features</h2>
+                <h2 className="text-lg font-medium">Amenities</h2>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {selectedYacht.yacht.features && selectedYacht.yacht.features.length > 0 ? (
                     selectedYacht.yacht.features.map((feature, index) => (
                       <div key={index} className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md px-3 py-2 hover:shadow-lg transition-shadow duration-300">
                         <div className="flex-shrink-0">
-                          {feature.image && (
-                            <Image src={feature.image} alt={feature.name} width={40} height={40} className="mr-2" />
+                          {feature?.image && (
+                            <Image src={feature?.image} alt={feature.name} width={40} height={40} className="mr-2" />
                           )}
                         </div>
                         <div className="flex-grow">
@@ -856,7 +858,7 @@ const YachtDetail = () => {
         </div>
       </section>
       {/* Featured Yachts Section */}
-      <section className="px-2">
+      <section className="">
         <Featured />
         {/* <div className="flex justify-center">
             <Link href="/dashboard/yachts">

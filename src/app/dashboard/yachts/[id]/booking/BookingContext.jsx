@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const BookingContext = createContext();
 
@@ -50,7 +50,7 @@ export const BookingProvider = ({ children }) => {
     setBookingData(prev => ({ ...prev, ...newData }));
   };
 
-  console.log(bookingData)
+
 
   const calculateTotal = () => {
     if (!selectedYacht?.yacht) return 0;
@@ -87,6 +87,7 @@ export const BookingProvider = ({ children }) => {
       paidCost: data.paid_cost || 0
     }));
   };
+
 
   return (
     <BookingContext.Provider value={{

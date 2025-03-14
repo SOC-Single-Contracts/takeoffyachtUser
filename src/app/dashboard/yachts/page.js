@@ -1166,7 +1166,7 @@ const Yachts = () => {
                   className="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px]] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
                 >
                   <div className="relative">
-                    <Carousel className="w-full h-[221px]">
+                    <Carousel className="px-2 rounded-3xl w-full h-[221px]">
                       <CarouselContent>
                         {images?.filter(image => image !== null).map((image, index) => (
                           <CarouselItem key={index}>
@@ -1175,7 +1175,7 @@ const Yachts = () => {
                               alt="not found"
                               width={326}
                               height={300}
-                              className="object-cover px-3 pt-3 rounded-3xl w-full h-[221px]"
+                              className="object-cover px-0 pt-3 rounded-3xns w-full h-[221px] "
                               onError={(e) => {
                                 e.target.src = '/assets/images/fycht.jpg';
                               }}
