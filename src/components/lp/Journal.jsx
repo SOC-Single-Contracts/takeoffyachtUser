@@ -45,10 +45,14 @@ const Journal = () => {
     fetchBlogs();
   }, [toast]);
 
+  useEffect(()=>{
+console.log("blogs",blogs)
+  },[blogs])
+
 
   return (
     <section className="py-10 md:py-16">
-      <div className="max-w-5xl px-4 mx-auto">
+      <div className="max-w-5xl px-2 mx-auto">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="md:text-[40px] text-[32px] font-bold tracking-tight sm:text-4xl">
             Journal
@@ -58,7 +62,7 @@ const Journal = () => {
         <Carousel 
           opts={{
             align: "start",
-            loop: true,
+            // loop: true,
           }}
           className="w-full"
         >

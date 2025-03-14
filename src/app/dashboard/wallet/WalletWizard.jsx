@@ -108,9 +108,9 @@ const WalletWizardContent = () => {
     return (
       <section className="py-16 text-center">
         <div className="max-w-md mx-auto px-4">
-          <h2 className="text-2xl font-bold mb-4">Welcome to Your Wishlist</h2>
+          <h2 className="text-2xl font-bold mb-4">Welcome to Your Wallet</h2>
           <p className="text-gray-600 mb-6">
-            Looks like you're not logged in. Please sign in to view and manage your wishlist.
+            Looks like you're not logged in. Please sign in to view and manage your Wallet.
           </p>
           <Button
             onClick={() => router.push('/login')}

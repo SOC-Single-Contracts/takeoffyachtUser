@@ -15,14 +15,14 @@ const sanitizeHTML = (html) => {
 
 const BlogItem = ({ blog }) => {
   return (
-    <Card className="overflow-hidden bg-transparent shadow-none border-none w-full max-w-[350px] h-full max-h-[465px]">
+    <Card className="overflow-hidden bg-transparent shadow-none border-none w-full max-w-[350px]] h-full max-h-[465px]">
       <div className="relative overflow-hidden rounded-2xl group">
         <Image 
           src={blog?.thumbnail_image || "/assets/images/blog-hero.png"}
           alt="Blog Image"
           width={350}
           height={221}
-          className="object-cover rounded-2xl w-full max-w-[349px] h-[221px] transition-transform duration-300 ease-in-out group-hover:scale-105 origin-center"
+          className="object-cover rounded-2xl w-full max-w-[349px]] h-[221px] transition-transform duration-300 ease-in-out group-hover:scale-105 origin-center"
           onError={(e) => {
             e.target.src = "/assets/images/blog-hero.png";
           }}

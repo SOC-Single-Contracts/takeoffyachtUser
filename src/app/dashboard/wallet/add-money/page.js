@@ -189,10 +189,10 @@ const AddMoney = () => {
     const { walletDetails } = useWalletContext();
 
   return (
-    <div className='mx-auto w-full max-w-3xl mx-auto container my-2 flex flex-column justify-between  flex-col items-start gap-8 px-2 px-4 lg:px-6'>
+    <div className='mx-auto py-10 mt-7 w-full max-w-3xl mx-auto container my-2 flex flex-column justify-between  flex-col items-start gap-8 px-2 px-4 lg:px-6'>
          <div className="flex items-center">
           <Button
-            onClick={() => router.back()}
+            onClick={() => router.push("/dashboard/wallet")}
             className="bg-[#F8F8F8] hover:bg-[#F8F8F8] shadow-md rounded-full flex items-center justify-center w-10 h-10"
           >
             <ArrowLeft className="w-4 h-4 text-black" />

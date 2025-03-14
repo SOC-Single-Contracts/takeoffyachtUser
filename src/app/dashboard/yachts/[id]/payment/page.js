@@ -49,19 +49,27 @@ const Payment = () => {
         </div>
         <div className='flex w-full items-center justify-between text-sm'>
             <p className='flex items-center gap-2'>Subtotal <CircleHelp className='w-4 h-4 text-black' /></p>
-            <p className='flex items-center gap-2'><DollarSign className='w-4 h-4 text-black' />4.25</p>
+            <p className='flex items-center gap-2'>
+                <DollarSign className='w-4 h-4 text-black' />
+                4.25</p>
         </div>
         <div className='flex w-full items-center justify-between text-sm'>
             <p className='flex items-center gap-2'>Shipping <CircleHelp className='w-4 h-4 text-black' /></p>
-            <p className='flex items-center gap-2'><DollarSign className='w-4 h-4 text-black' />8.89</p>
+            <p className='flex items-center gap-2'>
+                <DollarSign className='w-4 h-4 text-black' />
+                8.89</p>
         </div>
         <div className='flex w-full items-center justify-between text-sm'>
             <p className='flex items-center gap-2'>Estimated Taxes <CircleHelp className='w-4 h-4 text-black' /></p>
-            <p className='flex items-center gap-2'><DollarSign className='w-4 h-4 text-black' />0.40</p>
+            <p className='flex items-center gap-2'>
+                <DollarSign className='w-4 h-4 text-black' />
+                0.40</p>
         </div>
         <div className='flex w-full items-center justify-between text-sm'>
             <p className='font-semibold'>Total</p>
-            <p className='flex items-center font-semibold gap-2'><DollarSign className='w-4 h-4 text-black' />13.54</p>
+            <p className='flex items-center font-semibold gap-2'>
+                <DollarSign className='w-4 h-4 text-black' />
+                13.54</p>
         </div>
     </div>
     <div className='space-y-3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-7 w-full max-w-[400px] h-auto'>
@@ -83,7 +91,9 @@ const Payment = () => {
 
         <div className='flex w-full items-center justify-between text-sm'>
             <p className='font-semibold'>Total</p>
-            <p className='flex items-center font-semibold gap-2'><DollarSign className='w-4 h-4 text-black' />13.54</p>
+            <p className='flex items-center font-semibold gap-2'>
+                <DollarSign className='w-4 h-4 text-black' />
+                13.54</p>
         </div>
 
         <Button className='w-full bg-[#BEA355] rounded-full text-white'>Confirm Payment</Button>

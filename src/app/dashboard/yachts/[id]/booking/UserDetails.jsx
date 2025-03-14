@@ -142,11 +142,11 @@ const UserDetails = ({ onNext }) => {
       }
 
       const result = await response.json();
-      toast({
-        title: "Temporary Booking Created",
-        description: `Your temporary booking has been created. Your booking id is ${result.booking_id} Move forward to payment.`,
-        variant: "success",
-      });
+      // toast({
+      //   title: "Temporary Booking Created",
+      //   description: `Your temporary booking has been created. Your booking id is ${result.booking_id} Move forward to payment.`,
+      //   variant: "success",
+      // });
 
       // Update booking context with booking ID
       updateBookingData({ bookingId: result.booking_id });

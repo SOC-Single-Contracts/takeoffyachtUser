@@ -164,7 +164,9 @@ const Header = () => {
       transition-all duration-300 ease-in-out
     `}>
       <div className="max-w-5xl mx-auto flex items-center justify-between px-2 py-4">
-          <Link href="/">
+          <Link
+                      onClick={()=>setIsSheetOpen(false)}
+           href="/">
             <Image
               src="/assets/images/logo.png"
               width={180}
@@ -199,38 +201,50 @@ const Header = () => {
                     </Button>
                   </MenubarTrigger>
                   <MenubarContent>
-                    <Link href="/dashboard/cart">
+                    <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                     href="/dashboard/cart">
                       <MenubarItem>
                         <Heart className="w-4 h-4 mr-2" />
                         Wishlist
                       </MenubarItem>
                     </Link>
                     <MenubarItem>
-                      <Link className="flex items-center space-x-2" href="/dashboard/all-bookings">
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/all-bookings">
                         <Calendar className="w-4 h-4 mr-2" />
                         Bookings
                       </Link>
                     </MenubarItem>
                     <MenubarItem>
-                      <Link className="flex items-center space-x-2" href="/dashboard/messages">
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/messages">
                         <MessageSquareText className="w-4 h-4 mr-2" />
                         Messages
                       </Link>
                     </MenubarItem>
                     <MenubarItem>
-                      <Link className="flex items-center space-x-2" href="/dashboard/wallet">
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/wallet">
                         <Wallet className="w-4 h-4 mr-2" />
                         Wallet
                       </Link>
                     </MenubarItem>
                     <MenubarItem>
-                      <Link className="flex items-center space-x-2" href="/dashboard/partner-discounts">
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/partner-discounts">
                         <Proportions className="w-4 h-4 mr-2" />
                         Discounts
                       </Link>
                     </MenubarItem>
                     <MenubarItem>
-                      <Link className="flex items-center space-x-2" href="/dashboard/settings">
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/settings">
                         <CircleUserRound className="w-4 h-4 mr-2" />
                         Profile
                       </Link>
@@ -238,38 +252,52 @@ const Header = () => {
                     <Separator />
                     <MenubarItem>
                       {/* <MenubarSubTrigger className="flex items-center"> */}
-                      <Link className="flex items-center space-x-2" href="/dashboard/yachts">
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/yachts">
                         <Ship className="w-4 h-4 mr-2" />
                         Yachts
                       </Link>
                       {/* </MenubarSubTrigger> */}
                       {/* <MenubarSubContent>
                         <MenubarItem>
-                          <Link href="/dashboard/yachts">Regular Yachts</Link>
+                          <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                           href="/dashboard/yachts">Regular Yachts</Link>
                         </MenubarItem>
                         <MenubarItem>
-                          <Link href="/dashboard/yachts">F1 Yachts</Link>
+                          <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                           href="/dashboard/yachts">F1 Yachts</Link>
                         </MenubarItem>
                         <MenubarItem>
-                          <Link href="/dashboard/yachts">New Year Eve Yachts</Link>
+                          <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                           href="/dashboard/yachts">New Year Eve Yachts</Link>
                         </MenubarItem>
                       </MenubarSubContent> */}
                     </MenubarItem>
                     <MenubarItem>
-                      <Link className="flex items-center space-x-2" href="/dashboard/experience">
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/experience">
                         <SquareArrowOutUpRight className="w-4 h-4 mr-2" />
                         Experiences
                       </Link>
                     </MenubarItem>
                     <MenubarItem>
-                      <Link className="flex items-center space-x-2" href="/dashboard/events">
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/events">
                         <CalendarClock className="w-4 h-4 mr-2" />
                         Events
                       </Link>
                     </MenubarItem>
                     <Separator />
                     <MenubarItem>
-                      <Link className="flex items-center space-x-2" href="/merchant/dashboard">
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/merchant/dashboard">
                         <LayoutDashboard className="w-4 h-4 mr-2" />
                         Merchant Dashboard
                       </Link>
@@ -287,7 +315,9 @@ const Header = () => {
                     )}
                     {!session && (
                       <MenubarItem>
-                        <Link className="flex items-center space-x-2" href="/login">
+                        <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                         className="flex items-center space-x-2" href="/login">
                           <LogIn className="w-4 h-4 mr-2" />
                           Login / Signup
                         </Link>
@@ -314,18 +344,24 @@ const Header = () => {
                   </div> */}
                   <div className=" mt-4 mb-6 flex flex-col space-y-4">
                     {/* <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/where"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <Heart className="w-4 h-4" /> <span>Where?</span>
                     </Link>
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/when"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <Calendar className="w-4 h-4" /> <span>When?</span>
                     </Link>
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/who"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
@@ -333,36 +369,49 @@ const Header = () => {
                     </Link>
                     <Separator /> */}
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/dashboard/cart"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
+                    
                     >
                       <Heart className="w-4 h-4" /> <span>Wishlist</span>
                     </Link>
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/dashboard/all-bookings"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <Calendar className="w-4 h-4" /> <span>Bookings</span>
                     </Link>
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/dashboard/messages"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <MessageSquareText className="w-4 h-4" /> <span>Messages</span>
                     </Link>
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/dashboard/settings"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <CircleUserRound className="w-4 h-4" /> <span>Profile</span>
                     </Link>
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/dashboard/wallet"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <Wallet className="w-4 h-4" /> <span>Wallet</span>
                     </Link>
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/dashboard/partner-discounts"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
@@ -375,18 +424,24 @@ const Header = () => {
                       </div>
                       <div className="pl-6 space-y-2">
                         <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                           href="/dashboard/yachts"
                           className="block text-gray-700 hover:text-black dark:text-gray-300"
                         >
                           Regular Yachts
                         </Link>
                         <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                           href="/dashboard/yachts"
                           className="block text-gray-700 hover:text-black dark:text-gray-300"
                         >
                           F1 Yachts
                         </Link>
                         <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                           href="/dashboard/yachts"
                           className="block text-gray-700 hover:text-black dark:text-gray-300"
                         >
@@ -395,12 +450,16 @@ const Header = () => {
                       </div>
                     </div>
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/dashboard/experience"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <SquareArrowOutUpRight className="w-4 h-4" /> <span>Experiences</span>
                     </Link>
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/dashboard/events"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
@@ -408,6 +467,8 @@ const Header = () => {
                     </Link>
                     <Separator />
                     <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                       href="/merchant/dashboard"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
@@ -423,6 +484,8 @@ const Header = () => {
                     )}
                     {!session && (
                       <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
                         href="/login"
                         className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                       >

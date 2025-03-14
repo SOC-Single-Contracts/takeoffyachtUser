@@ -240,7 +240,7 @@ const Experience = () => {
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 place-items-center gap-2 my-8">
+          <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[0.6rem]   my-8">
             {experiences.map((experienceData) => (
               <ExperienceCard
                 key={experienceData.experience.id} 
@@ -270,13 +270,13 @@ const Experience = () => {
         </div>
       </section>
       <section className="py-10">
-        <div className="max-w-5xl px-4 mx-auto">
+        <div className="max-w-5xl px-2 mx-auto">
           {/* Cards Grid */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 place-items-center">
+          <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[0.6rem] place-items-center">
             {features.map((feature) => (
               <Card
                 key={feature.id}
-                className="bg-white dark:bg-gray-800 w-full max-w-[300px] h-full max-h-[308px] border-none shadow-2xl hover:shadow-xl hover:scale-20 transition-all duration-500 rounded-2xl"
+                className="bg-white cursor-pointer dark:bg-gray-800 w-full max-w-[300px]] h-full max-h-[308px] border-none shadow-2xl hover:shadow-xl hover:scale-20 transition-all duration-500 rounded-2xl"
                 onClick={() => setIsDialogOpen(true)}
               >
                 <CardContent className="p-6 space-y-4">
@@ -293,7 +293,7 @@ const Experience = () => {
           </div>
         </div>
       </section>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog  open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Get in touch</DialogTitle>

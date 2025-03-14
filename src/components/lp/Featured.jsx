@@ -175,7 +175,7 @@ const Featured = () => {
   };
 
   return (
-    <section className="md:py-20 py-8 ">
+    <section className="md:py-20 pb-8 ">
       <div className="max-w-5xl px-2 mx-auto">
         {/* Heading Section */}
         <div className="w-full flex items-center justify-between">

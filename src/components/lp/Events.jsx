@@ -129,7 +129,7 @@ const Events = ({ limit = 4 }) => {
     <section className="py-8 px-2">
       <div className="max-w-5xl mx-auto">
         <h1 className="md:text-4xl text-[24px] font-semibold text-start">Our Events</h1>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center my-8">
+        <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[0.6rem]  place-items-center my-8">
           {eventsToDisplay.map((item) => {
             if (!item?.event) {
               return null;
@@ -139,7 +139,7 @@ const Events = ({ limit = 4 }) => {
             return (
               <Card
                 key={event.id}
-                className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[298px] h-full max-h-[260px]"
+                className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[298px]] h-full max-h-[260px]"
               >
                 <div className="relative">
                 {/* <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" /> */}

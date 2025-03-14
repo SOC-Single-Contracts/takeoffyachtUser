@@ -185,7 +185,7 @@ const Gallery = () => {
                     </div>
                 </div>
                 {/* Thumbnail Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 h-[170px] md:h-[130px]">
+                {/* <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 h-[170px] md:h-[130px]">
                     {IMAGES.map((image, index) => (
                         <div 
                             key={index} 
@@ -207,7 +207,29 @@ const Gallery = () => {
                             />
                         </div>
                     ))}
-                </div>
+                </div> */}
+                <div className="flex overflow-x-auto space-x-1 md:space-x-1 h-[150px] scrollbar-hide">
+  {IMAGES.map((image, index) => (
+    <div 
+      key={index} 
+      className={`
+        relative w-[30%] sm:w-[20%] md:w-[15%] lg:w-[30%] h-[55%] sm:h-[60%] md:h-[100%] overflow-hidden transition-all duration-300 
+        ${currentImageIndex === index ? 'opacity-100' : 'opacity-70 hover:opacity-100'} 
+        cursor-pointer
+      `}
+      onClick={() => handleThumbnailClick(index)}
+    >
+      <Image
+        src={image}
+        fill
+        alt={`yachts gallery image ${index + 1}`}
+        className="object-cover"
+        sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 16vw"
+      />
+    </div>
+  ))}
+</div>
+
             </div>
         </section>
     )

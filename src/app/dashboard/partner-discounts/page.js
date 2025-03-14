@@ -89,10 +89,30 @@ const PartnerDiscount = () => {
     // useEffect(() => {
     //     console.log("branfds", brands)
     // }, [brands])
+      // If not logged in, show login prompt
+      if (!session) {
+        return (
+          <section className="py-16 text-center">
+            <div className="max-w-md mx-auto px-4">
+              <h2 className="text-2xl font-bold mb-4">Welcome to Get Discount</h2>
+              <p className="text-gray-600 mb-6">
+                Looks like you're not logged in. Please sign in to view and manage your Wallet.
+              </p>
+              <Button
+                onClick={() => router.push('/login')}
+                className="bg-[#BEA355] hover:bg-[#a68f4b] text-white rounded-full"
+              >
+                Login to Continue
+              </Button>
+            </div>
+          </section>
+        );
+      }
+    
     return (
 
 
-        <div className='mx-auto w-full max-w-3xl mx-auto container my-2 flex flex-column justify-between  flex-col items-start gap-8 px-2 px-4 lg:px-6'>
+        <div className='mx-auto py-10 mt-7 w-full max-w-3xl mx-auto container my-2 flex flex-column justify-between  flex-col items-start gap-8 px-2 px-4 lg:px-6'>
             <div className="flex items-center">
                 <Button
                     onClick={() => router.back()}

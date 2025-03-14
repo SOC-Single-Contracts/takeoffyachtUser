@@ -672,7 +672,7 @@ const Summary = ({ onNext, initialBookingId }) => {
           </TableBody>
         </Table>
 
-        <Table className="bg-[#F4F0E4] w-full rounded-lg shadow-lg">
+        {/* <Table className="bg-[#F4F0E4] w-full rounded-lg shadow-lg">
           <TableHeader>
             <TableRow>
               <TableHead className="font-semibold text-md text-black">
@@ -709,7 +709,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+        </Table> */}
 
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
@@ -754,13 +754,13 @@ const Summary = ({ onNext, initialBookingId }) => {
 
         {!(bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost) && (
           <div className="flex justify-end flex-wrap gap-2">
-            <Button
+            {/* <Button
               variant="secondary"
               onClick={handleUpdateExtras}
               className="px-6 py-2 text-xs rounded-full"
             >
               Update Extras
-            </Button>
+            </Button> */}
 
             <Button
               // onClick={handleProceedToPayment}
