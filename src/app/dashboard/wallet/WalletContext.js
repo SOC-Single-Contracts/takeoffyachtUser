@@ -1,5 +1,6 @@
 "use client";
-import { getWallet } from '@/api/wallet';
+import { freezeWallet, getWallet } from '@/api/wallet';
+import { Transaction } from 'firebase/firestore';
 import { useSession } from 'next-auth/react';
 import { createContext, useContext, useEffect, useState } from 'react';
 
@@ -9,19 +10,12 @@ export const WalletProvider = ({ children }) => {
   const [walletDetails, setwalletDetails] = useState({
     payment_method: 'card',
     payment_intent_id: '',
-    topupAmount:0
+    topupAmount:0,
+    balance:0,
+    hideAmount:false,
+    freezeWallet:false,
+    transactions:[]
   });
-  const [walletResponse,setWalletResponse] = useState(null)
-    const { data: session, status } = useSession();
-  const userId = session?.user?.userid || 1;
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-  const [token, setToken] = useState(null); 
-
-
-  
-
-
   const updateWalletDetails = (newDetails) => {
     setwalletDetails(prev => {
       const updated = { ...prev, ...newDetails };
@@ -29,40 +23,15 @@ export const WalletProvider = ({ children }) => {
     });
   };
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setToken(localStorage.getItem("token"));
-    }
-  }, []);
-
-  useEffect(() => {
-    const getWalletResponse = async () => {
-      if (!userId && !token) return;
-      try {
-        const data = await getWallet(token);
-        console.log("data=>",data)
-        setWalletResponse(data)
-      } catch (err) {
-        setError(err.message || 'Unexpected Error');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (token && userId) {
-      getWalletResponse();
-    }
-  }, [userId,token]);
 
 
-  
 
   return (
     <WalletContext.Provider 
       value={{ 
         walletDetails,
         updateWalletDetails,
-        walletResponse
+        setwalletDetails
       }}
     >
       {children}

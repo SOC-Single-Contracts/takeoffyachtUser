@@ -107,7 +107,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
     return `Pay Full Amount (AED ${calculateTotal().toFixed(2)})`;
   };
   
-  const handleSubmit = async (e) => {
+  const handleSubmitFull = async (e) => {
     e.preventDefault();
     if (!stripe || !elements || !validateForm()) return;
 
@@ -116,7 +116,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
 
     try {
       const totalAmount = calculateTotal();
-      const paymentAmount = isPartialPayment ? totalAmount * 0.25 : totalAmount;
+      const paymentAmount =  totalAmount;
 
       const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
         type: 'card',
@@ -140,7 +140,62 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           payment_method_id: paymentMethod.id,
-          is_partial_payment: isPartialPayment
+          is_partial_payment: false
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Payment processing failed');
+
+      const successMessage = paymentType === 'remaining'
+      ? 'Remaining payment processed successfully!'
+      : 'Full payment processed successfully!';
+
+      toast.success(successMessage);
+      router.push('/dashboard/success');
+
+    } catch (error) {
+      console.error('Payment error:', error);
+      setError(error.message);
+      toast.error(error.message || 'Payment processing failed');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+  const handleSubmitPartial = async (e) => {
+    e.preventDefault();
+    if (!stripe || !elements || !validateForm()) return;
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      const totalAmount = calculateTotal();
+      const paymentAmount = totalAmount * 0.25;
+
+      const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: elements.getElement(CardElement),
+        billing_details: {
+          name: bookingData.fullName,
+          email: bookingData.email,
+          phone: bookingData.phone,
+        },
+      });
+
+      if (paymentMethodError) throw new Error(paymentMethodError.message);
+
+      // Use paymentType to determine endpoint
+      const endpoint = paymentType === 'remaining'
+        ? `${API_BASE_URL}/yacht/capture-remaining-payment/${bookingData.bookingId}/`
+        : `${API_BASE_URL}/yacht/capture-initial-payment/${bookingData.bookingId}/`;
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          payment_method_id: paymentMethod.id,
+          is_partial_payment: true
         }),
       });
 
@@ -149,9 +204,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
 
       const successMessage = paymentType === 'remaining'
         ? 'Remaining payment processed successfully!'
-        : (isPartialPayment 
-          ? 'Initial payment (25%) processed successfully!'
-          : 'Full payment processed successfully!');
+        : 'Initial payment (25%) processed successfully!';
 
       toast.success(successMessage);
       router.push('/dashboard/success');
@@ -232,7 +285,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
   // };
 
   return (
-    <form onSubmit={handleSubmit} className='w-full space-y-6'>
+    <form onSubmit={handleSubmitFull} className='w-full space-y-6'>
       <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>
         <div className='flex items-center gap-2 mb-6'>
           <CreditCard className='w-5 h-5' />
@@ -281,7 +334,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
           </div>
         </div>
         <div className="space-y-2 pl-1 mt-4">
-            {(!bookingData.remainingCost || bookingData.remainingCost === 0) && (
+            {/* {(!bookingData.remainingCost || bookingData.remainingCost === 0) && (
     <div className="flex items-center space-x-2">
       <Checkbox 
         id="partial-payment" 
@@ -292,7 +345,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
         You want to do partial payment?
       </Label>
     </div>
-  )}
+  )} */}
 
             <div className="flex items-center space-x-2">
               <Checkbox 
@@ -358,6 +411,17 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
       >
         {getPaymentButtonText()}
       </Button>
+      {(!bookingData.remainingCost || bookingData.remainingCost === 0) && (
+    <div className="flex items-center space-x-2">
+        <Button
+          onClick={() => handleSubmitPartial()}
+          disabled={isProcessing || !stripe || !cardComplete}
+          className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
+        >
+          {`Pay Partial (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
+        </Button>
+    </div>
+  )}
     </form>
   );
 };

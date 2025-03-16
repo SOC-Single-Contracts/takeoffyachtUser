@@ -215,7 +215,7 @@ const SearchYacht = () => {
         if (filters.category_name.length) newFilters.push(`Categories: ${filters.category_name.length}`);
         if (filters.boat_category.length) newFilters.push(`Boat Categories: ${filters.boat_category.length}`);
         if (filters.engine_type) newFilters.push(`Type: ${filters.engine_type}`);
-        if (filters.min_length) newFilters.push(`Length: ${filters.min_length}-${filters.max_length}m`);
+        if (filters.min_length) newFilters.push(`Length: ${filters.min_length}-${filters.max_length}ft`);
         if (filters.number_of_cabin) newFilters.push(`Min No. of Cabins: ${filters.number_of_cabin}`);
         if (filters.sleep_capacity) newFilters.push(`Min Sleeping Capacity: ${filters.sleep_capacity}`);
         if (filters.amenities.length) newFilters.push(`Amenities: ${filters.amenities.length}`); // Added amenities filter
@@ -454,9 +454,9 @@ const SearchYacht = () => {
         setYachts(data)
     }, [originalYachts]);
     //test
-    useEffect(() => {
-        console.log("yachts", yachts, error);
-    }, [yachts]);
+    // useEffect(() => {
+    //     console.log("yachts", yachts, error);
+    // }, [yachts]);
 
 
     if (loading) {

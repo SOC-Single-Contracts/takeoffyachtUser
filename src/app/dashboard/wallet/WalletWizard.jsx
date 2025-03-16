@@ -1,13 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Icon, Snowflake, Eye, Plus } from "lucide-react";
+import { ArrowLeft, Icon, Snowflake, Eye, Plus, EyeOffIcon, EyeOff } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Heart } from 'lucide-react';
 import { useWalletContext, WalletProvider } from "./WalletContext";
-import { getWallet } from "@/api/wallet";
+import { freezeWallet, getWallet } from "@/api/wallet";
+import { useToast } from "@/hooks/use-toast";
 
 const SkeletonLoader = () => (
   <div className="animate-pulse flex flex-col space-y-4 p-4 border rounded-lg shadow">
@@ -19,8 +20,15 @@ const SkeletonLoader = () => (
   </div>
 );
 
-const WalletOptions = () => {
+const WalletWizardContent = () => {
+  const { data: session, status } = useSession();
+  const { toast } = useToast();
   const router = useRouter();
+  const { walletDetails, setwalletDetails } = useWalletContext();
+  const token = localStorage.getItem("token") || null;
+  const userId = localStorage.getItem("userid") || null;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const detailsMap = [
     {
@@ -40,71 +48,107 @@ const WalletOptions = () => {
     },
   ];
 
+
+
   const handleWallet = (type) => {
     if (type == "add-money") {
       router.push('./wallet/add-money')
 
 
+    } else if (type == "reveal") {
+      setwalletDetails((prev) => {
+        const updatedDetails = {
+          ...prev,
+          hideAmount: !walletDetails?.hideAmount
+        };
+
+        return updatedDetails;
+      });
     }
-    console.log("hell", type)
+    else if (type == "freeze") {
+      handleFreeze()
+    }
   }
 
-  return detailsMap?.map(({ type, text }, index) => (
-    <div
-      key={index}
-      className="flex flex-col justify-center items-center w-full h-20 "
-    >
-      {/* <Image src={type} quality={100} alt={text} width={20} height={20} className="dark:invert" /> */}
-      <Button
-        variant="default"
-        size="icon"
-        className="rounded-full h-12 w-12 ml-2 bg-[#BEA355]"
-        onClick={() => handleWallet(type)}
-      >
+  const handleFreeze = async () => {
+    if (!userId && !token) return;
+    if (walletDetails?.transactions.length<=0) {
+      toast({
+        title: "Error",
+        description: "kindly Add some Amount to freeze your wallet",
+        variant: "destructive",
+      });
+      return;
+    }
 
-        {type == 'add-money' ? <Plus className="h-8 w-8 dark:invert" />
-          : type == "freeze" ? <Snowflake className="h-8 w-8 dark:invert" />
-            : type == "reveal" ? <Eye className="h-8 w-8 dark:invert" />
+    try {
+      const data = await freezeWallet(token,!walletDetails?.freezeWallet);
+      // console.log("data=>",data)
+      setwalletDetails((prev) => {
+        const updatedDetails = {
+          ...prev,
+          freezeWallet: !walletDetails?.freezeWallet
+        };
+        return updatedDetails;
+      });
+      toast({
+        title: "Success! 🎉",
+        description: data,
+        variant: "default",
+        className: "bg-green-500 text-white border-none",
+      });
+    } catch (err) {
+      setError(err.message || 'Unexpected Error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-              : ""}
+  useEffect(() => {
+    const getWalletResponse = async () => {
+      if (!userId || !token) return;
+      try {
+        const data = await getWallet(token);
+  
+        setwalletDetails((prev) => {
+          const updatedDetails = {
+            ...prev,
+            balance: data?.balance ?? prev.balance,
+            freezeWallet: data?.freeze ?? prev.freezeWallet,
+            transactions: data?.transactions ?? prev.transactions,
+          };
+  
+          // Persist to local storage
+          // localStorage.setItem("walletContext", JSON.stringify(updatedDetails));
+  
+          return updatedDetails;
+        });
+      } catch (err) {
+        setError(err.message || "Unexpected Error");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    getWalletResponse();
+  }, [userId, token]); // Dependency array ensures this runs when userId or token changes
+  
+  // Listen to `walletDetails` and update localStorage whenever it changes
+  useEffect(() => {
+    if (walletDetails) {
+      localStorage.setItem("walletContext", JSON.stringify(walletDetails));
+    }
+  }, [walletDetails]);
+  
 
-
-
-
-      </Button>
-
-      <p className="text-gray-700 text-center text-sm dark:text-gray-300 mt-2">{text}</p>
-    </div>
-  ));
-};
-const WalletWizardContent = () => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const { walletDetails, updateWalletDetails, walletResponse } = useWalletContext();
-  // Get user ID, default to 1 if not available
-  const userId = session?.user?.userid || 1;
-
-  console.log(walletResponse)
-
-  // Show loading state while checking session
-  if (status === 'loading'  || walletResponse== null) {
-    return (
-      <section className="py-10">
-        <div className="max-w-5xl px-2 mx-auto flex items-center space-x-4">
-          <div className="animate-pulse w-10 h-10 bg-gray-200 rounded-full"></div>
-          <div className="h-6 bg-gray-200 w-1/4 rounded"></div>
-        </div>
-        <div className="max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-6 px-2 mx-auto my-12">
-          {Array(4).fill(null).map((_, index) => (
-            <SkeletonLoader key={index} />
-          ))}
-        </div>
-      </section>
-    );
-  }
+  useEffect(() => {
+    if (walletDetails) {
+      localStorage.setItem("walletContext", JSON.stringify(walletDetails));
+    }
+  }, [walletDetails]);
 
   // If not logged in, show login prompt
-  if (!session) {
+  if (!userId && !token) {
     return (
       <section className="py-16 text-center">
         <div className="max-w-md mx-auto px-4">
@@ -122,6 +166,27 @@ const WalletWizardContent = () => {
       </section>
     );
   }
+
+
+  // Show loading state while checking session
+  if (loading || error) {
+    return (
+      <section className="py-10">
+        <div className="max-w-5xl px-2 mx-auto flex items-center space-x-4">
+          <div className="animate-pulse w-10 h-10 bg-gray-200 rounded-full"></div>
+          <div className="h-6 bg-gray-200 w-1/4 rounded"></div>
+        </div>
+        <div className="max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-6 px-2 mx-auto my-12">
+          {Array(4).fill(null).map((_, index) => (
+            <SkeletonLoader key={index} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+
+
 
   return (
     <section className="py-10 mt-7">
@@ -141,13 +206,44 @@ const WalletWizardContent = () => {
           <div className="flex  justify-between">
 
             <h2 className="text-sm md:text-lg font-bold">Available Balance</h2>
-            <h2 className="text-sm md:text-lg font-bold">${walletResponse?.balance}</h2>
+            <h2 className="text-sm md:text-lg font-bold">
+              {!walletDetails?.hideAmount ? `$${walletDetails?.balance}` : "*****"}
+            </h2>
+
 
           </div>
 
           <div className="grid grid-cols-3  gap-4 my-3">
             {/* {walletOptions()} */}
-            <WalletOptions />
+          {  detailsMap?.map(({ type, text }, index) => (
+    <div
+      key={index}
+      className="flex flex-col justify-center items-center w-full h-20 "
+    >
+      {/* <Image src={type} quality={100} alt={text} width={20} height={20} className="dark:invert" /> */}
+      <Button
+        variant="default"
+        size="icon"
+        className="rounded-full h-12 w-12 ml-2 bg-[#BEA355]"
+        onClick={() => handleWallet(type)}
+      >
+
+        {type == 'add-money' ? <Plus className="h-8 w-8 dark:invert" />
+          : type == "freeze" ? <Snowflake className="h-8 w-8 dark:invert" />
+            : type == "reveal" ? walletDetails?.hideAmount ?  <Eye className="h-8 w-8 dark:invert" />: <EyeOff className="h-8 w-8 dark:invert" />
+
+              : ""}
+
+
+
+
+      </Button>
+
+      <p className="text-gray-700 text-center text-sm dark:text-gray-300 mt-2">{text}</p>
+    </div>
+  ))}
+
+{/* <h2 className="text-sm md:text-lg font-bold"> {walletDetails?.freezeWallet ? "(wallet Freeze)" :""} </h2> */}
 
           </div>
 

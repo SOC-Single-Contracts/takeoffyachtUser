@@ -264,15 +264,15 @@ const SearchFilter = () => {
     setsearchByName("")
   };
 
-  useEffect(() => {
-    console.log('State changes:', {
-      searchByName,
-      activeSearchTab,
-      selectedCity,
-      selectedDateRange,
-      guests
-    });
-  }, [searchByName, activeSearchTab, selectedCity, selectedDateRange, guests]);
+  // useEffect(() => {
+  //   console.log('State changes:', {
+  //     searchByName,
+  //     activeSearchTab,
+  //     selectedCity,
+  //     selectedDateRange,
+  //     guests
+  //   });
+  // }, [searchByName, activeSearchTab, selectedCity, selectedDateRange, guests]);
   const handleTabChange = (value) => {
     setActiveMainTab(value);
   };

@@ -159,22 +159,43 @@ const Chat = () => {
     const connectToSendbird = async () => {
       if (!session?.user?.userid) return;
       setLoading(true);
+  
       try {
         await sb.connect(JSON.stringify(session?.user?.userid), (user, error) => {
           if (error) {
             console.error("Connection failed:", error);
-          }
-          else {
-            // console.log("Connected as:", user);
+            return;
+          } else {
+            console.log("Connected as:", user);
           }
         });
+  
         loadUserChannels(); // Load channels after connection
-
-
+  
+        // Create user query
         const userQuery = sb.createApplicationUserListQuery();
-        const users = await userQuery.next();
-        // console.log("users=>",users)
-        const formattedUsers = users.map(user => ({
+        userQuery.limit = 100; // Set max limit
+  
+        let allUsers = [];
+        let hasMore = true;
+  
+        while (hasMore) {
+          const users = await userQuery.next();
+          
+          if (!users || users.length === 0) {
+            hasMore = false; // Stop if no more users
+            break;
+          }
+  
+          allUsers = [...allUsers, ...users];
+  
+          // Check if more users are available
+          hasMore = userQuery.hasNext;
+        }
+  
+        console.log("Fetched Users:", allUsers.length);
+  
+        const formattedUsers = allUsers.map(user => ({
           id: user.userId,
           name: user.nickname || user.userId,
           role: user.metaData?.role || 'User',
@@ -182,26 +203,30 @@ const Chat = () => {
           status: user.connectionStatus || 'offline',
           email: user.metaData?.email
         }));
+  
         setParticipants(formattedUsers);
-        const getAdminId = formattedUsers.find((user) => user?.id == "ADMIN_USER_ID")
-        setCurrentUser(sb.currentUser)
-        setAdminId(getAdminId?.id)
+        setCurrentUser(sb.currentUser);
+  
+        // Set admin ID
+        const getAdminId = formattedUsers.find(user => user?.id === "ADMIN_USER_ID");
+        setAdminId(getAdminId?.id || null);
+  
       } catch (error) {
-        console.error('Error connecting to Sendbird:', error);
+        console.error("Error connecting to Sendbird:", error);
       }
+      
       setLoading(false);
-
     };
+  
     connectToSendbird();
-
-    // Cleanup function
+  
     return () => {
       if (sb) {
         sb.disconnect();
       }
     };
   }, [session?.user?.userid]);
-
+  
 
   /// create chatRoom on behalf of selectedChatID
 
@@ -413,9 +438,9 @@ const Chat = () => {
   //   console.log(Boolean(selectedImage),Boolean(newMessage.trim()))
   // }, [selectedImage, newMessage])
 
-  useEffect(() => {
-    console.log("session", session)
-  }, [session])
+  // useEffect(() => {
+  //   console.log("session", session)
+  // }, [session])
 
   //   useEffect(()=>{
   // console.log("messages",messages)
@@ -475,8 +500,9 @@ const Chat = () => {
   }
 
   return (
-    <section className="lg:h-[calc(100vh-150px)] bg-white dark:bg-[#1F1F1F] max-w-5xl mx-auto border-2 my-4 border-black/20 rounded-2xl flex flex-col lg:flex-row">
+    <section className="p-4">
       {/* Aside for Participants */}
+      <div className="xs:h-[calc(100vh-150px)] lg:h-[calc(100vh-150px)] bg-white dark:bg-[#1F1F1F] max-w-5xl mx-auto border-2 my-4 border-black/20 rounded-2xl flex flex-col lg:flex-row">
       <aside className="w-full lg:w-1/4 border-b lg:border-r-2 border-black/20 overflow-y-auto">
         <div className="p-3">
           <div className="flex items-center mb-2 justify-between">
@@ -677,6 +703,8 @@ const Chat = () => {
           </div>
         )}
       </div>
+      </div>
+
     </section>
   );
 };

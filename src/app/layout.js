@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { GlobalLoading } from "./global-loading";
 import { useEffect, useState } from "react";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { initialFilterGlobal } from "@/helper/filterData";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -22,6 +23,7 @@ const jakarta = Plus_Jakarta_Sans({
 
 export default function RootLayout({ children }) {
   const [isLoading, setIsLoading] = useState(true);
+  const appStatWwalletContext = JSON.parse(localStorage.getItem("walletContext")) || {};
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -30,6 +32,27 @@ export default function RootLayout({ children }) {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("SearchfilterData");
+  
+    if (!storedData) { 
+      const initialData = initialFilterGlobal();
+      localStorage.setItem("SearchfilterData", JSON.stringify(initialData));
+    }
+  }, []);
+  useEffect(() => {
+    const storedData = localStorage.getItem("walletContext");
+  
+    if (!storedData) { 
+      const initialData = {};
+      localStorage.setItem("walletContext", JSON.stringify(initialData));
+    }
+  }, []);
+
+  // useEffect(()=>{
+  //   console.log("appStatWwalletContext",appStatWwalletContext)
+  // },[appStatWwalletContext])
   return (
     <html lang="en" suppressHydrationWarning>
       <body

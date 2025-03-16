@@ -192,7 +192,7 @@ const PaymentForm = () => {
         disabled={isProcessing || !stripe || !cardComplete}
         className='w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-10'
       >
-        {isProcessing ? 'Processing...' : `Pay ${bookingData.isPartialPayment ? '50%' : 'Full'} Amount (AED ${calculatePaymentAmount()})`}
+        {/* {isProcessing ? 'Processing...' : `Pay ${bookingData.isPartialPayment ? '50%' : 'Full'} Amount (AED ${calculatePaymentAmount()})`} */}
       </Button>
     </form>
   );

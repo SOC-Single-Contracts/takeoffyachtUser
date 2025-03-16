@@ -355,7 +355,7 @@ const Summary = ({ onNext, initialBookingId }) => {
           </TableRow>
         </TableHeader>
         <TableBody className="bg-white dark:bg-gray-800 text-xs">
-          <TableRow>
+          {/* <TableRow>
             <TableCell className="font-semibold">
               {bookingDetails.end_date
                 ? `${safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')} - ${safeFormat(bookingDetails.end_date, 'dd MMMM yyyy')}`
@@ -371,17 +371,17 @@ const Summary = ({ onNext, initialBookingId }) => {
                   : (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour
               }
             </TableCell>
-          </TableRow>
-             {bookingDetails.extras_data &&
-                   Array.isArray(bookingDetails.extras_data) &&
-                   bookingDetails.extras_data
-                     .filter((item) => item.quantity > 0) 
-                     .map((item) => (
-                       <TableRow key={item.extra_id}>
-                         <TableCell className="font-semibold">{item.name}</TableCell>
-                         <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
-                       </TableRow>
-                     ))}
+          </TableRow> */}
+          {bookingDetails.extras_data &&
+            Array.isArray(bookingDetails.extras_data) &&
+            bookingDetails.extras_data
+              .filter((item) => item.quantity > 0)
+              .map((item) => (
+                <TableRow key={item.extra_id}>
+                  <TableCell className="font-semibold">{item.name}</TableCell>
+                  <TableCell className="font-medium">AED {item.price * item.quantity}</TableCell>
+                </TableRow>
+              ))}
           <TableRow>
             <TableCell className="font-bold">Total Amount</TableCell>
             <TableCell className="font-bold">
@@ -563,7 +563,7 @@ const Summary = ({ onNext, initialBookingId }) => {
         </div>
 
         {/* Contact Details Table */}
-        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+        {/* <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
             <TableRow>
               <TableHead className="font-semibold text-md text-black">
@@ -601,7 +601,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               <TableCell className="font-medium">{bookingDetails.country}</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table> */}
 
         {/* Booking Details Table */}
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
@@ -613,7 +613,7 @@ const Summary = ({ onNext, initialBookingId }) => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-white dark:bg-gray-800 text-xs">
-            <TableRow>
+            {/* <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <span className="font-semibold">Date</span>
@@ -624,7 +624,7 @@ const Summary = ({ onNext, initialBookingId }) => {
                   : safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')
                 }
               </TableCell>
-            </TableRow>
+            </TableRow> */}
             <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
@@ -639,7 +639,7 @@ const Summary = ({ onNext, initialBookingId }) => {
                 }
               </TableCell>
             </TableRow>
-            <TableRow>
+            {/* <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 <span className="font-semibold">Guests</span>
@@ -647,7 +647,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               <TableCell className="font-medium">
                 {bookingDetails.adults} Adults{bookingDetails.kids > 0 && `, ${bookingDetails.kids} Children`}
               </TableCell>
-            </TableRow>
+            </TableRow> */}
             {bookingDetails.notes && (
               <TableRow>
                 <TableCell className="flex items-center gap-2">
@@ -661,7 +661,7 @@ const Summary = ({ onNext, initialBookingId }) => {
         </Table>
 
         {/* Extras Table with Editable Quantities */}
-        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+        {/* <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
             <TableRow>
               <TableHead className="font-semibold text-md text-black">
@@ -696,9 +696,9 @@ const Summary = ({ onNext, initialBookingId }) => {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+        </Table> */}
 
-        <Table className="bg-[#F4F0E4] w-full rounded-lg">
+        {/* <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
             <TableRow>
               <TableHead className="font-semibold text-md text-black">
@@ -722,7 +722,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               </TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table> */}
 
         {renderPriceSummary()}
         {bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost && (
@@ -741,20 +741,36 @@ const Summary = ({ onNext, initialBookingId }) => {
           <div className="flex justify-end flex-wrap gap-2">
             {(bookingDetails?.remaining_cost > 0 || !bookingDetails?.paid_cost) && (
               <>
-                <Button
+                {/* <Button
                   variant="secondary"
                   onClick={handleUpdateExtras}
                   className="px-6 py-2 text-xs rounded-full"
                 >
                   Update Extras
-                </Button>
-                <Button
-                  onClick={handleNext}
-                  // onClick={handleProceedToPayment}
-                  className="bg-[#BEA355] text-white px-2 text-xs md:px-8 py-2 rounded-full hover:bg-[#A89245]"
-                >
-                  Proceed to Payment
-                </Button>
+                </Button> */}
+                <div className="hidden md:block">
+                  <Button
+                    onClick={handleNext}
+                    className="bg-[#BEA355]  text-white text-sm sm:text-base lg:text-lg 
+                          px-4 sm:px-6 lg:px-10 py-2 sm:py-3 lg:py-3.5 
+                          rounded-full hover:bg-[#A89245] 
+                          min-w-[140px] sm:min-w-[180px] lg:min-w-[220px] 
+                          transition-all w-full sm:w-auto"
+                  >
+                    Proceed to Payment
+                  </Button>
+                </div>
+                <div className="fixed md:hidden bottom-0 left-0 w-full bg-white shadow-md z-50 p-4">
+                  <div className="relative  flex justify-center">
+                    <Button
+                      onClick={handleNext}
+
+                      className="rounded-full bg-[#BEA355] w-full min-w-[210px]} mx-auto text-white h-12"
+                    >
+                      Proceed to Payment
+                    </Button>
+                  </div>
+                </div>
               </>
             )}
           </div>

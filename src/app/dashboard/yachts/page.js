@@ -208,7 +208,7 @@ const Yachts = () => {
     if (filters.category_name.length) newFilters.push(`Categories: ${filters.category_name.length}`);
     if (filters.boat_category.length) newFilters.push(`Boat Categories: ${filters.boat_category.length}`);
     if (filters.engine_type) newFilters.push(`Type: ${filters.engine_type}`);
-    if (filters.min_length) newFilters.push(`Length: ${filters.min_length}-${filters.max_length}m`);
+    if (filters.min_length) newFilters.push(`Length: ${filters.min_length}-${filters.max_length}ft`);
     if (filters.number_of_cabin) newFilters.push(`Min No. of Cabins: ${filters.number_of_cabin}`);
     if (filters.sleep_capacity) newFilters.push(`Min Sleeping Capacity: ${filters.sleep_capacity}`);
     if (filters.amenities.length) newFilters.push(`Amenities: ${filters.amenities.length}`); // Added amenities filter
@@ -301,14 +301,14 @@ const Yachts = () => {
 
     let payload;
     if (type == "reset") {
-      console.log("ifff simple Yacht")
+      // console.log("ifff simple Yacht")
 
       payload = {
         source:"simpleYacht",
         user_id: userId,
       };
     } else {
-      console.log("else simple Yacht")
+      // console.log("else simple Yacht")
       payload = {
         user_id: userId,
         min_per_hour: filters.min_price.toString(),
@@ -403,7 +403,7 @@ const Yachts = () => {
 
   /// calling on first render only
   useEffect(() => {
-    console.log("calling on first render only")
+    // console.log("calling on first render only")
     handleFilterChange("reset");
   }, []);
 
@@ -482,12 +482,12 @@ const Yachts = () => {
     setYachts(data)
   }, [originalYachts]);
   //test
-  useEffect(() => {
-    console.log("yachts", yachts);
-  }, [yachts]);
-  useEffect(() => {
-    console.log("filters", filters);
-  }, [filters]);
+  // useEffect(() => {
+  //   console.log("yachts", yachts);
+  // }, [yachts]);
+  // useEffect(() => {
+  //   console.log("filters", filters);
+  // }, [filters]);
 
 
   if (loading) {

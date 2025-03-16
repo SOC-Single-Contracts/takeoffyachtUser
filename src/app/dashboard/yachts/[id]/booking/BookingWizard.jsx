@@ -91,14 +91,11 @@ const BookingWizardContent = ({ initialBookingId }) => {
   const CurrentStepComponent = steps[currentStep - 1].component;
 
 ///test
-  useEffect(()=>{
-    console.log("CurrentStepComponent",CurrentStepComponent)
 
-  },[CurrentStepComponent])
   
-  useEffect(()=>{
-    console.log("bookingData=>",bookingData)
-  },[bookingData])
+  // useEffect(()=>{
+  //   console.log("bookingData=>",bookingData)
+  // },[bookingData])
 
   return (
     <section className="py-6 md:py-10 ">

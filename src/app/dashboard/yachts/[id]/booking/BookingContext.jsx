@@ -88,6 +88,10 @@ export const BookingProvider = ({ children }) => {
     }));
   };
 
+  //test
+//   useEffect(()=>{
+// console.log("bookingData",bookingData)
+//   },[bookingData])
 
   return (
     <BookingContext.Provider value={{
