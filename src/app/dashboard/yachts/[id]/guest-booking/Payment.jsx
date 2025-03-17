@@ -356,7 +356,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
               />
               <Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
                 <DialogTrigger asChild>
-                  <Label htmlFor="terms" className="text-sm cursor-pointer hover:text-[#BEA355]">
+                  <Label htmlFor="terms" className="text-sm cursor-pointer underline hover:text-[#BEA355]">
                     I agree to terms & conditions
                   </Label>
                 </DialogTrigger>

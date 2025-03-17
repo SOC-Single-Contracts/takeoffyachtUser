@@ -711,7 +711,7 @@ const Summary = ({ onNext, initialBookingId }) => {
           </TableBody>
         </Table> */}
 
-        {/* <Table className="bg-[#F4F0E4] w-full rounded-lg">
+        <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
             <TableRow>
               <TableHead className="font-semibold text-md text-black">
@@ -735,7 +735,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               </TableCell>
             </TableRow>
           </TableBody>
-        </Table> */}
+        </Table>
 
         {renderPriceSummary()}
 

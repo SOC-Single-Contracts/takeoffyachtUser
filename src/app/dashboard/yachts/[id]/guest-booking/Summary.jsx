@@ -698,7 +698,7 @@ const Summary = ({ onNext, initialBookingId }) => {
           </TableBody>
         </Table> */}
 
-        {/* <Table className="bg-[#F4F0E4] w-full rounded-lg">
+        <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
             <TableRow>
               <TableHead className="font-semibold text-md text-black">
@@ -722,7 +722,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               </TableCell>
             </TableRow>
           </TableBody>
-        </Table> */}
+        </Table>
 
         {renderPriceSummary()}
         {bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost && (
@@ -760,7 +760,7 @@ const Summary = ({ onNext, initialBookingId }) => {
                     Proceed to Payment
                   </Button>
                 </div>
-                <div className="fixed md:hidden bottom-0 left-0 w-full bg-white shadow-md z-50 p-4">
+                <div className="fixed md:hidden bottom-0 left-0 w-full  shadow-md z-50 p-4">
                   <div className="relative  flex justify-center">
                     <Button
                       onClick={handleNext}
