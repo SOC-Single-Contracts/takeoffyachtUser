@@ -350,11 +350,6 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   };
   
   
-  
-
-  console.log("selectedYacht",selectedYacht)
-
-
   return (
     <form onSubmit={handleSubmitFull} className='w-full space-y-6'>
       <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>

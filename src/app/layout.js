@@ -23,7 +23,10 @@ const jakarta = Plus_Jakarta_Sans({
 
 export default function RootLayout({ children }) {
   const [isLoading, setIsLoading] = useState(true);
-  const appStatWwalletContext = JSON.parse(localStorage.getItem("walletContext")) || {};
+  const appStatWwalletContext = 
+  typeof window !== "undefined" && localStorage.getItem("walletContext") 
+    ? JSON.parse(localStorage.getItem("walletContext")) 
+    : {};
 
   useEffect(() => {
     const timer = setTimeout(() => {
