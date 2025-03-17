@@ -500,212 +500,169 @@ const Chat = () => {
   }
 
   return (
-    <section className="p-4">
-      {/* Aside for Participants */}
-      <div className="xs:h-[calc(100vh-150px)] lg:h-[calc(100vh-150px)] bg-white dark:bg-[#1F1F1F] max-w-5xl mx-auto border-2 my-4 border-black/20 rounded-2xl flex flex-col lg:flex-row">
-      <aside className="w-full lg:w-1/4 border-b lg:border-r-2 border-black/20 overflow-y-auto">
-        <div className="p-3">
-          <div className="flex items-center mb-2 justify-between">
-            <h2 className="text-xl font-bold">
-              Messages( User {currentUser?.nickname && currentUser?.nickname?.trim() !== ""
-                ? currentUser?.nickname
-                : `Guest ${currentUser?.userId ? `${currentUser?.userId}` : ""}`} ) to Admin
-            </h2>
-
-
-
-            {/* <Plus className="h-6 w-6 cursor-pointer hover:text-[#BEA355] transition-colors" /> */}
-          </div>
-          {/* <div className="p-2 space-y-4">
-            <div className="relative">
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search conversations"
-                className="pl-10 py-2 px-2 border border-black-20 rounded-lg outline-none focus:ring-2 focus:ring-[#BEA355] w-full"
-              />
-            </div>
-            <Button
-              onClick={startNewChat}
-              className="w-full h-10 capitalize flex items-center justify-center rounded-lg text-white transition duration-500 ease-in-out bg-[#BEA355] hover:bg-[#9a8544] shadow-none"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Start a new chat
-            </Button>
-          </div> */}
-          <div className="space-y-2">
-            {filteredParticipants.filter((participant) => participant.id == adminId)
-              .map((participant) => (
-
-                <div
-                  key={participant.id}
-                  onClick={() => setSelectedChat(participant.id)}
-                  className={`flex items-center mb-2 border-b-2 border-black-20 p-2 hover:bg-gray-100 transition-all duration-300 ease-in-out cursor-pointer hover:rounded-lg ${selectedChat === participant.id ? 'bg-gray-100 dark:bg-gray-800' : ''
-                    }`}
-                >
-                  <div className="relative">
-                    <AvatarChat
-                      src={participant?.avatar}
-                      alt={participant?.name}
-                      className="h-10 w-10"
-                    />
-                    
-
-                    <span
-                      className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${participant.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
-                        }`}
-                    />
-                  </div>
-                  <div className="ml-3">
-                    <p className="font-semibold">{participant.name}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{participant.role}</p>
-                  </div>
-                </div>
-              ))}
-          </div>
+    <section className="px-2 py-4">
+  <div className="xs:h-[calc(100vh-150px)] lg:h-[calc(100vh-150px)] bg-white dark:bg-[#1F1F1F] max-w-5xl mx-auto border-2 my-4 border-black/20 rounded-2xl flex flex-col lg:flex-row py-2 md:py-0">
+    <aside className="w-full lg:w-1/4 border-b lg:border-r-2 border-black/20 overflow-y-auto">
+      <div className="md:p-3 p-2">
+        <div className="flex items-center mb-2 justify-between">
+          <h2 className="text-sm sm:text-md md:text-xl font-bold">
+            Messages( User {currentUser?.nickname && currentUser?.nickname?.trim() !== ""
+              ? currentUser?.nickname
+              : `Guest ${currentUser?.userId ? `${currentUser?.userId}` : ""}`} ) to Admin
+          </h2>
         </div>
-      </aside>
-
-      {/* Chat Section */}
-      <div className="flex-1 flex flex-col">
-        {selectedChat ? (
-          <>
-            {/* Chat Header */}
-            <div className="flex items-center justify-between p-4 border-b">
-              <div className="flex items-center space-x-4">
+        <div className="space-y-2">
+          {filteredParticipants.filter((participant) => participant.id == adminId)
+            .map((participant) => (
+              <div
+                key={participant.id}
+                onClick={() => setSelectedChat(participant.id)}
+                className={`flex items-center mb-2 border-b-2 border-black-20 p-2 hover:bg-gray-100 transition-all duration-300 ease-in-out cursor-pointer hover:rounded-lg ${selectedChat === participant.id ? 'bg-gray-100 dark:bg-gray-800' : ''
+                  }`}
+              >
                 <div className="relative">
                   <AvatarChat
-                    src={getSelectedParticipant()?.avatar}
-                    alt={getSelectedParticipant()?.name}
-                    className="h-10 w-10"
+                    src={participant?.avatar}
+                    alt={participant?.name}
+                    className="md:h-10 h-8 md:w-10 w-8"
                   />
                   <span
-                    className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${getSelectedParticipant()?.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
+                    className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${participant.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
                       }`}
                   />
                 </div>
-                <div>
-                  <h3 className="font-semibold">{getSelectedParticipant()?.name}</h3>
-                  <p className="text-sm text-gray-600">{getSelectedParticipant()?.status}</p>
+                <div className="ml-3">
+                  <p className="font-semibold text-sm md:text-xl">{participant.name}</p>
+                  <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">{participant.role}</p>
                 </div>
               </div>
-            </div>
+            ))}
+        </div>
+      </div>
+    </aside>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.length === 0 && (
-                <div className="text-center text-gray-500 py-8">
-                  <p>No messages yet. Start the conversation!</p>
-                </div>
-              )}
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.senderId === session?.user?.userid ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div className={`max-w-[70%] ${message.senderId === session?.user?.userid
-                    ? 'bg-[#BEA355] text-white rounded-l-lg rounded-br-lg'
-                    : 'bg-gray-100 text-gray-800 rounded-r-lg rounded-bl-lg'
-                    } p-3 shadow-sm`}
-                  >
-
-                    {message?.type == "text" ? <p className="text-sm">{message.text}</p> : message?.type == "image" ?
-
-                      <img
-                        src={message?.url}
-                        alt="Preview"
-                        className="max-h-60 rounded-lg"
-                      />
-
-                      : ""}
-                    <span className="text-xs opacity-70 mt-1 block">
-                      {new Date(message.timestamp).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </span>
-                  </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Input Area */}
-
-            {imagePreview && (
-              <div className="mb-4 relative">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="max-h-60 rounded-lg"
+    <div className="flex-1 flex flex-col">
+      {selectedChat ? (
+        <>
+          <div className="flex items-center justify-between md:p-4 p-2 border-b">
+            <div className="flex items-center md:space-x-4 space-x-1">
+              <div className="relative">
+                <AvatarChat
+                  src={getSelectedParticipant()?.avatar}
+                  alt={getSelectedParticipant()?.name}
+                  className="md:h-10 h-8 md:w-10 w-8"
                 />
-                <button
-                  onClick={clearImage}
-                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+                <span
+                  className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${getSelectedParticipant()?.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
+                    }`}
+                />
               </div>
-            )}
-            <form onSubmit={handleSendChat} className="border-t p-4">
-              <div className="flex items-center space-x-2">
-                {/* <Button
-                  variant="ghost"
-                  className="p-2"
-                  type="button"
-                >
-                  <Smile className="h-6 w-6" />
-                </Button> */}
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                />
-                <Button
-                  variant="text"
-                  className="p-2"
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Camera className="h-6 w-6" />
-                </Button>
-                <Input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  className="flex-1 py-2 px-4 border rounded-full focus:outline-none focus:ring-2 focus:ring-[#BEA355]"
-                />
-                <Button
-                  type="submit"
-                  disabled={!selectedImage && !newMessage.trim()}
-                  className="p-2 bg-[#BEA355] text-white rounded-full hover:bg-[#9a8544] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleSendChat()
-                  }}
-                >
-                  <Send className="h-6 w-6" />
-                </Button>
+              <div>
+                <h3 className="font-semibold text-sm md:text-xl">{getSelectedParticipant()?.name}</h3>
+                <p className="text-sm text-gray-600 md:text-gray-400">{getSelectedParticipant()?.status}</p>
               </div>
-            </form>
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">Welcome to Messages</h3>
-              <p className="text-gray-500">Select a conversation or start a new one</p>
             </div>
           </div>
-        )}
-      </div>
-      </div>
 
-    </section>
+          <div className="flex-1 overflow-y-auto p-2 md:p-4 space-y-4">
+            {messages.length === 0 && (
+              <div className="text-center text-gray-500 py-8">
+                <p>No messages yet. Start the conversation!</p>
+              </div>
+            )}
+            {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.senderId === session?.user?.userid ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className={`max-w-[70%] ${message.senderId === session?.user?.userid
+                ? 'bg-[#BEA355] text-white rounded-l-lg rounded-br-lg'
+                : 'bg-gray-100 text-gray-800 rounded-r-lg rounded-bl-lg'
+                } md:p-3 p-1 shadow-sm break-words`}
+              >
+                {message?.type === "text" ? <p className="text-xs md:text-sm">{message.text}</p> : message?.type === "image" ?
+                  <img
+                    src={message?.url}
+                    alt="Preview"
+                    className="max-h-60 rounded-lg w-full object-cover"
+                  />
+                  : ""}
+                <span className="text-xs opacity-70 mt-1 block">
+                  {new Date(message.timestamp).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </span>
+              </div>
+            </div>
+          ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {imagePreview && (
+            <div className="mb-4 relative">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="max-h-60 rounded-lg w-full object-cover"
+              />
+              <button
+                onClick={clearImage}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+          <form onSubmit={handleSendChat} className="border-t p-2 md:p-4">
+            <div className="flex items-center md:space-x-2 space-x-1">
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileSelect}
+              />
+              <Button
+                variant="text"
+                className="md:p-2 p-1"
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Camera className="md:h-6 md:w-6" />
+              </Button>
+              <Input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 md:py-2 md:px-4 md:h-10 h-8 border rounded-full focus:outline-none focus:ring-2 focus:ring-[#BEA355]"
+              />
+              <Button
+                type="submit"
+                disabled={!selectedImage && !newMessage.trim()}
+                className="md:p-2 p-1 md:h-10 h-8 md:w-10 w-8 bg-[#BEA355] text-white rounded-full hover:bg-[#9a8544] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSendChat()
+                }}
+              >
+                <Send className="md:h-6 md:w-6" />
+              </Button>
+            </div>
+          </form>
+        </>
+      ) : (
+        <div className="flex-1 flex items-center justify-center min-h-[200px]">
+          <div className="text-center">
+            <h3 className="md:text-xl text-md font-semibold text-gray-700 mb-2">Welcome to Messages</h3>
+            <p className="md:text-sm text-xs text-gray-500">Select a conversation or start a new one</p>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+</section>
   );
 };
 

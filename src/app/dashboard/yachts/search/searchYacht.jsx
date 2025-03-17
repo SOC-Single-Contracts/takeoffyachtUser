@@ -655,8 +655,16 @@ const SearchYacht = () => {
                                                     <Input
                                                         type="number"
                                                         min="0"
-                                                        value={filters.sleep_capacity || 0}
-                                                        onChange={(e) => setFilters(prev => ({ ...prev, sleep_capacity: Math.max(0, parseInt(e.target.value) || 0) }))}
+                                                        // value={filters.sleep_capacity || 0}
+                                                        // onChange={(e) => setFilters(prev => ({ ...prev, sleep_capacity: Math.max(0, parseInt(e.target.value) || 0) }))}
+                                                        value={filters.sleep_capacity === undefined ? "" : filters.sleep_capacity}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setFilters(prev => ({
+                                                                ...prev,
+                                                                sleep_capacity: value === "" ? undefined : Math.max(0, parseInt(value)) // Allow empty input and set to undefined
+                                                            }));
+                                                        }}
                                                         className="w-16 text-center"
                                                     />
                                                     <Button
@@ -681,8 +689,16 @@ const SearchYacht = () => {
                                                     <Input
                                                         type="number"
                                                         min="0"
-                                                        value={filters.number_of_cabin || 0}
-                                                        onChange={(e) => setFilters(prev => ({ ...prev, number_of_cabin: Math.max(0, parseInt(e.target.value) || 0) }))}
+                                                        // value={filters.number_of_cabin || 0}
+                                                        // onChange={(e) => setFilters(prev => ({ ...prev, number_of_cabin: Math.max(0, parseInt(e.target.value) || 0) }))}
+                                                        value={filters.number_of_cabin === undefined ? "" : filters.number_of_cabin}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setFilters(prev => ({
+                                                                ...prev,
+                                                                number_of_cabin: value === "" ? undefined : Math.max(0, parseInt(value)) // Allow empty input and set to undefined
+                                                            }));
+                                                        }}
                                                         className="w-16 text-center"
                                                     />
                                                     <Button

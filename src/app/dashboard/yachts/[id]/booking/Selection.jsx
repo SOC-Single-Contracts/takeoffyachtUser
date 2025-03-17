@@ -629,7 +629,7 @@ const Selection = ({ onNext }) => {
                   value={bookingData.adults}
                   // onChange={(e) => updateBookingData({ adults: Math.max(0, parseInt(e.target.value) || 0) })}
                   onChange={(e) => {
-                    const adults = Math.max(0, parseInt(e.target.value) || 0);
+                    const adults = e.target.value === "" ? "" : Math.max(0, parseInt(e.target.value) || 0);
                     const totalGuests = adults + bookingData.kids;
                     if (totalGuests > capacity) {
                       toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
@@ -672,7 +672,7 @@ const Selection = ({ onNext }) => {
                   value={bookingData.kids}
                   // onChange={(e) => updateBookingData({ kids: Math.max(0, parseInt(e.target.value) || 0) })}
                   onChange={(e) => {
-                    const kids = Math.max(0, parseInt(e.target.value) || 0);
+                    const kids = e.target.value === "" ? "" : Math.max(0, parseInt(e.target.value) || 0);
                     const totalGuests = bookingData.adults + kids;
                     if (totalGuests > capacity) {
                       toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
@@ -814,7 +814,7 @@ const Selection = ({ onNext }) => {
           <TableCell className="flex justify-between">
             <span className="text-black dark:text-gray-400">Guests</span>
             <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-              {bookingData.adults + bookingData.kids} 
+                {(bookingData.adults || 0) + (bookingData.kids || 0)}
               <span className="text-xs ml-1">
                 (max {selectedYacht?.yacht?.capacity || 0})
               </span>

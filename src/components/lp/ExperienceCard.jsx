@@ -18,7 +18,7 @@ const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle }) => {
 
     return (
         <Link href={`/dashboard/experience/${experience.id}`} className="group">
-            <Card className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[240px]] h-full min-h-[270px] rounded-3xl cursor-pointer shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[240px] max-w-[310px] h-full min-h-[270px] rounded-3xl cursor-pointer shadow-lg hover:shadow-xl transition-shadow">
                 <div className="relative overflow-hidden group">
                     <div className="overflow-hidden">
                         <Image 
