@@ -782,7 +782,7 @@ const Summary = ({ onNext, initialBookingId }) => {
 
 
 
-            <div className="fixed md:hidden bottom-0 left-0 w-full bg-white shadow-md z-50 p-4">
+            <div className="fixed md:hidden bottom-0 left-0 w-full shadow-md z-50 p-4">
               <div className="relative  flex justify-center">
                 <Button
                   onClick={handleNext}

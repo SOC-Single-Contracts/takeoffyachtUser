@@ -868,7 +868,7 @@ const YachtDetail = () => {
             </Link>
           </div> */}
       </section>
-      <div className="fixed md:hidden bottom-0 left-0 w-full bg-white shadow-md z-50 p-4">
+      <div className="fixed md:hidden bottom-0 left-0 w-full  shadow-md z-50 p-4">
         <div className="relative  flex justify-center">
           <Link className="w-full" href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
             <Button
