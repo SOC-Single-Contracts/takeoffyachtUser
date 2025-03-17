@@ -155,7 +155,7 @@ const Header = () => {
       window.location.href = process.env.NEXT_PUBLIC_NEXTAUTH_URL || "/"; 
     }).catch(err => console.error("Logout Error:", err));
   };
-  
+    
   return (
     <nav className={`
       backdrop-blur-2xl 
