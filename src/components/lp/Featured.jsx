@@ -214,7 +214,7 @@ const Featured = () => {
             return (
               <Card
                 key={yachtItem.yacht.id}
-                className="overflow-hidden  cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px]] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                className="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
               >
                 <div className="relative">
                   <Carousel className="w-full h-[221px]">
@@ -226,7 +226,7 @@ const Featured = () => {
                             alt="Yacht Image"
                             width={326}
                             height={300}
-                            className="object-cover px-3 pt-3 rounded-3xl w-full h-[221px]"
+                            className="ml-1 object-cover px-3 pt-3 rounded-3xl w-full h-[221px]"
                             onError={(e) => {
                               e.target.src = '/assets/images/fycht.jpg';
                             }}
@@ -294,7 +294,7 @@ const Featured = () => {
                     <div className="flex justify-between items-center">
                       <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{yachtItem.yacht.name}</h3>
                       <span className="font-medium text-xs">
-                        AED <span className="font-bold text-sm text-primary">{yachtItem.yacht.per_hour_price}</span>
+                        AED <span className="font-bold text-sm text-primary">{yachtItem.yacht.per_day_price}</span>
                         <span className="text-xs font-light ml-1">/Day</span>
                       </span>
                     </div>

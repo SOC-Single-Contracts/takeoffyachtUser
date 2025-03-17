@@ -20,9 +20,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchFilter from '@/components/lp/shared/SearchFilter';
+import { useRouter } from "next/navigation";
 
 const Yachts = () => {
   const { data: session } = useSession();
+  const router = useRouter();
   const [yachts, setYachts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -295,6 +297,46 @@ const Yachts = () => {
   //   }
   // };
 
+  const saveFiltersToLocalStorage = (filters) => {
+    localStorage.setItem('yacht_filters', JSON.stringify(filters));
+  };
+  
+  const getFiltersFromLocalStorage = () => {
+    const savedFilters = localStorage.getItem('yacht_filters');
+    return savedFilters ? JSON.parse(savedFilters) : null;
+  };
+
+  // Add this function near your other utility functions
+const updateQueryParams = (filters) => {
+  const params = new URLSearchParams();
+  
+  // Add non-empty filters to query params
+  if (filters.min_price !== 1000) params.set('min_price', filters.min_price);
+  if (filters.max_price !== 4000) params.set('max_price', filters.max_price);
+  if (filters.min_guest) params.set('min_guest', filters.min_guest);
+  if (filters.max_guest) params.set('max_guest', filters.max_guest);
+  if (filters.sleep_capacity) params.set('sleep_capacity', filters.sleep_capacity);
+  if (filters.number_of_cabin) params.set('number_of_cabin', filters.number_of_cabin);
+  if (filters.location) params.set('location', filters.location);
+  if (filters.min_length) params.set('min_length', filters.min_length);
+  if (filters.max_length) params.set('max_length', filters.max_length);
+  
+  // Handle arrays
+  if (filters.category_name.length) params.set('category_name', JSON.stringify(filters.category_name));
+  if (filters.amenities.length) params.set('amenities', JSON.stringify(filters.amenities));
+  if (filters.outdoor_equipment.length) params.set('outdoor_equipment', JSON.stringify(filters.outdoor_equipment));
+  if (filters.kitchen.length) params.set('kitchen', JSON.stringify(filters.kitchen));
+  if (filters.energy.length) params.set('energy', JSON.stringify(filters.energy));
+  if (filters.leisure.length) params.set('leisure', JSON.stringify(filters.leisure));
+  if (filters.navigation.length) params.set('navigation', JSON.stringify(filters.navigation));
+  if (filters.extra_comforts.length) params.set('extra_comforts', JSON.stringify(filters.extra_comforts));
+  if (filters.indoor.length) params.set('indoor', JSON.stringify(filters.indoor));
+
+  // Update URL without page reload
+  const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+  router.push(newUrl, { scroll: false });
+};
+
   const handleFilterChange = async (type) => {
 
     if (!userId) return;
@@ -307,50 +349,46 @@ const Yachts = () => {
         source:"simpleYacht",
         user_id: userId,
       };
+      router.push('/dashboard/yachts', { scroll: false });
+      setSelectedSortBy("default");
+      setFilters(initialFilterState);
+      localStorage.removeItem('yacht_filters'); 
     } else {
       // console.log("else simple Yacht")
+      const currentFilters = type === "stored" ? getFiltersFromLocalStorage() : filters;
       payload = {
         user_id: userId,
-        min_per_hour: filters.min_price.toString(),
-        max_per_hour: filters.max_price.toString(),
-        guest: filters.max_guest,
-        min_guest: filters?.min_guest,
-        max_guest: filters?.max_guest,
-        sleep_capacity: filters.sleep_capacity,
-        number_of_cabin: filters.number_of_cabin,
-        // categories: JSON.stringify(filters.category_name),
-        // features: JSON.stringify(filters.amenities.concat(
-        //   filters.outdoor_equipment,
-        //   filters.kitchen,
-        //   filters.energy,
-        //   filters.leisure,
-        //   filters.navigation,
-        //   filters.extra_comforts,
-        //   filters.indoor
-        // )),
-        categories: filters.category_name,
+        min_per_hour: currentFilters?.min_price?.toString() || "1000",
+        max_per_hour: currentFilters?.max_price?.toString() || "4000",
+        guest: currentFilters?.max_guest || "",
+        min_guest: currentFilters?.min_guest || "",
+        max_guest: currentFilters?.max_guest || "",
+        sleep_capacity: currentFilters?.sleep_capacity || "",
+        number_of_cabin: currentFilters?.number_of_cabin || "",
+        categories: currentFilters?.category_name || [],
         features: [
-          ...filters.amenities,  // Include amenities first
-          ...filters.outdoor_equipment,  // Include outdoor equipment
-          ...filters.kitchen,  // Include kitchen
-          ...filters.energy,  // Include energy
-          ...filters.leisure,  // Include leisure
-          ...filters.navigation,  // Include navigation
-          ...filters.extra_comforts,  // Include extra comforts
-          ...filters.indoor  // Include indoor
+          ...(currentFilters?.amenities || []),
+          ...(currentFilters?.outdoor_equipment || []),
+          ...(currentFilters?.kitchen || []),
+          ...(currentFilters?.energy || []),
+          ...(currentFilters?.leisure || []),
+          ...(currentFilters?.navigation || []),
+          ...(currentFilters?.extra_comforts || []),
+          ...(currentFilters?.indoor || [])
         ],
-        price_asc: filters.price_asc,
-        price_des: filters.price_des,
-        cabin_asc: filters.cabin_asc,
-        cabin_des: filters.cabin_des,
-        created_on: filters.created_on,
-        location: filters?.location,
-        min_length: filters.min_length,
-        max_length: filters.max_length,
-
-        location: filters.location,
-
+        price_asc: currentFilters?.price_asc || false,
+        price_des: currentFilters?.price_des || false,
+        cabin_asc: currentFilters?.cabin_asc || false,
+        cabin_des: currentFilters?.cabin_des || false,
+        created_on: currentFilters?.created_on || "",
+        location: currentFilters?.location || "",
+        min_length: currentFilters?.min_length || "",
+        max_length: currentFilters?.max_length || "",
       };
+      if (type === "normal") {
+        saveFiltersToLocalStorage(currentFilters);
+        updateQueryParams(currentFilters);
+      }
     }
 
 
@@ -376,7 +414,6 @@ const Yachts = () => {
         // }); 
         const filteredYachts = responseData.data;
 
-
         // Sort the filtered yachts if needed
         const sortedYachts = filteredYachts?.sort((a, b) => {
           return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
@@ -395,17 +432,35 @@ const Yachts = () => {
     }
   };
 
+  useEffect(() => {
+    const savedFilters = getFiltersFromLocalStorage();
+    if (savedFilters) {
+      setFilters(savedFilters);
+      handleFilterChange("stored");
+    } else {
+      handleFilterChange("reset");
+    }
+  }, []);
+  
+  // Modify resetFilters function
   const resetFilters = () => {
+    localStorage.removeItem('yacht_filters');
+    router.push('/dashboard/yachts', { scroll: false });
     setFilters(initialFilterState);
     handleFilterChange("reset");
-
   };
 
+  // const resetFilters = () => {
+  //   setFilters(initialFilterState);
+  //   handleFilterChange("reset");
+
+  // };
+
   /// calling on first render only
-  useEffect(() => {
-    // console.log("calling on first render only")
-    handleFilterChange("reset");
-  }, []);
+  // useEffect(() => {
+  //   // console.log("calling on first render only")
+  //   handleFilterChange("reset");
+  // }, []);
 
 
   // call onCancelEachFilter
@@ -592,6 +647,7 @@ const Yachts = () => {
                     <Button
                       className="w-full bg-[#BEA355] mt-6 rounded-full"
                       onClick={() => {
+                        saveFiltersToLocalStorage(filters);
                         handleFilterChange("normal");
                       }}
                     >
@@ -680,7 +736,7 @@ const Yachts = () => {
                             <Input
                               type="number"
                               min="0"
-                              placeholder="Min"
+                              placeholder="Min ft"
                               value={filters.min_length}
                               onChange={(e) => {
                                 const value = e.target.value;
@@ -695,7 +751,7 @@ const Yachts = () => {
                             <Input
                               type="number"
                               min="0"
-                              placeholder="Max"
+                              placeholder="Max ft"
                               value={filters.max_length}
                               onChange={(e) => {
                                 const value = e.target.value;
@@ -722,9 +778,16 @@ const Yachts = () => {
                           <Input
                             type="number"
                             min="0"
-                            value={filters.sleep_capacity || 0}
-                            onChange={(e) => setFilters(prev => ({ ...prev, sleep_capacity: Math.max(0, parseInt(e.target.value) || 0) }))}
-
+                            // value={filters.sleep_capacity || 0}
+                            // onChange={(e) => setFilters(prev => ({ ...prev, sleep_capacity: Math.max(0, parseInt(e.target.value) || 0) }))}
+                            value={filters.sleep_capacity === undefined ? "" : filters.sleep_capacity}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setFilters(prev => ({
+                                ...prev,
+                                sleep_capacity: value === "" ? undefined : Math.max(0, parseInt(value)) // Allow empty input and set to undefined
+                              }));
+                            }}
                             className="w-16 text-center"
                           />
                           <Button
@@ -749,8 +812,16 @@ const Yachts = () => {
                           <Input
                             type="number"
                             min="0"
-                            value={filters.number_of_cabin || 0}
-                            onChange={(e) => setFilters(prev => ({ ...prev, number_of_cabin: Math.max(0, parseInt(e.target.value) || 0) }))}
+                            // value={filters.number_of_cabin || 0}
+                            // onChange={(e) => setFilters(prev => ({ ...prev, number_of_cabin: Math.max(0, parseInt(e.target.value) || 0) }))}
+                            value={filters.number_of_cabin === undefined ? "" : filters.number_of_cabin}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setFilters(prev => ({
+                                ...prev,
+                                number_of_cabin: value === "" ? undefined : Math.max(0, parseInt(value)) // Allow empty input and set to undefined
+                              }));
+                            }}
                             className="w-16 text-center"
                           />
                           <Button
@@ -1035,6 +1106,7 @@ const Yachts = () => {
                       <Button
                         className="w-full bg-[#BEA355] mt-6 rounded-full"
                         onClick={() => {
+                          saveFiltersToLocalStorage(filters);
                           handleFilterChange("normal");
                         }}
                       >
@@ -1175,7 +1247,7 @@ const Yachts = () => {
                               alt="not found"
                               width={326}
                               height={300}
-                              className="object-cover px-0 pt-3 rounded-3xns w-full h-[221px] "
+                              className="ml-1 object-cover px-2 pt-3 rounded-3xl w-full h-[221px] "
                               onError={(e) => {
                                 e.target.src = '/assets/images/fycht.jpg';
                               }}
@@ -1232,7 +1304,7 @@ const Yachts = () => {
                       <div className="flex justify-between items-center">
                         <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item?.yacht?.name}</h3>
                         <span className="font-medium text-xs">
-                          AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_hour_price}</span>
+                          AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_day_price}</span>
                           <span className="text-xs font-light ml-1">/Day</span>
                         </span>
                       </div>

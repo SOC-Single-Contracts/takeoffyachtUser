@@ -240,7 +240,7 @@ const Experience = () => {
             </h2>
           </div>
           
-          <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[0.6rem]   my-8">
+          <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[0.6rem] place-items-center  my-8">
             {experiences.map((experienceData) => (
               <ExperienceCard
                 key={experienceData.experience.id} 
