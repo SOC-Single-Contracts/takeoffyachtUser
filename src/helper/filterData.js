@@ -29,7 +29,8 @@
         extra_comforts: [],
         indoor: [],
         startDate:"",
-        endDate:""
+        endDate:"",
+        sortBy:"default"
       };
 
       return data;

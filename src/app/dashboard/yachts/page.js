@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchFilter from '@/components/lp/shared/SearchFilter';
 import { useRouter } from "next/navigation";
 
+const PAGE_SIZE = 10;
 const Yachts = () => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -31,6 +32,9 @@ const Yachts = () => {
   const [favorites, setFavorites] = useState(new Set());
   const [originalYachts, setOriginalYachts] = useState([]);
   const [onCancelEachFilter, setonCancelEachFilter] = useState(false);
+  const observer = useRef();
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -241,7 +245,7 @@ const Yachts = () => {
       }
     };
 
-    loadWishlist();
+    // loadWishlist();
   }, [userId]);
 
   // const handleFilterChange = async () => {
@@ -340,10 +344,11 @@ const updateQueryParams = (filters) => {
   const handleFilterChange = async (type) => {
 
     if (!userId) return;
+    if (!hasMore) return;
 
     let payload;
     if (type == "reset") {
-      // console.log("ifff simple Yacht")
+      console.log("ifff simple Yacht")
 
       payload = {
         source:"simpleYacht",
@@ -354,9 +359,10 @@ const updateQueryParams = (filters) => {
       setFilters(initialFilterState);
       localStorage.removeItem('yacht_filters'); 
     } else {
-      // console.log("else simple Yacht")
+      console.log("else simple Yacht")  
       const currentFilters = type === "stored" ? getFiltersFromLocalStorage() : filters;
       payload = {
+        source:"simpleYacht",
         user_id: userId,
         min_per_hour: currentFilters?.min_price?.toString() || "1000",
         max_per_hour: currentFilters?.max_price?.toString() || "4000",
@@ -394,7 +400,7 @@ const updateQueryParams = (filters) => {
 
     try {
       setLoading(true);
-      const response = await fetch('https://api.takeoffyachts.com/yacht/check_yacht/', {
+      const response = await fetch(`https://api.takeoffyachts.com/yacht/check_yacht/?page=${page}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -419,8 +425,9 @@ const updateQueryParams = (filters) => {
           return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
         });
         setOriginalYachts(sortedYachts)
-
+        if (sortedYachts?.length < PAGE_SIZE) setHasMore(false);
       } else {
+        setHasMore(false);
         setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
       }
@@ -431,8 +438,22 @@ const updateQueryParams = (filters) => {
       setLoading(false);
     }
   };
+  const lastYachtRef = (node) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prevPage) => prevPage + 1); // Load next page
+        }
+      },
+      { threshold: 1.0 }
+    );
+    if (node) observer.current.observe(node);
+  };
 
   useEffect(() => {
+    console.log("this is working")
     const savedFilters = getFiltersFromLocalStorage();
     if (savedFilters) {
       setFilters(savedFilters);
@@ -440,7 +461,7 @@ const updateQueryParams = (filters) => {
     } else {
       handleFilterChange("reset");
     }
-  }, []);
+  }, [page]);
   
   // Modify resetFilters function
   const resetFilters = () => {
@@ -470,6 +491,10 @@ const updateQueryParams = (filters) => {
       setonCancelEachFilter(false);
     }
   }, [filters, onCancelEachFilter]);
+
+  // useEffect(() => {
+  //  console.log("page",page)
+  // }, [page]);
 
 
   // useEffect(() => {
@@ -507,6 +532,7 @@ const updateQueryParams = (filters) => {
       console.error('Error toggling wishlist:', error);
     }
   };
+
 
   useEffect(() => {
 
@@ -1236,13 +1262,15 @@ const updateQueryParams = (filters) => {
                 <Card
                   key={item?.yacht?.id}
                   className="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px]] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                  ref={ind === yachts.length - 1 ? lastYachtRef : null}
                 >
                   <div className="relative">
                     <Carousel className="px-2 rounded-3xl w-full h-[221px]">
                       <CarouselContent>
                         {images?.filter(image => image !== null).map((image, index) => (
-                          <CarouselItem key={index}>
+                          <CarouselItem  key={index}>
                             <Image
+                            ref={index === yachts.length - 1 ? lastYachtRef : null}
                               src={image ? `https://api.takeoffyachts.com${image}` : '/assets/images/fycht.jpg'}
                               alt="not found"
                               width={326}
