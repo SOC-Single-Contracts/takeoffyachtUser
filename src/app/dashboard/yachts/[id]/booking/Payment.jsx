@@ -249,7 +249,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       return;
     }
 
-    if (!appStatWwalletContext?.freezeWallet) {
+    if (appStatWwalletContext?.freezeWallet) {
       toast({
         title: "Wallet Access Restricted",
         description: "Your wallet is currently frozen. Please contact support for assistance.",
