@@ -33,9 +33,13 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const [cardComplete, setCardComplete] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [paymentType, setPaymentType] = useState('initial');
-  const appStatWwalletContext = JSON.parse(localStorage.getItem("walletContext")) || {};
-  const token = localStorage.getItem("token") || null;
-  const userId = localStorage.getItem("userid") || null;
+  const appStatWwalletContext = 
+  typeof window !== "undefined" && localStorage.getItem("walletContext") 
+    ? JSON.parse(localStorage.getItem("walletContext")) 
+    : {};
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
+    const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
+    
 
   useEffect(() => {
     const initializePaymentState = async () => {

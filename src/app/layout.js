@@ -34,20 +34,26 @@ export default function RootLayout({ children }) {
   }, []);
 
   useEffect(() => {
-    const storedData = localStorage.getItem("SearchfilterData");
+    if (typeof window !== "undefined") {
+      const storedData = localStorage.getItem("SearchfilterData");
   
-    if (!storedData) { 
-      const initialData = initialFilterGlobal();
-      localStorage.setItem("SearchfilterData", JSON.stringify(initialData));
+      if (!storedData) { 
+        const initialData = initialFilterGlobal();
+        localStorage.setItem("SearchfilterData", JSON.stringify(initialData));
+      }
     }
+ 
   }, []);
   useEffect(() => {
-    const storedData = localStorage.getItem("walletContext");
+    if (typeof window !== "undefined") {
+      const storedData = localStorage.getItem("walletContext");
   
-    if (!storedData) { 
-      const initialData = {};
-      localStorage.setItem("walletContext", JSON.stringify(initialData));
+      if (!storedData) { 
+        const initialData = {};
+        localStorage.setItem("walletContext", JSON.stringify(initialData));
+      }
     }
+ 
   }, []);
 
   // useEffect(()=>{
