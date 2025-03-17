@@ -424,7 +424,7 @@ const updateQueryParams = (filters) => {
         const sortedYachts = filteredYachts?.sort((a, b) => {
           return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
         });
-        setOriginalYachts(sortedYachts)
+        setOriginalYachts((prev) => [...prev, ...sortedYachts]);
         if (sortedYachts?.length < PAGE_SIZE) setHasMore(false);
       } else {
         setHasMore(false);
