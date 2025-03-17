@@ -764,7 +764,6 @@ const Summary = ({ onNext, initialBookingId }) => {
                   <div className="relative  flex justify-center">
                     <Button
                       onClick={handleNext}
-
                       className="rounded-full bg-[#BEA355] w-full min-w-[210px]} mx-auto text-white h-12"
                     >
                       Proceed to Payment

@@ -1247,7 +1247,7 @@ const updateQueryParams = (filters) => {
                               alt="not found"
                               width={326}
                               height={300}
-                              className="ml-1 object-cover px-2 pt-3 rounded-3xl w-full h-[221px] "
+                              className="ml-1 object-cover px-2n pt-3 rounded-3xll w-full h-[221px] "
                               onError={(e) => {
                                 e.target.src = '/assets/images/fycht.jpg';
                               }}
