@@ -441,14 +441,14 @@ const Header = () => {
                         >
                           F1 Yachts
                         </Link>
-                        <Link
+                        {/* <Link
                       onClick={()=>setIsSheetOpen(false)}
 
                           href="/dashboard/yachts"
                           className="block text-gray-700 hover:text-black dark:text-gray-300"
                         >
                           New Year Eve Yachts
-                        </Link>
+                        </Link> */}
                       </div>
                     </div>
                     <Link
