@@ -226,7 +226,7 @@ const Featured = () => {
                             alt="Yacht Image"
                             width={326}
                             height={300}
-                            className="ml-1 object-cover px-3 pt-3 rounded-3xl w-full h-[221px]"
+                            className="ml-1 object-cover px-3n pt-3 rounded-3xll w-full h-[221px]"
                             onError={(e) => {
                               e.target.src = '/assets/images/fycht.jpg';
                             }}
