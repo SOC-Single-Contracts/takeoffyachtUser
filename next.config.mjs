@@ -25,7 +25,7 @@ const nextConfig = {
     env: {
         NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
         NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-        // NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'https://yachtsmain.netlify.app/login',
+        NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'https://yachtsmain.netlify.app',
         NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
 
     },
