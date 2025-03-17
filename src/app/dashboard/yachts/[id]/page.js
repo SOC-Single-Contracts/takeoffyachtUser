@@ -507,7 +507,7 @@ const YachtDetail = () => {
               </Badge>
               <div className="flex justify-between items-center mt-2">
                 <h2 className="text-xl md:text-2xl font-bold">{name}</h2>
-                <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_hour_price}</span>/hour</p>
+                <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>/day</p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
                 {getYachtDetailsGrid(selectedYacht?.yacht)}
