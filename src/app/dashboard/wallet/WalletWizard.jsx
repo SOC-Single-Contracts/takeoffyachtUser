@@ -25,10 +25,13 @@ const WalletWizardContent = () => {
   const { toast } = useToast();
   const router = useRouter();
   const { walletDetails, setwalletDetails } = useWalletContext();
-  const token = localStorage.getItem("token") || null;
-  const userId = localStorage.getItem("userid") || null;
+  // const token = localStorage.getItem("token") || null;
+  // const userId = localStorage.getItem("userid") || null;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+  const userId = typeof window !== 'undefined' ? localStorage.getItem("userid") : null;
 
   const detailsMap = [
     {
@@ -136,16 +139,19 @@ const WalletWizardContent = () => {
   // Listen to `walletDetails` and update localStorage whenever it changes
   useEffect(() => {
     if (walletDetails) {
-      localStorage.setItem("walletContext", JSON.stringify(walletDetails));
+      // Update localStorage only in the browser
+      if (typeof window !== 'undefined') {
+        localStorage.setItem("walletContext", JSON.stringify(walletDetails));
+      }
     }
   }, [walletDetails]);
   
 
-  useEffect(() => {
-    if (walletDetails) {
-      localStorage.setItem("walletContext", JSON.stringify(walletDetails));
-    }
-  }, [walletDetails]);
+  // useEffect(() => {
+  //   if (walletDetails) {
+  //     localStorage.setItem("walletContext", JSON.stringify(walletDetails));
+  //   }
+  // }, [walletDetails]);
 
   // If not logged in, show login prompt
   if (!userId && !token) {

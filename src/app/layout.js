@@ -1,6 +1,6 @@
 "use client";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,19 +11,27 @@ import { initialFilterGlobal } from "@/helper/filterData";
 
 const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-inter',
   display: 'swap',
+  variable: '--font-inter',
+  preload: true,
+  adjustFontFallback: true,
+  fallback: ['system-ui', 'arial']
 });
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  variable: '--font-jakarta',
   display: 'swap',
+  variable: '--font-jakarta',
+  preload: true,
+  adjustFontFallback: true,
+  fallback: ['system-ui', 'arial']
 });
 
 export default function RootLayout({ children }) {
   const [isLoading, setIsLoading] = useState(true);
-  const appStatWwalletContext = JSON.parse(localStorage.getItem("walletContext")) || {};
+  const [appStatWwalletContext, setAppStatWwalletContext] = useState({});
+
+  // const appStatWwalletContext = JSON.parse(localStorage.getItem("walletContext")) || {};
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -43,10 +51,8 @@ export default function RootLayout({ children }) {
   }, []);
   useEffect(() => {
     const storedData = localStorage.getItem("walletContext");
-  
-    if (!storedData) { 
-      const initialData = {};
-      localStorage.setItem("walletContext", JSON.stringify(initialData));
+    if (storedData) {
+      setAppStatWwalletContext(JSON.parse(storedData));
     }
   }, []);
 

@@ -1265,7 +1265,7 @@ const updateQueryParams = (filters) => {
                           <ChevronRight />
                         </Button>
                       </CarouselNext>
-                      <CarouselDots yId={item?.yacht?.id} />
+                      <CarouselDots yid={item?.yacht?.id} />
 
                     </Carousel>
                     {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
