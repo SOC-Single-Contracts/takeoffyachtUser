@@ -1259,7 +1259,7 @@ const updateQueryParams = (filters) => {
         </div>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 gap-[0.6rem] xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
+        <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {yachts.length > 0 ? (
             yachts.map((item, ind) => {
               if (!item || !item?.yacht) return null;
@@ -1292,21 +1292,21 @@ const updateQueryParams = (filters) => {
                 <Card
                   key={item?.yacht?.id}
                   id={`yacht-${item?.yacht?.id}`}
-                  className="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px]] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                  className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-full md:min-h-[280px] min-h-[300px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
                   ref={ind === yachts.length - 1 ? lastYachtRef : null}
                 >
                   <div className="relative">
-                    <Carousel className="px-2 rounded-3xl w-full h-[221px]">
+                    <Carousel className="">
                       <CarouselContent>
                         {images?.filter(image => image !== null).map((image, index) => (
-                          <CarouselItem  key={index}>
+                          <CarouselItem key={index}>
                             <Image
                             ref={index === yachts.length - 1 ? lastYachtRef : null}
                               src={image ? `https://api.takeoffyachts.com${image}` : '/assets/images/fycht.jpg'}
                               alt="not found"
                               width={326}
                               height={300}
-                              className="ml-1 object-cover px-2n pt-3 rounded-3xll w-full h-[221px] "
+                              className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
                               onError={(e) => {
                                 e.target.src = '/assets/images/fycht.jpg';
                               }}

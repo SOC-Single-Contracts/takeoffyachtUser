@@ -122,7 +122,7 @@ const Options = () => {
     <Tabs 
       value={selectedDate}
       onValueChange={handleTabChange}
-      className="max-w-5xl mx-auto md:py-10 px-2"
+      className="max-w-5xl mx-auto py-10 px-2"
     >
       <TabsList className="grid h-full w-full grid-cols-2 sm:grid-cols-2 md:grid-cols-7 lg:grid-cols-7 max-w-5xl mx-auto">
         {tabsData.map((tab) => (
@@ -142,12 +142,12 @@ const Options = () => {
             <Table>
               <TableHeader className="bg-[#F4F0E4] hover:bg-[#F4F0E4] rounded-t-lg">
                 <TableRow>
-                  <TableHead className="font-semibold text-black">Experience Name</TableHead>
-                  <TableHead className="font-semibold text-black">Location</TableHead>
-                  <TableHead className="font-semibold text-black">Duration</TableHead>
-                  <TableHead className="font-semibold text-black">Guests</TableHead>
-                  <TableHead className="font-semibold text-black">Price</TableHead>
-                  <TableHead className="font-semibold text-black">Action</TableHead>
+                  <TableHead className="font-medium text-black">Experience Name</TableHead>
+                  <TableHead className="font-medium text-black">Location</TableHead>
+                  <TableHead className="font-medium text-black">Duration</TableHead>
+                  <TableHead className="font-medium text-black">Guests</TableHead>
+                  <TableHead className="font-medium text-black">Price</TableHead>
+                  <TableHead className="font-medium text-black">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

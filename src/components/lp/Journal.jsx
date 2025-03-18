@@ -66,7 +66,7 @@ const Journal = () => {
           }}
           className="w-full"
         >
-          <CarouselContent>
+          <CarouselContent className="pl-4 md:pl-2 gap-2">
             {loading ? (
               <>
                 {[1, 2, 3].map((_, index) => (
