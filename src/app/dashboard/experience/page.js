@@ -286,7 +286,7 @@ const Experiences = () => {
           </div>
 
           {/* Experiences Grid */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:place-items-start place-items-center">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 md:place-items-start place-items-center">
             {loading ? (
               // Show skeleton loading state
               Array(8).fill(null).map((_, index) => (
@@ -299,7 +299,7 @@ const Experiences = () => {
                 return (
                   <Card
                     key={experience.id}
-                    className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[250px] h-full max-h-[260px]"
+                    className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[250px] h-full md:min-h-[260px] min-h-[290px]"
                   >
                     <div className="relative">
                       <Image
@@ -307,7 +307,7 @@ const Experiences = () => {
                         alt={experience.name || 'Experience Image'}
                         width={400}
                         height={250}
-                        className="object-cover px-3 pt-3 rounded-3xl h-[170px]"
+                        className="object-cover px-3 pt-3 rounded-3xl md:h-[170px] h-[220px]"
                       />
 
                       <Link href={`/dashboard/experience/${experience.id}`}>

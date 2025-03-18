@@ -128,7 +128,7 @@ const Events = ({ limit = 4 }) => {
   return (
     <section className="py-8 px-2">
       <div className="max-w-5xl mx-auto">
-        <h1 className="md:text-4xl text-[24px] font-semibold text-start">Our Events</h1>
+        <h1 className="md:text-4xl text-[32px] font-semibold text-start">Our Events</h1>
         <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[0.6rem]  place-items-center my-8">
           {eventsToDisplay.map((item) => {
             if (!item?.event) {
@@ -139,7 +139,7 @@ const Events = ({ limit = 4 }) => {
             return (
               <Card
                 key={event.id}
-                className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[298px] max-w-[350px] h-full md:max-h-[260px] max-h-[310px]"
+                className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[298px] h-full md:max-h-[260px] max-h-[310px]"
               >
                 <div className="relative">
                 {/* <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" /> */}
@@ -152,7 +152,7 @@ const Events = ({ limit = 4 }) => {
                     alt={event.name || 'Event Image'}
                     width={400}
                     height={250}
-                    className="object-cover px-3 pt-3 rounded-3xl md:h-[170px] h-[220px]"
+                    className="object-cover ml-0 sm:ml-1 px-1 pt-3 rounded-3xl md:h-[170px] h-[220px]"
                     onError={(e) => {
                         e.target.src = '/assets/images/f1.png'
                     }}

@@ -76,7 +76,8 @@ const BlogList = () => {
   }
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 my-14 md:my-16 lg:my-24">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 place-items-center">
+
       {blogs.map((blog) => (
         <BlogItem 
           key={blog.ID} 

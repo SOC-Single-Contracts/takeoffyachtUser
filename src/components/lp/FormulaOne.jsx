@@ -128,8 +128,8 @@ const FormulaOne = ({ limit = 4 }) => {
   return (
     <section className="py-8 px-2">
       <div className="max-w-5xl mx-auto">
-        <h1 className="md:text-4xl text-[24px] font-semibold text-start">Formula One</h1>
-        <div className="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center my-8">
+        <h1 className="md:text-4xl text-[32px] font-semibold text-start">Formula One</h1>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center my-8">
           {eventsToDisplay.map((item) => {
             if (!item) {
               return null;
@@ -138,7 +138,7 @@ const FormulaOne = ({ limit = 4 }) => {
             return (
               <Card
                 key={item.id}
-                className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[350px] md:max-w-[298px] h-full max-h-[320px] md:max-h-[260px]"
+                className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[350px] md:max-w-[298px] h-full max-h-[320px] md:max-h-[260px]"
               >
                 <div className="relative">
                 <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" />
@@ -151,7 +151,7 @@ const FormulaOne = ({ limit = 4 }) => {
                     alt={item.name || 'Event Image'}
                     width={400}
                     height={250}
-                    className="object-cover px-3 pt-3 rounded-3xl md:h-[170px]"
+                    className="object-cover px-2 ml-0.5 md:ml-0 pt-3 rounded-3xl md:h-[170px] h-[230px]"
                     onError={(e) => {
                         e.target.src = '/assets/images/f1.png'
                     }}

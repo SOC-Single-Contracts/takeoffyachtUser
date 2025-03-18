@@ -10,12 +10,11 @@ const BlogsPage = () => {
   return (
     <>    
     <Header />
-    <main className="flex-1 max-w-5xl mx-auto px-4 py-6">
-    <div className="mt-10 md:mt-0">
-    <h1>All Blogs</h1>
+    <main className="flex-1 max-w-5xl mx-auto px-2 pt-32 pb-6">
+    <section>
+    <h1 className="text-2xl font-bold mb-4">All Blogs</h1>
     <BlogList />
-            </div>
-   
+    </section>
     </main>
     <Footer />
     </>

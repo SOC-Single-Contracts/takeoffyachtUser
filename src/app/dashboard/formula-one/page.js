@@ -153,7 +153,7 @@ const Events = ({ limit }) => {
 
   return (
     <section className="md:py-10 py-4 px-2">
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Formula One</h1>
 
         <div className="flex flex-col space-y-4 mb-8">
@@ -274,7 +274,7 @@ const Events = ({ limit }) => {
         </div>
 
         {/* Events Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 place-items-center">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center">
           {loading ? (
             Array(8)
               .fill(0)
@@ -286,7 +286,7 @@ const Events = ({ limit }) => {
               return (
                 <Card
                   key={item.id}
-                  className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[250px] h-full max-h-[260px]"
+                  className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[250px] h-full md:min-h-[260px] min-h-[240px]"
                 >
                   <div className="relative">
                     <Image
@@ -298,7 +298,7 @@ const Events = ({ limit }) => {
                       alt={item.name || 'F1 Yacht Image'}
                       width={400}
                       height={250}
-                      className="object-cover px-3 pt-3 rounded-3xl h-[170px]"
+                      className="object-cover px-1 xs:ml-1 pt-2 rounded-2xl md:h-[170px] h-[220px]"
                       onError={(e) => {
                         e.target.src = '/assets/images/f1.png'
                       }}
