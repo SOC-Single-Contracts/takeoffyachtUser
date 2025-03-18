@@ -45,9 +45,9 @@ const Journal = () => {
     fetchBlogs();
   }, [toast]);
 
-  useEffect(()=>{
-console.log("blogs",blogs)
-  },[blogs])
+//   useEffect(()=>{
+// console.log("blogs",blogs)
+//   },[blogs])
 
 
   return (

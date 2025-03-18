@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -35,6 +35,7 @@ const Yachts = () => {
   const observer = useRef();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [allowFetching, setAllowFetching] = useState(true); // Prevent API spam
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -348,7 +349,7 @@ const updateQueryParams = (filters) => {
 
     let payload;
     if (type == "reset") {
-      console.log("ifff simple Yacht")
+      // console.log("ifff simple Yacht")
 
       payload = {
         source:"simpleYacht",
@@ -359,7 +360,7 @@ const updateQueryParams = (filters) => {
       setFilters(initialFilterState);
       localStorage.removeItem('yacht_filters'); 
     } else {
-      console.log("else simple Yacht")  
+      // console.log("else simple Yacht")  
       const currentFilters = type === "stored" ? getFiltersFromLocalStorage() : filters;
       payload = {
         source:"simpleYacht",
@@ -438,22 +439,11 @@ const updateQueryParams = (filters) => {
       setLoading(false);
     }
   };
-  const lastYachtRef = (node) => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPage((prevPage) => prevPage + 1); // Load next page
-        }
-      },
-      { threshold: 1.0 }
-    );
-    if (node) observer.current.observe(node);
-  };
+
+  
 
   useEffect(() => {
-    console.log("this is working")
+    // console.log("this is working")
     const savedFilters = getFiltersFromLocalStorage();
     if (savedFilters) {
       setFilters(savedFilters);
@@ -562,7 +552,47 @@ const updateQueryParams = (filters) => {
     let data = [...originalYachts]
     setYachts(data)
   }, [originalYachts]);
-  //test
+
+
+  const lastYachtRef = useCallback(
+    (node) => {
+      if (loading || !hasMore || !allowFetching) return;
+  
+      if (observer.current) observer.current.disconnect();
+  
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            console.log("Fetching Next Page...");
+            setAllowFetching(false); 
+            setPage((prevPage) => prevPage + 1);
+  
+            setTimeout(() => setAllowFetching(true), 1000);
+          }
+        },
+        { threshold: 1.0 }
+      );
+  
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore, allowFetching]
+  );
+  
+
+  useEffect(() => {
+    if (yachts.length > 0) {
+      setAllowFetching(false); 
+  
+      const middleIndex = Math.floor(yachts.length / 2);
+      const middleYacht = document.getElementById(`yacht-${yachts[middleIndex]?.yacht?.id}`);
+  
+      if (middleYacht) {
+        middleYacht.scrollIntoView({ behavior: "smooth", block: "center" });
+  
+        setTimeout(() => setAllowFetching(true), 1000);
+      }
+    }
+  }, [yachts.length]); 
   // useEffect(() => {
   //   console.log("yachts", yachts);
   // }, [yachts]);
@@ -1261,6 +1291,7 @@ const updateQueryParams = (filters) => {
               return (
                 <Card
                   key={item?.yacht?.id}
+                  id={`yacht-${item?.yacht?.id}`}
                   className="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px]] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
                   ref={ind === yachts.length - 1 ? lastYachtRef : null}
                 >

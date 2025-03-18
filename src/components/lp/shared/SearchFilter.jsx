@@ -506,7 +506,7 @@ const SearchFilter = () => {
                           </div>
                         </div>
                       ))}
-                      <div className="flex flex-wrap pt-4 items-center md:space-y-0 space-y-1.5 overflow-y-auto md:space-x-1 justify-between">
+                      <div className="flex flex-wra pt-4 items-center md:space-y-0 space-y-1.5 overflow-y-auto md:space-x-1 justify-between">
                         <Button
                           variant="outline"
                           type="button" // Change to button to prevent form submission
