@@ -395,7 +395,7 @@ const SearchFilter = () => {
                     >
                       <div className="flex flex-col items-start md:pl-2 w-full">
                         <span className="font-semibold text-xs">Search</span>
-                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">By Name</span>
+                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{searchByName || "By Name"}</span>
                       </div>
                     </TabsTrigger>
                     <TabsTrigger
@@ -404,7 +404,7 @@ const SearchFilter = () => {
                     >
                       <div className="flex flex-col items-start md:pl-2 w-full">
                         <span className="font-semibold text-xs">Where</span>
-                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">Add Destination</span>
+                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{selectedCity || "Add Destination"}</span>
                       </div>
                     </TabsTrigger>
                     <TabsTrigger
@@ -414,7 +414,7 @@ const SearchFilter = () => {
                     >
                       <div className="flex flex-col items-start md:pl-2 w-full">
                         <span className="font-semibold text-xs">When</span>
-                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">Add Dates</span>
+                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{selectedDateRange.from && selectedDateRange.to ? `${format(selectedDateRange.from, 'MMM dd')} - ${format(selectedDateRange.to, 'MMM dd')}` : "Add Dates"}</span>
                       </div>
                     </TabsTrigger>
                     <TabsTrigger
@@ -424,7 +424,7 @@ const SearchFilter = () => {
                     >
                       <div className="flex flex-col items-start md:pl-2 w-full">
                         <span className="font-semibold text-xs">Who</span>
-                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">Add Guests</span>
+                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{guests.capacity > 0 ? `${guests.capacity} Guests` : "Add Guests"}</span>
                       </div>
                     </TabsTrigger>
                     <div>
