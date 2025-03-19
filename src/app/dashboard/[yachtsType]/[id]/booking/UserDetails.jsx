@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,7 @@ import { API_BASE_URL } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
+import { handleDispatchBookingData } from "@/helper/bookingData";
 
 const UserDetails = ({ onNext }) => {
   const { data: session } = useSession();
@@ -24,6 +25,10 @@ const UserDetails = ({ onNext }) => {
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht } = useBookingContext();
   const [loading, setLoading] = useState(false);
+  const appStatBookingContext =
+  typeof window !== "undefined" && localStorage.getItem("bookingContext")
+    ? JSON.parse(localStorage.getItem("bookingContext"))
+    : {};
 
   // Convert countries object to sorted array
   const countriesList = useMemo(() => {
@@ -150,6 +155,10 @@ const UserDetails = ({ onNext }) => {
 
       // Update booking context with booking ID
       updateBookingData({ bookingId: result.booking_id });
+      handleDispatchBookingData({...appStatBookingContext,
+        ...bookingPayload
+
+      })
 
       onNext();
     } catch (error) {
@@ -163,6 +172,8 @@ const UserDetails = ({ onNext }) => {
       setLoading(false);
     }
   };
+
+
 
   if (loading) {
     return (
@@ -262,7 +273,7 @@ const UserDetails = ({ onNext }) => {
         <Input
           id="phone"
           type="tel"
-          placeholder="+971 4 XXX XXXX"
+          placeholder="Enter any International Number"
           required
           value={bookingData.phone}
           onChange={(e) => {

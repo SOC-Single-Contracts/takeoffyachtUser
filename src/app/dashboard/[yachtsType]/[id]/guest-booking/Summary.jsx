@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import Image from 'next/image';
+import BookingGallery from "@/components/lp/BookingGallery";
 
 const safeFormat = (dateString, formatString, fallback = 'N/A') => {
   try {
@@ -384,7 +385,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               ))}
           <TableRow>
             <TableCell className="font-bold">Total Amount</TableCell>
-            <TableCell className="font-bold">
+            <TableCell className="font-bold text-red-500  text-lg">
               AED {totalCost.toFixed(2)}
             </TableCell>
           </TableRow>
@@ -510,7 +511,7 @@ const Summary = ({ onNext, initialBookingId }) => {
     <section>
       <div className="max-w-5xl mx-auto container px-2 space-y-6 mt-8">
         {/* Yacht Images */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {selectedYacht?.yacht?.yacht_image && (
               <div
@@ -560,7 +561,38 @@ const Summary = ({ onNext, initialBookingId }) => {
               return null;
             })}
           </div>
-        </div>
+        </div> */}
+           <div className="w-full">
+                  {!selectedYacht || !selectedYacht?.yacht ? null : (() => {
+                    const images = [
+                      selectedYacht?.yacht?.yacht_image,
+                      selectedYacht?.yacht?.image1,
+                      selectedYacht?.yacht?.image2,
+                      selectedYacht?.yacht?.image3,
+                      selectedYacht?.yacht?.image4,
+                      selectedYacht?.yacht?.image5,
+                      selectedYacht?.yacht?.image6,
+                      selectedYacht?.yacht?.image7,
+                      selectedYacht?.yacht?.image8,
+                      selectedYacht?.yacht?.image9,
+                      selectedYacht?.yacht?.image10,
+                      selectedYacht?.yacht?.image11,
+                      selectedYacht?.yacht?.image12,
+                      selectedYacht?.yacht?.image13,
+                      selectedYacht?.yacht?.image14,
+                      selectedYacht?.yacht?.image15,
+                      selectedYacht?.yacht?.image16,
+                      selectedYacht?.yacht?.image17,
+                      selectedYacht?.yacht?.image18,
+                      selectedYacht?.yacht?.image19,
+                      selectedYacht?.yacht?.image20,
+                    ]
+                      .filter((image) => typeof image === "string" && image.trim() !== "")
+                      .map((image) => `${process.env.NEXT_PUBLIC_API_URL}${image}`)
+        
+                    return <BookingGallery images={images} />
+                  })()}
+                </div>
 
         {/* Contact Details Table */}
         {/* <Table className="bg-[#F4F0E4] w-full rounded-lg">
@@ -698,6 +730,9 @@ const Summary = ({ onNext, initialBookingId }) => {
           </TableBody>
         </Table> */}
 
+     
+
+        {renderPriceSummary()}
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
             <TableRow>
@@ -723,8 +758,6 @@ const Summary = ({ onNext, initialBookingId }) => {
             </TableRow>
           </TableBody>
         </Table>
-
-        {renderPriceSummary()}
         {bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost && (
           <div className="flex items-center justify-between bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md mb-4">
             <div className="flex items-center">

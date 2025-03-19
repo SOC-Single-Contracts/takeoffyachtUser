@@ -122,6 +122,8 @@ const Gallery = () => {
         "/assets/images/5.webp",
     ]
 
+    // {console.log("wokriiii",IMAGES)}
+
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
     const [progress, setProgress] = useState(0)
 

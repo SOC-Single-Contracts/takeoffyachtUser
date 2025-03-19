@@ -88,6 +88,8 @@ export const BookingProvider = ({ children }) => {
     }));
   };
 
+
+
   //test
 //   useEffect(()=>{
 // console.log("bookingData",bookingData)
@@ -101,6 +103,7 @@ export const BookingProvider = ({ children }) => {
       selectedYacht,
       setSelectedYacht,
       calculateTotal,
+      setBookingData
     }}>
       {children}
     </BookingContext.Provider>

@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Copy, Mail, Phone, User, Calendar, Clock, Users, Globe, MessageSquare, Check, Clipboard, CheckCheck } from "lucide-react";
+import { Copy, Mail, Phone, User, Calendar, Clock, Users, Globe, MessageSquare, Check, Clipboard, CheckCheck, ChevronLeft, ChevronRight } from "lucide-react";
 import { useBookingContext } from "./BookingContext";
 import { parseISO, format, isValid } from "date-fns";
 import { API_BASE_URL } from "@/lib/api";
@@ -19,6 +19,9 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import Image from 'next/image';
 import { useSession } from "next-auth/react";
+import { Card } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import BookingGallery from "@/components/lp/BookingGallery";
 
 const safeFormat = (dateString, formatString, fallback = 'N/A') => {
   try {
@@ -396,7 +399,7 @@ const Summary = ({ onNext, initialBookingId }) => {
 
           <TableRow>
             <TableCell className="font-bold">Total Amount</TableCell>
-            <TableCell className="font-bold">
+            <TableCell className="font-bold text-red-500  text-lg">
               AED {totalCost.toFixed(2)}
             </TableCell>
           </TableRow>
@@ -522,7 +525,7 @@ const Summary = ({ onNext, initialBookingId }) => {
     <section>
       <div className="max-w-5xl mx-auto container px-2 space-y-6 mt-8">
         {/* Yacht Images */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {selectedYacht?.yacht?.yacht_image && (
               <div
@@ -572,7 +575,107 @@ const Summary = ({ onNext, initialBookingId }) => {
               return null;
             })}
           </div>
+        </div> */}
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-center place-items-center my-8 max-w-screen-xl mx-auto px-4">
+              {!selectedYacht || !selectedYacht?.yacht ? null : (() => {
+                const images = [
+                  selectedYacht?.yacht?.yacht_image,
+                  selectedYacht?.yacht?.image1,
+                  selectedYacht?.yacht?.image2,
+                  selectedYacht?.yacht?.image3,
+                  selectedYacht?.yacht?.image4,
+                  selectedYacht?.yacht?.image5,
+                  selectedYacht?.yacht?.image6,
+                  selectedYacht?.yacht?.image7,
+                  selectedYacht?.yacht?.image8,
+                  selectedYacht?.yacht?.image9,
+                  selectedYacht?.yacht?.image10,
+                  selectedYacht?.yacht?.image11,
+                  selectedYacht?.yacht?.image12,
+                  selectedYacht?.yacht?.image13,
+                  selectedYacht?.yacht?.image14,
+                  selectedYacht?.yacht?.image15,
+                  selectedYacht?.yacht?.image16,
+                  selectedYacht?.yacht?.image17,
+                  selectedYacht?.yacht?.image18,
+                  selectedYacht?.yacht?.image19,
+                  selectedYacht?.yacht?.image20,
+                ].filter((image) => typeof image === "string" && image.trim() !== "");
+
+                return (
+                  <Card
+                    key={selectedYacht?.yacht?.id}
+                    id={`yacht-${selectedYacht?.yacht?.id}`}
+                    className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-full md:min-h-[280px] min-h-[300px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                  >
+                    <div className="relative">
+                      <Carousel>
+                        <CarouselContent>
+                          {images.map((image, index) => (
+                            <CarouselItem key={index}>
+                              <Image
+                                src={image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : '/assets/images/fycht.jpg'}
+                                alt="not found"
+                                width={326}
+                                height={300}
+                                className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
+                                onError={(e) => {
+                                  e.target.src = '/assets/images/fycht.jpg';
+                                }}
+                              />
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
+                          <Button variant="icon" onClick={(e) => e.stopPropagation()}>
+                            <ChevronLeft />
+                          </Button>
+                        </CarouselPrevious>
+                        <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
+                          <Button variant="icon" onClick={(e) => e.stopPropagation()}>
+                            <ChevronRight />
+                          </Button>
+                        </CarouselNext>
+                        <CarouselDots yId={selectedYacht?.yacht?.id} />
+                      </Carousel>
+                    </div>
+                  </Card>
+                );
+              })()}
+            </div> */}
+        <div className="w-full">
+          {!selectedYacht || !selectedYacht?.yacht ? null : (() => {
+            const images = [
+              selectedYacht?.yacht?.yacht_image,
+              selectedYacht?.yacht?.image1,
+              selectedYacht?.yacht?.image2,
+              selectedYacht?.yacht?.image3,
+              selectedYacht?.yacht?.image4,
+              selectedYacht?.yacht?.image5,
+              selectedYacht?.yacht?.image6,
+              selectedYacht?.yacht?.image7,
+              selectedYacht?.yacht?.image8,
+              selectedYacht?.yacht?.image9,
+              selectedYacht?.yacht?.image10,
+              selectedYacht?.yacht?.image11,
+              selectedYacht?.yacht?.image12,
+              selectedYacht?.yacht?.image13,
+              selectedYacht?.yacht?.image14,
+              selectedYacht?.yacht?.image15,
+              selectedYacht?.yacht?.image16,
+              selectedYacht?.yacht?.image17,
+              selectedYacht?.yacht?.image18,
+              selectedYacht?.yacht?.image19,
+              selectedYacht?.yacht?.image20,
+            ]
+              .filter((image) => typeof image === "string" && image.trim() !== "")
+              .map((image) => `${process.env.NEXT_PUBLIC_API_URL}${image}`)
+
+            return <BookingGallery images={images} />
+          })()}
         </div>
+
+
 
         {/* Contact Details Table */}
         {/* <Table className="bg-[#F4F0E4] w-full rounded-lg">
@@ -711,6 +814,9 @@ const Summary = ({ onNext, initialBookingId }) => {
           </TableBody>
         </Table> */}
 
+
+
+        {renderPriceSummary()}
         <Table className="bg-[#F4F0E4] w-full rounded-lg">
           <TableHeader>
             <TableRow>
@@ -736,8 +842,6 @@ const Summary = ({ onNext, initialBookingId }) => {
             </TableRow>
           </TableBody>
         </Table>
-
-        {renderPriceSummary()}
 
         {bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost && (
           <div className="flex items-center justify-between bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md mb-4">
