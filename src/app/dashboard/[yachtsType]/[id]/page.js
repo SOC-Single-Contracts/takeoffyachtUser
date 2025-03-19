@@ -344,6 +344,7 @@ const YachtDetail = () => {
       return 'N/A';
     }
   };
+
 //test
   // console.log(selectedYacht)
 

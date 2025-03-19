@@ -131,7 +131,7 @@ const UserDetails = ({ onNext }) => {
         <Input
           id="phone"
           type="tel"
-          placeholder="Enter your phone number"
+          placeholder="Enter any International Number"
           required
           value={bookingData.phone}
           onChange={(e) => updateBookingData({ phone: e.target.value })}

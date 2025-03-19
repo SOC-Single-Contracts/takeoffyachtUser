@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Dot, FilterIcon, MapPin, SortAscIcon } from 'lucide-react';
 import Link from 'next/link';
-import { fetchYachts } from '@/api/yachts';
+import { fetchf1Yachts } from '@/api/yachts';
 import { useSession } from 'next-auth/react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,7 +37,7 @@ const Yachts = () => {
   const [hasMore, setHasMore] = useState(true);
   const [allowFetching, setAllowFetching] = useState(true); // Prevent API spam
     const { yachtsType} = useParams();
-    console.log("yachtsType",yachtsType)
+    // console.log("yachtsType",yachtsType)
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -281,7 +281,7 @@ const Yachts = () => {
 
   //   try {
   //     setLoading(true);
-  //     const response = await fetch('https://api.takeoffyachts.com/yacht/check_yacht/', {
+  //     const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/', {
   //       method: 'POST',
   //       headers: {
   //         'Content-Type': 'application/json',
@@ -403,7 +403,30 @@ const updateQueryParams = (filters) => {
 
     try {
       setLoading(true);
-      const response = await fetch(`https://api.takeoffyachts.com/yacht/check_yacht/?page=${page}`, {
+      let response ;
+      // if(yachtsType=="f1yachts"&& type == "reset"){
+      //   console.log("what work 1")
+      //   response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/f1-yachts/`, {
+      //     method: 'GET',
+      //     headers: {
+      //       'Content-Type': 'application/json',  
+      //     }
+      //   });
+      // }else{
+      //   console.log("what work 2")
+
+      //    response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //       "Referer": window.location.href
+  
+      //     },
+      //     body: JSON.stringify(payload),
+      //   });
+      // }
+
+      response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -412,6 +435,7 @@ const updateQueryParams = (filters) => {
         },
         body: JSON.stringify(payload),
       });
+    
 
       const responseData = await response.json();
       if (responseData.error_code === 'pass') {
@@ -583,18 +607,32 @@ const updateQueryParams = (filters) => {
 
   useEffect(() => {
     if (yachts.length > 0) {
-      setAllowFetching(false); 
+      setAllowFetching(false);
   
-      const middleIndex = Math.floor(yachts.length / 2);
-      const middleYacht = document.getElementById(`yacht-${yachts[middleIndex]?.yacht?.id}`);
+      // Save the current scroll position before new data loads
+      const previousScrollY = window.scrollY;
   
-      if (middleYacht) {
-        middleYacht.scrollIntoView({ behavior: "smooth", block: "center" });
+      requestAnimationFrame(() => {
+        // Scroll back to the saved position instantly to prevent jump
+        window.scrollTo({ top: previousScrollY, behavior: "instant" });
   
-        setTimeout(() => setAllowFetching(true), 1000);
-      }
+        setTimeout(() => {
+          const middleIndex = Math.floor(yachts.length * 0.75);
+          const middleYacht = document.getElementById(`yacht-${yachts[middleIndex]?.yacht?.id}`);
+  
+          if (middleYacht) {
+            middleYacht.scrollIntoView({ behavior: "smooth", block: "end" });
+          }
+  
+          setAllowFetching(true);
+        }, 100); // Small delay for smoother UI updates
+      });
     }
-  }, [yachts.length]); 
+  }, [yachts.length]);
+  
+  
+  
+
   // useEffect(() => {
   //   console.log("yachts", yachts);
   // }, [yachts]);
@@ -663,6 +701,9 @@ const updateQueryParams = (filters) => {
     <section className="py-4 px-2">
 
       <div className="max-w-5xl mx-auto">
+      <h1 className="text-2xl font-semibold mb-6">
+                    Listing ({yachts.length}) {yachtsType == "f1yachts" ?   "f1 yachts" : yachtsType == "yachts" ? "Regular yachts" :"" }
+                </h1>
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
 
         <div className="flex flex-col space-y-4 mb-8">
@@ -1304,7 +1345,7 @@ const updateQueryParams = (filters) => {
                           <CarouselItem key={index}>
                             <Image
                             ref={index === yachts.length - 1 ? lastYachtRef : null}
-                              src={image ? `https://api.takeoffyachts.com${image}` : '/assets/images/fycht.jpg'}
+                              src={image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : '/assets/images/fycht.jpg'}
                               alt="not found"
                               width={326}
                               height={300}

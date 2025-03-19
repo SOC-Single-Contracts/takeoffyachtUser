@@ -14,6 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { API_BASE_URL } from '@/lib/api';
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from 'next/navigation';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 
 const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`);
@@ -24,7 +25,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const router = useRouter();
   const params = useParams();
   const yachtId = params.id;
-  console.log("yachtId",yachtId)
+  // console.log("yachtId", yachtId)
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht, calculateTotal } = useBookingContext();
   const { data: session } = useSession();
@@ -33,13 +34,17 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const [cardComplete, setCardComplete] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [paymentType, setPaymentType] = useState('initial');
-  const appStatWwalletContext = 
-  typeof window !== "undefined" && localStorage.getItem("walletContext") 
-    ? JSON.parse(localStorage.getItem("walletContext")) 
-    : {};
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
-    const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
-    
+  const appStatWwalletContext =
+    typeof window !== "undefined" && localStorage.getItem("walletContext")
+      ? JSON.parse(localStorage.getItem("walletContext"))
+      : {};
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
+  const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
+  const [openAccordionCard, setOpenAccordionCard] = useState(null);
+  const [openAccordionWallet, setOpenAccordionWallet] = useState(null);
+
+
+
 
   useEffect(() => {
     const initializePaymentState = async () => {
@@ -239,7 +244,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       });
       return;
     }
-  
+
     if (!bookingData?.termsAccepted) {
       toast({
         title: "Error",
@@ -257,29 +262,29 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       });
       return;
     }
-    
-  
+
+
     setIsProcessing(true);
     setError(null);
-  
+
     try {
       console.log("Processing wallet payment...");
-  
+
       const totalAmount = calculateTotal();
       const paymentAmount = totalAmount * 0.25;
-  
+
       const endpoint = `${API_BASE_URL}/yacht/wallet/`;
-  
+
       if (!yachtId) throw new Error("Invalid Yacht ID");
-  
+
       let formattedStartingTime = "";
       if (bookingData?.startTime) {
         const date = new Date(bookingData.startTime);
         formattedStartingTime = `${String(date.getHours()).padStart(2, "0")}:${String(
           date.getMinutes()
-        ).padStart(2, "0")}:00`; 
+        ).padStart(2, "0")}:00`;
       }
-  
+
       const body = {
         booking_type: "yacht",
         yacht: yachtId,
@@ -292,11 +297,11 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         kids: bookingData?.kids || 0,
         duration_hour: bookingData?.duration || 0,
         is_partial_payment: bookingData?.isPartialPayment || false,
-        terms_accepted: true, 
+        terms_accepted: true,
         selected_date: bookingData?.date
-          ? bookingData.date.toISOString().split("T")[0] 
+          ? bookingData.date.toISOString().split("T")[0]
           : "",
-        starting_time: formattedStartingTime, 
+        starting_time: formattedStartingTime,
         per_day_price: bookingData?.perDayPrice || 0,
         food: bookingData?.food || 0,
         waterSports: bookingData?.waterSports || 0,
@@ -304,16 +309,16 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         bath: bookingData?.bath || 0,
         extras: Array.isArray(bookingData?.extras)
           ? bookingData.extras.map(extra => ({
-              id: extra?.id || "",
-              quantity: extra?.quantity || 0,
-              price: extra?.price || 0,
-              name: extra?.name || "",
-            }))
+            id: extra?.id || "",
+            quantity: extra?.quantity || 0,
+            price: extra?.price || 0,
+            name: extra?.name || "",
+          }))
           : [],
       };
-  
-      console.log("Final Payload:", JSON.stringify(body, null, 2)); 
-  
+
+      console.log("Final Payload:", JSON.stringify(body, null, 2));
+
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: {
@@ -322,21 +327,21 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         },
         body: JSON.stringify(body),
       });
-  
+
       const result = await response.json();
       console.log("API Response:", result, response);
-  
+
       if (!response.ok) throw new Error(result.error || "Payment processing failed");
-  
+
       toast({
         title: "Success! 🎉",
         description: "Payment processed successfully",
         variant: "default",
         className: "bg-green-500 text-white border-none",
       });
-  
+
       router.push("/dashboard/success");
-  
+
     } catch (error) {
       console.error("Payment error:", error);
       toast({
@@ -348,8 +353,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       setIsProcessing(false);
     }
   };
-  
-  
+
+
   return (
     <form onSubmit={handleSubmitFull} className='w-full space-y-6'>
       <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>
@@ -363,42 +368,69 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             {error}
           </div>
         )}
+        <Accordion className="space-y-4" type="single" collapsible
+          value={openAccordionCard}
+          onValueChange={(val) => setOpenAccordionCard(val || null)}
+        >
 
-        <div className='space-y-4'>
-          <div className='border rounded-md p-3'>
-            <CardElement
-              onChange={handleCardChange}
-              options={{
-                style: {
-                  base: {
-                    fontSize: '16px',
-                    color: '#424770',
-                    '::placeholder': {
-                      color: '#aab7c4',
-                    },
-                  },
-                  invalid: {
-                    color: '#9e2146',
-                  },
-                },
-                hidePostalCode: true,
-              }}
-            />
-          </div>
-          <div className="flex flex-col space-y-2">
-            <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
-              <CheckCircle className='w-3 h-3 text-green-500' />
-              You are only charged if the owner accepts.
-            </p>
-            <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
-              <CheckCircle className='w-3 h-3 text-green-500' />
-              Guaranteed response within 24 hours
-            </p>
-          </div>
-          <div className='text-xs text-gray-500 dark:text-gray-400'>
-            We accept all major credit and debit cards including Visa, Mastercard, and American Express
-          </div>
-        </div>
+          <AccordionItem className="" value="card">
+            <AccordionTrigger className="w-full flex justify-center font-medium items-center h-8 text-xs rounded-lg border-2 border-black dark:border-gray-600">
+              Pay With Card
+            </AccordionTrigger>
+            <AccordionContent className="mt-4">
+              <div className='space-y-4'>
+                <div className='border rounded-md p-3'>
+                  <CardElement
+                    onChange={handleCardChange}
+                    options={{
+                      style: {
+                        base: {
+                          fontSize: '16px',
+                          color: '#424770',
+                          '::placeholder': {
+                            color: '#aab7c4',
+                          },
+                        },
+                        invalid: {
+                          color: '#9e2146',
+                        },
+                      },
+                      hidePostalCode: true,
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
+                    <CheckCircle className='w-3 h-3 text-green-500' />
+                    You are only charged if the owner accepts.
+                  </p>
+                  <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
+                    <CheckCircle className='w-3 h-3 text-green-500' />
+                    Guaranteed response within 24 hours
+                  </p>
+                </div>
+                <div className='text-xs text-gray-500 dark:text-gray-400'>
+                  We accept all major credit and debit cards including Visa, Mastercard, and American Express
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        <Accordion className="space-y-4 mt-3" type="single" collapsible
+          value={openAccordionWallet}
+          onValueChange={(val) => setOpenAccordionWallet(val || null)}
+        >
+
+          <AccordionItem className="" value="wallet">
+            <AccordionTrigger className="w-full flex justify-center font-medium items-center h-8 text-xs rounded-lg border-2 border-black dark:border-gray-600">
+              Pay With Wallet
+            </AccordionTrigger>
+
+          </AccordionItem>
+        </Accordion>
+
+
         <div className="space-y-2 pl-1 mt-4">
           {/* {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
     <div className="flex items-center space-x-2">
@@ -470,31 +502,38 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         </div>
       </div>
 
-      <Button
-        type='submit'
-        disabled={isProcessing || !stripe || !cardComplete}
-        className='w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12'
-      >
-        {getPaymentButtonText()}
-      </Button>
+      {openAccordionCard === "card" && (
+        <div>
+          <Button
+            type="submit"
+            disabled={isProcessing || !stripe || !cardComplete}
+            className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
+          >
+            {getPaymentButtonText()}
+          </Button>
 
-      {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
-        <Button
-          onClick={() => handleSubmitPartial()}
-          disabled={isProcessing || !stripe || !cardComplete}
-          className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
-        >
-          {`Pay Partial (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
-        </Button>
-
+          {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
+            <Button
+              onClick={() => handleSubmitPartial()}
+              disabled={isProcessing || !stripe || !cardComplete}
+              className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
+            >
+              {`Pay Partial (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
+            </Button>
+          )}
+        </div>
       )}
-      <Button
+
+      {openAccordionWallet === "wallet" && (
+        <Button
           onClick={() => handlePayfromWallet()}
           disabled={isProcessing}
           className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
           {`Pay From Wallet (AED ${(calculateTotal()).toFixed(2)})`}
         </Button>
+      )}
+
     </form>
   );
 };
@@ -505,8 +544,8 @@ const Payment = () => {
   const [isPartialPayment, setIsPartialPayment] = useState(false);
   const [bookingDetails, setBookingDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-    const { toast } = useToast();
-  
+  const { toast } = useToast();
+
 
   useEffect(() => {
     updateBookingData({

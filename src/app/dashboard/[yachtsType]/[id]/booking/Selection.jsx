@@ -22,9 +22,12 @@ import { Input } from '@/components/ui/input';
 
 const Selection = ({ onNext }) => {
   const { toast } = useToast();
-  const { bookingData, updateBookingData, selectedYacht } = useBookingContext();
+  const { bookingData, updateBookingData, selectedYacht,setBookingData } = useBookingContext();
   const capacity = selectedYacht?.yacht?.capacity || 0;
-
+  const appStatBookingContext =
+  typeof window !== "undefined" && localStorage.getItem("bookingContext")
+    ? JSON.parse(localStorage.getItem("bookingContext"))
+    : {};
   const [loading, setLoading] = useState(false);
   const [availableDates, setAvailableDates] = useState([]);
   const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
@@ -125,6 +128,11 @@ const Selection = ({ onNext }) => {
     }
   }, [selectedYacht]);
 
+  // useEffect(()=>{
+  //   console.log("appStatBookingContext",appStatBookingContext)
+  //   // updateBookingData({...appStatBookingContext });
+  //   setBookingData(prev => ({ ...prev, ...appStatBookingContext }));
+  // },[appStatBookingContext])
   const handleQuantityChange = (itemId, type) => {
     setQuantities(prev => {
       const currentQty = prev[itemId] || 0;
@@ -344,6 +352,11 @@ const Selection = ({ onNext }) => {
   }
 };
 
+
+//test
+// useEffect(()=>{
+// console.log("bookingData",bookingData?.startTime)
+// },[bookingData])
 
   return (
     <>
@@ -576,7 +589,8 @@ const Selection = ({ onNext }) => {
                 <SelectContent>
                   {generateTimeSlots().map((time) => (
                     <SelectItem key={time} value={time}>
-                      {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")}
+                      {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
+                      {time} 
                     </SelectItem>
                   ))}
                 </SelectContent>

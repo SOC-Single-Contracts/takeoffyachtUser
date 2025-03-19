@@ -573,7 +573,8 @@ const Selection = ({ onNext }) => {
                 <SelectContent>
                   {generateTimeSlots().map((time) => (
                     <SelectItem key={time} value={time}>
-                      {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")}
+                      {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
+                      {time}
                     </SelectItem>
                   ))}
                 </SelectContent>
