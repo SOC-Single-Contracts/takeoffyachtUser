@@ -260,6 +260,8 @@ const Header = () => {
                         <Ship className="w-4 h-4 mr-2" />
                         Yachts
                       </Link>
+            
+                    
                       {/* </MenubarSubTrigger> */}
                       {/* <MenubarSubContent>
                         <MenubarItem>
@@ -278,6 +280,14 @@ const Header = () => {
                            href="/dashboard/yachts">New Year Eve Yachts</Link>
                         </MenubarItem>
                       </MenubarSubContent> */}
+                    </MenubarItem>
+                    <MenubarItem>
+                       <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/f1yachts">
+                        <Ship className="w-4 h-4 mr-2" />
+                        F1 Yachts
+                      </Link>
                     </MenubarItem>
                     <MenubarItem>
                       <Link
@@ -436,7 +446,7 @@ const Header = () => {
                         <Link
                       onClick={()=>setIsSheetOpen(false)}
 
-                          href="/dashboard/yachts"
+                          href="/dashboard/f1yachts"
                           className="block text-gray-700 hover:text-black dark:text-gray-300"
                         >
                           F1 Yachts
