@@ -20,7 +20,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchFilter from '@/components/lp/shared/SearchFilter';
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 const PAGE_SIZE = 10;
 const Yachts = () => {
@@ -36,6 +36,8 @@ const Yachts = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [allowFetching, setAllowFetching] = useState(true); // Prevent API spam
+    const { yachtsType} = useParams();
+    console.log("yachtsType",yachtsType)
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -355,7 +357,7 @@ const updateQueryParams = (filters) => {
         source:"simpleYacht",
         user_id: userId,
       };
-      router.push('/dashboard/yachts', { scroll: false });
+      // router.push('/dashboard/yachts', { scroll: false });
       setSelectedSortBy("default");
       setFilters(initialFilterState);
       localStorage.removeItem('yacht_filters'); 
@@ -456,7 +458,7 @@ const updateQueryParams = (filters) => {
   // Modify resetFilters function
   const resetFilters = () => {
     localStorage.removeItem('yacht_filters');
-    router.push('/dashboard/yachts', { scroll: false });
+    // router.push('/dashboard/yachts', { scroll: false });
     setFilters(initialFilterState);
     handleFilterChange("reset");
   };
