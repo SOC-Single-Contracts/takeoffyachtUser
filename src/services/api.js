@@ -33,7 +33,7 @@ export const yachtApi = {
 
   // Booking
   createBooking: async (bookingData) => {
-    
+
     // Ensure yacht_id is present and is a number
     if (!bookingData.yacht_id || isNaN(parseInt(bookingData.yacht_id))) {
       throw new Error('Invalid yacht ID');

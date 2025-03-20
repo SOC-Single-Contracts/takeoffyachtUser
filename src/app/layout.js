@@ -24,11 +24,6 @@ const jakarta = Plus_Jakarta_Sans({
 
 export default function RootLayout({ children }) {
   const [isLoading, setIsLoading] = useState(true);
-  const appStatWwalletContext =
-    typeof window !== "undefined" && localStorage.getItem("walletContext")
-      ? JSON.parse(localStorage.getItem("walletContext"))
-      : {};
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -57,11 +52,11 @@ export default function RootLayout({ children }) {
       }
     }
     if (typeof window !== "undefined") {
-      const storedData = localStorage.getItem("bookingContext");
+      const storedData = localStorage.getItem("bookingContextUser");
 
       if (!storedData) {
         const initialData = initialBookingGlobal();
-        localStorage.setItem("bookingContext", JSON.stringify(initialData));
+        localStorage.setItem("bookingContextUser", JSON.stringify(initialData));
       }
     }
 

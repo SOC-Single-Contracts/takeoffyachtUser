@@ -15,6 +15,7 @@ import { API_BASE_URL } from '@/lib/api';
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from 'next/navigation';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { handleDispatchBookingData } from '@/helper/bookingData';
 
 
 const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`);
@@ -23,9 +24,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
-  const params = useParams();
-  const yachtId = params.id;
-  // console.log("yachtId", yachtId)
+  const { id: yachtId, yachtsType } = useParams();
+  
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht, calculateTotal } = useBookingContext();
   const { data: session } = useSession();
@@ -148,9 +148,17 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       if (paymentMethodError) throw new Error(paymentMethodError.message);
 
       // Use paymentType to determine endpoint
-      const endpoint = paymentType === 'remaining'
+      let endpoint;
+      if (yachtsType == "yachts"){
+        endpoint = paymentType === 'remaining'
         ? `${API_BASE_URL}/yacht/capture-remaining-payment/${bookingData.bookingId}/`
         : `${API_BASE_URL}/yacht/capture-initial-payment/${bookingData.bookingId}/`;
+      } else if (yachtsType == "f1yachts"){
+        endpoint = paymentType === 'remaining'
+        ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+        : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+      }
+
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -168,13 +176,23 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         ? 'Remaining payment processed successfully!'
         : 'Full payment processed successfully!';
 
-      toast.success(successMessage);
+        toast({
+          title: "Success! 🎉",
+          description: successMessage,
+          variant: "default",
+          className: "bg-green-500 text-white border-none",
+        });
       router.push('/dashboard/success');
+      handleDispatchBookingData({});
 
     } catch (error) {
       console.error('Payment error:', error);
       setError(error.message);
-      toast.error(error.message || 'Payment processing failed');
+      toast({
+        title: "Error",
+        description: error.message || "Payment processing failed",
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -203,9 +221,16 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       if (paymentMethodError) throw new Error(paymentMethodError.message);
 
       // Use paymentType to determine endpoint
-      const endpoint = paymentType === 'remaining'
+      let endpoint;
+      if (yachtsType == "yachts"){
+        endpoint = paymentType === 'remaining'
         ? `${API_BASE_URL}/yacht/capture-remaining-payment/${bookingData.bookingId}/`
         : `${API_BASE_URL}/yacht/capture-initial-payment/${bookingData.bookingId}/`;
+      } else if (yachtsType == "f1yachts"){
+        endpoint = paymentType === 'remaining'
+        ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+        : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+      }
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -223,13 +248,24 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         ? 'Remaining payment processed successfully!'
         : 'Initial payment (25%) processed successfully!';
 
-      toast.success(successMessage);
+        toast({
+          title: "Success! 🎉",
+          description: successMessage,
+          variant: "default",
+          className: "bg-green-500 text-white border-none",
+        });
       router.push('/dashboard/success');
+      handleDispatchBookingData({})
+
 
     } catch (error) {
       console.error('Payment error:', error);
       setError(error.message);
-      toast.error(error.message || 'Payment processing failed');
+      toast({
+        title: "Error",
+        description: error.message || "Payment processing failed",
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -341,6 +377,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       });
 
       router.push("/dashboard/success");
+      handleDispatchBookingData({})
+
 
     } catch (error) {
       console.error("Payment error:", error);

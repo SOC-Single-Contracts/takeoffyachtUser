@@ -1,10 +1,13 @@
 "use client";
+import { useParams } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const BookingContext = createContext();
 
 export const BookingProvider = ({ children }) => {
   const [selectedYacht, setSelectedYacht] = useState(null);
+  const { id } = useParams();
+  const [appStatBookingContext, setAppStatBookingContext] = useState({});
   const [bookingData, setBookingData] = useState({
     date: new Date(),
     endDate: null,
@@ -33,7 +36,8 @@ export const BookingProvider = ({ children }) => {
     expiryYear: '',
     cvc: '',
     paymentError: null,
-    paymentProcessing: false
+    paymentProcessing: false,
+    yachtId: id,
   });
 
   const resetPaymentState = () => {
@@ -54,9 +58,9 @@ export const BookingProvider = ({ children }) => {
 
   const calculateTotal = () => {
     if (!selectedYacht?.yacht) return 0;
-    
+
     let baseTotal = 0;
-    
+
     if (bookingData.bookingType === 'hourly') {
       const basePrice = selectedYacht.yacht.per_hour_price || 0;
       const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;
@@ -70,7 +74,7 @@ export const BookingProvider = ({ children }) => {
       const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
       baseTotal = (selectedYacht.yacht.per_day_price || 0) * days;
     }
-    
+
     const extrasTotal = (bookingData.extras || []).reduce((total, item) => {
       return total + (item.price * item.quantity);
     }, 0);
@@ -88,12 +92,30 @@ export const BookingProvider = ({ children }) => {
     }));
   };
 
+  /// get appState
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const storedData = localStorage.getItem("bookingContextUser");
+  //     // console.log("Retrieved from localStorage:", storedData); // Debugging line
+  //     if (storedData) {
+  //       setAppStatBookingContext(JSON.parse(storedData));
+  //     }
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (Object.keys(appStatBookingContext).length > 0 && appStatBookingContext?.yachtId == id) {
+  //     setBookingData(prev => ({ ...prev, ...appStatBookingContext }));
+  //   } else {
+  //     setBookingData({ ...bookingData })
+  //   }
+  // }, [appStatBookingContext]);
 
 
   //test
-//   useEffect(()=>{
-// console.log("bookingData",bookingData)
-//   },[bookingData])
+  useEffect(() => {
+    console.log("bookingData", bookingData)
+  }, [bookingData])
 
   return (
     <BookingContext.Provider value={{
@@ -103,7 +125,8 @@ export const BookingProvider = ({ children }) => {
       selectedYacht,
       setSelectedYacht,
       calculateTotal,
-      setBookingData
+      setBookingData,
+      appStatBookingContext
     }}>
       {children}
     </BookingContext.Provider>

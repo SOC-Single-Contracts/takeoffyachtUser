@@ -108,7 +108,7 @@ const UserDetails = ({ onNext }) => {
           Country <span className="text-red-500">*</span>
         </Label>
         <Select 
-          value={bookingData.country}
+          value={bookingData?.country}
           onValueChange={(value) => updateBookingData({ country: value })}
         >
           <SelectTrigger className="w-full mt-1">

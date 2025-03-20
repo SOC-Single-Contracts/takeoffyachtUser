@@ -24,11 +24,12 @@ const steps = [
 
 const BookingWizardContent = ({ initialBookingId }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const { id } = useParams();
+  const { id,yachtsType } = useParams();
   const { data: session, status } = useSession();
   const { setSelectedYacht, updateBookingData } = useBookingContext();
   const router = useRouter();
   const { toast } = useToast();
+  
 
   // Authentication check
   // useEffect(() => {
@@ -45,7 +46,7 @@ const BookingWizardContent = ({ initialBookingId }) => {
   useEffect(() => {
     const getYachtDetails = async () => {
       try {
-        const yachts = await fetchYachts(1);
+        const yachts = await fetchYachts(1,yachtsType == "f1yachts" ? "f1yachts" :"regular");
         const yacht = yachts.find(
           (item) => item.yacht.id.toString() === id
         );

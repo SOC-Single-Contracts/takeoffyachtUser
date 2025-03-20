@@ -354,7 +354,8 @@ const Yachts = () => {
       // console.log("ifff simple Yacht")
 
       payload = {
-        source: "simpleYacht",
+        source:"simpleYacht",
+        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
         user_id: userId,
       };
       // router.push('/dashboard/yachts', { scroll: false });
@@ -365,7 +366,8 @@ const Yachts = () => {
       // console.log("else simple Yacht")  
       const currentFilters = type === "stored" ? getFiltersFromLocalStorage() : filters;
       payload = {
-        source: "simpleYacht",
+        source:"simpleYacht",
+        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
         user_id: userId,
         min_per_hour: currentFilters?.min_price?.toString() || "1000",
         max_per_hour: currentFilters?.max_price?.toString() || "4000",
@@ -403,30 +405,8 @@ const Yachts = () => {
 
     try {
       setLoading(true);
-      let response;
-      // if(yachtsType=="f1yachts"&& type == "reset"){
-      //   console.log("what work 1")
-      //   response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/f1-yachts/`, {
-      //     method: 'GET',
-      //     headers: {
-      //       'Content-Type': 'application/json',  
-      //     }
-      //   });
-      // }else{
-      //   console.log("what work 2")
 
-      //    response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //       "Referer": window.location.href
-
-      //     },
-      //     body: JSON.stringify(payload),
-      //   });
-      // }
-
-      response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
+     let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1306,7 +1286,7 @@ const Yachts = () => {
           {yachts.length > 0 ? (
             yachts.map((item, ind) => {
               if (!item || !item?.yacht) return null;
-              const images = [
+              let images = [
                 item?.yacht?.yacht_image,
                 item?.yacht?.image1,
                 item?.yacht?.image2,
@@ -1329,7 +1309,10 @@ const Yachts = () => {
                 item?.yacht?.image19,
                 item?.yacht?.image20,
               ].filter((image) => typeof image === "string" && image.trim() !== "");
-              // console.log("item",ind,item,images)
+              
+              if (images.length === 0) {
+                images.push("/assets/images/fycht.jpg");
+              }
 
               return (
                 <Card
@@ -1346,7 +1329,7 @@ const Yachts = () => {
                             <CarouselItem key={index}>
                               <Image
                                 ref={index === images.length - 1 ? lastYachtRef : null}
-                                src={image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : '/assets/images/fycht.jpg'}
+                                src={image ? `${process.env.NEXT_PUBLIC_S3_URL}${image}` : '/assets/images/fycht.jpg'}
                                 alt="not found"
                                 width={326}
                                 height={300}
@@ -1381,12 +1364,7 @@ const Yachts = () => {
                         </Button>
                       </CarouselNext>
                       <CarouselDots yId={item?.yacht?.id} />
-
                     </Carousel>
-                    {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
-                    {/* <div className="absolute inset-0"></div> */}
-                    {/* </Link> */}
-
                     <Button
                       variant="secondary"
                       size="icon"
@@ -1403,15 +1381,20 @@ const Yachts = () => {
                         height={20}
                       />
                     </Button>
-
-                    <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
+                    {yachtsType == "yachts" ?  <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
                       <span className="font-medium text-xs">
                         AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_hour_price}</span>
                         <span className="text-xs font-light ml-1">/Hour</span>
                       </span>
-                    </div>
+                    </div> : yachtsType == "f1yachts" ?  <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
+                      <span className="font-medium text-xs">
+                        AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_day_price}</span>
+                        <span className="text-xs font-light ml-1">/Day</span>
+                      </span>
+                    </div> :""}
+                   
                   </div>
-                  <Link href={`/dashboard/yachts/${item?.yacht?.id}`}>
+                  <Link href={`/dashboard/${yachtsType}/${item?.yacht?.id}`}>
                     <CardContent className="px-4 py-2">
                       <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
                         <MapPin className="size-3 mr-1" /> {item?.yacht?.location || "Location Not Available"}
@@ -1438,9 +1421,7 @@ const Yachts = () => {
                           <p>Cabins</p>
                           <p>{item?.yacht?.number_of_cabin || 0}</p>
                         </div>
-
                       </div>
-
                     </CardContent>
                   </Link>
                 </Card>
