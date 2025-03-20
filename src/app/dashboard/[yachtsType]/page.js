@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -180,7 +180,7 @@ const Yachts = () => {
     { name: 'Wi-Fi', icon: '/assets/images/Icon_Wi-Fi.svg' },
     { name: 'VHF', icon: '/assets/images/Icon_VHF.svg' },
     { name: 'Dinghy', icon: '/assets/images/Icon_Dinghy.svg' },
-    { name: 'Dinghy’s motor', icon: '/assets/images/Icon_Dinghysmotor.svg' },
+    { name: "Dinghy's motor", icon: '/assets/images/Icon_Dinghysmotor.svg' },
     { name: 'GPS', icon: '/assets/images/Icon_GPS.svg' }
   ];
   const extraComforts = [
@@ -356,6 +356,8 @@ const Yachts = () => {
       payload = {
         source: "simpleYacht",
         user_id: userId,
+        "YachtType": "regular"
+
       };
       // router.push('/dashboard/yachts', { scroll: false });
       setSelectedSortBy("default");
@@ -1339,53 +1341,7 @@ const Yachts = () => {
                   ref={ind === yachts.length - 3 ? lastYachtRef : null}
                 >
                   <div className="relative">
-                    <Carousel className="">
-                      <CarouselContent>
-                        {images?.filter(image => image !== null).length > 0 ? (
-                          images?.filter(image => image !== null).map((image, index) => (
-                            <CarouselItem key={index}>
-                              <Image
-                                ref={index === images.length - 1 ? lastYachtRef : null}
-                                src={image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : '/assets/images/fycht.jpg'}
-                                alt="not found"
-                                width={326}
-                                height={300}
-                                className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
-                                onError={(e) => {
-                                  e.target.src = '/assets/images/fycht.jpg';
-                                }}
-                              />
-                            </CarouselItem>
-                          ))
-                        ) : (
-                          <CarouselItem>
-                            <Image
-                              src="/assets/images/fycht.jpg"
-                              alt="fallback image"
-                              width={326}
-                              height={300}
-                              className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
-                            />
-                          </CarouselItem>
-                        )}
-
-                      </CarouselContent>
-                      <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
-                        <Button variant="icon" onClick={(e) => e.stopPropagation()}>
-                          <ChevronLeft />
-                        </Button>
-                      </CarouselPrevious>
-                      <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
-                        <Button variant="icon" onClick={(e) => e.stopPropagation()}>
-                          <ChevronRight />
-                        </Button>
-                      </CarouselNext>
-                      <CarouselDots yId={item?.yacht?.id} />
-
-                    </Carousel>
-                    {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
-                    {/* <div className="absolute inset-0"></div> */}
-                    {/* </Link> */}
+                    <CustomCarousel images={images} />
 
                     <Button
                       variant="secondary"
@@ -1484,6 +1440,59 @@ const Yachts = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+// Custom lightweight carousel component
+const CustomCarousel = ({ images }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleNext = useCallback(() => {
+    setActiveIndex((prevIndex) => (prevIndex + 1) % images.length);
+  }, [images.length]);
+
+  const handlePrevious = useCallback(() => {
+    setActiveIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+  }, [images.length]);
+
+  return (
+    <div className="relative w-full">
+      <div className="overflow-hidden rounded-3xl transition-transform duration-500 ease-in-out">
+        <Image
+          src={images[activeIndex] ? `${process.env.NEXT_PUBLIC_API_URL}${images[activeIndex]}` : "/assets/images/fycht.jpg"}
+          alt={`Image ${activeIndex + 1}`}
+          width={326}
+          height={300}
+          className="object-cover w-full h-[240px]"
+          priority={activeIndex === 0}
+          loading={activeIndex === 0 ? undefined : "lazy"}
+        />
+      </div>
+      {images.length > 1 && (
+        <>
+          <button
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full"
+            onClick={handlePrevious}
+          >
+            <ChevronLeft />
+          </button>
+          <button
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full"
+            onClick={handleNext}
+          >
+            <ChevronRight />
+          </button>
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1">
+            {images.map((_, index) => (
+              <span
+                key={index}
+                className={`w-2 h-2 rounded-full ${activeIndex === index ? "bg-primary" : "bg-gray-300"}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 
