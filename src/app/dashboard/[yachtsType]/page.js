@@ -37,6 +37,7 @@ const Yachts = () => {
   const [hasMore, setHasMore] = useState(true);
   const [allowFetching, setAllowFetching] = useState(true); // Prevent API spam
   const { yachtsType } = useParams();
+  const [showSkeleton, setShowSkeleton] = useState(false);
   // console.log("yachtsType",yachtsType)
   const [filters, setFilters] = useState({
     min_price: 1000,
@@ -180,7 +181,7 @@ const Yachts = () => {
     { name: 'Wi-Fi', icon: '/assets/images/Icon_Wi-Fi.svg' },
     { name: 'VHF', icon: '/assets/images/Icon_VHF.svg' },
     { name: 'Dinghy', icon: '/assets/images/Icon_Dinghy.svg' },
-    { name: 'Dinghy’s motor', icon: '/assets/images/Icon_Dinghysmotor.svg' },
+    { name: "Dinghy's motor", icon: '/assets/images/Icon_Dinghysmotor.svg' },
     { name: 'GPS', icon: '/assets/images/Icon_GPS.svg' }
   ];
   const extraComforts = [
@@ -250,59 +251,6 @@ const Yachts = () => {
 
     // loadWishlist();
   }, [userId]);
-
-  // const handleFilterChange = async () => {
-  //   if (!userId) return;
-
-  //   const payload = {
-  //       user_id: userId,
-  //       min_price: filters.min_price.toString(),
-  //       max_price: filters.max_price.toString(),
-  //       guest: filters.max_guest,
-  //       sleep_capacity: filters.sleep_capacity,
-  //       number_of_cabin: filters.number_of_cabin,
-  //       categories: JSON.stringify(filters.category_name),
-  //       features: JSON.stringify(filters.amenities.concat(
-  //           filters.outdoor_equipment,
-  //           filters.kitchen,
-  //           filters.energy,
-  //           filters.leisure,
-  //           filters.navigation,
-  //           filters.extra_comforts,
-  //           filters.indoor
-  //       )),
-  //       price_asc: filters.price_asc,
-  //       price_des: filters.price_des,
-  //       cabin_asc: filters.cabin_asc,
-  //       cabin_des: filters.cabin_des,
-  //       created_on: filters.created_on,
-  //       location: filters.location,
-  //   };
-
-  //   try {
-  //     setLoading(true);
-  //     const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
-
-  //     const responseData = await response.json();
-  //     if (responseData.error_code === 'pass') {
-  //       setYachts(responseData.data || []);
-  //     } else {
-  //       setError(responseData.error || 'Failed to apply filters');
-  //       console.error('API Error:', responseData.error);
-  //     }
-  //   } catch (err) {
-  //     setError(err.message || 'Error applying filters');
-  //     console.error('Filter error:', err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const saveFiltersToLocalStorage = (filters) => {
     localStorage.setItem('yacht_filters', JSON.stringify(filters));
@@ -591,7 +539,12 @@ const Yachts = () => {
             console.log("Fetching Next Page...");
             setAllowFetching(false);
             setPage((prevPage) => prevPage + 1);
-            setTimeout(() => setAllowFetching(true), 1000); // Delay to avoid multiple rapid requests
+            setTimeout(() => {
+
+              setAllowFetching(true)
+              // setShowSkeleton(true)
+          }, 1000); // Delay to avoid multiple rapid requests
+          // setShowSkeleton(false) 
           }
         },
         {
@@ -691,16 +644,15 @@ const Yachts = () => {
 
   return (
     <section className="py-4 px-2">
-
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-semibold mb-6">
-          Listing ({yachts.length}) {yachtsType == "f1yachts" ? "f1 yachts" : yachtsType == "yachts" ? "Regular yachts" : ""}
+          Listing ({yachts.length}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
         </h1>
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
 
         <div className="flex flex-col space-y-4 mb-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center  w-full gap-2 flex-wrap">
+            <div className="flex items-center w-full gap-2 flex-wrap">
               <Sheet>
                 <div className="flex justify-between w-full">
                   <SheetTrigger asChild>
@@ -1295,184 +1247,178 @@ const Yachts = () => {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
-          {yachts.length > 0 ? (
-            yachts.map((item, ind) => {
-              if (!item || !item?.yacht) return null;
-              const images = [
-                item?.yacht?.yacht_image,
-                item?.yacht?.image1,
-                item?.yacht?.image2,
-                item?.yacht?.image3,
-                item?.yacht?.image4,
-                item?.yacht?.image5,
-                item?.yacht?.image6,
-                item?.yacht?.image7,
-                item?.yacht?.image8,
-                item?.yacht?.image9,
-                item?.yacht?.image10,
-                item?.yacht?.image11,
-                item?.yacht?.image12,
-                item?.yacht?.image13,
-                item?.yacht?.image14,
-                item?.yacht?.image15,
-                item?.yacht?.image16,
-                item?.yacht?.image17,
-                item?.yacht?.image18,
-                item?.yacht?.image19,
-                item?.yacht?.image20,
-              ].filter((image) => typeof image === "string" && image.trim() !== "");
-              // console.log("item",ind,item,images)
+          {showSkeleton ? (
+            // Render skeleton UI
+            Array.from({ length: 9 }).map((_, index) => (
+              <Card
+                key={`skeleton-${index}`}
+                className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
+              >
+                <div className="relative">
+                  <div className="bg-gray-200 dark:bg-gray-700 w-full h-[221px] rounded-t-2xl"></div>
+                  <div className="absolute top-6 right-6 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                  <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+                </div>
 
-              return (
-                <Card
-                  key={item?.yacht?.id}
-                  id={`yacht-${item?.yacht?.id}`}
-                  className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-full md:min-h-[280px] min-h-[300px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
-                  ref={ind === yachts.length - 1 ? lastYachtRef : null}
-                >
-                  <div className="relative">
-                    <Carousel className="">
-                      <CarouselContent>
-                        {images?.filter(image => image !== null).length > 0 ? (
-                          images?.filter(image => image !== null).map((image, index) => (
-                            <CarouselItem key={index}>
+                <CardContent className="px-4 py-4 space-y-3">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
+                  <div className="flex justify-start items-center gap-2">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            yachts.length > 0 ? (
+              yachts.map((item, ind) => {
+                if (!item || !item?.yacht) return null;
+                const images = [
+                  item?.yacht?.yacht_image,
+                  item?.yacht?.image1,
+                  item?.yacht?.image2,
+                  item?.yacht?.image3,
+                  item?.yacht?.image4,
+                  item?.yacht?.image5,
+                  item?.yacht?.image6,
+                  item?.yacht?.image7,
+                  item?.yacht?.image8,
+                  item?.yacht?.image9,
+                  item?.yacht?.image10,
+                  item?.yacht?.image11,
+                  item?.yacht?.image12,
+                  item?.yacht?.image13,
+                  item?.yacht?.image14,
+                  item?.yacht?.image15,
+                  item?.yacht?.image16,
+                  item?.yacht?.image17,
+                  item?.yacht?.image18,
+                  item?.yacht?.image19,
+                  item?.yacht?.image20,
+                ].filter((image) => typeof image === "string" && image.trim() !== "");
+
+                return (
+                  <Card
+                    key={item?.yacht?.id}
+                    id={`yacht-${item?.yacht?.id}`}
+                    className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-full md:min-h-[280px] min-h-[300px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                    ref={ind === yachts.length - 1 ? lastYachtRef : null}
+                  >
+                    <div className="relative">
+                      <Carousel className="">
+                        <CarouselContent>
+                          {images.length > 0 ? (
+                            images.map((image, index) => (
+                              <CarouselItem key={index}>
+                                <Image
+                                  src={image ? `https://images-yacht.s3.us-east-1.amazonaws.com${image}` : '/assets/images/fycht.jpg'}
+                                  alt="not found"
+                                  width={326}
+                                  height={300}
+                                  className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
+                                  onError={(e) => {
+                                    e.target.src = '/assets/images/fycht.jpg';
+                                  }}
+                                />
+                              </CarouselItem>
+                            ))
+                          ) : (
+                            <CarouselItem>
                               <Image
-                                ref={index === images.length - 1 ? lastYachtRef : null}
-                                src={image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : '/assets/images/fycht.jpg'}
-                                alt="not found"
+                                src="/assets/images/fycht.jpg"
+                                alt="fallback image"
                                 width={326}
                                 height={300}
                                 className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
-                                onError={(e) => {
-                                  e.target.src = '/assets/images/fycht.jpg';
-                                }}
                               />
                             </CarouselItem>
-                          ))
-                        ) : (
-                          <CarouselItem>
-                            <Image
-                              src="/assets/images/fycht.jpg"
-                              alt="fallback image"
-                              width={326}
-                              height={300}
-                              className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
-                            />
-                          </CarouselItem>
-                        )}
+                          )}
+                        </CarouselContent>
+                        <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
+                          <Button variant="icon" onClick={(e) => e.stopPropagation()}>
+                            <ChevronLeft />
+                          </Button>
+                        </CarouselPrevious>
+                        <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
+                          <Button variant="icon" onClick={(e) => e.stopPropagation()}>
+                            <ChevronRight />
+                          </Button>
+                        </CarouselNext>
+                        <CarouselDots yId={item?.yacht?.id} />
+                      </Carousel>
 
-                      </CarouselContent>
-                      <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
-                        <Button variant="icon" onClick={(e) => e.stopPropagation()}>
-                          <ChevronLeft />
-                        </Button>
-                      </CarouselPrevious>
-                      <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
-                        <Button variant="icon" onClick={(e) => e.stopPropagation()}>
-                          <ChevronRight />
-                        </Button>
-                      </CarouselNext>
-                      <CarouselDots yId={item?.yacht?.id} />
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
+                        onClick={() => handleWishlistToggle(item?.yacht?.id)}
+                      >
+                        <Image
+                          src={favorites.has(item?.yacht?.id)
+                            ? "/assets/images/wishlist.svg"
+                            : "/assets/images/unwishlist.svg"
+                          }
+                          alt="wishlist"
+                          width={20}
+                          height={20}
+                        />
+                      </Button>
 
-                    </Carousel>
-                    {/* <Link href={`/dashboard/yachts/${item?.yacht?.id}`}> */}
-                    {/* <div className="absolute inset-0"></div> */}
-                    {/* </Link> */}
-
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
-                      onClick={() => handleWishlistToggle(item?.yacht?.id)}
-                    >
-                      <Image
-                        src={favorites.has(item?.yacht?.id)
-                          ? "/assets/images/wishlist.svg"
-                          : "/assets/images/unwishlist.svg"
-                        }
-                        alt="wishlist"
-                        width={20}
-                        height={20}
-                      />
-                    </Button>
-
-                    <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
-                      <span className="font-medium text-xs">
-                        AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_hour_price}</span>
-                        <span className="text-xs font-light ml-1">/Hour</span>
-                      </span>
-                    </div>
-                  </div>
-                  <Link href={`/dashboard/yachts/${item?.yacht?.id}`}>
-                    <CardContent className="px-4 py-2">
-                      <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
-                        <MapPin className="size-3 mr-1" /> {item?.yacht?.location || "Location Not Available"}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item?.yacht?.name}</h3>
+                      <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
                         <span className="font-medium text-xs">
-                          AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_day_price}</span>
-                          <span className="text-xs font-light ml-1">/Day</span>
+                          AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_hour_price}</span>
+                          <span className="text-xs font-light ml-1">/Hour</span>
                         </span>
                       </div>
-                      <div className="flex justify-start items-center gap-1 flex-wrap">
-                        <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
-                        <p className="font-semibold text-xs">{item?.yacht?.length || 0} ft</p>
-                        <Dot />
-                        <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                          <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
-                          <p>Guests</p>
-                          <p>{item?.yacht?.guest || 0}</p>
+                    </div>
+                    <Link href={`/dashboard/yachts/${item?.yacht?.id}`}>
+                      <CardContent className="px-4 py-2">
+                        <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
+                          <MapPin className="size-3 mr-1" /> {item?.yacht?.location || "Location Not Available"}
+                        </p>
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item?.yacht?.name}</h3>
+                          <span className="font-medium text-xs">
+                            AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_day_price}</span>
+                            <span className="text-xs font-light ml-1">/Day</span>
+                          </span>
                         </div>
-                        <Dot />
-                        <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                          <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
-                          <p>Cabins</p>
-                          <p>{item?.yacht?.number_of_cabin || 0}</p>
+                        <div className="flex justify-start items-center gap-1 flex-wrap">
+                          <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
+                          <p className="font-semibold text-xs">{item?.yacht?.length || 0} ft</p>
+                          <Dot />
+                          <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                            <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
+                            <p>Guests</p>
+                            <p>{item?.yacht?.guest || 0}</p>
+                          </div>
+                          <Dot />
+                          <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                            <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
+                            <p>Cabins</p>
+                            <p>{item?.yacht?.number_of_cabin || 0}</p>
+                          </div>
                         </div>
-
-                      </div>
-
-                    </CardContent>
-                  </Link>
-                </Card>
-              )
-            })
-          ) : (
-            <div className="col-span-full flex flex-col items-center justify-center py-12">
-              <p className="text-gray-500 text-lg mb-4">No yachts found</p>
-              <Button
-                variant="outline"
-                onClick={resetFilters}
-                className="gap-2"
-              >
-                <X className="h-4 w-4" />
-                Reset Filters
-              </Button>
-            </div>
-          )}
-
-          {loading && Array.from({ length: 10 }).map((_, index) => (
-            <Card
-              key={index}
-              className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
-            >
-              <div className="relative">
-                <div className="bg-gray-200 dark:bg-gray-700 w-full h-[221px] rounded-t-2xl"></div>
-                <div className="absolute top-6 right-6 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+                      </CardContent>
+                    </Link>
+                  </Card>
+                );
+              })
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-12">
+                <p className="text-gray-500 text-lg mb-4">No yachts found</p>
+                <Button
+                  variant="outline"
+                  onClick={resetFilters}
+                  className="gap-2"
+                >
+                  <X className="h-4 w-4" />
+                  Reset Filters
+                </Button>
               </div>
-
-              <CardContent className="px-4 py-4 space-y-3">
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
-                <div className="flex justify-start items-center gap-2">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+            )
+          )}
         </div>
       </div>
     </section>
