@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -27,6 +27,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
   const [cardComplete, setCardComplete] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [paymentType, setPaymentType] = useState('initial');
+  const {  yachtsType } = useParams();
 
   useEffect(() => {
     const initializePaymentState = async () => {
@@ -131,9 +132,16 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
       if (paymentMethodError) throw new Error(paymentMethodError.message);
 
       // Use paymentType to determine endpoint
-      const endpoint = paymentType === 'remaining'
+      let endpoint;
+      if (yachtsType == "yachts"){
+        endpoint = paymentType === 'remaining'
         ? `${API_BASE_URL}/yacht/capture-remaining-payment/${bookingData.bookingId}/`
         : `${API_BASE_URL}/yacht/capture-initial-payment/${bookingData.bookingId}/`;
+      } else if (yachtsType == "f1yachts"){
+        endpoint = paymentType === 'remaining'
+        ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+        : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+      }
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -186,9 +194,16 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
       if (paymentMethodError) throw new Error(paymentMethodError.message);
 
       // Use paymentType to determine endpoint
-      const endpoint = paymentType === 'remaining'
+      let endpoint;
+      if (yachtsType == "yachts"){
+        endpoint = paymentType === 'remaining'
         ? `${API_BASE_URL}/yacht/capture-remaining-payment/${bookingData.bookingId}/`
         : `${API_BASE_URL}/yacht/capture-initial-payment/${bookingData.bookingId}/`;
+      } else if (yachtsType == "f1yachts"){
+        endpoint = paymentType === 'remaining'
+        ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+        : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+      }
 
       const response = await fetch(endpoint, {
         method: 'POST',

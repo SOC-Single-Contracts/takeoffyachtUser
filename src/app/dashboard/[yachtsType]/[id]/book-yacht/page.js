@@ -13,11 +13,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 const BookYacht = () => {
     const [date, setDate] = useState(new Date())
     const [startTime, setStartTime] = useState(new Date())
-
+    const { yachtsType} = useParams();
     const [duration, setDuration] = useState(3)
 
     const [adults, setAdults] = useState(0)
@@ -375,7 +376,7 @@ const BookYacht = () => {
                             I agree to terms & conditions
                         </Label>
                     </div>
-                    <Link className="w-full" href={`/dashboard/yachts/${id}/booking-details`}>
+                    <Link className="w-full" href={`/dashboard/${yachtsType}/${id}/booking-details`}>
                         <Button className='bg-[#BEA355] text-white rounded-full w-full h-10'>Continue</Button>
                     </Link>
                 </div>

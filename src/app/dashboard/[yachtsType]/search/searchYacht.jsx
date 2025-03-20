@@ -22,7 +22,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchResults from './mainSearch';
 import { Loading } from '@/components/ui/loading';
 import YachtCard from '@/components/yachts/YachtCard';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import EmptySearch from '@/components/shared/EmptySearch';
 import yachtApi from '@/services/api';
 import { format } from 'date-fns';
@@ -38,6 +38,7 @@ const SearchYacht = () => {
     const [originalYachts, setOriginalYachts] = useState([]);
     const [startFilterWork, setStartFilterWork] = useState(false)
     const [onCancelEachFilter, setonCancelEachFilter] = useState(false);
+        const { yachtsType} = useParams();
     const [filters, setFilters] = useState({
         min_price: 1000,
         max_price: 4000,
@@ -253,12 +254,14 @@ const SearchYacht = () => {
         if (!userId) return;
 
         let payload = {
+            YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
             user_id: session?.user?.userid || 1,
             guest: parseInt(searchParams.get('guests')) || 1,
             location: searchParams.get('location'),
             capacity: parseInt(searchParams.get('guests')) || 1,
             name: searchParams.get('name') || "",
             created_on: searchParams.get('date') || "",
+            
         };
         if (type == "reset&FirstRender") {
             console.log("ifff")
@@ -455,7 +458,7 @@ const SearchYacht = () => {
     }, [originalYachts]);
     //test
     // useEffect(() => {
-    //     console.log("yachts", yachts, error);
+    //     console.log("yachts", yachts);
     // }, [yachts]);
 
 

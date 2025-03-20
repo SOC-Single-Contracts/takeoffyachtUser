@@ -17,7 +17,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { MapPin, Calendar as CalendarIcon, Users, Search, X } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import yachtApi from '@/services/api';
 import { format } from 'date-fns';
@@ -40,6 +40,8 @@ const SearchFilter = () => {
     from: null,
     to: null
   });
+      const { yachtsType} = useParams();
+
   const [guests, setGuests] = useState({
     // adults: 1,
     // children: 0,
@@ -65,7 +67,7 @@ const SearchFilter = () => {
         let locationResults;
         switch (activeMainTab) {
           case 'yachts':
-            locationResults = await yachtApi.checkYachts({ user_id: session?.user?.userid || 1 });
+            locationResults = await yachtApi.checkYachts({ user_id: session?.user?.userid || 1  });
             // For yachts, extract location and yacht_image from the nested yacht object
             if (locationResults?.data) {
               const transformedLocations = locationResults.data
@@ -176,11 +178,14 @@ const SearchFilter = () => {
         user_id: session?.user?.userid || 1,
         starting_date: formattedStartDate,
         ending_date: formattedEndDate,
+        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
+
       };
 
       let searchResults;
       let searchPath;
 
+      // {console.log("activeMainTab",activeMainTab)}
       switch (activeMainTab) {
         case 'yachts':
           const yachtParams = {
@@ -194,16 +199,22 @@ const SearchFilter = () => {
             price_asc: false,
             cabin_des: false,
             cabin_asc: true,
-            name: searchByName
+            name: searchByName,
+        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
+
+             
           };
           searchResults = await yachtApi.checkYachts(yachtParams);
-          searchPath = '/dashboard/yachts/search';
+          searchPath = `/dashboard/${yachtsType}/search`;
           break;
 
         case 'experiences':
           const experienceParams = {
             ...baseParams,
-            name: searchByName
+            name: searchByName,
+        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
+
+
           };
           searchResults = await yachtApi.checkExperiences(experienceParams);
           searchPath = '/dashboard/experience/search';
@@ -212,7 +223,9 @@ const SearchFilter = () => {
         case 'events':
           const eventParams = {
             user_id: session?.user?.userid || 1,
-            name: searchByName
+            name: searchByName,
+        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
+
           };
           searchResults = await yachtApi.checkEvents(eventParams);
           searchPath = '/dashboard/events/search';

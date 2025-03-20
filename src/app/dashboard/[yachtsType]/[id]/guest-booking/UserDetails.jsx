@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useParams } from 'next/navigation';
 
 const UserDetails = ({ onNext }) => {
-  const { id: yachtId } = useParams();
+  const { id: yachtId,yachtsType } = useParams();
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht } = useBookingContext();
   const [loading, setLoading] = useState(false);
@@ -44,111 +44,221 @@ const UserDetails = ({ onNext }) => {
     setLoading(true);
 
     try {
-      const requiredFields = ['fullName', 'email', 'phone', 'country'];
-      const missingFields = requiredFields.filter(field => !bookingData[field]);
+      if(yachtsType == "yachts"){
 
-      if (missingFields.length > 0) {
-        toast({
-          title: "Validation Error",
-          description: `Please fill in all required fields: ${missingFields.join(', ')}`,
-          variant: "destructive",
+        const requiredFields = ['fullName', 'email', 'phone', 'country'];
+        const missingFields = requiredFields.filter(field => !bookingData[field]);
+  
+        if (missingFields.length > 0) {
+          toast({
+            title: "Validation Error",
+            description: `Please fill in all required fields: ${missingFields.join(', ')}`,
+            variant: "destructive",
+          });
+          return;
+        }
+    
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(bookingData.email)) {
+          toast({
+            title: "Validation Error",
+            description: 'Please enter a valid email address',
+            variant: "destructive",
+          });
+          return;
+        }
+    
+        const phoneRegex = /^\+?[\d\s-]{8,}$/;
+        if (!phoneRegex.test(bookingData.phone)) {
+          toast({
+            title: "Validation Error",
+            description: 'Please enter a valid phone number',
+            variant: "destructive",
+          });
+          return;
+        }
+  
+        // const formattedDate = format(bookingData.date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        const formattedDate = format(bookingData.date, "yyyy-MM-dd");
+        const formattedEndDate = bookingData.endDate ? format(bookingData.endDate, "yyyy-MM-dd") : null;
+        const formattedTime = format(bookingData.startTime, 'HH:mm');
+  
+        const formattedExtras = bookingData.extras.map(extra => ({
+          ...extra,
+          id: extra.id
+        }));  
+  
+        const bookingPayload = {
+          yacht: yachtId,
+          full_name: bookingData.fullName,
+          email: bookingData.email,
+          phone_number: bookingData.phone,
+          country: countriesList.find(c => c.code === bookingData.country)?.name || bookingData.country,
+          message: bookingData.message || "",
+          adults: bookingData.adults,
+          kids: bookingData.kids,
+          // duration_hour: bookingData.bookingType === 'hourly' ? bookingData.duration : null,
+          duration_hour: bookingData.bookingType === 'date_range' ? 0 : bookingData.duration,
+          is_partial_payment: bookingData.isPartialPayment || false,
+          terms_accepted: bookingData.termsAccepted || true,
+          // selected_date: bookingData.date.toISOString(),
+          selected_date: formattedDate,
+          end_date: formattedEndDate,
+          booking_type: bookingData.bookingType || 'hourly',
+          // starting_time: format(bookingData.startTime, 'HH:mm'),
+          starting_time: formattedTime,
+          per_day_price: bookingData.bookingType === 'date_range' ? selectedYacht?.yacht?.per_day_price || 0 : 0,
+          food: 0,
+          waterSports: 0,
+          misc: 0,
+          bath: 0,
+          // extras: bookingData.extras ? Object.entries(bookingData.extras).map(([id, { quantity, price, name }]) => ({
+          //   id,
+          //   quantity,
+          //   price,
+          //   name,
+          // })) : [],
+          extras: formattedExtras
+        };
+  
+        if (!yachtId) {
+          toast.error('Yacht ID is missing. Please select a yacht.');
+          return;
+        }
+    
+        // Send POST request
+        const response = await fetch(`${API_BASE_URL}/yacht/yacht_booking/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(bookingPayload),
         });
-        return;
-      }
+    
+        if (!response.ok) {
+          const errorResult = await response.json(); // Parse the error response
+          throw new Error(errorResult.error || 'Failed to create booking');
+        }
+    
+        const result = await response.json();
+        // toast({
+        //   title: "Temporary Booking Created",
+        //   description: `Your temporary booking has been created. Your booking id is ${result.booking_id} Move forward to payment.`,
+        //   variant: "success",
+        // });
   
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(bookingData.email)) {
-        toast({
-          title: "Validation Error",
-          description: 'Please enter a valid email address',
-          variant: "destructive",
+        // Update booking context with booking ID
+        updateBookingData({ bookingId: result.booking_id });
+  
+        onNext();
+      }else if(yachtsType == "f1yachts"){
+        const requiredFields = ['fullName', 'email', 'phone', 'country'];
+        const missingFields = requiredFields.filter(field => !bookingData[field]);
+  
+        if (missingFields.length > 0) {
+          toast({
+            title: "Validation Error",
+            description: `Please fill in all required fields: ${missingFields.join(', ')}`,
+            variant: "destructive",
+          });
+          return;
+        }
+    
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(bookingData.email)) {
+          toast({
+            title: "Validation Error",
+            description: 'Please enter a valid email address',
+            variant: "destructive",
+          });
+          return;
+        }
+    
+        const phoneRegex = /^\+?[\d\s-]{8,}$/;
+        if (!phoneRegex.test(bookingData.phone)) {
+          toast({
+            title: "Validation Error",
+            description: 'Please enter a valid phone number',
+            variant: "destructive",
+          });
+          return;
+        }
+  
+        // const formattedDate = format(bookingData.date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        const formattedDate = format(bookingData.date, "yyyy-MM-dd");
+        const formattedEndDate = bookingData.endDate ? format(bookingData.endDate, "yyyy-MM-dd") : null;
+        const formattedTime = format(bookingData.startTime, 'HH:mm');
+  
+        const formattedExtras = bookingData.extras.map(extra => ({
+          ...extra,
+          id: extra.id
+        }));  
+  
+        const bookingPayload = {
+          f1_yacht_id: yachtId,
+          full_name: bookingData.fullName,
+          email: bookingData.email,
+          phone_number: bookingData.phone,
+          country: countriesList.find(c => c.code === bookingData.country)?.name || bookingData.country,
+          message: bookingData.message || "",
+          adults: bookingData.adults,
+          kids: bookingData.kids,
+          // duration_hour: bookingData.bookingType === 'hourly' ? bookingData.duration : null,
+          duration_hour: bookingData.bookingType === 'date_range' ? 0 : bookingData.duration,
+          is_partial_payment: bookingData.isPartialPayment || false,
+          terms_accepted: bookingData.termsAccepted || true,
+          // selected_date: bookingData.date.toISOString(),
+          start_date: formattedDate,
+          end_date: formattedEndDate,
+          booking_type: bookingData.bookingType || 'hourly',
+          // starting_time: format(bookingData.startTime, 'HH:mm'),
+          starting_time: formattedTime,
+          per_day_price: bookingData.bookingType === 'date_range' ? selectedYacht?.yacht?.per_day_price || 0 : 0,
+          food: 0,
+          waterSports: 0,
+          misc: 0,
+          bath: 0,
+          // extras: bookingData.extras ? Object.entries(bookingData.extras).map(([id, { quantity, price, name }]) => ({
+          //   id,
+          //   quantity,
+          //   price,
+          //   name,
+          // })) : [],
+          extras: formattedExtras
+        };
+  
+        if (!yachtId) {
+          toast.error('Yacht ID is missing. Please select a yacht.');
+          return;
+        }
+    
+        // Send POST request
+        const response = await fetch(`${API_BASE_URL}/yacht/f1-yachts_booking/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(bookingPayload),
         });
-        return;
-      }
+    
+        if (!response.ok) {
+          const errorResult = await response.json(); // Parse the error response
+          throw new Error(errorResult.error || 'Failed to create booking');
+        }
+    
+        const result = await response.json();
+        // toast({
+        //   title: "Temporary Booking Created",
+        //   description: `Your temporary booking has been created. Your booking id is ${result.booking_id} Move forward to payment.`,
+        //   variant: "success",
+        // });
   
-      const phoneRegex = /^\+?[\d\s-]{8,}$/;
-      if (!phoneRegex.test(bookingData.phone)) {
-        toast({
-          title: "Validation Error",
-          description: 'Please enter a valid phone number',
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // const formattedDate = format(bookingData.date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-      const formattedDate = format(bookingData.date, "yyyy-MM-dd");
-      const formattedEndDate = bookingData.endDate ? format(bookingData.endDate, "yyyy-MM-dd") : null;
-      const formattedTime = format(bookingData.startTime, 'HH:mm');
-
-      const formattedExtras = bookingData.extras.map(extra => ({
-        ...extra,
-        id: extra.id
-      }));  
-
-      const bookingPayload = {
-        yacht: yachtId,
-        full_name: bookingData.fullName,
-        email: bookingData.email,
-        phone_number: bookingData.phone,
-        country: countriesList.find(c => c.code === bookingData.country)?.name || bookingData.country,
-        message: bookingData.message || "",
-        adults: bookingData.adults,
-        kids: bookingData.kids,
-        // duration_hour: bookingData.bookingType === 'hourly' ? bookingData.duration : null,
-        duration_hour: bookingData.bookingType === 'date_range' ? 0 : bookingData.duration,
-        is_partial_payment: bookingData.isPartialPayment || false,
-        terms_accepted: bookingData.termsAccepted || true,
-        // selected_date: bookingData.date.toISOString(),
-        selected_date: formattedDate,
-        end_date: formattedEndDate,
-        booking_type: bookingData.bookingType || 'hourly',
-        // starting_time: format(bookingData.startTime, 'HH:mm'),
-        starting_time: formattedTime,
-        per_day_price: bookingData.bookingType === 'date_range' ? selectedYacht?.yacht?.per_day_price || 0 : 0,
-        food: 0,
-        waterSports: 0,
-        misc: 0,
-        bath: 0,
-        // extras: bookingData.extras ? Object.entries(bookingData.extras).map(([id, { quantity, price, name }]) => ({
-        //   id,
-        //   quantity,
-        //   price,
-        //   name,
-        // })) : [],
-        extras: formattedExtras
-      };
-
-      if (!yachtId) {
-        toast.error('Yacht ID is missing. Please select a yacht.');
-        return;
-      }
+        // Update booking context with booking ID
+        updateBookingData({ bookingId: result.booking_id });
   
-      // Send POST request
-      const response = await fetch(`${API_BASE_URL}/yacht/yacht_booking/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingPayload),
-      });
-  
-      if (!response.ok) {
-        const errorResult = await response.json(); // Parse the error response
-        throw new Error(errorResult.error || 'Failed to create booking');
+        onNext();
       }
-  
-      const result = await response.json();
-      // toast({
-      //   title: "Temporary Booking Created",
-      //   description: `Your temporary booking has been created. Your booking id is ${result.booking_id} Move forward to payment.`,
-      //   variant: "success",
-      // });
-
-      // Update booking context with booking ID
-      updateBookingData({ bookingId: result.booking_id });
-
-      onNext();
+ 
     } catch (error) {
       console.error('Error:', error);
       toast({
