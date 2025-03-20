@@ -582,7 +582,7 @@ const updateQueryParams = (filters) => {
 
   const lastYachtRef = useCallback(
     (node) => {
-      if (loading || !hasMore || !allowFetching) return;
+      if ( !hasMore || !allowFetching) return;
   
       if (observer.current) observer.current.disconnect();
   
@@ -601,7 +601,7 @@ const updateQueryParams = (filters) => {
   
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore, allowFetching]
+    [ hasMore, allowFetching]
   );
   
 
@@ -641,51 +641,51 @@ const updateQueryParams = (filters) => {
   // }, [filters]);
 
 
-  if (loading) {
-    return (
-      <section className="md:py-20 py-8">
-        <div className="max-w-5xl px-4 mx-auto">
-          {/* Heading Skeleton */}
-          <div className="w-full flex items-center justify-between mb-8">
-            <div className="h-10 bg-gray-200 dark:bg-gray-700 w-1/3 rounded-md animate-pulse"></div>
-          </div>
+  // if (loading) {
+  //   return (
+  //     <section className="md:py-20 py-8">
+  //       <div className="max-w-5xl px-4 mx-auto">
+  //         {/* Heading Skeleton */}
+  //         <div className="w-full flex items-center justify-between mb-8">
+  //           <div className="h-10 bg-gray-200 dark:bg-gray-700 w-1/3 rounded-md animate-pulse"></div>
+  //         </div>
 
-          {/* Cards Grid Skeleton */}
-          <div className="grid grid-cols-1 gap-[0.6rem] xs:grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 place-items-center">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <Card
-                key={index}
-                className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
-              >
-                <div className="relative">
-                  {/* Image Skeleton */}
-                  <div className="bg-gray-200 dark:bg-gray-700 w-full h-[221px] rounded-t-2xl"></div>
+  //         {/* Cards Grid Skeleton */}
+  //         <div className="grid grid-cols-1 gap-[0.6rem] xs:grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 place-items-center">
+  //           {Array.from({ length: 6 }).map((_, index) => (
+  //             <Card
+  //               key={index}
+  //               className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
+  //             >
+  //               <div className="relative">
+  //                 {/* Image Skeleton */}
+  //                 <div className="bg-gray-200 dark:bg-gray-700 w-full h-[221px] rounded-t-2xl"></div>
 
-                  {/* Wishlist Button Skeleton */}
-                  <div className="absolute top-6 right-6 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+  //                 {/* Wishlist Button Skeleton */}
+  //                 <div className="absolute top-6 right-6 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
 
-                  {/* Price Skeleton */}
-                  <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
-                </div>
+  //                 {/* Price Skeleton */}
+  //                 <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+  //               </div>
 
-                <CardContent className="px-4 py-4 space-y-3">
-                  {/* Yacht Name Skeleton */}
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
+  //               <CardContent className="px-4 py-4 space-y-3">
+  //                 {/* Yacht Name Skeleton */}
+  //                 <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
 
-                  {/* Specs Skeleton */}
-                  <div className="flex justify-start items-center gap-2">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
+  //                 {/* Specs Skeleton */}
+  //                 <div className="flex justify-start items-center gap-2">
+  //                   <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+  //                   <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+  //                   <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+  //                 </div>
+  //               </CardContent>
+  //             </Card>
+  //           ))}
+  //         </div>
+  //       </div>
+  //     </section>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -1446,6 +1446,28 @@ const updateQueryParams = (filters) => {
               </Button>
             </div>
           )}
+
+          {loading && Array.from({ length: 10 }).map((_, index) => (
+            <Card
+              key={index}
+              className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
+            >
+              <div className="relative">
+                <div className="bg-gray-200 dark:bg-gray-700 w-full h-[221px] rounded-t-2xl"></div>
+                <div className="absolute top-6 right-6 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+              </div>
+
+              <CardContent className="px-4 py-4 space-y-3">
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
+                <div className="flex justify-start items-center gap-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </section>
