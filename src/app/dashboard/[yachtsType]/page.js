@@ -579,7 +579,6 @@ const Yachts = () => {
     setYachts(data)
   }, [originalYachts]);
 
-
   const lastYachtRef = useCallback(
     (node) => {
       if (!hasMore || !allowFetching) return;
@@ -592,41 +591,34 @@ const Yachts = () => {
             console.log("Fetching Next Page...");
             setAllowFetching(false);
             setPage((prevPage) => prevPage + 1);
-
-            setTimeout(() => setAllowFetching(true), 1000);
+            setTimeout(() => setAllowFetching(true), 1000); // Delay to avoid multiple rapid requests
           }
         },
-        { threshold: 1.0 }
+        {
+          threshold: 0.75, // Adjust threshold to trigger earlier (before it's fully visible)
+        }
       );
 
       if (node) observer.current.observe(node);
     },
-    [hasMore, allowFetching]
+    [hasMore, allowFetching, setPage]
   );
-
 
   useEffect(() => {
     if (yachts.length > 0) {
       setAllowFetching(false);
 
-      // Save the current scroll position before new data loads
-      const previousScrollY = window.scrollY;
+      setTimeout(() => {
+        const middleIndex = Math.floor(yachts.length * 0.75);
+        const middleYacht = document.getElementById(`yacht-${yachts[middleIndex]?.yacht?.id}`);
 
-      requestAnimationFrame(() => {
-        // Scroll back to the saved position instantly to prevent jump
-        window.scrollTo({ top: previousScrollY, behavior: "instant" });
+        // // Smoothly scroll to the middle yacht if needed
+        // if (middleYacht) {
+        //   middleYacht.scrollIntoView({ behavior: "smooth", block: "end" });
+        // }
 
-        setTimeout(() => {
-          const middleIndex = Math.floor(yachts.length * 0.75);
-          const middleYacht = document.getElementById(`yacht-${yachts[middleIndex]?.yacht?.id}`);
-
-          // if (middleYacht) {
-          //   middleYacht.scrollIntoView({ behavior: "smooth", block: "end" });
-          // }
-
-          setAllowFetching(true);
-        }, 100); // Small delay for smoother UI updates
-      });
+        setAllowFetching(true);
+      }, 100); 
     }
   }, [yachts.length]);
 
@@ -1336,7 +1328,7 @@ const Yachts = () => {
                   key={item?.yacht?.id}
                   id={`yacht-${item?.yacht?.id}`}
                   className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-full md:min-h-[280px] min-h-[300px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
-                  ref={ind === yachts.length - 3 ? lastYachtRef : null}
+                  ref={ind === yachts.length - 1 ? lastYachtRef : null}
                 >
                   <div className="relative">
                     <Carousel className="">
