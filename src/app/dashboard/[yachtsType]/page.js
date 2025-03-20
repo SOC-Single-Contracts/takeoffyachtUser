@@ -36,8 +36,8 @@ const Yachts = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [allowFetching, setAllowFetching] = useState(true); // Prevent API spam
-    const { yachtsType} = useParams();
-    // console.log("yachtsType",yachtsType)
+  const { yachtsType } = useParams();
+  // console.log("yachtsType",yachtsType)
   const [filters, setFilters] = useState({
     min_price: 1000,
     max_price: 4000,
@@ -307,42 +307,42 @@ const Yachts = () => {
   const saveFiltersToLocalStorage = (filters) => {
     localStorage.setItem('yacht_filters', JSON.stringify(filters));
   };
-  
+
   const getFiltersFromLocalStorage = () => {
     const savedFilters = localStorage.getItem('yacht_filters');
     return savedFilters ? JSON.parse(savedFilters) : null;
   };
 
   // Add this function near your other utility functions
-const updateQueryParams = (filters) => {
-  const params = new URLSearchParams();
-  
-  // Add non-empty filters to query params
-  if (filters.min_price !== 1000) params.set('min_price', filters.min_price);
-  if (filters.max_price !== 4000) params.set('max_price', filters.max_price);
-  if (filters.min_guest) params.set('min_guest', filters.min_guest);
-  if (filters.max_guest) params.set('max_guest', filters.max_guest);
-  if (filters.sleep_capacity) params.set('sleep_capacity', filters.sleep_capacity);
-  if (filters.number_of_cabin) params.set('number_of_cabin', filters.number_of_cabin);
-  if (filters.location) params.set('location', filters.location);
-  if (filters.min_length) params.set('min_length', filters.min_length);
-  if (filters.max_length) params.set('max_length', filters.max_length);
-  
-  // Handle arrays
-  if (filters.category_name.length) params.set('category_name', JSON.stringify(filters.category_name));
-  if (filters.amenities.length) params.set('amenities', JSON.stringify(filters.amenities));
-  if (filters.outdoor_equipment.length) params.set('outdoor_equipment', JSON.stringify(filters.outdoor_equipment));
-  if (filters.kitchen.length) params.set('kitchen', JSON.stringify(filters.kitchen));
-  if (filters.energy.length) params.set('energy', JSON.stringify(filters.energy));
-  if (filters.leisure.length) params.set('leisure', JSON.stringify(filters.leisure));
-  if (filters.navigation.length) params.set('navigation', JSON.stringify(filters.navigation));
-  if (filters.extra_comforts.length) params.set('extra_comforts', JSON.stringify(filters.extra_comforts));
-  if (filters.indoor.length) params.set('indoor', JSON.stringify(filters.indoor));
+  const updateQueryParams = (filters) => {
+    const params = new URLSearchParams();
 
-  // Update URL without page reload
-  const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
-  router.push(newUrl, { scroll: false });
-};
+    // Add non-empty filters to query params
+    if (filters.min_price !== 1000) params.set('min_price', filters.min_price);
+    if (filters.max_price !== 4000) params.set('max_price', filters.max_price);
+    if (filters.min_guest) params.set('min_guest', filters.min_guest);
+    if (filters.max_guest) params.set('max_guest', filters.max_guest);
+    if (filters.sleep_capacity) params.set('sleep_capacity', filters.sleep_capacity);
+    if (filters.number_of_cabin) params.set('number_of_cabin', filters.number_of_cabin);
+    if (filters.location) params.set('location', filters.location);
+    if (filters.min_length) params.set('min_length', filters.min_length);
+    if (filters.max_length) params.set('max_length', filters.max_length);
+
+    // Handle arrays
+    if (filters.category_name.length) params.set('category_name', JSON.stringify(filters.category_name));
+    if (filters.amenities.length) params.set('amenities', JSON.stringify(filters.amenities));
+    if (filters.outdoor_equipment.length) params.set('outdoor_equipment', JSON.stringify(filters.outdoor_equipment));
+    if (filters.kitchen.length) params.set('kitchen', JSON.stringify(filters.kitchen));
+    if (filters.energy.length) params.set('energy', JSON.stringify(filters.energy));
+    if (filters.leisure.length) params.set('leisure', JSON.stringify(filters.leisure));
+    if (filters.navigation.length) params.set('navigation', JSON.stringify(filters.navigation));
+    if (filters.extra_comforts.length) params.set('extra_comforts', JSON.stringify(filters.extra_comforts));
+    if (filters.indoor.length) params.set('indoor', JSON.stringify(filters.indoor));
+
+    // Update URL without page reload
+    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    router.push(newUrl, { scroll: false });
+  };
 
   const handleFilterChange = async (type) => {
 
@@ -354,18 +354,18 @@ const updateQueryParams = (filters) => {
       // console.log("ifff simple Yacht")
 
       payload = {
-        source:"simpleYacht",
+        source: "simpleYacht",
         user_id: userId,
       };
       // router.push('/dashboard/yachts', { scroll: false });
       setSelectedSortBy("default");
       setFilters(initialFilterState);
-      localStorage.removeItem('yacht_filters'); 
+      localStorage.removeItem('yacht_filters');
     } else {
       // console.log("else simple Yacht")  
       const currentFilters = type === "stored" ? getFiltersFromLocalStorage() : filters;
       payload = {
-        source:"simpleYacht",
+        source: "simpleYacht",
         user_id: userId,
         min_per_hour: currentFilters?.min_price?.toString() || "1000",
         max_per_hour: currentFilters?.max_price?.toString() || "4000",
@@ -403,7 +403,7 @@ const updateQueryParams = (filters) => {
 
     try {
       setLoading(true);
-      let response ;
+      let response;
       // if(yachtsType=="f1yachts"&& type == "reset"){
       //   console.log("what work 1")
       //   response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/f1-yachts/`, {
@@ -420,7 +420,7 @@ const updateQueryParams = (filters) => {
       //     headers: {
       //       'Content-Type': 'application/json',
       //       "Referer": window.location.href
-  
+
       //     },
       //     body: JSON.stringify(payload),
       //   });
@@ -435,7 +435,7 @@ const updateQueryParams = (filters) => {
         },
         body: JSON.stringify(payload),
       });
-    
+
 
       const responseData = await response.json();
       if (responseData.error_code === 'pass') {
@@ -466,7 +466,7 @@ const updateQueryParams = (filters) => {
     }
   };
 
-  
+
 
   useEffect(() => {
     // console.log("this is working")
@@ -478,7 +478,7 @@ const updateQueryParams = (filters) => {
       handleFilterChange("reset");
     }
   }, [page]);
-  
+
   // Modify resetFilters function
   const resetFilters = () => {
     localStorage.removeItem('yacht_filters');
@@ -582,56 +582,56 @@ const updateQueryParams = (filters) => {
 
   const lastYachtRef = useCallback(
     (node) => {
-      if (loading || !hasMore || !allowFetching) return;
-  
+      if (!hasMore || !allowFetching) return;
+
       if (observer.current) observer.current.disconnect();
-  
+
       observer.current = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
             console.log("Fetching Next Page...");
-            setAllowFetching(false); 
+            setAllowFetching(false);
             setPage((prevPage) => prevPage + 1);
-  
+
             setTimeout(() => setAllowFetching(true), 1000);
           }
         },
         { threshold: 1.0 }
       );
-  
+
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore, allowFetching]
+    [hasMore, allowFetching]
   );
-  
+
 
   useEffect(() => {
     if (yachts.length > 0) {
       setAllowFetching(false);
-  
+
       // Save the current scroll position before new data loads
       const previousScrollY = window.scrollY;
-  
+
       requestAnimationFrame(() => {
         // Scroll back to the saved position instantly to prevent jump
-        // window.scrollTo({ top: previousScrollY, behavior: "instant" });
-  
+        window.scrollTo({ top: previousScrollY, behavior: "instant" });
+
         setTimeout(() => {
           const middleIndex = Math.floor(yachts.length * 0.75);
           const middleYacht = document.getElementById(`yacht-${yachts[middleIndex]?.yacht?.id}`);
-  
-          if (middleYacht) {
-            middleYacht.scrollIntoView({ behavior: "smooth", block: "end" });
-          }
-  
+
+          // if (middleYacht) {
+          //   middleYacht.scrollIntoView({ behavior: "smooth", block: "end" });
+          // }
+
           setAllowFetching(true);
         }, 100); // Small delay for smoother UI updates
       });
     }
   }, [yachts.length]);
-  
-  
-  
+
+
+
 
   // useEffect(() => {
   //   console.log("yachts", yachts);
@@ -641,51 +641,51 @@ const updateQueryParams = (filters) => {
   // }, [filters]);
 
 
-  if (loading) {
-    return (
-      <section className="md:py-20 py-8">
-        <div className="max-w-5xl px-4 mx-auto">
-          {/* Heading Skeleton */}
-          <div className="w-full flex items-center justify-between mb-8">
-            <div className="h-10 bg-gray-200 dark:bg-gray-700 w-1/3 rounded-md animate-pulse"></div>
-          </div>
+  // if (loading) {
+  //   return (
+  //     <section className="md:py-20 py-8">
+  //       <div className="max-w-5xl px-4 mx-auto">
+  //         {/* Heading Skeleton */}
+  //         <div className="w-full flex items-center justify-between mb-8">
+  //           <div className="h-10 bg-gray-200 dark:bg-gray-700 w-1/3 rounded-md animate-pulse"></div>
+  //         </div>
 
-          {/* Cards Grid Skeleton */}
-          <div className="grid grid-cols-1 gap-[0.6rem] xs:grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 place-items-center">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <Card
-                key={index}
-                className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
-              >
-                <div className="relative">
-                  {/* Image Skeleton */}
-                  <div className="bg-gray-200 dark:bg-gray-700 w-full h-[221px] rounded-t-2xl"></div>
+  //         {/* Cards Grid Skeleton */}
+  //         <div className="grid grid-cols-1 gap-[0.6rem] xs:grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 place-items-center">
+  //           {Array.from({ length: 6 }).map((_, index) => (
+  //             <Card
+  //               key={index}
+  //               className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
+  //             >
+  //               <div className="relative">
+  //                 {/* Image Skeleton */}
+  //                 <div className="bg-gray-200 dark:bg-gray-700 w-full h-[221px] rounded-t-2xl"></div>
 
-                  {/* Wishlist Button Skeleton */}
-                  <div className="absolute top-6 right-6 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+  //                 {/* Wishlist Button Skeleton */}
+  //                 <div className="absolute top-6 right-6 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
 
-                  {/* Price Skeleton */}
-                  <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
-                </div>
+  //                 {/* Price Skeleton */}
+  //                 <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+  //               </div>
 
-                <CardContent className="px-4 py-4 space-y-3">
-                  {/* Yacht Name Skeleton */}
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
+  //               <CardContent className="px-4 py-4 space-y-3">
+  //                 {/* Yacht Name Skeleton */}
+  //                 <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
 
-                  {/* Specs Skeleton */}
-                  <div className="flex justify-start items-center gap-2">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
+  //                 {/* Specs Skeleton */}
+  //                 <div className="flex justify-start items-center gap-2">
+  //                   <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+  //                   <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+  //                   <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+  //                 </div>
+  //               </CardContent>
+  //             </Card>
+  //           ))}
+  //         </div>
+  //       </div>
+  //     </section>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -701,9 +701,9 @@ const updateQueryParams = (filters) => {
     <section className="py-4 px-2">
 
       <div className="max-w-5xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-6">
-                    Listing ({yachts.length}) {yachtsType == "f1yachts" ?   "f1 yachts" : yachtsType == "yachts" ? "Regular yachts" :"" }
-                </h1>
+        <h1 className="text-2xl font-semibold mb-6">
+          Listing ({yachts.length}) {yachtsType == "f1yachts" ? "f1 yachts" : yachtsType == "yachts" ? "Regular yachts" : ""}
+        </h1>
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
 
         <div className="flex flex-col space-y-4 mb-8">
@@ -1341,21 +1341,34 @@ const updateQueryParams = (filters) => {
                   <div className="relative">
                     <Carousel className="">
                       <CarouselContent>
-                        {images?.filter(image => image !== null).map((image, index) => (
-                          <CarouselItem key={index}>
+                        {images?.filter(image => image !== null).length > 0 ? (
+                          images?.filter(image => image !== null).map((image, index) => (
+                            <CarouselItem key={index}>
+                              <Image
+                                ref={index === images.length - 1 ? lastYachtRef : null}
+                                src={image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : '/assets/images/fycht.jpg'}
+                                alt="not found"
+                                width={326}
+                                height={300}
+                                className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
+                                onError={(e) => {
+                                  e.target.src = '/assets/images/fycht.jpg';
+                                }}
+                              />
+                            </CarouselItem>
+                          ))
+                        ) : (
+                          <CarouselItem>
                             <Image
-                            ref={index === yachts.length - 1 ? lastYachtRef : null}
-                              src={image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : '/assets/images/fycht.jpg'}
-                              alt="not found"
+                              src="/assets/images/fycht.jpg"
+                              alt="fallback image"
                               width={326}
                               height={300}
                               className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
-                              onError={(e) => {
-                                e.target.src = '/assets/images/fycht.jpg';
-                              }}
                             />
                           </CarouselItem>
-                        ))}
+                        )}
+
                       </CarouselContent>
                       <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
                         <Button variant="icon" onClick={(e) => e.stopPropagation()}>
@@ -1446,6 +1459,28 @@ const updateQueryParams = (filters) => {
               </Button>
             </div>
           )}
+
+          {loading && Array.from({ length: 10 }).map((_, index) => (
+            <Card
+              key={index}
+              className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
+            >
+              <div className="relative">
+                <div className="bg-gray-200 dark:bg-gray-700 w-full h-[221px] rounded-t-2xl"></div>
+                <div className="absolute top-6 right-6 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+              </div>
+
+              <CardContent className="px-4 py-4 space-y-3">
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
+                <div className="flex justify-start items-center gap-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </section>
