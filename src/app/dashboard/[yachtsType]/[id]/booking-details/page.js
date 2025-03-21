@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -11,8 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-
+import { useParams } from "next/navigation";
+ 
 const BookingDetails = () => {
+    const { yachtsType } = useParams();
+  
   return (
     <section className="py-10">
       <div className="max-w-5xl mx-auto flex items-center space-x-4">
@@ -80,7 +84,7 @@ const BookingDetails = () => {
 
         <Link
           className="w-full col-span-2 flex justify-end"
-          href="/dashboard/yachts/1/booking-summary"
+          href={`/dashboard/${yachtsType}/1/booking-summary`}
         >
           <Button className="rounded-full bg-[#BEA355] px-6 py-2" type="submit">
             Next

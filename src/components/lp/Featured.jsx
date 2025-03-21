@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { addToWishlist, removeFromWishlist, fetchWishlist } from "@/api/wishlist";
 import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
+import { useParams } from "next/navigation";
 
 // Empty State Component
 const EmptyYachtState = ({ onRetry }) => {
@@ -51,13 +52,15 @@ const Featured = () => {
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const { data } = useSession();
+    const { yachtsType } = useParams();
+  
 
   const getYachts = async () => {
     try {
       setLoading(true);
       setError(null);
       // Using hardcoded user ID 1 for public access
-      const newData = await fetchYachts(1);
+      const newData = await fetchYachts(1,yachtsType == "f1yachts" ? "f1yachts" :"regular");
       setYachts(newData);
     } catch (err) {
       console.error('Yacht fetching error:', err);
@@ -328,7 +331,7 @@ const Featured = () => {
                       {images.map((image, index) => (
                         <CarouselItem key={index}>
                           <Image
-                            src={image ? `https://api.takeoffyachts.com${image}` : '/assets/images/fycht.jpg'}
+                            src={image ? `${process.env.NEXT_PUBLIC_S3_URL}${image}` : '/assets/images/fycht.jpg'}
                             alt="Yacht Image"
                             width={326}
                             height={300}
@@ -377,13 +380,18 @@ const Featured = () => {
                       quality={100}
                     />
                   </Button>
-
-                  <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                  {yachtsType == "yachts" ?   <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                     <span className="font-medium text-xs">
                       AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_hour_price}</span>
                       <span className="text-xs font-light ml-1">/Hour</span>
                     </span>
-                  </div>
+                  </div> : yachtsType == "f1yachts" ?   <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                    <span className="font-medium text-xs">
+                      AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_day_price}</span>
+                      <span className="text-xs font-light ml-1">/Day</span>
+                    </span>
+                  </div> :""}
+                
                 </div>
                 <CardContent className="px-4 py-2">
                   <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">

@@ -22,6 +22,7 @@ import { useSession } from "next-auth/react";
 import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import BookingGallery from "@/components/lp/BookingGallery";
+import { useParams } from "next/navigation";
 
 const safeFormat = (dateString, formatString, fallback = 'N/A') => {
   try {
@@ -49,47 +50,90 @@ const Summary = ({ onNext, initialBookingId }) => {
   const [editableExtras, setEditableExtras] = useState([]);
   const [isPartialPayment, setIsPartialPayment] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const { yachtsType } = useParams();
+
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
       try {
-        // Prioritize initialBookingId, then bookingId from context
-        const currentBookingId = initialBookingId || bookingData.bookingId;
+        if (yachtsType == "yachts") {
+          // Prioritize initialBookingId, then bookingId from context
+          const currentBookingId = initialBookingId || bookingData.bookingId;
 
-        if (!currentBookingId) {
-          toast.error('No booking ID found. Please complete the booking process again.');
-          return;
+          if (!currentBookingId) {
+            toast.error('No booking ID found. Please complete the booking process again.');
+            return;
+          }
+
+          const response = await fetch(`${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch booking details');
+          }
+
+          const details = await response.json();
+
+          // Filter extras with quantities > 0
+          const activeExtras = details.extras_data.filter(extra => extra.quantity > 0);
+
+          setBookingDetails(details);
+          setEditableExtras(details.extras_data || []);
+          setIsPartialPayment(details.is_partial_payment || false);
+
+          // Update booking context with booking details
+          updateBookingData({
+            bookingId: details.id,
+            qrCodeUrl: details.qr_code,
+            remainingCost: details.remaining_cost,
+            totalCost: details.total_cost,
+            paidCost: details.paid_cost,
+            extras: activeExtras
+          });
+        } else if (yachtsType == "f1yachts") {
+          // Prioritize initialBookingId, then bookingId from context
+          const currentBookingId = initialBookingId || bookingData.bookingId;
+
+          if (!currentBookingId) {
+            toast.error('No booking ID found. Please complete the booking process again.');
+            return;
+          }
+
+          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${currentBookingId}/`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch booking details');
+          }
+
+          const details = await response.json();
+
+          // Filter extras with quantities > 0
+          const activeExtras = details.extras_data.filter(extra => extra.quantity > 0);
+
+          setBookingDetails(details);
+          setEditableExtras(details.extras_data || []);
+          setIsPartialPayment(details.is_partial_payment || false);
+
+          // Update booking context with booking details
+          updateBookingData({
+            bookingId: details.id,
+            qrCodeUrl: details.qr_code,
+            remainingCost: details.remaining_cost,
+            totalCost: details.total_cost,
+            paidCost: details.paid_cost,
+            extras: activeExtras
+          });
         }
 
-        const response = await fetch(`${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch booking details');
-        }
-
-        const details = await response.json();
-
-        // Filter extras with quantities > 0
-        const activeExtras = details.extras_data.filter(extra => extra.quantity > 0);
-
-        setBookingDetails(details);
-        setEditableExtras(details.extras_data || []);
-        setIsPartialPayment(details.is_partial_payment || false);
-
-        // Update booking context with booking details
-        updateBookingData({
-          bookingId: details.id,
-          qrCodeUrl: details.qr_code,
-          remainingCost: details.remaining_cost,
-          totalCost: details.total_cost,
-          paidCost: details.paid_cost,
-          extras: activeExtras
-        });
       } catch (error) {
         console.error('Error fetching booking details:', error);
         toast({
@@ -117,10 +161,10 @@ const Summary = ({ onNext, initialBookingId }) => {
   };
 
   const calculateUpdatedTotalCost = () => {
-    const baseHourlyRate = bookingDetails.is_new_year_booking
+    const baseHourlyRate = bookingDetails?.is_new_year_booking
       ? (selectedYacht?.yacht?.new_year_price || 0)
       : (selectedYacht?.yacht?.per_hour_price || 0);
-    const charterCost = baseHourlyRate * bookingDetails.duration_hour;
+    const charterCost = baseHourlyRate * bookingDetails?.duration_hour;
 
     // Calculate extras cost
     const extrasCost = editableExtras.reduce((total, extra) => {
@@ -133,17 +177,17 @@ const Summary = ({ onNext, initialBookingId }) => {
 
   const handleUpdateExtras = async () => {
     try {
-      const bookingId = bookingDetails.id;
+      const bookingId = bookingDetails?.id;
 
       // Calculate base cost based on booking type
       let baseCost = 0;
-      if (bookingDetails.booking_type === 'hourly') {
+      if (bookingDetails?.booking_type === 'hourly') {
         const hourlyRate = selectedYacht?.yacht?.per_hour_price || 0;
-        baseCost = hourlyRate * (bookingDetails.duration_hour || 3);
+        baseCost = hourlyRate * (bookingDetails?.duration_hour || 3);
       } else {
         // Date range booking
-        const startDate = new Date(bookingDetails.selected_date);
-        const endDate = new Date(bookingDetails.end_date);
+        const startDate = new Date(bookingDetails?.selected_date);
+        const endDate = new Date(bookingDetails?.end_date);
         const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
         baseCost = (selectedYacht?.yacht?.per_day_price || 0) * days;
       }
@@ -157,7 +201,7 @@ const Summary = ({ onNext, initialBookingId }) => {
       const totalCost = baseCost + extrasCost;
 
       const payload = {
-        user_id: bookingDetails.user_id || session?.user?.userid,
+        user_id: bookingDetails?.user_id || session?.user?.userid,
         extras: editableExtras.map(extra => ({
           extra_id: extra.extra_id,
           name: extra.name,
@@ -165,7 +209,7 @@ const Summary = ({ onNext, initialBookingId }) => {
           price: parseFloat(extra.price)
         })),
         total_cost: totalCost,
-        remaining_cost: totalCost - (bookingDetails.paid_cost || 0)
+        remaining_cost: totalCost - (bookingDetails?.paid_cost || 0)
       };
 
       const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingId}/`, {
@@ -212,16 +256,16 @@ const Summary = ({ onNext, initialBookingId }) => {
 
   const handleUpdatePartialPayment = async () => {
     try {
-      const bookingId = bookingDetails.id;
+      const bookingId = bookingDetails?.id;
 
       // Destructure to remove unwanted fields
       const { qr_code, ...payloadWithoutQrCode } = bookingDetails;
 
       // Calculate total cost
-      const totalCost = bookingDetails.total_cost || calculateTotal();
+      const totalCost = bookingDetails?.total_cost || calculateTotal();
 
       const payload = {
-        user_id: bookingDetails.user_id || session?.user?.userid,
+        user_id: bookingDetails?.user_id || session?.user?.userid,
         ...payloadWithoutQrCode,
         is_partial_payment: isPartialPayment,
         total_cost: totalCost,
@@ -271,15 +315,15 @@ const Summary = ({ onNext, initialBookingId }) => {
 
   const handleProceedToPayment = async () => {
     try {
-      const bookingId = bookingDetails.id;
+      const bookingId = bookingDetails?.id;
 
       // First, update extras if they were modified
       await handleUpdateExtras();
 
       // Calculate payment amounts
-      const totalCost = bookingDetails.total_cost || calculateTotal();
-      const paidCost = bookingDetails.paid_cost || 0;
-      const remainingCost = bookingDetails.remaining_cost || 0;
+      const totalCost = bookingDetails?.total_cost || calculateTotal();
+      const paidCost = bookingDetails?.paid_cost || 0;
+      const remainingCost = bookingDetails?.remaining_cost || 0;
 
       // Determine payment amount based on booking state
       let paymentAmount;
@@ -332,9 +376,9 @@ const Summary = ({ onNext, initialBookingId }) => {
   };
 
   const handleCopyLink = () => {
-    const bookingId = bookingDetails.id;
+    const bookingId = bookingDetails?.id;
     const yachtId = selectedYacht?.yacht?.id || bookingData.yachtId;
-    const bookingLink = `${window.location.origin}/dashboard/yachts/${yachtId}/booking/?bookingId=${bookingId}`;
+    const bookingLink = `${window.location.origin}/dashboard/${yachtsType}/${yachtId}/booking/?bookingId=${bookingId}`;
 
     navigator.clipboard.writeText(bookingLink).then(() => {
       setIsCopied(true); // Set copied state to true
@@ -354,41 +398,48 @@ const Summary = ({ onNext, initialBookingId }) => {
     });
   };
 
+  //test
+
+  useEffect(()=>{
+   console.log("bookingDetails",bookingDetails)
+  },[bookingDetails])
+
   const renderPriceSummary = () => {
-    const totalCost = bookingDetails.total_cost || calculateTotal();
-    const paidCost = bookingDetails.paid_cost || 0;
-    const remainingCost = bookingDetails.remaining_cost || 0;
+    const totalCost = bookingDetails?.total_cost || calculateTotal();
+    const paidCost = bookingDetails?.paid_cost || 0;
+    const remainingCost = bookingDetails?.remaining_cost || 0;
 
     return (
       <Table className="bg-[#F4F0E4] w-full rounded-lg">
         <TableHeader>
           <TableRow>
             <TableHead className="font-semibold text-md text-black">
-              Price Summary {bookingDetails.is_new_year_booking && "(New Year's Eve Special Rate)"}
+              Price Summary {bookingDetails?.is_new_year_booking && "(New Year's Eve Special Rate)"}
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="bg-white dark:bg-gray-800 text-xs">
           {/* <TableRow>
             <TableCell className="font-semibold">
-              {bookingDetails.end_date
-                ? `${safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')} - ${safeFormat(bookingDetails.end_date, 'dd MMMM yyyy')}`
-                : safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')
+              {bookingDetails?.end_date
+                ? `${safeFormat(bookingDetails?.selected_date, 'dd MMMM yyyy')} - ${safeFormat(bookingDetails?.end_date, 'dd MMMM yyyy')}`
+                : safeFormat(bookingDetails?.selected_date, 'dd MMMM yyyy')
               }
-              {bookingDetails.is_new_year_booking && " - New Year's Eve Rate"}
+              {bookingDetails?.is_new_year_booking && " - New Year's Eve Rate"}
             </TableCell>
             <TableCell className="font-medium">
-              AED {bookingDetails.end_date
-                ? (selectedYacht?.yacht?.per_day_price || 0) * (Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1))
-                : (bookingDetails.is_new_year_booking
+              AED {bookingDetails?.end_date
+                ? (selectedYacht?.yacht?.per_day_price || 0) * (Math.ceil((new Date(bookingDetails?.end_date) - new Date(bookingDetails?.selected_date)) / (1000 * 60 * 60 * 24) + 1))
+                : (bookingDetails?.is_new_year_booking
                   ? (selectedYacht?.yacht?.new_year_price || 0)
-                  : (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails.duration_hour
+                  : (selectedYacht?.yacht?.per_hour_price || 0)) * bookingDetails?.duration_hour
               }
             </TableCell>
           </TableRow> */}
-          {bookingDetails.extras_data &&
-            Array.isArray(bookingDetails.extras_data) &&
-            bookingDetails.extras_data
+  {/* {        console.log("bookingDetails?.extras_data",bookingDetails?.extras_data)} */}
+          {bookingDetails?.extras_data &&
+            Array.isArray(bookingDetails?.extras_data) &&
+            bookingDetails?.extras_data
               .filter((item) => item.quantity > 0)
               .map((item) => (
                 <TableRow key={item.extra_id}>
@@ -669,7 +720,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               selectedYacht?.yacht?.image20,
             ]
               .filter((image) => typeof image === "string" && image.trim() !== "")
-              .map((image) => `${process.env.NEXT_PUBLIC_API_URL}${image}`)
+              .map((image) => `${process.env.NEXT_PUBLIC_S3_URL}${image}`)
 
             return <BookingGallery images={images} />
           })()}
@@ -692,28 +743,28 @@ const Summary = ({ onNext, initialBookingId }) => {
                 <User className="w-4 h-4" />
                 <span className="font-semibold">Full Name</span>
               </TableCell>
-              <TableCell className="font-medium">{bookingDetails.full_name}</TableCell>
+              <TableCell className="font-medium">{bookingDetails?.full_name}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
                 <span className="font-semibold">Email</span>
               </TableCell>
-              <TableCell className="font-medium">{bookingDetails.email}</TableCell>
+              <TableCell className="font-medium">{bookingDetails?.email}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
                 <span className="font-semibold">Phone</span>
               </TableCell>
-              <TableCell className="font-medium">{bookingDetails.phone_number}</TableCell>
+              <TableCell className="font-medium">{bookingDetails?.phone_number}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="flex items-center gap-2">
                 <Globe className="w-4 h-4" />
                 <span className="font-semibold">Country</span>
               </TableCell>
-              <TableCell className="font-medium">{bookingDetails.country}</TableCell>
+              <TableCell className="font-medium">{bookingDetails?.country}</TableCell>
             </TableRow>
           </TableBody>
         </Table> */}
@@ -734,9 +785,9 @@ const Summary = ({ onNext, initialBookingId }) => {
                 <span className="font-semibold">Date</span>
               </TableCell>
               <TableCell className="font-medium">
-                {bookingDetails.end_date
-                  ? `${safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')} - ${safeFormat(bookingDetails.end_date, 'dd MMMM yyyy')}`
-                  : safeFormat(bookingDetails.selected_date, 'dd MMMM yyyy')
+                {bookingDetails?.end_date
+                  ? `${safeFormat(bookingDetails?.selected_date, 'dd MMMM yyyy')} - ${safeFormat(bookingDetails?.end_date, 'dd MMMM yyyy')}`
+                  : safeFormat(bookingDetails?.selected_date, 'dd MMMM yyyy')
                 }
               </TableCell>
             </TableRow> */}
@@ -744,14 +795,18 @@ const Summary = ({ onNext, initialBookingId }) => {
               <TableCell className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span className="font-semibold">
-                  {bookingDetails.end_date ? 'Duration' : 'Time & Duration'}
+                  {bookingDetails?.end_date ? 'Duration' : 'Time & Duration'}
                 </span>
               </TableCell>
               <TableCell className="font-medium">
-                {bookingDetails.end_date
-                  ? `${Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days`
-                  : `${safeFormat(bookingDetails.starting_time, 'hh:mm a')} (${bookingDetails.duration_hour} hours)`
-                }
+                {yachtsType == "yachts" ? bookingDetails?.end_date
+                  ? `${Math.ceil((new Date(bookingDetails?.end_date) - new Date(bookingDetails?.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days`
+                  : `${safeFormat(bookingDetails?.starting_time, 'hh:mm a')} (${bookingDetails?.duration_hour} hours)`
+                 :yachtsType == "f1yachts" ? bookingDetails?.end_date
+                 ? `${Math.ceil((new Date(bookingDetails?.end_date) - new Date(bookingDetails?.start_date)) / (1000 * 60 * 60 * 24) + 1)} days`
+                 : `notprovided`
+               :""}
+                
               </TableCell>
             </TableRow>
             {/* <TableRow>
@@ -760,16 +815,16 @@ const Summary = ({ onNext, initialBookingId }) => {
                 <span className="font-semibold">Guests</span>
               </TableCell>
               <TableCell className="font-medium">
-                {bookingDetails.adults} Adults{bookingDetails.kids > 0 && `, ${bookingDetails.kids} Children`}
+                {bookingDetails?.adults} Adults{bookingDetails?.kids > 0 && `, ${bookingDetails?.kids} Children`}
               </TableCell>
             </TableRow> */}
-            {/* {bookingDetails.notes && (
+            {/* {bookingDetails?.notes && (
               <TableRow>
                 <TableCell className="flex items-center gap-2">
                   <MessageSquare className="w-4 h-4" />
                   <span className="font-semibold">Special Requests</span>
                 </TableCell>
-                <TableCell className="font-medium">{bookingDetails.notes}</TableCell>
+                <TableCell className="font-medium">{bookingDetails?.notes}</TableCell>
               </TableRow>
             )} */}
           </TableBody>
@@ -843,7 +898,7 @@ const Summary = ({ onNext, initialBookingId }) => {
           </TableBody>
         </Table>
 
-        {bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost && (
+        {bookingDetails && bookingDetails?.total_cost === bookingDetails?.paid_cost && (
           <div className="flex items-center justify-between bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md mb-4">
             <div className="flex items-center">
               <CheckCheck className="w-6 h-6 mr-2" />
@@ -856,7 +911,7 @@ const Summary = ({ onNext, initialBookingId }) => {
           </div>
         )}
 
-        {!(bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost) && (
+        {!(bookingDetails && bookingDetails?.total_cost === bookingDetails?.paid_cost) && (
           <>
             <div className="flex justify-end flex-wrap gap-2">
               {/* <Button

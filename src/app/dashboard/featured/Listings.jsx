@@ -9,15 +9,18 @@ import Link from "next/link";
 import { Loading } from "@/components/ui/loading";
 import { useSession } from "next-auth/react";
 import Featured from "@/components/lp/Featured";
+import { useParams } from "next/navigation";
 const FeaturedListings = () => {
   const [featuredYachts, setFeaturedYachts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { data, status } = useSession();
+    const {yachtsType } = useParams();
+
   useEffect(() => {
     const getYachts = async () => {
       try {
-        const yachtData = await fetchYachts(data?.user?.userid);
+        const yachtData = await fetchYachts(data?.user?.userid,yachtsType == "f1yachts" ? "f1yachts" :"regular");
         setFeaturedYachts(yachtData);
       } catch (err) {
         setError(err.message || "Unexpected Error");

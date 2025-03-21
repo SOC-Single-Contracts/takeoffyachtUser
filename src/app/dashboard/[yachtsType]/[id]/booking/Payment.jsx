@@ -1,6 +1,6 @@
 "use client";
 import { Button } from '@/components/ui/button';
-import { CheckCircle, CreditCard } from 'lucide-react';
+import { Check, CheckCircle, CreditCard, Square } from 'lucide-react';
 import { useBookingContext } from './BookingContext';
 import { useSession } from 'next-auth/react';
 import { loadStripe } from '@stripe/stripe-js';
@@ -15,6 +15,7 @@ import { API_BASE_URL } from '@/lib/api';
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from 'next/navigation';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { handleDispatchBookingData } from '@/helper/bookingData';
 
 
 const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`);
@@ -23,9 +24,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
-  const params = useParams();
-  const yachtId = params.id;
-  // console.log("yachtId", yachtId)
+  const { id: yachtId, yachtsType } = useParams();
+
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht, calculateTotal } = useBookingContext();
   const { data: session } = useSession();
@@ -42,6 +42,11 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
   const [openAccordionCard, setOpenAccordionCard] = useState(null);
   const [openAccordionWallet, setOpenAccordionWallet] = useState(null);
+  const [deductFromWallet, setDeductFromWallet] = useState(false);
+  const isWalletDisabled =
+    !appStatWwalletContext ||
+    Object.keys(appStatWwalletContext).length === 0 ||
+    appStatWwalletContext?.balance === 0;
 
 
 
@@ -107,7 +112,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   };
 
   const getPaymentButtonText = () => {
-    if (isProcessing) return 'Processing...';
+    // if (isProcessing) return 'Processing...';
 
     const paymentAmount = calculatePaymentAmount();
 
@@ -124,9 +129,33 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
     return `Pay Full Amount (AED ${calculateTotal().toFixed(2)})`;
   };
 
+  //test
+  // useEffect(() => {
+  //   console.log("deductFromWallet", deductFromWallet)
+  // }, [deductFromWallet])
+
+
   const handleSubmitFull = async (e) => {
     e.preventDefault();
     if (!stripe || !elements || !validateForm()) return;
+
+    if (!bookingData?.termsAccepted) {
+      toast({
+        title: "Error",
+        description: "You must accept the terms and conditions before proceeding.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (deductFromWallet && (Object.keys(appStatWwalletContext).length === 0 || appStatWwalletContext?.freezeWallet)) {
+      toast({
+        title: "Wallet Access Restricted",
+        description: "Your wallet is currently frozen. Please contact support for assistance.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsProcessing(true);
     setError(null);
@@ -148,16 +177,27 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       if (paymentMethodError) throw new Error(paymentMethodError.message);
 
       // Use paymentType to determine endpoint
-      const endpoint = paymentType === 'remaining'
-        ? `${API_BASE_URL}/yacht/capture-remaining-payment/${bookingData.bookingId}/`
-        : `${API_BASE_URL}/yacht/capture-initial-payment/${bookingData.bookingId}/`;
+      let endpoint;
+      if (yachtsType == "yachts") {
+        endpoint = paymentType === 'remaining'
+          ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
+          : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+      } else if (yachtsType == "f1yachts") {
+        endpoint = paymentType === 'remaining'
+          ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+          : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+      }
+
 
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           payment_method_id: paymentMethod.id,
-          is_partial_payment: false
+          is_partial_payment: false,
+          user_id: userId,
+          is_wallet: deductFromWallet
+
         }),
       });
 
@@ -168,13 +208,23 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         ? 'Remaining payment processed successfully!'
         : 'Full payment processed successfully!';
 
-      toast.success(successMessage);
+      toast({
+        title: "Success! 🎉",
+        description: successMessage,
+        variant: "default",
+        className: "bg-green-500 text-white border-none",
+      });
       router.push('/dashboard/success');
+      handleDispatchBookingData({});
 
     } catch (error) {
       console.error('Payment error:', error);
       setError(error.message);
-      toast.error(error.message || 'Payment processing failed');
+      toast({
+        title: "Error",
+        description: error.message || "Payment processing failed",
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -182,7 +232,23 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const handleSubmitPartial = async (e) => {
     e.preventDefault();
     if (!stripe || !elements || !validateForm()) return;
+    if (!bookingData?.termsAccepted) {
+      toast({
+        title: "Error",
+        description: "You must accept the terms and conditions before proceeding.",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    if (deductFromWallet && (Object.keys(appStatWwalletContext).length === 0 || appStatWwalletContext?.freezeWallet)) {
+      toast({
+        title: "Wallet Access Restricted",
+        description: "Your wallet is currently frozen. Please contact support for assistance.",
+        variant: "destructive",
+      });
+      return;
+    }
     setIsProcessing(true);
     setError(null);
 
@@ -203,16 +269,26 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       if (paymentMethodError) throw new Error(paymentMethodError.message);
 
       // Use paymentType to determine endpoint
-      const endpoint = paymentType === 'remaining'
-        ? `${API_BASE_URL}/yacht/capture-remaining-payment/${bookingData.bookingId}/`
-        : `${API_BASE_URL}/yacht/capture-initial-payment/${bookingData.bookingId}/`;
+      let endpoint;
+      if (yachtsType == "yachts") {
+        endpoint = paymentType === 'remaining'
+          ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
+          : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+      } else if (yachtsType == "f1yachts") {
+        endpoint = paymentType === 'remaining'
+          ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+          : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+      }
 
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           payment_method_id: paymentMethod.id,
-          is_partial_payment: true
+          is_partial_payment: true,
+          user_id: userId,
+          is_wallet: deductFromWallet
+
         }),
       });
 
@@ -223,13 +299,24 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         ? 'Remaining payment processed successfully!'
         : 'Initial payment (25%) processed successfully!';
 
-      toast.success(successMessage);
+      toast({
+        title: "Success! 🎉",
+        description: successMessage,
+        variant: "default",
+        className: "bg-green-500 text-white border-none",
+      });
       router.push('/dashboard/success');
+      handleDispatchBookingData({})
+
 
     } catch (error) {
       console.error('Payment error:', error);
       setError(error.message);
-      toast.error(error.message || 'Payment processing failed');
+      toast({
+        title: "Error",
+        description: error.message || "Payment processing failed",
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -254,7 +341,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       return;
     }
 
-    if (appStatWwalletContext?.freezeWallet) {
+    if (Object.keys(appStatWwalletContext).length === 0 || appStatWwalletContext?.freezeWallet) {
       toast({
         title: "Wallet Access Restricted",
         description: "Your wallet is currently frozen. Please contact support for assistance.",
@@ -341,6 +428,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       });
 
       router.push("/dashboard/success");
+      handleDispatchBookingData({})
+
 
     } catch (error) {
       console.error("Payment error:", error);
@@ -353,6 +442,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       setIsProcessing(false);
     }
   };
+
+
 
 
   return (
@@ -368,6 +459,53 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             {error}
           </div>
         )}
+
+
+
+<div
+  className={`flex items-center justify-between my-3 p-4 rounded-lg transition-all duration-300 border 
+    ${deductFromWallet ? "bg-[#EAF7E4] border-[#BEA355]" : "bg-gray-100 border-gray-300"}
+    ${isWalletDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+  `}
+  onClick={() => {
+    if (isWalletDisabled) return; // Prevent clicking when balance is 0 or context is empty
+    setDeductFromWallet((prev) => !prev);
+  }}
+  role="button"
+  tabIndex={0}
+>
+  {/* Left Side: Check Icon + Wallet Icon + Label */}
+  <div className="flex items-center space-x-3">
+    {/* ✅ Check Icon (Only Visible if Selected) */}
+    {deductFromWallet ? (
+      <div className="w-5 h-5 bg-[#BEA355] text-white flex items-center justify-center rounded-md">
+        <Check size={20} />
+      </div>
+    ) : (
+      <div className="w-5 h-5 bg-[#BEA355] text-white flex items-center justify-center rounded-md">
+        <Square size={20} className="text-[#BEA355]" />
+      </div>
+    )}
+
+    {/* Wallet Icon */}
+    <img src="/assets/images/wallet.png" alt="Wallet Icon" className="w-8 h-8" />
+
+    {/* Wallet Details */}
+    <div>
+      <Label htmlFor="partial-payment" className="text-base font-medium">
+        Rewards & Wallet
+      </Label>
+      <p className="text-sm text-[#BEA355]">
+        To spend today: AED {appStatWwalletContext?.balance ? appStatWwalletContext?.balance : "0"} Credits
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+
+
         <Accordion className="space-y-4" type="single" collapsible
           value={openAccordionCard}
           onValueChange={(val) => setOpenAccordionCard(val || null)}

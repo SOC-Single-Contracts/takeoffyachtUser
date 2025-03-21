@@ -15,5 +15,5 @@ const Dashboard = () => {
       <Featured />
   );
 };
-
+  
 export default Dashboard;

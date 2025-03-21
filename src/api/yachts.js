@@ -1,9 +1,9 @@
 import { API_BASE_URL } from "@/lib/api";
 import axios from "axios";
 
-export const fetchYachts = async (id) => {
+export const fetchYachts = async (id,yachtsType) => {
   try {
-    const response = await axios.get(`https://api.takeoffyachts.com/yacht/get_yacht/1`);
+    const response = await axios.get(`https://api.takeoffyachts.com/yacht/get_yacht/1?YachtType=${yachtsType}`);
 
     
     if (response.data.error_code === "pass") {
@@ -166,10 +166,12 @@ export const cancelYachtBooking = async (bookingData) => {
   }
 };
 
-export const checkYachts = async (userId) => {
+export const checkYachts = async (userId,yachtsType) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/yacht/check_yacht/`, {
-            user_id: userId
+            user_id: userId,
+        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
+
         });
         return response.data.data;
     } catch (error) {
