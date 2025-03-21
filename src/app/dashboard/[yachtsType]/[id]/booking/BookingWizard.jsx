@@ -87,7 +87,7 @@ const BookingWizardContent = ({ initialBookingId }) => {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const CurrentStepComponent = steps[4 - 1].component;
+  const CurrentStepComponent = steps[currentStep - 1].component;
 
 ///test
 

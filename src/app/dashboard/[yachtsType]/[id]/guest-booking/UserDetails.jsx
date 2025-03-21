@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { API_BASE_URL } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from 'next/navigation';
+import { ArrowLeft } from "lucide-react";
 
 const UserDetails = ({ onNext, onBack }) => {
   const { id: yachtId, yachtsType } = useParams();
