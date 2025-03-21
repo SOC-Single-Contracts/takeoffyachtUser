@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-
+ 
 const BookingDetails = () => {
     const { yachtsType } = useParams();
   
