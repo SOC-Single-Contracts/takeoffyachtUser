@@ -713,7 +713,7 @@ const YachtDetail = () => {
                 </section>
               )}
 
-              {ny_status && (ny_availability || ny_price || ny_firework) && (
+              {yachtsType !== "f1yachts" && ny_status && (ny_availability || ny_price || ny_firework) && (
                 <section className="mt-4">
                   <h2 className="text-lg font-medium">
                     New Year's Eve
