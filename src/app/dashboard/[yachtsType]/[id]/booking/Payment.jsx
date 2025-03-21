@@ -1,6 +1,6 @@
 "use client";
 import { Button } from '@/components/ui/button';
-import { CheckCircle, CreditCard } from 'lucide-react';
+import { Check, CheckCircle, CreditCard, Square } from 'lucide-react';
 import { useBookingContext } from './BookingContext';
 import { useSession } from 'next-auth/react';
 import { loadStripe } from '@stripe/stripe-js';
@@ -25,7 +25,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const elements = useElements();
   const router = useRouter();
   const { id: yachtId, yachtsType } = useParams();
-  
+
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht, calculateTotal } = useBookingContext();
   const { data: session } = useSession();
@@ -42,6 +42,11 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
   const [openAccordionCard, setOpenAccordionCard] = useState(null);
   const [openAccordionWallet, setOpenAccordionWallet] = useState(null);
+  const [deductFromWallet, setDeductFromWallet] = useState(false);
+  const isWalletDisabled =
+    !appStatWwalletContext ||
+    Object.keys(appStatWwalletContext).length === 0 ||
+    appStatWwalletContext?.balance === 0;
 
 
 
@@ -124,9 +129,33 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
     return `Pay Full Amount (AED ${calculateTotal().toFixed(2)})`;
   };
 
+  //test
+  // useEffect(() => {
+  //   console.log("deductFromWallet", deductFromWallet)
+  // }, [deductFromWallet])
+
+
   const handleSubmitFull = async (e) => {
     e.preventDefault();
     if (!stripe || !elements || !validateForm()) return;
+
+    if (!bookingData?.termsAccepted) {
+      toast({
+        title: "Error",
+        description: "You must accept the terms and conditions before proceeding.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (deductFromWallet && (Object.keys(appStatWwalletContext).length === 0 || appStatWwalletContext?.freezeWallet)) {
+      toast({
+        title: "Wallet Access Restricted",
+        description: "Your wallet is currently frozen. Please contact support for assistance.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsProcessing(true);
     setError(null);
@@ -149,14 +178,14 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
 
       // Use paymentType to determine endpoint
       let endpoint;
-      if (yachtsType == "yachts"){
+      if (yachtsType == "yachts") {
         endpoint = paymentType === 'remaining'
-        ? `${API_BASE_URL}/yacht/capture-remaining-payment/${bookingData.bookingId}/`
-        : `${API_BASE_URL}/yacht/capture-initial-payment/${bookingData.bookingId}/`;
-      } else if (yachtsType == "f1yachts"){
+          ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
+          : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+      } else if (yachtsType == "f1yachts") {
         endpoint = paymentType === 'remaining'
-        ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
-        : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+          ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+          : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
       }
 
 
@@ -165,7 +194,10 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           payment_method_id: paymentMethod.id,
-          is_partial_payment: false
+          is_partial_payment: false,
+          user_id: userId,
+          is_wallet: deductFromWallet
+
         }),
       });
 
@@ -176,12 +208,12 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         ? 'Remaining payment processed successfully!'
         : 'Full payment processed successfully!';
 
-        toast({
-          title: "Success! 🎉",
-          description: successMessage,
-          variant: "default",
-          className: "bg-green-500 text-white border-none",
-        });
+      toast({
+        title: "Success! 🎉",
+        description: successMessage,
+        variant: "default",
+        className: "bg-green-500 text-white border-none",
+      });
       router.push('/dashboard/success');
       handleDispatchBookingData({});
 
@@ -200,7 +232,23 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const handleSubmitPartial = async (e) => {
     e.preventDefault();
     if (!stripe || !elements || !validateForm()) return;
+    if (!bookingData?.termsAccepted) {
+      toast({
+        title: "Error",
+        description: "You must accept the terms and conditions before proceeding.",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    if (deductFromWallet && (Object.keys(appStatWwalletContext).length === 0 || appStatWwalletContext?.freezeWallet)) {
+      toast({
+        title: "Wallet Access Restricted",
+        description: "Your wallet is currently frozen. Please contact support for assistance.",
+        variant: "destructive",
+      });
+      return;
+    }
     setIsProcessing(true);
     setError(null);
 
@@ -222,14 +270,14 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
 
       // Use paymentType to determine endpoint
       let endpoint;
-      if (yachtsType == "yachts"){
+      if (yachtsType == "yachts") {
         endpoint = paymentType === 'remaining'
-        ? `${API_BASE_URL}/yacht/capture-remaining-payment/${bookingData.bookingId}/`
-        : `${API_BASE_URL}/yacht/capture-initial-payment/${bookingData.bookingId}/`;
-      } else if (yachtsType == "f1yachts"){
+          ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
+          : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+      } else if (yachtsType == "f1yachts") {
         endpoint = paymentType === 'remaining'
-        ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
-        : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+          ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+          : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
       }
 
       const response = await fetch(endpoint, {
@@ -237,7 +285,10 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           payment_method_id: paymentMethod.id,
-          is_partial_payment: true
+          is_partial_payment: true,
+          user_id: userId,
+          is_wallet: deductFromWallet
+
         }),
       });
 
@@ -248,12 +299,12 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         ? 'Remaining payment processed successfully!'
         : 'Initial payment (25%) processed successfully!';
 
-        toast({
-          title: "Success! 🎉",
-          description: successMessage,
-          variant: "default",
-          className: "bg-green-500 text-white border-none",
-        });
+      toast({
+        title: "Success! 🎉",
+        description: successMessage,
+        variant: "default",
+        className: "bg-green-500 text-white border-none",
+      });
       router.push('/dashboard/success');
       handleDispatchBookingData({})
 
@@ -290,7 +341,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       return;
     }
 
-    if (appStatWwalletContext?.freezeWallet) {
+    if (Object.keys(appStatWwalletContext).length === 0 || appStatWwalletContext?.freezeWallet) {
       toast({
         title: "Wallet Access Restricted",
         description: "Your wallet is currently frozen. Please contact support for assistance.",
@@ -393,6 +444,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   };
 
 
+
+
   return (
     <form onSubmit={handleSubmitFull} className='w-full space-y-6'>
       <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>
@@ -406,6 +459,53 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             {error}
           </div>
         )}
+
+
+
+<div
+  className={`flex items-center justify-between my-3 p-4 rounded-lg transition-all duration-300 border 
+    ${deductFromWallet ? "bg-[#EAF7E4] border-[#BEA355]" : "bg-gray-100 border-gray-300"}
+    ${isWalletDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+  `}
+  onClick={() => {
+    if (isWalletDisabled) return; // Prevent clicking when balance is 0 or context is empty
+    setDeductFromWallet((prev) => !prev);
+  }}
+  role="button"
+  tabIndex={0}
+>
+  {/* Left Side: Check Icon + Wallet Icon + Label */}
+  <div className="flex items-center space-x-3">
+    {/* ✅ Check Icon (Only Visible if Selected) */}
+    {deductFromWallet ? (
+      <div className="w-5 h-5 bg-[#BEA355] text-white flex items-center justify-center rounded-md">
+        <Check size={20} />
+      </div>
+    ) : (
+      <div className="w-5 h-5 bg-[#BEA355] text-white flex items-center justify-center rounded-md">
+        <Square size={20} className="text-[#BEA355]" />
+      </div>
+    )}
+
+    {/* Wallet Icon */}
+    <img src="/assets/images/wallet.png" alt="Wallet Icon" className="w-8 h-8" />
+
+    {/* Wallet Details */}
+    <div>
+      <Label htmlFor="partial-payment" className="text-base font-medium">
+        Rewards & Wallet
+      </Label>
+      <p className="text-sm text-[#BEA355]">
+        To spend today: AED {appStatWwalletContext?.balance ? appStatWwalletContext?.balance : "0"} Credits
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+
+
         <Accordion className="space-y-4" type="single" collapsible
           value={openAccordionCard}
           onValueChange={(val) => setOpenAccordionCard(val || null)}
