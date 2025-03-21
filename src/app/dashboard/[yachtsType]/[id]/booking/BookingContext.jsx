@@ -1,4 +1,5 @@
 "use client";
+import { handleDispatchBookingData } from '@/helper/bookingData';
 import { useParams } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 
@@ -92,7 +93,7 @@ export const BookingProvider = ({ children }) => {
     }));
   };
 
-  /// get appState
+  // get appState
   // useEffect(() => {
   //   if (typeof window !== "undefined") {
   //     const storedData = localStorage.getItem("bookingContextUser");

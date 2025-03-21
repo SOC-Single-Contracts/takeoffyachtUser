@@ -94,17 +94,24 @@ const BookingWizardContent = ({ initialBookingId }) => {
   return (
     <section className="py-6 md:py-10 ">
       <div className="max-w-5xl mx-auto px-2">
-        <div className="flex items-center space-x-4 mb-8">
-          {currentStep > 1 && (
-            <Button
-              onClick={handleBack}
-              className="bg-[#F8F8F8] hover:bg-[#F8F8F8] shadow-md rounded-full flex items-center justify-center w-10 h-10"
-            >
-              <ArrowLeft className='w-4 h-4 text-black' />
-            </Button>
-          )}
-          <h1 className='text-sm md:text-lg font-medium'>{steps[currentStep - 1].title}</h1>
-        </div>
+      <div className="flex items-center space-x-4 mb-8">
+             {currentStep > 1 ? (
+               <Button
+                 onClick={handleBack}
+                 className="bg-[#F8F8F8] hover:bg-[#F8F8F8] shadow-md rounded-full flex items-center justify-center w-10 h-10"
+               >
+                 <ArrowLeft className='w-4 h-4 text-black' />
+               </Button>
+             ):(
+               <Button
+                 onClick={()=>router.back()}
+                 className="bg-[#F8F8F8] hover:bg-[#F8F8F8] shadow-md rounded-full flex items-center justify-center w-10 h-10"
+               >
+                 <ArrowLeft className='w-4 h-4 text-black' />
+               </Button>
+             )}
+             <h1 className='text-sm md:text-lg font-medium'>{steps[currentStep - 1].title}</h1>
+           </div>
 
         <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">
           <div 
@@ -117,6 +124,7 @@ const BookingWizardContent = ({ initialBookingId }) => {
           <CurrentStepComponent 
             onNext={handleNext} 
             initialBookingId={initialBookingId} 
+            onBack={handleBack}
           />
         </div>
       </div>

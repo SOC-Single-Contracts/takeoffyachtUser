@@ -17,7 +17,7 @@ import { API_BASE_URL } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from 'next/navigation';
 
-const UserDetails = ({ onNext }) => {
+const UserDetails = ({ onNext,onBack }) => {
   const { id: yachtId,yachtsType } = useParams();
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht } = useBookingContext();
@@ -376,14 +376,23 @@ const UserDetails = ({ onNext }) => {
         />
       </div>
 
-      <div className="col-span-2 flex justify-end">
-      <Button 
-        type="submit"
-        disabled={loading}
-        className="rounded-full bg-[#BEA355] px-6 py-2 text-white"
-      >
-        {loading ? 'Saving...' : 'Next'}
-      </Button>
+      <div className="flex justify-end">
+        <div className="col-span-2 mx-3 flex justify-end">
+          <Button onClick={() => onBack()} className="rounded-full  px-6 py-2 bg-[#91908b]  dark:text-white transition duration-300 hover:shadow-2xl">
+            <ArrowLeft className='w-4 h-4 ' />
+
+            Back</Button>
+
+        </div>
+        <div className="col-span-2 flex justify-end">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="rounded-full bg-[#BEA355] px-6 py-2 text-white"
+          >
+            {loading ? 'Saving...' : 'Next'}
+          </Button>
+        </div>
       </div>
     </form>
   );

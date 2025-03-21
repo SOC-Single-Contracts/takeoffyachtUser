@@ -15,16 +15,18 @@ import { countries } from 'countries-list';
 import { format } from "date-fns";
 import { API_BASE_URL } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import { handleDispatchBookingData } from "@/helper/bookingData";
+import { ArrowLeft } from "lucide-react";
 
-const UserDetails = ({ onNext }) => {
+const UserDetails = ({ onNext,onBack }) => {
   const { data: session } = useSession();
-  const { id: yachtId,yachtsType } = useParams();
+  const { id: yachtId, yachtsType } = useParams();
   const { toast } = useToast();
-  const { bookingData, updateBookingData, selectedYacht,appStatBookingContext } = useBookingContext();
+  const { bookingData, updateBookingData, selectedYacht, appStatBookingContext } = useBookingContext();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
 
   // Convert countries object to sorted array
@@ -49,10 +51,10 @@ const UserDetails = ({ onNext }) => {
 
     try {
 
-      if(yachtsType == "yachts"){
+      if (yachtsType == "yachts") {
         const requiredFields = ['fullName', 'email', 'phone', 'country'];
         const missingFields = requiredFields.filter(field => !bookingData[field]);
-  
+
         if (missingFields.length > 0) {
           toast({
             title: "Validation Error",
@@ -61,7 +63,7 @@ const UserDetails = ({ onNext }) => {
           });
           return;
         }
-  
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(bookingData.email)) {
           toast({
@@ -71,7 +73,7 @@ const UserDetails = ({ onNext }) => {
           });
           return;
         }
-  
+
         const phoneRegex = /^\+?[\d\s-]{8,}$/;
         if (!phoneRegex.test(bookingData.phone)) {
           toast({
@@ -81,17 +83,17 @@ const UserDetails = ({ onNext }) => {
           });
           return;
         }
-  
+
         // const formattedDate = format(bookingData.date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         const formattedDate = format(bookingData.date, "yyyy-MM-dd");
         const formattedEndDate = bookingData.endDate ? format(bookingData.endDate, "yyyy-MM-dd") : null;
         const formattedTime = format(bookingData.startTime, 'HH:mm');
-  
+
         const formattedExtras = bookingData.extras.map(extra => ({
           ...extra,
           id: extra.id
         }));
-  
+
         const bookingPayload = {
           user_id: session?.user?.userid,
           yacht: yachtId,
@@ -125,12 +127,12 @@ const UserDetails = ({ onNext }) => {
           // })) : [],
           extras: formattedExtras
         };
-  
+
         if (!yachtId) {
           toast.error('Yacht ID is missing. Please select a yacht.');
           return;
         }
-  
+
         // Send POST request
         const response = await fetch(`${API_BASE_URL}/yacht/yacht_bookings/`, {
           method: 'POST',
@@ -139,30 +141,31 @@ const UserDetails = ({ onNext }) => {
           },
           body: JSON.stringify(bookingPayload),
         });
-  
+
         if (!response.ok) {
           const errorResult = await response.json(); // Parse the error response
           throw new Error(errorResult.error || 'Failed to create booking');
         }
-  
+
         const result = await response.json();
         // toast({
         //   title: "Temporary Booking Created",
         //   description: `Your temporary booking has been created. Your booking id is ${result.booking_id} Move forward to payment.`,
         //   variant: "success",
         // });
-  
+
         // Update booking context with booking ID
         updateBookingData({ bookingId: result.booking_id });
-        handleDispatchBookingData({...appStatBookingContext,
-                     ...bookingData
-                   })
-  
+        handleDispatchBookingData({
+          ...appStatBookingContext,
+          ...bookingData
+        })
+
         onNext();
-      }else if(yachtsType == "f1yachts"){
+      } else if (yachtsType == "f1yachts") {
         const requiredFields = ['fullName', 'email', 'phone', 'country'];
         const missingFields = requiredFields.filter(field => !bookingData[field]);
-  
+
         if (missingFields.length > 0) {
           toast({
             title: "Validation Error",
@@ -171,7 +174,7 @@ const UserDetails = ({ onNext }) => {
           });
           return;
         }
-  
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(bookingData.email)) {
           toast({
@@ -181,7 +184,7 @@ const UserDetails = ({ onNext }) => {
           });
           return;
         }
-  
+
         const phoneRegex = /^\+?[\d\s-]{8,}$/;
         if (!phoneRegex.test(bookingData.phone)) {
           toast({
@@ -191,17 +194,17 @@ const UserDetails = ({ onNext }) => {
           });
           return;
         }
-  
+
         // const formattedDate = format(bookingData.date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         const formattedDate = format(bookingData.date, "yyyy-MM-dd");
         const formattedEndDate = bookingData.endDate ? format(bookingData.endDate, "yyyy-MM-dd") : null;
         const formattedTime = format(bookingData.startTime, 'HH:mm');
-  
+
         const formattedExtras = bookingData.extras.map(extra => ({
           ...extra,
           id: extra.id
         }));
-  
+
         const bookingPayload = {
           user_id: session?.user?.userid,
           f1_yacht_id: yachtId,
@@ -235,12 +238,12 @@ const UserDetails = ({ onNext }) => {
           // })) : [],
           extras: formattedExtras
         };
-  
+
         if (!yachtId) {
           toast.error('Yacht ID is missing. Please select a yacht.');
           return;
         }
-  
+
         // Send POST request
         const response = await fetch(`${API_BASE_URL}/yacht/f1-yachts_booking/`, {
           method: 'POST',
@@ -249,29 +252,30 @@ const UserDetails = ({ onNext }) => {
           },
           body: JSON.stringify(bookingPayload),
         });
-  
+
         if (!response.ok) {
           const errorResult = await response.json(); // Parse the error response
           console.log(errorResult)
           throw new Error(errorResult.error || 'Failed to create booking');
         }
-  
+
         const result = await response.json();
         // toast({
         //   title: "Temporary Booking Created",
         //   description: `Your temporary booking has been created. Your booking id is ${result.booking_id} Move forward to payment.`,
         //   variant: "success",
         // });
-  
+
         // Update booking context with booking ID
         updateBookingData({ bookingId: result.booking_id });
-        handleDispatchBookingData({...appStatBookingContext,
-                     ...bookingData
-                   })
-  
+        handleDispatchBookingData({
+          ...appStatBookingContext,
+          ...bookingData
+        })
+
         onNext();
       }
-   
+
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -390,22 +394,31 @@ const UserDetails = ({ onNext }) => {
           value={bookingData.phone}
           onChange={(e) => {
             const value = e.target.value;
-            const sanitizedValue = value.replace(/[^0-9+]/g, ""); 
+            const sanitizedValue = value.replace(/[^0-9+]/g, "");
             updateBookingData({ phone: sanitizedValue });
           }}
           className="mt-1 block w-full"
         />
       </div>
+      <div className="flex justify-end">
+        <div className="col-span-2 mx-3 flex justify-end">
+          <Button onClick={() => onBack()} className="rounded-full  px-6 py-2 bg-[#91908b]  dark:text-white transition duration-300 hover:shadow-2xl">
+            <ArrowLeft className='w-4 h-4 ' />
 
-      <div className="col-span-2 flex justify-end">
-        <Button
-          type="submit"
-          disabled={loading}
-          className="rounded-full bg-[#BEA355] px-6 py-2 text-white"
-        >
-          {loading ? 'Saving...' : 'Next'}
-        </Button>
+            Back</Button>
+
+        </div>
+        <div className="col-span-2 flex justify-end">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="rounded-full bg-[#BEA355] px-6 py-2 text-white"
+          >
+            {loading ? 'Saving...' : 'Next'}
+          </Button>
+        </div>
       </div>
+
     </form>
   );
 };
