@@ -17,8 +17,8 @@ import { API_BASE_URL } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from 'next/navigation';
 
-const UserDetails = ({ onNext,onBack }) => {
-  const { id: yachtId,yachtsType } = useParams();
+const UserDetails = ({ onNext, onBack }) => {
+  const { id: yachtId, yachtsType } = useParams();
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht } = useBookingContext();
   const [loading, setLoading] = useState(false);
@@ -44,11 +44,11 @@ const UserDetails = ({ onNext,onBack }) => {
     setLoading(true);
 
     try {
-      if(yachtsType == "yachts"){
+      if (yachtsType == "yachts") {
 
         const requiredFields = ['fullName', 'email', 'phone', 'country'];
         const missingFields = requiredFields.filter(field => !bookingData[field]);
-  
+
         if (missingFields.length > 0) {
           toast({
             title: "Validation Error",
@@ -57,7 +57,7 @@ const UserDetails = ({ onNext,onBack }) => {
           });
           return;
         }
-    
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(bookingData.email)) {
           toast({
@@ -67,7 +67,7 @@ const UserDetails = ({ onNext,onBack }) => {
           });
           return;
         }
-    
+
         const phoneRegex = /^\+?[\d\s-]{8,}$/;
         if (!phoneRegex.test(bookingData.phone)) {
           toast({
@@ -77,17 +77,17 @@ const UserDetails = ({ onNext,onBack }) => {
           });
           return;
         }
-  
+
         // const formattedDate = format(bookingData.date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         const formattedDate = format(bookingData.date, "yyyy-MM-dd");
         const formattedEndDate = bookingData.endDate ? format(bookingData.endDate, "yyyy-MM-dd") : null;
         const formattedTime = format(bookingData.startTime, 'HH:mm');
-  
+
         const formattedExtras = bookingData.extras.map(extra => ({
           ...extra,
           id: extra.id
-        }));  
-  
+        }));
+
         const bookingPayload = {
           yacht: yachtId,
           full_name: bookingData.fullName,
@@ -120,12 +120,12 @@ const UserDetails = ({ onNext,onBack }) => {
           // })) : [],
           extras: formattedExtras
         };
-  
+
         if (!yachtId) {
           toast.error('Yacht ID is missing. Please select a yacht.');
           return;
         }
-    
+
         // Send POST request
         const response = await fetch(`${API_BASE_URL}/yacht/yacht_booking/`, {
           method: 'POST',
@@ -134,27 +134,27 @@ const UserDetails = ({ onNext,onBack }) => {
           },
           body: JSON.stringify(bookingPayload),
         });
-    
+
         if (!response.ok) {
           const errorResult = await response.json(); // Parse the error response
           throw new Error(errorResult.error || 'Failed to create booking');
         }
-    
+
         const result = await response.json();
         // toast({
         //   title: "Temporary Booking Created",
         //   description: `Your temporary booking has been created. Your booking id is ${result.booking_id} Move forward to payment.`,
         //   variant: "success",
         // });
-  
+
         // Update booking context with booking ID
         updateBookingData({ bookingId: result.booking_id });
-  
+
         onNext();
-      }else if(yachtsType == "f1yachts"){
+      } else if (yachtsType == "f1yachts") {
         const requiredFields = ['fullName', 'email', 'phone', 'country'];
         const missingFields = requiredFields.filter(field => !bookingData[field]);
-  
+
         if (missingFields.length > 0) {
           toast({
             title: "Validation Error",
@@ -163,7 +163,7 @@ const UserDetails = ({ onNext,onBack }) => {
           });
           return;
         }
-    
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(bookingData.email)) {
           toast({
@@ -173,7 +173,7 @@ const UserDetails = ({ onNext,onBack }) => {
           });
           return;
         }
-    
+
         const phoneRegex = /^\+?[\d\s-]{8,}$/;
         if (!phoneRegex.test(bookingData.phone)) {
           toast({
@@ -183,17 +183,17 @@ const UserDetails = ({ onNext,onBack }) => {
           });
           return;
         }
-  
+
         // const formattedDate = format(bookingData.date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         const formattedDate = format(bookingData.date, "yyyy-MM-dd");
         const formattedEndDate = bookingData.endDate ? format(bookingData.endDate, "yyyy-MM-dd") : null;
         const formattedTime = format(bookingData.startTime, 'HH:mm');
-  
+
         const formattedExtras = bookingData.extras.map(extra => ({
           ...extra,
           id: extra.id
-        }));  
-  
+        }));
+
         const bookingPayload = {
           f1_yacht_id: yachtId,
           full_name: bookingData.fullName,
@@ -226,12 +226,12 @@ const UserDetails = ({ onNext,onBack }) => {
           // })) : [],
           extras: formattedExtras
         };
-  
+
         if (!yachtId) {
           toast.error('Yacht ID is missing. Please select a yacht.');
           return;
         }
-    
+
         // Send POST request
         const response = await fetch(`${API_BASE_URL}/yacht/f1-yachts_booking/`, {
           method: 'POST',
@@ -240,25 +240,25 @@ const UserDetails = ({ onNext,onBack }) => {
           },
           body: JSON.stringify(bookingPayload),
         });
-    
+
         if (!response.ok) {
           const errorResult = await response.json(); // Parse the error response
           throw new Error(errorResult.error || 'Failed to create booking');
         }
-    
+
         const result = await response.json();
         // toast({
         //   title: "Temporary Booking Created",
         //   description: `Your temporary booking has been created. Your booking id is ${result.booking_id} Move forward to payment.`,
         //   variant: "success",
         // });
-  
+
         // Update booking context with booking ID
         updateBookingData({ bookingId: result.booking_id });
-  
+
         onNext();
       }
- 
+
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -302,7 +302,7 @@ const UserDetails = ({ onNext,onBack }) => {
           <div className="mt-1 block w-full h-10 bg-gray-200 rounded"></div>
         </div>
 
-        
+
       </form>
     );
   }
@@ -344,7 +344,7 @@ const UserDetails = ({ onNext,onBack }) => {
         <Label htmlFor="country" className="block text-sm font-medium">
           Country <span className="text-red-500">*</span>
         </Label>
-        <Select 
+        <Select
           value={bookingData.country}
           onValueChange={(value) => updateBookingData({ country: value })}
         >
@@ -376,25 +376,26 @@ const UserDetails = ({ onNext,onBack }) => {
         />
       </div>
 
-      <div className="flex justify-end">
-        <div className="col-span-2 mx-3 flex justify-end">
-          <Button onClick={() => onBack()} className="rounded-full  px-6 py-2 bg-[#91908b]  dark:text-white transition duration-300 hover:shadow-2xl">
-            <ArrowLeft className='w-4 h-4 ' />
+      {/* Buttons Wrapper */}
+      <div className="col-span-2 flex justify-end mt-4">
+        <Button
+          onClick={() => onBack()}
+          className="rounded-full px-6 py-2 bg-[#91908b] dark:text-white transition duration-300 hover:shadow-2xl flex items-center"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
 
-            Back</Button>
-
-        </div>
-        <div className="col-span-2 flex justify-end">
-          <Button
-            type="submit"
-            disabled={loading}
-            className="rounded-full bg-[#BEA355] px-6 py-2 text-white"
-          >
-            {loading ? 'Saving...' : 'Next'}
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="rounded-full bg-[#BEA355] px-6 py-2 text-white ml-4"
+        >
+          {loading ? 'Saving...' : 'Next'}
+        </Button>
       </div>
     </form>
+
   );
 };
 

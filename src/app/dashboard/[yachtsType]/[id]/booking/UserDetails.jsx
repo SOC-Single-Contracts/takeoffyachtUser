@@ -20,7 +20,7 @@ import { useSession } from "next-auth/react";
 import { handleDispatchBookingData } from "@/helper/bookingData";
 import { ArrowLeft } from "lucide-react";
 
-const UserDetails = ({ onNext,onBack }) => {
+const UserDetails = ({ onNext, onBack }) => {
   const { data: session } = useSession();
   const { id: yachtId, yachtsType } = useParams();
   const { toast } = useToast();
@@ -372,8 +372,7 @@ const UserDetails = ({ onNext,onBack }) => {
             <SelectValue placeholder="Select your country" />
           </SelectTrigger>
           <SelectContent>
-
-            {countriesList.map(country => (
+            {countriesList.map((country) => (
               <SelectItem key={country?.name} value={country?.name}>
                 {country.name}
               </SelectItem>
@@ -400,26 +399,27 @@ const UserDetails = ({ onNext,onBack }) => {
           className="mt-1 block w-full"
         />
       </div>
-      <div className="flex justify-end">
-        <div className="col-span-2 mx-3 flex justify-end">
-          <Button onClick={() => onBack()} className="rounded-full  px-6 py-2 bg-[#91908b]  dark:text-white transition duration-300 hover:shadow-2xl">
-            <ArrowLeft className='w-4 h-4 ' />
 
-            Back</Button>
+      {/* Wrap buttons in a full-width div and use `md:col-span-2` */}
+      <div className="col-span-2 flex justify-end mt-4">
+        <Button
+          onClick={() => onBack()}
+          className="rounded-full px-6 py-2 bg-[#91908b] dark:text-white transition duration-300 hover:shadow-2xl flex items-center"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
 
-        </div>
-        <div className="col-span-2 flex justify-end">
-          <Button
-            type="submit"
-            disabled={loading}
-            className="rounded-full bg-[#BEA355] px-6 py-2 text-white"
-          >
-            {loading ? 'Saving...' : 'Next'}
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="rounded-full bg-[#BEA355] px-6 py-2 text-white ml-4"
+        >
+          {loading ? "Saving..." : "Next"}
+        </Button>
       </div>
-
     </form>
+
   );
 };
 
