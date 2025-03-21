@@ -22,7 +22,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchResults from './mainSearch';
 import { Loading } from '@/components/ui/loading';
 import YachtCard from '@/components/yachts/YachtCard';
-import { useSearchParams, useRouter  } from 'next/navigation';
+import { useSearchParams, useRouter,useParams  } from 'next/navigation';
 import EmptySearch from '@/components/shared/EmptySearch';
 import yachtApi from '@/services/api';
 import { format } from 'date-fns';
@@ -41,6 +41,7 @@ const SearchYacht = () => {
     const [originalYachts, setOriginalYachts] = useState([]);
     const [startFilterWork, setStartFilterWork] = useState(false)
     const [onCancelEachFilter, setonCancelEachFilter] = useState(false);
+        const { yachtsType} = useParams();
     const [filters, setFilters] = useState({
         min_price: 1000,
         max_price: 4000,
@@ -256,7 +257,7 @@ const SearchYacht = () => {
         if (!userId) return;
 
         let payload = {
-            YachtType: "regular",
+            YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
             user_id: session?.user?.userid || 1,
             // guest: parseInt(searchParams.get('guests')) || 1,
             // min_guest: parseInt(searchParams.get('min_guest')),
@@ -475,7 +476,7 @@ const SearchYacht = () => {
     }, [originalYachts]);
     //test
     // useEffect(() => {
-    //     console.log("yachts", yachts, error);
+    //     console.log("yachts", yachts);
     // }, [yachts]);
 
 

@@ -93,7 +93,7 @@ const Header = () => {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ user_id: 1 || '', ...searchParams })
           }),
-          fetch('https://api.takeoffyachts.com/yacht/check_yacht/', {
+          fetch('https://api.takeoffyachts.com/yacht/check_yacht/?isthis', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ user_id: 1 || '', ...searchParams })

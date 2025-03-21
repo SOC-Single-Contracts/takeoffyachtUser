@@ -40,6 +40,7 @@ const Cart = () => {
       try {
         const response = await fetch('https://api.takeoffyachts.com/wishlist/wishlistview/');
         const wishlistItems = await response.json();
+        console.log(wishlistItems)
         const filterYac = wishlistItems.filter((item)=>item?.yacht == 55);
 
         const detailedItems = await Promise.all(wishlistItems.map(async (item, index) => {

@@ -19,6 +19,7 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import Image from 'next/image';
 import BookingGallery from "@/components/lp/BookingGallery";
+import { useParams } from "next/navigation";
 
 const safeFormat = (dateString, formatString, fallback = 'N/A') => {
   try {
@@ -44,44 +45,83 @@ const Summary = ({ onNext, initialBookingId }) => {
   const [editableExtras, setEditableExtras] = useState([]);
   const [isPartialPayment, setIsPartialPayment] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+    const { yachtsType} = useParams();
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
       try {
-        const currentBookingId = initialBookingId || bookingData.bookingId;
+        if(yachtsType == "yachts"){
+          const currentBookingId = initialBookingId || bookingData.bookingId;
 
-        if (!currentBookingId) {
-          toast.error('No booking ID found. Please complete the booking process again.');
-          return;
+          if (!currentBookingId) {
+            toast.error('No booking ID found. Please complete the booking process again.');
+            return;
+          }
+  
+          const response = await fetch(`${API_BASE_URL}/yacht/booking/${currentBookingId}/`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+  
+          if (!response.ok) {
+            throw new Error('Failed to fetch booking details');
+          }
+  
+          const details = await response.json();
+  
+          const activeExtras = details.extras_data.filter(extra => extra.quantity > 0);
+  
+          setBookingDetails(details);
+          setEditableExtras(details.extras_data || []);
+          setIsPartialPayment(details.is_partial_payment || false);
+  
+          updateBookingData({
+            bookingId: details.id,
+            qrCodeUrl: details.qr_code,
+            remainingCost: details.remaining_cost,
+            totalCost: details.total_cost,
+            paidCost: details.paid_cost,
+            extras: activeExtras
+          });
+        }else if(yachtsType == "f1yachts"){
+          const currentBookingId = initialBookingId || bookingData.bookingId;
+
+          if (!currentBookingId) {
+            toast.error('No booking ID found. Please complete the booking process again.');
+            return;
+          }
+  
+          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${currentBookingId}/`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+  
+          if (!response.ok) {
+            throw new Error('Failed to fetch booking details');
+          }
+  
+          const details = await response.json();
+  
+          const activeExtras = details.extras_data.filter(extra => extra.quantity > 0);
+  
+          setBookingDetails(details);
+          setEditableExtras(details.extras_data || []);
+          setIsPartialPayment(details.is_partial_payment || false);
+  
+          updateBookingData({
+            bookingId: details.id,
+            qrCodeUrl: details.qr_code,
+            remainingCost: details.remaining_cost,
+            totalCost: details.total_cost,
+            paidCost: details.paid_cost,
+            extras: activeExtras
+          });
         }
-
-        const response = await fetch(`${API_BASE_URL}/yacht/booking/${currentBookingId}/`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch booking details');
-        }
-
-        const details = await response.json();
-
-        const activeExtras = details.extras_data.filter(extra => extra.quantity > 0);
-
-        setBookingDetails(details);
-        setEditableExtras(details.extras_data || []);
-        setIsPartialPayment(details.is_partial_payment || false);
-
-        updateBookingData({
-          bookingId: details.id,
-          qrCodeUrl: details.qr_code,
-          remainingCost: details.remaining_cost,
-          totalCost: details.total_cost,
-          paidCost: details.paid_cost,
-          extras: activeExtras
-        });
+     
       } catch (error) {
         console.error('Error fetching booking details:', error);
         toast({
@@ -321,7 +361,7 @@ const Summary = ({ onNext, initialBookingId }) => {
   const handleCopyLink = () => {
     const bookingId = bookingDetails.id;
     const yachtId = selectedYacht?.yacht?.id || bookingData.yachtId;
-    const bookingLink = `${window.location.origin}/dashboard/yachts/${yachtId}/guest-booking/?bookingId=${bookingId}`;
+    const bookingLink = `${window.location.origin}/dashboard/${yachtsType}/${yachtId}/guest-booking/?bookingId=${bookingId}`;
 
     navigator.clipboard.writeText(bookingLink).then(() => {
       setIsCopied(true);
@@ -588,7 +628,7 @@ const Summary = ({ onNext, initialBookingId }) => {
                       selectedYacht?.yacht?.image20,
                     ]
                       .filter((image) => typeof image === "string" && image.trim() !== "")
-                      .map((image) => `${process.env.NEXT_PUBLIC_API_URL}${image}`)
+                      .map((image) => `${process.env.NEXT_PUBLIC_S3_URL}${image}`)
         
                     return <BookingGallery images={images} />
                   })()}
@@ -665,10 +705,13 @@ const Summary = ({ onNext, initialBookingId }) => {
                 </span>
               </TableCell>
               <TableCell className="font-medium">
-                {bookingDetails.end_date
-                  ? `${Math.ceil((new Date(bookingDetails.end_date) - new Date(bookingDetails.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days`
-                  : `${safeFormat(bookingDetails.starting_time, 'hh:mm a')} (${bookingDetails.duration_hour} hours)`
-                }
+              {yachtsType == "yachts" ? bookingDetails?.end_date
+                  ? `${Math.ceil((new Date(bookingDetails?.end_date) - new Date(bookingDetails?.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days`
+                  : `${safeFormat(bookingDetails?.starting_time, 'hh:mm a')} (${bookingDetails?.duration_hour} hours)`
+                 :yachtsType == "f1yachts" ? bookingDetails?.end_date
+                 ? `${Math.ceil((new Date(bookingDetails?.end_date) - new Date(bookingDetails?.start_date)) / (1000 * 60 * 60 * 24) + 1)} days`
+                 : `notprovided`
+               :""}
               </TableCell>
             </TableRow>
             {/* <TableRow>

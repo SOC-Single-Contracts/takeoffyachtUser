@@ -40,7 +40,7 @@ const Skeleton = ({ className }) => (
 );
 
 const YachtDetail = () => {
-  const { id } = useParams();
+  const { id, yachtsType } = useParams();
   const { data: session, status } = useSession();
   const [selectedYacht, setSelectedYacht] = useState(null);
   const [featuredYachts, setFeaturedYachts] = useState([]);
@@ -59,11 +59,18 @@ const YachtDetail = () => {
       if (status === "loading") return; // Wait for session to load
 
       try {
-        const newData = await fetchYachts(session?.user?.userid || 1);
+        const newData = await fetchYachts(session?.user?.userid || 1, yachtsType == "f1yachts" ? "f1yachts" : "regular");
         const yacht = newData?.find(
-          (item) => item.yacht && item.yacht.id.toString() === id
+          (item) => item.yacht && item.yacht.id.toString() == id
         );
 
+        // const allYachtIds = newData?.map(item => item.yacht?.id).filter(id => id !== undefined);
+
+        // console.log("All Yacht IDs:", allYachtIds);
+        // console.log("yacht", yacht, newData, id);
+        // const yachtWithId8 = newData?.find(item => item.yacht?.id === 8);
+
+        // console.log("Yacht with ID 8:", yachtWithId8);
         if (!yacht) {
           throw new Error('Yacht not found');
         }
@@ -345,7 +352,7 @@ const YachtDetail = () => {
     }
   };
 
-//test
+  //test
   // console.log(selectedYacht)
 
   return (
@@ -358,7 +365,7 @@ const YachtDetail = () => {
                 {/* Default View */}
                 {/* <div className="w-full mb-0">
                   <Image
-                    src={`https://api.takeoffyachts.com${selectedMainImage || yachtImages[0]}`}
+                    src={`${process.env.NEXT_PUBLIC_S3_URL}${selectedMainImage || yachtImages[0]}`}
                     alt="Main Yacht Image"
                     className="w-full h-[320px] object-cover rounded-md shadow-md cursor-pointer"
                     width={800}
@@ -371,7 +378,7 @@ const YachtDetail = () => {
                     {uniqueYachtImages.map((image, index) => (
                       <CarouselItem key={index}>
                         <Image
-                          src={`https://api.takeoffyachts.com${image}`}
+                          src={`${process.env.NEXT_PUBLIC_S3_URL}${image}`}
                           alt={`Yacht Image ${index + 1}`}
                           className="w-full h-[180px] md:h-[320px] object-cover rounded-md shadow-md cursor-pointer"
                           width={800}
@@ -395,7 +402,7 @@ const YachtDetail = () => {
                       onClick={() => handleMainImageSelect(image)}
                     >
                       <Image
-                        src={`https://api.takeoffyachts.com${image}`}
+                        src={`${process.env.NEXT_PUBLIC_S3_URL}${image}`}
                         alt={`Yacht Image ${index + 1}`}
                         className="w-full h-full object-cover rounded-md shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
                         width={200}
@@ -439,11 +446,11 @@ const YachtDetail = () => {
                         {/* Selected Image Display */}
                         <div className="md:col-span-2 mb-4">
                           <a
-                            href={`https://api.takeoffyachts.com${selectedGalleryImage || yachtImages[0]}`}
+                            href={`${process.env.NEXT_PUBLIC_S3_URL}${selectedGalleryImage || yachtImages[0]}`}
                             data-fancybox="yacht-gallery"
                           >
                             <Image
-                              src={`https://api.takeoffyachts.com${selectedGalleryImage || yachtImages[0]}`}
+                              src={`${process.env.NEXT_PUBLIC_S3_URL}${selectedGalleryImage || yachtImages[0]}`}
                               alt="Selected Gallery Image"
                               className="w-full h-[400px] md:h-[500px] object-cover rounded-md cursor-pointer"
                               width={800}
@@ -457,7 +464,7 @@ const YachtDetail = () => {
                         {yachtImages.map((image, index) => (
                           <a
                             key={index}
-                            href={`https://api.takeoffyachts.com${image}`}
+                            href={`${process.env.NEXT_PUBLIC_S3_URL}${image}`}
                             data-fancybox="yacht-gallery"
                             className="aspect-square"
                             onClick={(e) => {
@@ -466,7 +473,7 @@ const YachtDetail = () => {
                             }}
                           >
                             <Image
-                              src={`https://api.takeoffyachts.com${image}`}
+                              src={`${process.env.NEXT_PUBLIC_S3_URL}${image}`}
                               alt={`Yacht Image ${index + 1}`}
                               quality={100}
                               className={`w-full h-full object-cover rounded-md shadow-sm cursor-pointer 
@@ -538,7 +545,7 @@ const YachtDetail = () => {
                     </div>
                   </div>
                 </div>
-                <Link className="hidden md:block" href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
+                <Link className="hidden md:block" href={session ? `/dashboard/${yachtsType}/${id}/booking` : `/dashboard/${yachtsType}/${id}/guest-booking`}>
                   <Button
                     // onClick={(e) => {
                     //   if (!session) {
@@ -706,7 +713,7 @@ const YachtDetail = () => {
                 </section>
               )}
 
-              {ny_status && (ny_availability || ny_price || ny_firework) && (
+              {yachtsType !== "f1yachts" && ny_status && (ny_availability || ny_price || ny_firework) && (
                 <section className="mt-4">
                   <h2 className="text-lg font-medium">
                     New Year's Eve
@@ -871,7 +878,7 @@ const YachtDetail = () => {
       </section>
       <div className="fixed md:hidden bottom-0 left-0 w-full  shadow-md z-50 p-4">
         <div className="relative  flex justify-center">
-          <Link className="w-full" href={session ? `/dashboard/yachts/${id}/booking` : `/dashboard/yachts/${id}/guest-booking`}>
+          <Link className="w-full" href={session ? `/dashboard/${yachtsType}/${id}/booking` : `/dashboard/${yachtsType}/${id}/guest-booking`}>
             <Button
               className="rounded-full bg-[#BEA355] w-full min-w-[210px]} mx-auto text-white h-12"
             >
