@@ -26,9 +26,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from "@/hooks/use-toast";
+import { useGlobalState } from '@/context/GlobalStateContext';
 
 
 const SearchFilter = () => {
+  const {state, setFilter} = useGlobalState();
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession();
@@ -46,6 +48,7 @@ const SearchFilter = () => {
     // infants: 0,
     capacity:1,
   });
+  const [minGuest, setMinGuest] = useState(0)
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -65,7 +68,7 @@ const SearchFilter = () => {
         let locationResults;
         switch (activeMainTab) {
           case 'yachts':
-            locationResults = await yachtApi.checkYachts({ user_id: session?.user?.userid || 1 });
+            locationResults = await yachtApi.checkYachts({ user_id: session?.user?.userid || 1, YachtType: "regular", });
             // For yachts, extract location and yacht_image from the nested yacht object
             if (locationResults?.data) {
               const transformedLocations = locationResults.data
@@ -185,6 +188,7 @@ const SearchFilter = () => {
         case 'yachts':
           const yachtParams = {
             ...baseParams,
+            YachtType: "regular",
             guest: totalGuests > 0 ? totalGuests : undefined,
             location: selectedCity || undefined,
             // min_price: 1000,
@@ -218,13 +222,14 @@ const SearchFilter = () => {
           searchPath = '/dashboard/events/search';
           break;
       }
-
+      setFilter({max_guest: totalGuests, location: selectedCity})
       if (searchResults?.error_code === 'pass') {
         router.push(`${searchPath}?${new URLSearchParams({
           location: selectedCity || '',
           date: formattedStartDate || '',
           guests: totalGuests > 0 ? totalGuests : '',
-          name: searchByName || ""
+          name: searchByName || "",
+          ...(minGuest ? { min_guest: parseInt(minGuest) } : {})
         }).toString()}`);
         setIsDialogOpen(false);
       } else {
@@ -242,17 +247,22 @@ const SearchFilter = () => {
     // let adults = 0;
     // let children = 0;
     let capacity = 0;
+    let min_guest = 0
 
     if (range === "1 - 10") {
+      min_guest = 1
       capacity = 10;
     } else if (range === "10 - 30") {
+      min_guest = 10
       capacity = 30;
     } else if (range === "30 - 50") {
+      min_guest = 30
       capacity = 50;
     } else if (range === "50+") {
       capacity = 100;
     }
 
+    setMinGuest(min_guest)
     setGuests({ capacity });
   };
 
@@ -283,8 +293,6 @@ const SearchFilter = () => {
     setIsDialogOpen(false); // Close the dialog when clicking on the specific div
   };
 
-
-
   return (
     <section  className="">
       <Sheet open={isDialogOpen} 
@@ -299,7 +307,7 @@ const SearchFilter = () => {
             <div className="flex items-center">
               <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
                 <MapPin className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
-                <span className="truncate max-w-[80px] text-xs dark:text-gray-300">{selectedCity || "Where?"}</span>
+                <span className="truncate max-w-[80px] text-xs dark:text-gray-300">{state?.filters?.location || "Where?"}</span>
               </div>
               <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
                 <CalendarIcon className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
@@ -312,7 +320,7 @@ const SearchFilter = () => {
               <div className="flex items-center px-2 md:px-4 py-1.5 md:py-3 text-sm">
                 <Users className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
                 <span className="dark:text-gray-300 text-xs">
-                  {guests?.capacity} Guests
+                {state?.filters?.max_guest} Guests
                 </span>
               </div>
             </div>
@@ -479,6 +487,7 @@ const SearchFilter = () => {
                               //   }));
                               // }}
                               onChange={(e) => {
+                                setMinGuest(0)
                                 const value = e.target.value;
                                 if (value === "") {
                                   setGuests(prev => ({

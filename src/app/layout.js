@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { initialFilterGlobal } from "@/helper/filterData";
 import { initialBookingGlobal } from "@/helper/bookingData";
+import { GlobalStateProvider } from "@/context/GlobalStateContext";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -78,14 +79,16 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} ${jakarta.variable} antialiased bg-[#E2E2E2] text-black dark:bg-gray-900 dark:text-white`}
       >
-        <Providers>
-          <ThemeProvider>
-            {isLoading && <GlobalLoading />}
-            {children}
-            <WhatsAppButton />
-            <Toaster />
-          </ThemeProvider>
-        </Providers>
+        <GlobalStateProvider>
+          <Providers>
+            <ThemeProvider>
+              {isLoading && <GlobalLoading />}
+              {children}
+              <WhatsAppButton />
+              <Toaster />
+            </ThemeProvider>
+          </Providers>
+        </GlobalStateProvider>
       </body>
     </html>
   );
