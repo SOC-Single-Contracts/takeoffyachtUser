@@ -26,9 +26,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from "@/hooks/use-toast";
+import { useGlobalState } from '@/context/GlobalStateContext';
 
 
 const SearchFilter = () => {
+  const { state, setFilter } = useGlobalState();
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession();
@@ -40,14 +42,16 @@ const SearchFilter = () => {
     from: null,
     to: null
   });
-      const { yachtsType} = useParams();
+  const { yachtsType } = useParams();
+  console.log(yachtsType)
 
   const [guests, setGuests] = useState({
     // adults: 1,
     // children: 0,
     // infants: 0,
-    capacity:1,
+    capacity: 1,
   });
+  const [minGuest, setMinGuest] = useState(0)
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -67,7 +71,7 @@ const SearchFilter = () => {
         let locationResults;
         switch (activeMainTab) {
           case 'yachts':
-            locationResults = await yachtApi.checkYachts({ user_id: session?.user?.userid || 1  });
+            locationResults = await yachtApi.checkYachts({ user_id: session?.user?.userid || 1, yachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular" });
             // For yachts, extract location and yacht_image from the nested yacht object
             if (locationResults?.data) {
               const transformedLocations = locationResults.data
@@ -120,7 +124,7 @@ const SearchFilter = () => {
   }, [activeMainTab, session]);
 
   // Fetch cities from City API
-  useEffect(() => { 
+  useEffect(() => {
     const fetchCities = async () => {
       try {
         setIsCitiesLoading(true);
@@ -142,10 +146,10 @@ const SearchFilter = () => {
 
     fetchCities();
   }, []);
-//test
-//   useEffect(()=>{
-// console.log("guests",guests)
-//   },[guests])
+  //test
+  //   useEffect(()=>{
+  // console.log("guests",guests)
+  //   },[guests])
 
   const handleGuestChange = (type, action) => {
     setGuests(prev => ({
@@ -164,7 +168,7 @@ const SearchFilter = () => {
       const formattedEndDate = selectedDateRange?.to ? format(selectedDateRange?.to, 'yyyy-MM-dd') : null;
 
       // Check if at least one criterion is provided
-      if (!selectedCity && !formattedStartDate && (totalGuests === 0 || totalGuests == "") ) {
+      if (!selectedCity && !formattedStartDate && (totalGuests === 0 || totalGuests == "")) {
         toast({
           title: "Error",
           description: "Please select at least one search criterion.",
@@ -178,7 +182,7 @@ const SearchFilter = () => {
         user_id: session?.user?.userid || 1,
         starting_date: formattedStartDate,
         ending_date: formattedEndDate,
-        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
+        YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
 
       };
 
@@ -190,6 +194,7 @@ const SearchFilter = () => {
         case 'yachts':
           const yachtParams = {
             ...baseParams,
+            YachtType: "regular",
             guest: totalGuests > 0 ? totalGuests : undefined,
             location: selectedCity || undefined,
             // min_price: 1000,
@@ -200,19 +205,19 @@ const SearchFilter = () => {
             cabin_des: false,
             cabin_asc: true,
             name: searchByName,
-        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
+            YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
 
-             
+
           };
           searchResults = await yachtApi.checkYachts(yachtParams);
-          searchPath = `/dashboard/${yachtsType}/search`;
+          searchPath = `/dashboard/${yachtsType == "f1yachts" ? "f1yachts" : "yachts"}/search`;
           break;
 
         case 'experiences':
           const experienceParams = {
             ...baseParams,
             name: searchByName,
-        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
+            YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
 
 
           };
@@ -224,20 +229,21 @@ const SearchFilter = () => {
           const eventParams = {
             user_id: session?.user?.userid || 1,
             name: searchByName,
-        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
+            YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
 
           };
           searchResults = await yachtApi.checkEvents(eventParams);
           searchPath = '/dashboard/events/search';
           break;
       }
-
+      setFilter({ max_guest: totalGuests, location: selectedCity })
       if (searchResults?.error_code === 'pass') {
         router.push(`${searchPath}?${new URLSearchParams({
           location: selectedCity || '',
           date: formattedStartDate || '',
           guests: totalGuests > 0 ? totalGuests : '',
-          name: searchByName || ""
+          name: searchByName || "",
+          ...(minGuest ? { min_guest: parseInt(minGuest) } : {})
         }).toString()}`);
         setIsDialogOpen(false);
       } else {
@@ -255,17 +261,22 @@ const SearchFilter = () => {
     // let adults = 0;
     // let children = 0;
     let capacity = 0;
+    let min_guest = 0
 
     if (range === "1 - 10") {
+      min_guest = 1
       capacity = 10;
     } else if (range === "10 - 30") {
+      min_guest = 10
       capacity = 30;
     } else if (range === "30 - 50") {
+      min_guest = 30
       capacity = 50;
     } else if (range === "50+") {
       capacity = 100;
     }
 
+    setMinGuest(min_guest)
     setGuests({ capacity });
   };
 
@@ -273,7 +284,7 @@ const SearchFilter = () => {
     setActiveSearchTab("where");
     setSelectedCity("");
     setSelectedDateRange({ from: null, to: null });
-    setGuests({ capacity:1 });
+    setGuests({ capacity: 1 });
     setsearchByName("")
   };
 
@@ -296,23 +307,21 @@ const SearchFilter = () => {
     setIsDialogOpen(false); // Close the dialog when clicking on the specific div
   };
 
-
-
   return (
-    <section  className="">
-      <Sheet open={isDialogOpen} 
-      onOpenChange={(open) => {
-        setIsDialogOpen(open);
-        if (!open) resetSearch();
-      }}
+    <section className="">
+      <Sheet open={isDialogOpen}
+        onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) resetSearch();
+        }}
       // ref={sheetRef} // Assign the ref here
       >
-        <SheetTrigger  asChild>
+        <SheetTrigger asChild>
           <div className="flex items-center justify-between bg-white dark:bg-gray-700 lg:w-[400px] rounded-full shadow-lg cursor-pointer">
             <div className="flex items-center">
               <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
                 <MapPin className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
-                <span className="truncate max-w-[80px] text-xs dark:text-gray-300">{selectedCity || "Where?"}</span>
+                <span className="truncate max-w-[80px] text-xs dark:text-gray-300">{state?.filters?.location || "Where?"}</span>
               </div>
               <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
                 <CalendarIcon className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
@@ -325,7 +334,7 @@ const SearchFilter = () => {
               <div className="flex items-center px-2 md:px-4 py-1.5 md:py-3 text-sm">
                 <Users className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
                 <span className="dark:text-gray-300 text-xs">
-                  {guests?.capacity} Guests
+                  {state?.filters?.max_guest} Guests
                 </span>
               </div>
             </div>
@@ -338,26 +347,26 @@ const SearchFilter = () => {
             </Button>
           </div>
         </SheetTrigger>
-        <SheetContent handleCloseSheet={handleCloseSheet}   side="top" className="max-w-8xl p-0 overflow-hidden mt-[-10.5rem] h-[700px] rounded-b-2xl border-none shadow-none outline-none bg-none bg-transparent">
+        <SheetContent handleCloseSheet={handleCloseSheet} side="top" className="max-w-8xl p-0 overflow-hidden mt-[-10.5rem] h-[700px] rounded-b-2xl border-none shadow-none outline-none bg-none bg-transparent">
           <SheetHeader>
             <VisuallyHidden>
               <SheetTitle>Yacht Search Filter</SheetTitle>
             </VisuallyHidden>
           </SheetHeader>
           <div
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent closing the sheet
-            // Your button logic here
-          }}
-             className="w-full">
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent closing the sheet
+              // Your button logic here
+            }}
+            className="w-full">
             <div className="transition-all duration-300 ease-in-out">
               <Tabs
                 value={activeMainTab}
                 onValueChange={setActiveMainTab}
                 className="w-full mt-40 md:mt-40"
               >
-                <div 
-                className="bg-white flex items-center justify-between dark:bg-gray-800 py-3.5 md:py-8 transition-all duration-300 ease-in-out z-0">
+                <div
+                  className="bg-white flex items-center justify-between dark:bg-gray-800 py-3.5 md:py-8 transition-all duration-300 ease-in-out z-0">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -441,7 +450,7 @@ const SearchFilter = () => {
                       </div>
                     </TabsTrigger>
                     <div>
-                      
+
                     </div>
                     <TabsTrigger
                       value="search"
@@ -492,6 +501,7 @@ const SearchFilter = () => {
                               //   }));
                               // }}
                               onChange={(e) => {
+                                setMinGuest(0)
                                 const value = e.target.value;
                                 if (value === "") {
                                   setGuests(prev => ({
