@@ -91,7 +91,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
   };
   
   const getPaymentButtonText = () => {
-    if (isProcessing) return 'Processing...';
+    // if (isProcessing) return 'Processing...';
     
     const paymentAmount = calculatePaymentAmount();
     
