@@ -28,7 +28,13 @@ export default function YachtCard({ yacht }) {
   };
 
   return (
+    
 
+
+
+
+
+    
     <Card className="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px]] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out">
         <Link href={`/dashboard/yachts/${yachtData?.id}`}>
       <div className="relative">
