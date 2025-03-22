@@ -21,8 +21,10 @@ import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, Ca
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchFilter from '@/components/lp/shared/SearchFilter';
 import { useParams, useRouter } from "next/navigation";
-       
+           
 const PAGE_SIZE = 10;
+
+
 const Yachts = () => {
   const { data: session } = useSession();
   const router = useRouter();
