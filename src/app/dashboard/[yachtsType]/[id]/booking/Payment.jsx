@@ -47,6 +47,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
     !appStatWwalletContext ||
     Object.keys(appStatWwalletContext).length === 0 ||
     appStatWwalletContext?.balance === 0;
+  const [dueAmountAlltime, setdueAmountAlltime] = useState(600)
+  const [payOnlywithWallet, setpayOnlywithWallet] = useState(false)
 
 
 
@@ -78,7 +80,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             paidAmount: data.paid_cost
           });
         }
-
+        setdueAmountAlltime(data?.total_cost - data.paid_cost)
         setIsPartialPayment(data.is_partial_payment || false);
       } catch (error) {
         console.error('Error fetching booking details:', error);
@@ -137,317 +139,365 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
 
   const handleSubmitFull = async (e) => {
     e.preventDefault();
-    if (!stripe || !elements || !validateForm()) return;
-
-    if (!bookingData?.termsAccepted) {
-      toast({
-        title: "Error",
-        description: "You must accept the terms and conditions before proceeding.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (deductFromWallet && (Object.keys(appStatWwalletContext).length === 0 || appStatWwalletContext?.freezeWallet)) {
-      toast({
-        title: "Wallet Access Restricted",
-        description: "Your wallet is currently frozen. Please contact support for assistance.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-    setError(null);
-
-    try {
-      const totalAmount = calculateTotal();
-      const paymentAmount = totalAmount;
-
-      const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: elements.getElement(CardElement),
-        billing_details: {
-          name: bookingData.fullName,
-          email: bookingData.email,
-          phone: bookingData.phone,
-        },
-      });
-
-      if (paymentMethodError) throw new Error(paymentMethodError.message);
-
-      // Use paymentType to determine endpoint
-      let endpoint;
-      if (yachtsType == "yachts") {
-        endpoint = paymentType === 'remaining'
-          ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
-          : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
-      } else if (yachtsType == "f1yachts") {
-        endpoint = paymentType === 'remaining'
-          ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
-          : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+    if(payOnlywithWallet){
+      if (!bookingData?.termsAccepted) {
+        toast({
+          title: "Error",
+          description: "You must accept the terms and conditions before proceeding.",
+          variant: "destructive",
+        });
+        return;
       }
+  
+    
+  
+      setIsProcessing(true);
+      setError(null);
+  
+      try {
+        const totalAmount = calculateTotal();
+        const paymentAmount = totalAmount;
+  
+        // Use paymentType to determine endpoint
+        let endpoint;
+        if (yachtsType == "yachts") {
+          endpoint = paymentType === 'remaining'
+            ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
+            : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+        } else if (yachtsType == "f1yachts") {
+          endpoint = paymentType === 'remaining'
+            ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+            : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+        }
+  
+  
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            is_partial_payment: false,
+            user_id: userId,
+            is_wallet: true
+  
+          }),
+        });
+  
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Payment processing failed');
+  
+        const successMessage = paymentType === 'remaining'
+          ? 'Remaining payment processed successfully!'
+          : 'Full payment processed successfully!';
+  
+        toast({
+          title: "Success! 🎉",
+          description: successMessage,
+          variant: "default",
+          className: "bg-green-500 text-white border-none",
+        });
+        router.push('/dashboard/success');
+        handleDispatchBookingData({});
+  
+      } catch (error) {
+        console.error('Payment error:', error);
+        setError(error.message);
+        toast({
+          title: "Error",
+          description: error.message || "Payment processing failed",
+          variant: "destructive",
+        });
+      } finally {
+        setIsProcessing(false);
+      }
+    }else{
+      if (!stripe || !elements || !validateForm()) return;
 
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          payment_method_id: paymentMethod.id,
-          is_partial_payment: false,
-          user_id: userId,
-          is_wallet: deductFromWallet
-
-        }),
-      });
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Payment processing failed');
-
-      const successMessage = paymentType === 'remaining'
-        ? 'Remaining payment processed successfully!'
-        : 'Full payment processed successfully!';
-
-      toast({
-        title: "Success! 🎉",
-        description: successMessage,
-        variant: "default",
-        className: "bg-green-500 text-white border-none",
-      });
-      router.push('/dashboard/success');
-      handleDispatchBookingData({});
-
-    } catch (error) {
-      console.error('Payment error:', error);
-      setError(error.message);
-      toast({
-        title: "Error",
-        description: error.message || "Payment processing failed",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
+      if (!bookingData?.termsAccepted) {
+        toast({
+          title: "Error",
+          description: "You must accept the terms and conditions before proceeding.",
+          variant: "destructive",
+        });
+        return;
+      }
+  
+    
+  
+      setIsProcessing(true);
+      setError(null);
+  
+      try {
+        const totalAmount = calculateTotal();
+        const paymentAmount = totalAmount;
+  
+        const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
+          type: 'card',
+          card: elements.getElement(CardElement),
+          billing_details: {
+            name: bookingData.fullName,
+            email: bookingData.email,
+            phone: bookingData.phone,
+          },
+        });
+  
+        if (paymentMethodError) throw new Error(paymentMethodError.message);
+  
+        // Use paymentType to determine endpoint
+        let endpoint;
+        if (yachtsType == "yachts") {
+          endpoint = paymentType === 'remaining'
+            ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
+            : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+        } else if (yachtsType == "f1yachts") {
+          endpoint = paymentType === 'remaining'
+            ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+            : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+        }
+  
+  
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            payment_method_id: paymentMethod.id,
+            is_partial_payment: false,
+            user_id: userId,
+            is_wallet: deductFromWallet
+  
+          }),
+        });
+  
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Payment processing failed');
+  
+        const successMessage = paymentType === 'remaining'
+          ? 'Remaining payment processed successfully!'
+          : 'Full payment processed successfully!';
+  
+        toast({
+          title: "Success! 🎉",
+          description: successMessage,
+          variant: "default",
+          className: "bg-green-500 text-white border-none",
+        });
+        router.push('/dashboard/success');
+        handleDispatchBookingData({});
+  
+      } catch (error) {
+        console.error('Payment error:', error);
+        setError(error.message);
+        toast({
+          title: "Error",
+          description: error.message || "Payment processing failed",
+          variant: "destructive",
+        });
+      } finally {
+        setIsProcessing(false);
+      }
     }
+
   };
   const handleSubmitPartial = async (e) => {
+    console.log("worksdddddd")
     e.preventDefault();
-    if (!stripe || !elements || !validateForm()) return;
-    if (!bookingData?.termsAccepted) {
-      toast({
-        title: "Error",
-        description: "You must accept the terms and conditions before proceeding.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (deductFromWallet && (Object.keys(appStatWwalletContext).length === 0 || appStatWwalletContext?.freezeWallet)) {
-      toast({
-        title: "Wallet Access Restricted",
-        description: "Your wallet is currently frozen. Please contact support for assistance.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setIsProcessing(true);
-    setError(null);
-
-    try {
-      const totalAmount = calculateTotal();
-      const paymentAmount = totalAmount * 0.25;
-
-      const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: elements.getElement(CardElement),
-        billing_details: {
-          name: bookingData.fullName,
-          email: bookingData.email,
-          phone: bookingData.phone,
-        },
-      });
-
-      if (paymentMethodError) throw new Error(paymentMethodError.message);
-
-      // Use paymentType to determine endpoint
-      let endpoint;
-      if (yachtsType == "yachts") {
-        endpoint = paymentType === 'remaining'
-          ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
-          : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
-      } else if (yachtsType == "f1yachts") {
-        endpoint = paymentType === 'remaining'
-          ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
-          : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+    if(payOnlywithWallet){
+      if (!bookingData?.termsAccepted) {
+        toast({
+          title: "Error",
+          description: "You must accept the terms and conditions before proceeding.",
+          variant: "destructive",
+        });
+        return;
       }
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          payment_method_id: paymentMethod.id,
-          is_partial_payment: true,
-          user_id: userId,
-          is_wallet: deductFromWallet
-
-        }),
-      });
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Payment processing failed');
-
-      const successMessage = paymentType === 'remaining'
-        ? 'Remaining payment processed successfully!'
-        : 'Initial payment (25%) processed successfully!';
-
-      toast({
-        title: "Success! 🎉",
-        description: successMessage,
-        variant: "default",
-        className: "bg-green-500 text-white border-none",
-      });
-      router.push('/dashboard/success');
-      handleDispatchBookingData({})
-
-
-    } catch (error) {
-      console.error('Payment error:', error);
-      setError(error.message);
-      toast({
-        title: "Error",
-        description: error.message || "Payment processing failed",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
+  
+      setIsProcessing(true);
+      setError(null);
+  
+      try {
+        const totalAmount = calculateTotal();
+        const paymentAmount = totalAmount * 0.25;
+  
+        // Use paymentType to determine endpoint
+        let endpoint;
+        if (yachtsType == "yachts") {
+          endpoint = paymentType === 'remaining'
+            ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
+            : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+        } else if (yachtsType == "f1yachts") {
+          endpoint = paymentType === 'remaining'
+            ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+            : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+        }
+  
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            is_partial_payment: true,
+            user_id: userId,
+            is_wallet: true
+          }),
+        });
+  
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Payment processing failed');
+  
+        const successMessage = paymentType === 'remaining'
+          ? 'Remaining payment processed successfully!'
+          : 'Initial payment (25%) processed successfully!';
+  
+        toast({
+          title: "Success! 🎉",
+          description: successMessage,
+          variant: "default",
+          className: "bg-green-500 text-white border-none",
+        });
+        router.push('/dashboard/success');
+        handleDispatchBookingData({})
+  
+  
+      } catch (error) {
+        console.error('Payment error:', error);
+        setError(error.message);
+        toast({
+          title: "Error",
+          description: error.message || "Payment processing failed",
+          variant: "destructive",
+        });
+      } finally {
+        setIsProcessing(false);
+      }
+    }else{
+      if (!stripe || !elements || !validateForm()) return;
+      if (!bookingData?.termsAccepted) {
+        toast({
+          title: "Error",
+          description: "You must accept the terms and conditions before proceeding.",
+          variant: "destructive",
+        });
+        return;
+      }
+  
+      setIsProcessing(true);
+      setError(null);
+  
+      try {
+        const totalAmount = calculateTotal();
+        const paymentAmount = totalAmount * 0.25;
+  
+        const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
+          type: 'card',
+          card: elements.getElement(CardElement),
+          billing_details: {
+            name: bookingData.fullName,
+            email: bookingData.email,
+            phone: bookingData.phone,
+          },
+        });
+  
+        if (paymentMethodError) throw new Error(paymentMethodError.message);
+  
+        // Use paymentType to determine endpoint
+        let endpoint;
+        if (yachtsType == "yachts") {
+          endpoint = paymentType === 'remaining'
+            ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
+            : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+        } else if (yachtsType == "f1yachts") {
+          endpoint = paymentType === 'remaining'
+            ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
+            : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+        }
+  
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            payment_method_id: paymentMethod.id,
+            is_partial_payment: true,
+            user_id: userId,
+            is_wallet: deductFromWallet
+  
+          }),
+        });
+  
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Payment processing failed');
+  
+        const successMessage = paymentType === 'remaining'
+          ? 'Remaining payment processed successfully!'
+          : 'Initial payment (25%) processed successfully!';
+  
+        toast({
+          title: "Success! 🎉",
+          description: successMessage,
+          variant: "default",
+          className: "bg-green-500 text-white border-none",
+        });
+        router.push('/dashboard/success');
+        handleDispatchBookingData({})
+  
+  
+      } catch (error) {
+        console.error('Payment error:', error);
+        setError(error.message);
+        toast({
+          title: "Error",
+          description: error.message || "Payment processing failed",
+          variant: "destructive",
+        });
+      } finally {
+        setIsProcessing(false);
+      }
     }
+
   };
 
-  const handlePayfromWallet = async () => {
-    if (!token) {
-      toast({
-        title: "Error",
-        description: "User is not authenticated.",
-        variant: "destructive",
-      });
-      return;
+  
+  // useEffect(() => {
+  //   const getWalletResponse = async () => {
+  //     if (!userId || !token) return;
+  //     try {
+  //       const data = await getWallet(token);
+  
+  //       setwalletDetails((prev) => {
+  //         const updatedDetails = {
+  //           ...prev,
+  //           balance: data?.balance ?? prev.balance,
+  //           freezeWallet: data?.freeze ?? prev.freezeWallet,
+  //           transactions: data?.transactions ?? prev.transactions,
+  //         };
+  
+  //         // Persist to local storage
+  //         // localStorage.setItem("walletContext", JSON.stringify(updatedDetails));
+  
+  //         return updatedDetails;
+  //       });
+  //     } catch (err) {
+  //       setError(err.message || "Unexpected Error");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  
+  //   getWalletResponse();
+  // }, [userId, token]); 
+
+  useEffect(() => {
+    console.log("dueAmountAlltime", dueAmountAlltime)
+
+    if (appStatWwalletContext?.balance >= dueAmountAlltime) {
+      setpayOnlywithWallet(true)
     }
-
-    if (!bookingData?.termsAccepted) {
-      toast({
-        title: "Error",
-        description: "You must accept the terms and conditions before proceeding.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (Object.keys(appStatWwalletContext).length === 0 || appStatWwalletContext?.freezeWallet) {
-      toast({
-        title: "Wallet Access Restricted",
-        description: "Your wallet is currently frozen. Please contact support for assistance.",
-        variant: "destructive",
-      });
-      return;
-    }
+  }, [dueAmountAlltime, appStatWwalletContext])
 
 
-    setIsProcessing(true);
-    setError(null);
-
-    try {
-      console.log("Processing wallet payment...");
-
-      const totalAmount = calculateTotal();
-      const paymentAmount = totalAmount * 0.25;
-
-      const endpoint = `${API_BASE_URL}/yacht/wallet/`;
-
-      if (!yachtId) throw new Error("Invalid Yacht ID");
-
-      let formattedStartingTime = "";
-      if (bookingData?.startTime) {
-        const date = new Date(bookingData.startTime);
-        formattedStartingTime = `${String(date.getHours()).padStart(2, "0")}:${String(
-          date.getMinutes()
-        ).padStart(2, "0")}:00`;
-      }
-
-      const body = {
-        booking_type: "yacht",
-        yacht: yachtId,
-        full_name: bookingData?.fullName || "",
-        email: bookingData?.email || "",
-        phone_number: bookingData?.phone || "",
-        country: bookingData?.country || "United Arab Emirates",
-        message: bookingData?.message || "",
-        adults: bookingData?.adults || 0,
-        kids: bookingData?.kids || 0,
-        duration_hour: bookingData?.duration || 0,
-        is_partial_payment: bookingData?.isPartialPayment || false,
-        terms_accepted: true,
-        selected_date: bookingData?.date
-          ? bookingData.date.toISOString().split("T")[0]
-          : "",
-        starting_time: formattedStartingTime,
-        per_day_price: bookingData?.perDayPrice || 0,
-        food: bookingData?.food || 0,
-        waterSports: bookingData?.waterSports || 0,
-        misc: bookingData?.misc || 0,
-        bath: bookingData?.bath || 0,
-        extras: Array.isArray(bookingData?.extras)
-          ? bookingData.extras.map(extra => ({
-            id: extra?.id || "",
-            quantity: extra?.quantity || 0,
-            price: extra?.price || 0,
-            name: extra?.name || "",
-          }))
-          : [],
-      };
-
-      console.log("Final Payload:", JSON.stringify(body, null, 2));
-
-      const response = await fetch(endpoint, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-      });
-
-      const result = await response.json();
-      console.log("API Response:", result, response);
-
-      if (!response.ok) throw new Error(result.error || "Payment processing failed");
-
-      toast({
-        title: "Success! 🎉",
-        description: "Payment processed successfully",
-        variant: "default",
-        className: "bg-green-500 text-white border-none",
-      });
-
-      router.push("/dashboard/success");
-      handleDispatchBookingData({})
-
-
-    } catch (error) {
-      console.error("Payment error:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Payment processing failed",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-
-
+  useEffect(() => {
+    console.log("payOnlywithWallet", payOnlywithWallet)
+  }, [payOnlywithWallet])
 
   return (
-    <form onSubmit={handleSubmitFull} className='w-full space-y-6'>
+    <form  className='w-full space-y-6'>
       <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>
         <div className='flex items-center gap-2 mb-6'>
           <CreditCard className='w-5 h-5' />
@@ -462,111 +512,85 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
 
 
 
-<div
-  className={`flex items-center justify-between my-3 p-4 rounded-lg transition-all duration-300 border 
+        <div
+          className={`flex items-center justify-between my-3 p-4 rounded-lg transition-all duration-300 border 
     ${deductFromWallet ? "bg-[#EAF7E4] border-[#BEA355]" : "bg-gray-100 border-gray-300"}
     ${isWalletDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
   `}
-  onClick={() => {
-    if (isWalletDisabled) return; // Prevent clicking when balance is 0 or context is empty
-    setDeductFromWallet((prev) => !prev);
-  }}
-  role="button"
-  tabIndex={0}
->
-  {/* Left Side: Check Icon + Wallet Icon + Label */}
-  <div className="flex items-center space-x-3">
-    {/* ✅ Check Icon (Only Visible if Selected) */}
-    {deductFromWallet ? (
-      <div className="w-5 h-5 bg-[#BEA355] text-white flex items-center justify-center rounded-md">
-        <Check size={20} />
-      </div>
-    ) : (
-      <div className="w-5 h-5 bg-[#BEA355] text-white flex items-center justify-center rounded-md">
-        <Square size={20} className="text-[#BEA355]" />
-      </div>
-    )}
-
-    {/* Wallet Icon */}
-    <img src="/assets/images/wallet.png" alt="Wallet Icon" className="w-8 h-8" />
-
-    {/* Wallet Details */}
-    <div>
-      <Label htmlFor="partial-payment" className="text-base font-medium">
-        Rewards & Wallet
-      </Label>
-      <p className="text-sm text-[#BEA355]">
-        To spend today: AED {appStatWwalletContext?.balance ? appStatWwalletContext?.balance : "0"} Credits
-      </p>
-    </div>
-  </div>
-</div>
-
-
-
-
-
-        <Accordion className="space-y-4" type="single" collapsible
-          value={openAccordionCard}
-          onValueChange={(val) => setOpenAccordionCard(val || null)}
+          onClick={() => {
+            if (isWalletDisabled ||  payOnlywithWallet) return; // Prevent clicking when balance is 0 or context is empty
+            setDeductFromWallet((prev) => !prev);
+          }}
+          role="button"
+          tabIndex={0}
         >
-
-          <AccordionItem className="" value="card">
-            <AccordionTrigger className="w-full flex justify-center font-medium items-center h-8 text-xs rounded-lg border-2 border-black dark:border-gray-600">
-              Pay With Card
-            </AccordionTrigger>
-            <AccordionContent className="mt-4">
-              <div className='space-y-4'>
-                <div className='border rounded-md p-3'>
-                  <CardElement
-                    onChange={handleCardChange}
-                    options={{
-                      style: {
-                        base: {
-                          fontSize: '16px',
-                          color: '#424770',
-                          '::placeholder': {
-                            color: '#aab7c4',
-                          },
-                        },
-                        invalid: {
-                          color: '#9e2146',
-                        },
-                      },
-                      hidePostalCode: true,
-                    }}
-                  />
-                </div>
-                <div className="flex flex-col space-y-2">
-                  <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
-                    <CheckCircle className='w-3 h-3 text-green-500' />
-                    You are only charged if the owner accepts.
-                  </p>
-                  <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
-                    <CheckCircle className='w-3 h-3 text-green-500' />
-                    Guaranteed response within 24 hours
-                  </p>
-                </div>
-                <div className='text-xs text-gray-500 dark:text-gray-400'>
-                  We accept all major credit and debit cards including Visa, Mastercard, and American Express
-                </div>
+          {/* Left Side: Check Icon + Wallet Icon + Label */}
+          <div className="flex items-center space-x-3">
+            {/* ✅ Check Icon (Only Visible if Selected) */}
+            {payOnlywithWallet? "" : deductFromWallet ? (
+              <div className="w-5 h-5 bg-[#BEA355] text-white flex items-center justify-center rounded-md">
+                <Check size={20} />
               </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+            ) : (
+              <div className="w-5 h-5 bg-[#BEA355] text-white flex items-center justify-center rounded-md">
+                <Square size={20} className="text-[#BEA355]" />
+              </div>
+            )}
 
-        <Accordion className="space-y-4 mt-3" type="single" collapsible
-          value={openAccordionWallet}
-          onValueChange={(val) => setOpenAccordionWallet(val || null)}
-        >
+            {/* Wallet Icon */}
+            <img src="/assets/images/wallet.png" alt="Wallet Icon" className="w-8 h-8" />
 
-          <AccordionItem className="" value="wallet">
-            <AccordionTrigger className="w-full flex justify-center font-medium items-center h-8 text-xs rounded-lg border-2 border-black dark:border-gray-600">
-              Pay With Wallet
-            </AccordionTrigger>
+            {/* Wallet Details */}
+            <div>
+              <Label htmlFor="partial-payment" className="text-base font-medium">
+                Rewards & Wallet
+              </Label>
+              <p className="text-sm text-[#BEA355]">
+                To spend today: AED {appStatWwalletContext?.balance ? appStatWwalletContext?.balance : "0"}
+              </p>
+            </div>
+          </div>
+        </div>
 
-          </AccordionItem>
-        </Accordion>
+
+        {!payOnlywithWallet && <div className='space-y-4'>
+          <div className='border rounded-md p-3'>
+            <CardElement
+              onChange={handleCardChange}
+              options={{
+                style: {
+                  base: {
+                    fontSize: '16px',
+                    color: '#424770',
+                    '::placeholder': {
+                      color: '#aab7c4',
+                    },
+                  },
+                  invalid: {
+                    color: '#9e2146',
+                  },
+                },
+                hidePostalCode: true,
+              }}
+            />
+          </div>
+          <div className="flex flex-col space-y-2">
+            <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
+              <CheckCircle className='w-3 h-3 text-green-500' />
+              You are only charged if the owner accepts.
+            </p>
+            <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
+              <CheckCircle className='w-3 h-3 text-green-500' />
+              Guaranteed response within 24 hours
+            </p>
+          </div>
+          <div className='text-xs text-gray-500 dark:text-gray-400'>
+            We accept all major credit and debit cards including Visa, Mastercard, and American Express
+          </div>
+        </div>}
+
+
+
 
 
         <div className="space-y-2 pl-1 mt-4">
@@ -640,37 +664,46 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         </div>
       </div>
 
-      {openAccordionCard === "card" && (
-        <div>
-          <Button
-            type="submit"
-            disabled={isProcessing || !stripe || !cardComplete}
-            className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
-          >
-            {getPaymentButtonText()}
-          </Button>
-
-          {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
-            <Button
-              onClick={() => handleSubmitPartial()}
-              disabled={isProcessing || !stripe || !cardComplete}
-              className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
-            >
-              {`Pay Partial (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
-            </Button>
-          )}
-        </div>
-      )}
-
-      {openAccordionWallet === "wallet" && (
+      {payOnlywithWallet ?  <div>
         <Button
-          onClick={() => handlePayfromWallet()}
-          disabled={isProcessing}
+            onClick={(e) => handleSubmitFull(e)}
+          disabled={isProcessing || isWalletDisabled}
           className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
-          {`Pay From Wallet (AED ${(calculateTotal()).toFixed(2)})`}
+          {`Pay Full Amount wallet (AED ${calculateTotal().toFixed(2)})`}
+        </Button>
+
+        {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
+          <Button
+            onClick={(e) => handleSubmitPartial(e)}
+            disabled={isProcessing || isWalletDisabled}
+            className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
+          >
+            {`Pay Partial wallet (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
+          </Button>
+        )}
+      </div> : 
+     
+      <div>
+      <Button
+                   onClick={(e) => handleSubmitFull(e)}
+
+        disabled={isProcessing || !stripe || !cardComplete}
+        className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
+      >
+        {getPaymentButtonText()}
+      </Button>
+
+      {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
+        <Button
+          onClick={(e) => handleSubmitPartial(e)}
+          disabled={isProcessing || !stripe || !cardComplete}
+          className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
+        >
+          {`Pay Partial (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
         </Button>
       )}
+    </div>}
 
     </form>
   );

@@ -14,6 +14,7 @@ import { useBookingContext } from './BookingContext';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Loading } from '@/components/ui/loading';
+import { getWallet } from '@/api/wallet';
 
 const steps = [
   { id: 1, title: 'Booking Details', component: Selection },
@@ -88,6 +89,9 @@ const BookingWizardContent = ({ initialBookingId }) => {
   };
 
   const CurrentStepComponent = steps[currentStep - 1].component;
+
+
+
 
 ///test
 
