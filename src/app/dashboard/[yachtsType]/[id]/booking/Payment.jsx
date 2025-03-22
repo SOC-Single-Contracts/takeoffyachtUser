@@ -16,6 +16,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useParams } from 'next/navigation';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { handleDispatchBookingData } from '@/helper/bookingData';
+import { handleDispatchwalletData } from '@/helper/walletData';
+import { getWallet } from '@/api/wallet';
 
 
 const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`);
@@ -179,7 +181,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
           body: JSON.stringify({
             is_partial_payment: false,
             user_id: userId,
-            is_wallet: true
+            wallet: true
 
           }),
         });
@@ -264,7 +266,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             payment_method_id: paymentMethod.id,
             is_partial_payment: false,
             user_id: userId,
-            is_wallet: deductFromWallet
+            wallet: deductFromWallet
 
           }),
         });
@@ -336,7 +338,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
           body: JSON.stringify({
             is_partial_payment: true,
             user_id: userId,
-            is_wallet: true
+            wallet: true
           }),
         });
 
@@ -417,7 +419,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             payment_method_id: paymentMethod.id,
             is_partial_payment: true,
             user_id: userId,
-            is_wallet: deductFromWallet
+            wallet: deductFromWallet
 
           }),
         });
@@ -455,34 +457,28 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   };
 
 
-  // useEffect(() => {
-  //   const getWalletResponse = async () => {
-  //     if (!userId || !token) return;
-  //     try {
-  //       const data = await getWallet(token);
+  useEffect(() => {
+    const getWalletResponse = async () => {
+      if (!userId || !token) return;
+      try {
+        const data = await getWallet(token);
 
-  //       setwalletDetails((prev) => {
-  //         const updatedDetails = {
-  //           ...prev,
-  //           balance: data?.balance ?? prev.balance,
-  //           freezeWallet: data?.freeze ?? prev.freezeWallet,
-  //           transactions: data?.transactions ?? prev.transactions,
-  //         };
+        handleDispatchwalletData({
+          ...appStatWwalletContext, balance: data?.balance ?? prev.balance,
+          freezeWallet: data?.freeze ?? prev.freezeWallet,
+          transactions: data?.transactions ?? prev.transactions
+        })
+      console.log("hello",data)
 
-  //         // Persist to local storage
-  //         // localStorage.setItem("walletContext", JSON.stringify(updatedDetails));
+      } catch (err) {
+        setError(err.message || "Unexpected Error");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //         return updatedDetails;
-  //       });
-  //     } catch (err) {
-  //       setError(err.message || "Unexpected Error");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   getWalletResponse();
-  // }, [userId, token]); 
+    getWalletResponse();
+  }, [userId, token]);
 
   useEffect(() => {
     console.log("dueAmountAlltime", dueAmountAlltime)

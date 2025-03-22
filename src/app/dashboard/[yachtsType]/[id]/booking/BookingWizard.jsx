@@ -92,6 +92,29 @@ const BookingWizardContent = ({ initialBookingId }) => {
 
 
 
+    // useEffect(() => {
+  //   const getWalletResponse = async () => {
+  //     if (!userId || !token) return;
+  //     try {
+  //       const data = await getWallet(token);
+
+  //       handleDispatchwalletData({
+  //         ...appStatWwalletContext, balance: data?.balance ?? prev.balance,
+  //         freezeWallet: data?.freeze ?? prev.freezeWallet,
+  //         transactions: data?.transactions ?? prev.transactions
+  //       })
+  //     console.log("hello",data)
+
+  //     } catch (err) {
+  //       setError(err.message || "Unexpected Error");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   getWalletResponse();
+  // }, [userId, token]);
+
 
 ///test
 
