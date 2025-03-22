@@ -23,7 +23,6 @@ import QRCode from "qrcode";
 import { format } from "date-fns";
 
 const BookingSummary = () => {
-  const params = useParams();
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
   const [booking, setBooking] = useState(null);
@@ -31,6 +30,7 @@ const BookingSummary = () => {
   const [copied, setCopied] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
+      const { yachtsType,id} = useParams();
   
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -284,12 +284,12 @@ const BookingSummary = () => {
   const handleProceedToPayment = () => {
     if (booking?.remaining_cost > 0) {
       // Pass user details along with payment info
-      router.push(`/dashboard/yachts/${params.id}/booking/?bookingId=${bookingId}&amount=${booking.remaining_cost}&isPartialPayment=true&phone=${encodeURIComponent(booking.phone_number)}&name=${encodeURIComponent(booking.full_name)}`);
+      router.push(`/dashboard/${yachtsType}/${id}/booking/?bookingId=${bookingId}&amount=${booking.remaining_cost}&isPartialPayment=true&phone=${encodeURIComponent(booking.phone_number)}&name=${encodeURIComponent(booking.full_name)}`);
     }
   };
 
   const handleCopyLink = async () => {
-    const bookingUrl = `${window.location.origin}/dashboard/yachts/${params.id}/booking/booking-summary?bookingId=${bookingId}`;
+    const bookingUrl = `${window.location.origin}/dashboard/${yachtsType}/${id}/booking/booking-summary?bookingId=${bookingId}`;
     try {
       await navigator.clipboard.writeText(bookingUrl);
       setCopied(true);

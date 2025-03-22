@@ -9,6 +9,6 @@
 
   export const handleDispatchBookingData = (data)=>{
     if (typeof window !== "undefined") {
-        localStorage.setItem("bookingContext", JSON.stringify(data));
+        localStorage.setItem("bookingContextUser", JSON.stringify(data));
       }
   }

@@ -304,7 +304,8 @@ const Yachts = () => {
       // console.log("ifff simple Yacht")
 
       payload = {
-        source: "simpleYacht",
+        source:"simpleYacht",
+        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
         user_id: userId,
       };
       // router.push('/dashboard/yachts', { scroll: false });
@@ -315,7 +316,8 @@ const Yachts = () => {
       // console.log("else simple Yacht")  
       const currentFilters = type === "stored" ? getFiltersFromLocalStorage() : filters;
       payload = {
-        source: "simpleYacht",
+        source:"simpleYacht",
+        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
         user_id: userId,
         min_per_hour: currentFilters?.min_price?.toString() || "1000",
         max_per_hour: currentFilters?.max_price?.toString() || "4000",
@@ -353,30 +355,8 @@ const Yachts = () => {
 
     try {
       setLoading(true);
-      let response;
-      // if(yachtsType=="f1yachts"&& type == "reset"){
-      //   console.log("what work 1")
-      //   response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/f1-yachts/`, {
-      //     method: 'GET',
-      //     headers: {
-      //       'Content-Type': 'application/json',  
-      //     }
-      //   });
-      // }else{
-      //   console.log("what work 2")
 
-      //    response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //       "Referer": window.location.href
-
-      //     },
-      //     body: JSON.stringify(payload),
-      //   });
-      // }
-
-      response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
+     let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1330,11 +1310,13 @@ const Yachts = () => {
                               <Image
                                 src="/assets/images/fycht.jpg"
                                 alt="fallback image"
+
                                 width={326}
                                 height={300}
                                 className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
                               />
                             </CarouselItem>
+
                           )}
                         </CarouselContent>
                         <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
@@ -1368,6 +1350,7 @@ const Yachts = () => {
                       </Button>
 
                       <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
+
                         <span className="font-medium text-xs">
                           AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_hour_price}</span>
                           <span className="text-xs font-light ml-1">/Hour</span>
@@ -1402,6 +1385,7 @@ const Yachts = () => {
                             <p>{item?.yacht?.number_of_cabin || 0}</p>
                           </div>
                         </div>
+
                       </CardContent>
                     </Link>
                   </Card>
@@ -1418,6 +1402,7 @@ const Yachts = () => {
                   <X className="h-4 w-4" />
                   Reset Filters
                 </Button>
+
               </div>
             )
           )}

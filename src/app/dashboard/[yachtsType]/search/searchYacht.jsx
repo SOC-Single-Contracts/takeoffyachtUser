@@ -22,15 +22,18 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchResults from './mainSearch';
 import { Loading } from '@/components/ui/loading';
 import YachtCard from '@/components/yachts/YachtCard';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter,useParams  } from 'next/navigation';
 import EmptySearch from '@/components/shared/EmptySearch';
 import yachtApi from '@/services/api';
 import { format } from 'date-fns';
 import SearchFilter from '@/components/lp/shared/SearchFilter';
+import { useGlobalState } from '@/context/GlobalStateContext';
 
 const SearchYacht = () => {
+    const {setFilter} = useGlobalState()
     const { data: session } = useSession();
     const searchParams = useSearchParams();
+    const router = useRouter();
     const [yachts, setYachts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -38,6 +41,7 @@ const SearchYacht = () => {
     const [originalYachts, setOriginalYachts] = useState([]);
     const [startFilterWork, setStartFilterWork] = useState(false)
     const [onCancelEachFilter, setonCancelEachFilter] = useState(false);
+        const { yachtsType} = useParams();
     const [filters, setFilters] = useState({
         min_price: 1000,
         max_price: 4000,
@@ -253,12 +257,18 @@ const SearchYacht = () => {
         if (!userId) return;
 
         let payload = {
+            YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
             user_id: session?.user?.userid || 1,
-            guest: parseInt(searchParams.get('guests')) || 1,
+            // guest: parseInt(searchParams.get('guests')) || 1,
+            // min_guest: parseInt(searchParams.get('min_guest')),
+            max_guest: parseInt(searchParams.get('guests')) || 1,
             location: searchParams.get('location'),
-            capacity: parseInt(searchParams.get('guests')) || 1,
+            // capacity: parseInt(searchParams.get('guests')) || 1,
             name: searchParams.get('name') || "",
             created_on: searchParams.get('date') || "",
+            ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest')))) 
+            ? { min_guest: parseInt(searchParams.get('min_guest')) } 
+            : {})
         };
         if (type == "reset&FirstRender") {
             console.log("ifff")
@@ -269,12 +279,18 @@ const SearchYacht = () => {
             };
         } else {
             console.log("else")
+            if (filters?.max_guest) {
+                setFilter({max_guest: filters?.max_guest})
+            };
+            if (filters?.location) {
+                setFilter({location: filters?.location})
+            };
             payload = {
                 ...payload, user_id: userId,
                 min_per_hour: filters.min_price.toString(),
                 max_per_hour: filters.max_price.toString(),
-                guest: filters.max_guest,
-                min_guest: filters?.min_guest,
+                // guest: filters.max_guest,
+                // min_guest: filters?.min_guest,
                 max_guest: filters?.max_guest,
                 sleep_capacity: filters.sleep_capacity,
                 number_of_cabin: filters.number_of_cabin,
@@ -346,10 +362,11 @@ const SearchYacht = () => {
 
     useEffect(() => {
         // console.log(JSON.stringify(filters))
-        if (JSON.stringify(filters) === JSON.stringify(initialFilterState)) {
+        // if (JSON.stringify(filters) === JSON.stringify(initialFilterState)) {
             handleFilterChange("reset&FirstRender");
-        }
-    }, [filters, searchParams, session]);
+        // }
+      
+    }, [ searchParams, session]);
     // call onCancelEachFilter
     useEffect(() => {
         if (onCancelEachFilter) {
@@ -357,7 +374,11 @@ const SearchYacht = () => {
             handleFilterChange("normal");
             setonCancelEachFilter(false);
         }
-    }, [filters, onCancelEachFilter]);
+    }, [ onCancelEachFilter]);
+
+    useEffect(() => {
+        setFilters((prev) => ({ ...prev, max_guest: parseInt(searchParams.get('guests')), location: searchParams.get('location'), min_guest: parseInt(searchParams.get('min_guest')) }))
+    },[searchParams])
     //   useEffect(() => {
     //     const getYachts = async () => {
     //       if (!userId) return;
@@ -455,7 +476,7 @@ const SearchYacht = () => {
     }, [originalYachts]);
     //test
     // useEffect(() => {
-    //     console.log("yachts", yachts, error);
+    //     console.log("yachts", yachts);
     // }, [yachts]);
 
 

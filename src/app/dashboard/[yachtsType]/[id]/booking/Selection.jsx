@@ -10,7 +10,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useBookingContext } from './BookingContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import Image from 'next/image';
@@ -19,18 +18,17 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { handleDispatchBookingData } from '@/helper/bookingData';
+import { useParams } from 'next/navigation';
 
 const Selection = ({ onNext }) => {
   const { toast } = useToast();
-  const { bookingData, updateBookingData, selectedYacht,setBookingData } = useBookingContext();
+  const { bookingData, updateBookingData, selectedYacht,setBookingData,appStatBookingContext } = useBookingContext();
   const capacity = selectedYacht?.yacht?.capacity || 0;
-  const appStatBookingContext =
-  typeof window !== "undefined" && localStorage.getItem("bookingContext")
-    ? JSON.parse(localStorage.getItem("bookingContext"))
-    : {};
   const [loading, setLoading] = useState(false);
   const [availableDates, setAvailableDates] = useState([]);
   const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
+        const { yachtsType} = useParams();
 
   const [extras, setExtras] = useState({
     food: [],
@@ -78,7 +76,7 @@ const Selection = ({ onNext }) => {
         if (data.error_code === 'pass') {
           const available = data.availability.filter(item => item.is_available).map(item => item.date);
           setAvailableDates(available); // Store available dates
-          console.log('Available Dates:', available);
+          // console.log('Available Dates:', available);
           setDateRange(data.date_range); // Store date range
         } else {
           toast.error('Failed to check availability.');
@@ -91,7 +89,37 @@ const Selection = ({ onNext }) => {
       }
     };
 
-    fetchAvailability();
+    if(yachtsType == "f1yachts"){
+      const generateDateArray = () => {
+        let dates = [], d = new Date();
+        for (let i = 0; i <= 60; i++) {
+          dates.push(d.toISOString().split("T")[0]);
+          d.setDate(d.getDate() + 1);
+        }
+        return dates;
+      };
+      
+      // console.log(generateDateArray());
+
+      const generateDateRange = () => {
+        let startDate = new Date();
+        let endDate = new Date();
+        endDate.setDate(startDate.getDate() + 60);
+      
+        return {
+          start_date: startDate.toISOString().split("T")[0],
+          end_date: endDate.toISOString().split("T")[0]
+        };
+      };
+      
+      // console.log(generateDateRange());
+
+      setAvailableDates(generateDateArray)
+      setDateRange(generateDateRange)
+
+    }else if(yachtsType == "yachts"){
+      fetchAvailability();
+    }
   }, [selectedYacht]);
 
   useEffect(() => {
@@ -128,11 +156,13 @@ const Selection = ({ onNext }) => {
     }
   }, [selectedYacht]);
 
-  // useEffect(()=>{
-  //   console.log("appStatBookingContext",appStatBookingContext)
-  //   // updateBookingData({...appStatBookingContext });
-  //   setBookingData(prev => ({ ...prev, ...appStatBookingContext }));
-  // },[appStatBookingContext])
+
+//   useEffect(()=>{
+// // console.log("availableDates,dateRange",availableDates,dateRange)
+// //   },[availableDates,dateRange])
+
+
+
   const handleQuantityChange = (itemId, type) => {
     setQuantities(prev => {
       const currentQty = prev[itemId] || 0;
@@ -183,46 +213,98 @@ const Selection = ({ onNext }) => {
   const handleNext = async () => {
     setLoading(true);
     try {
-      if (!bookingData.date || !bookingData.startTime) {
-        toast({ title: 'Error', description: 'Please select date and time' });
-        return;
-      }
-
-      // if (bookingData.adults + bookingData.kids === 0) {
-      //   toast({ title: 'Error', description: 'Please add at least one guest' });
-      //   return;
-      // }
-
-      // Check if it's New Year's Eve
-      const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 && 
-                           new Date(bookingData.date).getDate() === 31;
-
-      // Show warning for New Year's Eve bookings
-      if (isNewYearsEve) {
-        toast.warning("New Year's Eve rates apply for this booking date", {
-          description: "Special pricing will be calculated accordingly."
-        });
-      }
-
-      const allExtras = [...extras.food, ...extras.extra, ...extras.sport];
-
-      // Update booking data with quantities and pricing info
-      updateBookingData({
-        extras: Object.entries(quantities).reduce((acc, [itemId, qty]) => {
-          if (qty > 0) {
-            // const item = [...extras.food, ...extras.extra, ...extras.sport].find(i => i.id === parseInt(id));
-            const item = allExtras.find(i => i.id === Number(itemId))
-            if (item) {
-              // acc.push({ id, quantity: qty, price: item.price, name: item.name });
-              acc.push({ id: item.id.toString(), quantity: qty, price: item.price, name: item.name });
+      if (yachtsType == "yachts") {
+        if (!bookingData.date || !bookingData.startTime) {
+          toast({ title: 'Error', description: 'Please select date and time' });
+          return;
+        }
+  
+        // if (bookingData.adults + bookingData.kids === 0) {
+        //   toast({ title: 'Error', description: 'Please add at least one guest' });
+        //   return;
+        // }
+  
+        // Check if it's New Year's Eve
+        const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 && 
+                             new Date(bookingData.date).getDate() === 31;
+  
+        // Show warning for New Year's Eve bookings
+        if (isNewYearsEve) {
+          toast.warning("New Year's Eve rates apply for this booking date", {
+            description: "Special pricing will be calculated accordingly."
+          });
+        }
+  
+        const allExtras = [...extras.food, ...extras.extra, ...extras.sport];
+  
+        // Update booking data with quantities and pricing info
+        updateBookingData({
+          extras: Object.entries(quantities).reduce((acc, [itemId, qty]) => {
+            if (qty > 0) {
+              // const item = [...extras.food, ...extras.extra, ...extras.sport].find(i => i.id === parseInt(id));
+              const item = allExtras.find(i => i.id === Number(itemId))
+              if (item) {
+                // acc.push({ id, quantity: qty, price: item.price, name: item.name });
+                acc.push({ id: item.id.toString(), quantity: qty, price: item.price, name: item.name });
+              }
             }
-          }
-          return acc;
-        }, []),
-        isNewYearBooking: isNewYearsEve
-      });
-
-      onNext();
+            return acc;
+          }, []),
+          isNewYearBooking: isNewYearsEve
+        });
+  
+         handleDispatchBookingData({...appStatBookingContext,
+                ...bookingData
+              })
+  
+        onNext();
+      }else if(yachtsType == "f1yachts"){
+        if (!bookingData.date || !bookingData.endDate ) {
+          toast({ title: 'Error', description: 'Please select Start Date and End Date' });
+          return;
+        }
+  
+        // if (bookingData.adults + bookingData.kids === 0) {
+        //   toast({ title: 'Error', description: 'Please add at least one guest' });
+        //   return;
+        // }
+  
+        // Check if it's New Year's Eve
+        const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 && 
+                             new Date(bookingData.date).getDate() === 31;
+  
+        // Show warning for New Year's Eve bookings
+        if (isNewYearsEve) {
+          toast.warning("New Year's Eve rates apply for this booking date", {
+            description: "Special pricing will be calculated accordingly."
+          });
+        }
+  
+        const allExtras = [...extras.food, ...extras.extra, ...extras.sport];
+  
+        // Update booking data with quantities and pricing info
+        updateBookingData({
+          extras: Object.entries(quantities).reduce((acc, [itemId, qty]) => {
+            if (qty > 0) {
+              // const item = [...extras.food, ...extras.extra, ...extras.sport].find(i => i.id === parseInt(id));
+              const item = allExtras.find(i => i.id === Number(itemId))
+              if (item) {
+                // acc.push({ id, quantity: qty, price: item.price, name: item.name });
+                acc.push({ id: item.id.toString(), quantity: qty, price: item.price, name: item.name });
+              }
+            }
+            return acc;
+          }, []),
+          isNewYearBooking: isNewYearsEve
+        });
+  
+         handleDispatchBookingData({...appStatBookingContext,
+                ...bookingData
+              })
+  
+        onNext();
+      }
+   
     } catch (error) {
       console.error('Error:', error);
       toast({ title: 'Error', description: 'Failed to proceed. Please try again.' });
@@ -322,7 +404,11 @@ const Selection = ({ onNext }) => {
   // Check if the selected date is available
   const selectedDate = format(range.from, 'yyyy-MM-dd');
   if (!availableDates.includes(selectedDate)) {
-    toast.error("Selected date is not available.");
+    toast({
+      title: "Error",
+      description: "Selected date is not available.",
+      variant: "destructive",
+    });
     return;
   }
 
@@ -461,7 +547,7 @@ const Selection = ({ onNext }) => {
       <div className="flex flex-col w-full lg:w-2/4 xl:w-2/3 gap-4">
         {/* Date and Time Selection */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6">
-          <div className="flex flex-col space-y-2">
+     {yachtsType == "yachts" ?   <div className="flex flex-col space-y-2">
             <Label className="text-sm font-medium">
               Select Date<span className='text-red-500'>*</span>
             </Label>
@@ -559,13 +645,114 @@ const Selection = ({ onNext }) => {
       />
               </PopoverContent>
             </Popover>
-          </div>
-
+          </div> : yachtsType == "f1yachts" ?   <div className="flex flex-col space-y-2">
+            <Label className="text-sm font-medium">
+              Select Date Range<span className='text-red-500'>*</span>
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full max-w-[300px] justify-start text-left font-normal",
+                    !bookingData.date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-1 h-4 w-4" />
+                  {/* {bookingData.date ? format(bookingData.date, "PPP") : <span>Pick a date</span>} */}
+                  {bookingData.date ? (
+                bookingData.endDate ? 
+                  `${format(bookingData.date, "PPP")} - ${format(bookingData.endDate, "PPP")}` :
+                  format(bookingData.date, "PPP")
+              ) : (
+                <span>Pick date(s)</span>
+              )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                {/* <Calendar
+                  mode="single"
+                  selected={bookingData.date}
+                  onSelect={(date) => updateBookingData({ date })}
+                  disabled={(date) => date < new Date()}
+                  initialFocus
+                /> */}
+               {/* <Calendar
+              mode="single"
+              selected={bookingData.date}
+              onSelect={(date) => {
+                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
+                  updateBookingData({ date });
+                } else {
+                  toast.error("Selected date is not available.");
+                }
+              }}
+              disabled={(date) => !availableDates.includes(format(date, 'yyyy-MM-dd')) || date < new Date()} // Disable booked dates and past dates
+              initialFocus
+            /> */}
+             {/* <Calendar
+              mode="single"
+              selected={bookingData.date}
+              onSelect={(date) => {
+                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
+                  updateBookingData({ date });
+                } else {
+                  toast.error("Selected date is not available.");
+                }
+              }}
+              disabled={(date) => 
+                !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
+                date < new Date() || 
+                date < new Date(dateRange.start_date) || 
+                date > new Date(dateRange.end_date) // Disable dates outside the range
+              }
+              initialFocus
+            /> */}
+             <Calendar
+        mode="range"
+        selected={{
+          from: bookingData.date || undefined,
+          to: bookingData.endDate || undefined
+        }}
+        // onSelect={(range) => {
+        //   if (range?.from) {
+        //     const isDateRange = range.to && range.to !== range.from;
+        //     updateBookingData({
+        //       date: range.from,
+        //       endDate: range.to,
+        //       bookingType: isDateRange ? 'date_range' : 'hourly',
+        //       // Reset duration if switching to date range
+        //       duration: isDateRange ? undefined : bookingData.duration
+        //     });
+        //   }
+        // }}
+        onSelect={handleDateSelect}
+        // disabled={(date) => 
+        //   !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
+        //   date < new Date() || 
+        //   date < new Date(dateRange.start_date) || 
+        //   date > new Date(dateRange.end_date)
+        // }
+        disabled={(date) => 
+          date < new Date(new Date().setHours(0, 0, 0, 0)) || // Disable past dates
+          (dateRange?.start_date && date < new Date(dateRange.start_date)) || 
+          (dateRange?.end_date && date > new Date(dateRange.end_date)) ||
+          !availableDates.includes(format(date, 'yyyy-MM-dd'))
+        }
+        initialFocus
+      />
+              </PopoverContent>
+            </Popover>
+          </div> :""}  
+      
+          {yachtsType == "yachts" ? "" : yachtsType == "f1yachts" ? "" :""}
           {/* Show duration and time only for hourly bookings */}
         {(!bookingData.endDate || bookingData.bookingType === 'hourly') && (
           <>
           <div className="flex justify-between items-start">
-            <div className="flex flex-col space-y-2">
+            {yachtsType == "yachts" ? <>
+
+              <div className="flex flex-col space-y-2">
               <Label className="text-sm font-medium">
                 Start Time<span className='text-red-500'>*</span>
               </Label>
@@ -582,7 +769,8 @@ const Selection = ({ onNext }) => {
                   <SelectValue placeholder="Select time">
                     <div className="flex items-center">
                       <Clock className="mr-2 h-4 w-4" />
-                      {format(bookingData.startTime, "h:mm a")}
+                      {/* {format(bookingData.startTime, "h:mm a")} */}
+                      {format(bookingData.startTime, "HH:mm")} 
                     </div>
                   </SelectValue>
                 </SelectTrigger>
@@ -596,7 +784,6 @@ const Selection = ({ onNext }) => {
                 </SelectContent>
               </Select>
             </div>
-
             <div className="flex flex-col items-end space-y-2">
               <Label className="text-sm font-medium">Duration (min 3 hrs)<span className='text-red-500'>*</span></Label>
               <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
@@ -619,6 +806,10 @@ const Selection = ({ onNext }) => {
                 </Button>
               </div>
             </div>
+            </> : yachtsType == "f1yachts" ? "" :""}
+          
+
+          
           </div>
           </>
                 )}
@@ -852,7 +1043,7 @@ const Selection = ({ onNext }) => {
             disabled={loading}
             className="w-full bg-[#BEA355] text-white hover:bg-[#A68D3F] rounded-full"
           >
-            {loading ? 'Checking availability...' : 'Continue'}
+            {loading ? 'Checking availability...' : 'Save and Continue'}
           </Button>
         </div>
       </div>
