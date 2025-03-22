@@ -37,6 +37,7 @@ const Yachts = () => {
   const [hasMore, setHasMore] = useState(true);
   const [allowFetching, setAllowFetching] = useState(true); // Prevent API spam
   const { yachtsType } = useParams();
+  const [showSkeleton, setShowSkeleton] = useState(false);
   // console.log("yachtsType",yachtsType)
   const [filters, setFilters] = useState({
     min_price: 1000,
@@ -180,7 +181,7 @@ const Yachts = () => {
     { name: 'Wi-Fi', icon: '/assets/images/Icon_Wi-Fi.svg' },
     { name: 'VHF', icon: '/assets/images/Icon_VHF.svg' },
     { name: 'Dinghy', icon: '/assets/images/Icon_Dinghy.svg' },
-    { name: 'Dinghy’s motor', icon: '/assets/images/Icon_Dinghysmotor.svg' },
+    { name: "Dinghy's motor", icon: '/assets/images/Icon_Dinghysmotor.svg' },
     { name: 'GPS', icon: '/assets/images/Icon_GPS.svg' }
   ];
   const extraComforts = [
@@ -250,59 +251,6 @@ const Yachts = () => {
 
     // loadWishlist();
   }, [userId]);
-
-  // const handleFilterChange = async () => {
-  //   if (!userId) return;
-
-  //   const payload = {
-  //       user_id: userId,
-  //       min_price: filters.min_price.toString(),
-  //       max_price: filters.max_price.toString(),
-  //       guest: filters.max_guest,
-  //       sleep_capacity: filters.sleep_capacity,
-  //       number_of_cabin: filters.number_of_cabin,
-  //       categories: JSON.stringify(filters.category_name),
-  //       features: JSON.stringify(filters.amenities.concat(
-  //           filters.outdoor_equipment,
-  //           filters.kitchen,
-  //           filters.energy,
-  //           filters.leisure,
-  //           filters.navigation,
-  //           filters.extra_comforts,
-  //           filters.indoor
-  //       )),
-  //       price_asc: filters.price_asc,
-  //       price_des: filters.price_des,
-  //       cabin_asc: filters.cabin_asc,
-  //       cabin_des: filters.cabin_des,
-  //       created_on: filters.created_on,
-  //       location: filters.location,
-  //   };
-
-  //   try {
-  //     setLoading(true);
-  //     const response = await fetch('${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
-
-  //     const responseData = await response.json();
-  //     if (responseData.error_code === 'pass') {
-  //       setYachts(responseData.data || []);
-  //     } else {
-  //       setError(responseData.error || 'Failed to apply filters');
-  //       console.error('API Error:', responseData.error);
-  //     }
-  //   } catch (err) {
-  //     setError(err.message || 'Error applying filters');
-  //     console.error('Filter error:', err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const saveFiltersToLocalStorage = (filters) => {
     localStorage.setItem('yacht_filters', JSON.stringify(filters));
@@ -559,7 +507,6 @@ const Yachts = () => {
     setYachts(data)
   }, [originalYachts]);
 
-
   const lastYachtRef = useCallback(
     (node) => {
       if (!hasMore || !allowFetching) return;
@@ -572,41 +519,39 @@ const Yachts = () => {
             console.log("Fetching Next Page...");
             setAllowFetching(false);
             setPage((prevPage) => prevPage + 1);
+            setTimeout(() => {
 
-            setTimeout(() => setAllowFetching(true), 1000);
+              setAllowFetching(true)
+              // setShowSkeleton(true)
+          }, 1000); // Delay to avoid multiple rapid requests
+          // setShowSkeleton(false) 
           }
         },
-        { threshold: 1.0 }
+        {
+          threshold: 0.75, // Adjust threshold to trigger earlier (before it's fully visible)
+        }
       );
 
       if (node) observer.current.observe(node);
     },
-    [hasMore, allowFetching]
+    [hasMore, allowFetching, setPage]
   );
-
 
   useEffect(() => {
     if (yachts.length > 0) {
       setAllowFetching(false);
 
-      // Save the current scroll position before new data loads
-      const previousScrollY = window.scrollY;
+      setTimeout(() => {
+        const middleIndex = Math.floor(yachts.length * 0.75);
+        const middleYacht = document.getElementById(`yacht-${yachts[middleIndex]?.yacht?.id}`);
 
-      requestAnimationFrame(() => {
-        // Scroll back to the saved position instantly to prevent jump
-        window.scrollTo({ top: previousScrollY, behavior: "instant" });
+        // // Smoothly scroll to the middle yacht if needed
+        // if (middleYacht) {
+        //   middleYacht.scrollIntoView({ behavior: "smooth", block: "end" });
+        // }
 
-        setTimeout(() => {
-          const middleIndex = Math.floor(yachts.length * 0.75);
-          const middleYacht = document.getElementById(`yacht-${yachts[middleIndex]?.yacht?.id}`);
-
-          // if (middleYacht) {
-          //   middleYacht.scrollIntoView({ behavior: "smooth", block: "end" });
-          // }
-
-          setAllowFetching(true);
-        }, 100); // Small delay for smoother UI updates
-      });
+        setAllowFetching(true);
+      }, 100); 
     }
   }, [yachts.length]);
 
@@ -677,7 +622,7 @@ const Yachts = () => {
     );
   }
 
-  return (
+ return (
     <section className="py-4 px-2">
 
       <div className="max-w-5xl mx-auto">
