@@ -1351,13 +1351,17 @@ const Yachts = () => {
 
                       <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
 
-                        <span className="font-medium text-xs">
+                      {yachtsType == "yachts" ?  <span className="font-medium text-xs">
                           AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_hour_price}</span>
                           <span className="text-xs font-light ml-1">/Hour</span>
-                        </span>
+                        </span> : yachtsType == "f1yachts" ?  <span className="font-medium text-xs">
+                          AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_day_price}</span>
+                          <span className="text-xs font-light ml-1">/Day</span>
+                        </span> :""}
+                       
                       </div>
                     </div>
-                    <Link href={`/dashboard/yachts/${item?.yacht?.id}`}>
+                    <Link href={`/dashboard/${yachtsType}/${item?.yacht?.id}`}>
                       <CardContent className="px-4 py-2">
                         <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
                           <MapPin className="size-3 mr-1" /> {item?.yacht?.location || "Location Not Available"}
