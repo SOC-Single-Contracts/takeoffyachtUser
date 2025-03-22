@@ -47,8 +47,10 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
     !appStatWwalletContext ||
     Object.keys(appStatWwalletContext).length === 0 ||
     appStatWwalletContext?.balance === 0;
+  // const isWalletDisabled = false;
   const [dueAmountAlltime, setdueAmountAlltime] = useState(600)
-  const [payOnlywithWallet, setpayOnlywithWallet] = useState(false)
+  const [showStripeStuff, setshowStripeStuff] = useState(true)
+
 
 
 
@@ -137,9 +139,9 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   // }, [deductFromWallet])
 
 
-  const handleSubmitFull = async (e) => {
+  const handleSubmitFull = async (e, type) => {
     e.preventDefault();
-    if(payOnlywithWallet){
+    if (type == "payOnlywithWallet") {
       if (!bookingData?.termsAccepted) {
         toast({
           title: "Error",
@@ -148,16 +150,16 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         });
         return;
       }
-  
-    
-  
+
+
+
       setIsProcessing(true);
       setError(null);
-  
+
       try {
         const totalAmount = calculateTotal();
         const paymentAmount = totalAmount;
-  
+
         // Use paymentType to determine endpoint
         let endpoint;
         if (yachtsType == "yachts") {
@@ -169,8 +171,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
             : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
         }
-  
-  
+
+
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -178,17 +180,17 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             is_partial_payment: false,
             user_id: userId,
             is_wallet: true
-  
+
           }),
         });
-  
+
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'Payment processing failed');
-  
+
         const successMessage = paymentType === 'remaining'
           ? 'Remaining payment processed successfully!'
           : 'Full payment processed successfully!';
-  
+
         toast({
           title: "Success! 🎉",
           description: successMessage,
@@ -197,7 +199,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         });
         router.push('/dashboard/success');
         handleDispatchBookingData({});
-  
+
       } catch (error) {
         console.error('Payment error:', error);
         setError(error.message);
@@ -209,7 +211,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       } finally {
         setIsProcessing(false);
       }
-    }else{
+    } else if (type == "paycard+wallet") {
       if (!stripe || !elements || !validateForm()) return;
 
       if (!bookingData?.termsAccepted) {
@@ -220,16 +222,16 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         });
         return;
       }
-  
-    
-  
+
+
+
       setIsProcessing(true);
       setError(null);
-  
+
       try {
         const totalAmount = calculateTotal();
         const paymentAmount = totalAmount;
-  
+
         const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
           type: 'card',
           card: elements.getElement(CardElement),
@@ -239,9 +241,9 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             phone: bookingData.phone,
           },
         });
-  
+
         if (paymentMethodError) throw new Error(paymentMethodError.message);
-  
+
         // Use paymentType to determine endpoint
         let endpoint;
         if (yachtsType == "yachts") {
@@ -253,8 +255,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
             : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
         }
-  
-  
+
+
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -263,17 +265,17 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             is_partial_payment: false,
             user_id: userId,
             is_wallet: deductFromWallet
-  
+
           }),
         });
-  
+
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'Payment processing failed');
-  
+
         const successMessage = paymentType === 'remaining'
           ? 'Remaining payment processed successfully!'
           : 'Full payment processed successfully!';
-  
+
         toast({
           title: "Success! 🎉",
           description: successMessage,
@@ -282,7 +284,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         });
         router.push('/dashboard/success');
         handleDispatchBookingData({});
-  
+
       } catch (error) {
         console.error('Payment error:', error);
         setError(error.message);
@@ -297,10 +299,9 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
     }
 
   };
-  const handleSubmitPartial = async (e) => {
-    console.log("worksdddddd")
+  const handleSubmitPartial = async (e, type) => {
     e.preventDefault();
-    if(payOnlywithWallet){
+    if (type == "payOnlywithWallet") {
       if (!bookingData?.termsAccepted) {
         toast({
           title: "Error",
@@ -309,14 +310,14 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         });
         return;
       }
-  
+
       setIsProcessing(true);
       setError(null);
-  
+
       try {
         const totalAmount = calculateTotal();
         const paymentAmount = totalAmount * 0.25;
-  
+
         // Use paymentType to determine endpoint
         let endpoint;
         if (yachtsType == "yachts") {
@@ -328,7 +329,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
             : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
         }
-  
+
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -338,14 +339,14 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             is_wallet: true
           }),
         });
-  
+
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'Payment processing failed');
-  
+
         const successMessage = paymentType === 'remaining'
           ? 'Remaining payment processed successfully!'
           : 'Initial payment (25%) processed successfully!';
-  
+
         toast({
           title: "Success! 🎉",
           description: successMessage,
@@ -354,8 +355,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         });
         router.push('/dashboard/success');
         handleDispatchBookingData({})
-  
-  
+
+
       } catch (error) {
         console.error('Payment error:', error);
         setError(error.message);
@@ -367,7 +368,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
       } finally {
         setIsProcessing(false);
       }
-    }else{
+    } else if (type == "paycard+wallet") {
       if (!stripe || !elements || !validateForm()) return;
       if (!bookingData?.termsAccepted) {
         toast({
@@ -377,14 +378,14 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         });
         return;
       }
-  
+
       setIsProcessing(true);
       setError(null);
-  
+
       try {
         const totalAmount = calculateTotal();
         const paymentAmount = totalAmount * 0.25;
-  
+
         const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
           type: 'card',
           card: elements.getElement(CardElement),
@@ -394,9 +395,9 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             phone: bookingData.phone,
           },
         });
-  
+
         if (paymentMethodError) throw new Error(paymentMethodError.message);
-  
+
         // Use paymentType to determine endpoint
         let endpoint;
         if (yachtsType == "yachts") {
@@ -408,7 +409,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
             : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
         }
-  
+
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -417,17 +418,17 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             is_partial_payment: true,
             user_id: userId,
             is_wallet: deductFromWallet
-  
+
           }),
         });
-  
+
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'Payment processing failed');
-  
+
         const successMessage = paymentType === 'remaining'
           ? 'Remaining payment processed successfully!'
           : 'Initial payment (25%) processed successfully!';
-  
+
         toast({
           title: "Success! 🎉",
           description: successMessage,
@@ -436,8 +437,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         });
         router.push('/dashboard/success');
         handleDispatchBookingData({})
-  
-  
+
+
       } catch (error) {
         console.error('Payment error:', error);
         setError(error.message);
@@ -453,13 +454,13 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
 
   };
 
-  
+
   // useEffect(() => {
   //   const getWalletResponse = async () => {
   //     if (!userId || !token) return;
   //     try {
   //       const data = await getWallet(token);
-  
+
   //       setwalletDetails((prev) => {
   //         const updatedDetails = {
   //           ...prev,
@@ -467,10 +468,10 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   //           freezeWallet: data?.freeze ?? prev.freezeWallet,
   //           transactions: data?.transactions ?? prev.transactions,
   //         };
-  
+
   //         // Persist to local storage
   //         // localStorage.setItem("walletContext", JSON.stringify(updatedDetails));
-  
+
   //         return updatedDetails;
   //       });
   //     } catch (err) {
@@ -479,25 +480,37 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   //       setLoading(false);
   //     }
   //   };
-  
+
   //   getWalletResponse();
   // }, [userId, token]); 
 
   useEffect(() => {
     console.log("dueAmountAlltime", dueAmountAlltime)
 
-    if (appStatWwalletContext?.balance >= dueAmountAlltime) {
-      setpayOnlywithWallet(true)
-    }
-  }, [dueAmountAlltime, appStatWwalletContext])
+    if (deductFromWallet && appStatWwalletContext?.balance >= dueAmountAlltime) {
+      setshowStripeStuff(false)
+    } else {
+      setshowStripeStuff(true)
 
+    }
+  }, [dueAmountAlltime, appStatWwalletContext, deductFromWallet])
 
   useEffect(() => {
-    console.log("payOnlywithWallet", payOnlywithWallet)
-  }, [payOnlywithWallet])
+    if (!showStripeStuff && elements) {
+      const cardElement = elements.getElement(CardElement);
+      if (cardElement) {
+        cardElement.clear(); // Clears the input when showStripeStuff is false
+      }
+    }
+  }, [showStripeStuff, elements]);
+
+  useEffect(() => {
+    console.log("showStripeStuff", showStripeStuff)
+  }, [showStripeStuff])
+
 
   return (
-    <form  className='w-full space-y-6'>
+    <form className='w-full space-y-6'>
       <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>
         <div className='flex items-center gap-2 mb-6'>
           <CreditCard className='w-5 h-5' />
@@ -518,7 +531,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
     ${isWalletDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
   `}
           onClick={() => {
-            if (isWalletDisabled ||  payOnlywithWallet) return; // Prevent clicking when balance is 0 or context is empty
+            if (isWalletDisabled) return; // Prevent clicking when balance is 0 or context is empty
             setDeductFromWallet((prev) => !prev);
           }}
           role="button"
@@ -527,7 +540,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
           {/* Left Side: Check Icon + Wallet Icon + Label */}
           <div className="flex items-center space-x-3">
             {/* ✅ Check Icon (Only Visible if Selected) */}
-            {payOnlywithWallet? "" : deductFromWallet ? (
+            {deductFromWallet ? (
               <div className="w-5 h-5 bg-[#BEA355] text-white flex items-center justify-center rounded-md">
                 <Check size={20} />
               </div>
@@ -553,8 +566,12 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         </div>
 
 
-        {!payOnlywithWallet && <div className='space-y-4'>
-          <div className='border rounded-md p-3'>
+        <div className='space-y-4'>
+          {/* Card Input Section */}
+          <div
+            className={`border rounded-md p-3 transition-opacity ${!showStripeStuff ? "opacity-50 cursor-not-allowed pointer-events-none" : ""
+              }`}
+          >
             <CardElement
               onChange={handleCardChange}
               options={{
@@ -562,18 +579,17 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
                   base: {
                     fontSize: '16px',
                     color: '#424770',
-                    '::placeholder': {
-                      color: '#aab7c4',
-                    },
+                    '::placeholder': { color: '#aab7c4' },
                   },
-                  invalid: {
-                    color: '#9e2146',
-                  },
+                  invalid: { color: '#9e2146' },
                 },
                 hidePostalCode: true,
               }}
+              disabled={!showStripeStuff} // Ensure Stripe input is disabled
             />
           </div>
+
+          {/* Info Messages */}
           <div className="flex flex-col space-y-2">
             <p className='text-[11px] flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 p-1 rounded-md'>
               <CheckCircle className='w-3 h-3 text-green-500' />
@@ -584,10 +600,14 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
               Guaranteed response within 24 hours
             </p>
           </div>
+
+          {/* Payment Info */}
           <div className='text-xs text-gray-500 dark:text-gray-400'>
             We accept all major credit and debit cards including Visa, Mastercard, and American Express
           </div>
-        </div>}
+        </div>
+
+
 
 
 
@@ -664,46 +684,47 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         </div>
       </div>
 
-      {payOnlywithWallet ?  <div>
+      {(!showStripeStuff) && <div>
         <Button
-            onClick={(e) => handleSubmitFull(e)}
+          onClick={(e) => handleSubmitFull(e, "payOnlywithWallet")}
           disabled={isProcessing || isWalletDisabled}
           className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
-          {`Pay Full Amount wallet (AED ${calculateTotal().toFixed(2)})`}
+          {`Pay Full Amount (AED ${calculateTotal().toFixed(2)})`}
         </Button>
 
         {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
           <Button
-            onClick={(e) => handleSubmitPartial(e)}
+            onClick={(e) => handleSubmitPartial(e, "payOnlywithWallet")}
             disabled={isProcessing || isWalletDisabled}
             className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
           >
-            {`Pay Partial wallet (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
+            {`Pay Partial  (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
           </Button>
         )}
-      </div> : 
-     
-      <div>
-      <Button
-                   onClick={(e) => handleSubmitFull(e)}
+      </div>}
 
-        disabled={isProcessing || !stripe || !cardComplete}
-        className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
-      >
-        {getPaymentButtonText()}
-      </Button>
-
-      {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
+      {showStripeStuff && <div>
         <Button
-          onClick={(e) => handleSubmitPartial(e)}
+          onClick={(e) => handleSubmitFull(e, "paycard+wallet")}
+
           disabled={isProcessing || !stripe || !cardComplete}
-          className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
+          className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
-          {`Pay Partial (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
+          {getPaymentButtonText()}
         </Button>
-      )}
-    </div>}
+
+        {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
+          <Button
+            onClick={(e) => handleSubmitPartial(e, "paycard+wallet")}
+            disabled={isProcessing || !stripe || !cardComplete}
+            className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
+          >
+            {`Pay Partial (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
+          </Button>
+        )}
+      </div>}
+
 
     </form>
   );
