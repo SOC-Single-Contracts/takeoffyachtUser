@@ -33,7 +33,10 @@ const Selection = ({ onNext }) => {
   const { yachtsType } = useParams();
   const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
   const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
-
+  const appStatWwalletContext =
+  typeof window !== "undefined" && localStorage.getItem("walletContext")
+    ? JSON.parse(localStorage.getItem("walletContext"))
+    : {};
   const [extras, setExtras] = useState({
     food: [],
     extra: [],
@@ -455,7 +458,7 @@ const Selection = ({ onNext }) => {
     if (range.to) {
       const endDate = format(range.to, 'yyyy-MM-dd');
       if (!availableDates.includes(endDate)) {
-        toast.error("End date is not available.");
+        // toast.error("End date is not available.");
         return;
       }
 
