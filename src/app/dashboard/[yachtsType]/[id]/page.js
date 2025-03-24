@@ -136,7 +136,9 @@ const YachtDetail = () => {
       },
       {
         imgSrc: "/assets/images/yacht.svg",
-        text: selectedYacht?.categories[0] ? selectedYacht?.categories[0].replace(/'/g, '') : "Super Yacht", // Show first category or default to "Super Yacht"
+        text: Array.isArray(selectedYacht?.categories) && typeof selectedYacht.categories[0] === "string"
+            ? selectedYacht.categories[0].replace(/'/g, '') 
+            : "Super Yacht", // Show first category or default to "Super Yacht"
         condition: true
       }
     ];

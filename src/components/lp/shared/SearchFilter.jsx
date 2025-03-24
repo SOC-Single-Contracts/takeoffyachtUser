@@ -43,7 +43,6 @@ const SearchFilter = () => {
     to: null
   });
   const { yachtsType } = useParams();
-  console.log(yachtsType)
 
   const [guests, setGuests] = useState({
     // adults: 1,
@@ -306,6 +305,9 @@ const SearchFilter = () => {
   const handleCloseSheet = () => {
     setIsDialogOpen(false); // Close the dialog when clicking on the specific div
   };
+  // useEffect(()=>{
+  // console.log("globalStateFilter",state)
+  // },[state])
 
   return (
     <section className="">
@@ -334,7 +336,7 @@ const SearchFilter = () => {
               <div className="flex items-center px-2 md:px-4 py-1.5 md:py-3 text-sm">
                 <Users className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
                 <span className="dark:text-gray-300 text-xs">
-                  {state?.filters?.max_guest} Guests
+                  {state?.filters?.max_guest ? state?.filters?.max_guest : 1} Guests
                 </span>
               </div>
             </div>

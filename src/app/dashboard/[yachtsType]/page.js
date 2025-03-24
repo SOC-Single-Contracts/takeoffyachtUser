@@ -20,8 +20,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchFilter from '@/components/lp/shared/SearchFilter';
-import { useParams, useRouter } from "next/navigation";
-           
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useGlobalState } from '@/context/GlobalStateContext';
+import { Loading } from '@/components/ui/loading';
+
 const PAGE_SIZE = 10;
 
 
@@ -40,6 +42,11 @@ const Yachts = () => {
   const [allowFetching, setAllowFetching] = useState(true); // Prevent API spam
   const { yachtsType } = useParams();
   const [showSkeleton, setShowSkeleton] = useState(false);
+  const { state, setFilter } = useGlobalState()
+  const searchParams = useSearchParams();
+  let searchPath = `/dashboard/${yachtsType == "f1yachts" ? "f1yachts" : "yachts"}`;
+
+
   // console.log("yachtsType",yachtsType)
   const [filters, setFilters] = useState({
     min_price: 1000,
@@ -109,12 +116,21 @@ const Yachts = () => {
     { value: "Capacity-Low-High", label: "Capacity: Low to High" }
   ];
 
-  const [selectedSortBy, setSelectedSortBy] = useState("default");
+  const [selectedSortBy, setSelectedSortBy] = useState(searchParams.get('sortBy') || "default");
   const [startSort, setStartSort] = useState(false);
 
   const handleChange = (value) => {
-    setStartSort(true)
+    setStartSort(true);
     setSelectedSortBy(value);
+
+    // Get current search params
+    const currentParams = new URLSearchParams(window.location.search);
+
+    // Update or add new parameter
+    currentParams.set("sortBy", value);
+
+    // Push updated URL with all existing params
+    router.push(`${searchPath}?${currentParams.toString()}`);
   };
 
   const selectedOption = sortByOptions.find(option => option.value === selectedSortBy);
@@ -215,7 +231,7 @@ const Yachts = () => {
     if (filters.min_price !== 1000 || filters.max_price !== 4000) {
       newFilters.push(`Price: ${filters.min_price}-${filters.max_price} AED`);
     }
-    if (filters.min_guest) newFilters.push(`Guests: ${filters.min_guest}-${filters.max_guest}`);
+    if (filters.min_guest || filters.max_guest) newFilters.push(`Guests: ${filters.min_guest}-${filters.max_guest}`);
     if (filters.location) newFilters.push(`Location: ${filters.location}`);
     if (filters.category_name.length) newFilters.push(`Categories: ${filters.category_name.length}`);
     if (filters.boat_category.length) newFilters.push(`Boat Categories: ${filters.boat_category.length}`);
@@ -234,10 +250,62 @@ const Yachts = () => {
     setActiveFilters(newFilters);
   };
 
+  /// update filter on searchParams
+  useEffect(() => {
+    /// for this compo
+    let obj = {
+      location: searchParams.get('location') || "",
+      max_guest: searchParams.get('guests') ? parseInt(searchParams.get('guests')) : "",
+      min_guest: searchParams.get('min_guest') ? parseInt(searchParams.get('min_guest')) : "",
+      min_price: searchParams.get('min_price') ? parseInt(searchParams.get('min_price')) : 1000,
+      max_price: searchParams.get('max_price') ? parseInt(searchParams.get('max_price')) : 4000,
+      sortBy: searchParams.get('sortBy') ? searchParams.get('sortBy') : "default",
+      min_length: searchParams.get('min_length') ? parseInt(searchParams.get('min_length')) : "",
+      max_length: searchParams.get('max_length') ? parseInt(searchParams.get('max_length')) : "",
+      sleep_capacity: searchParams.get('sleep_capacity') ? parseInt(searchParams.get('sleep_capacity')) : "",
+      number_of_cabin: searchParams.get('number_of_cabin') ? parseInt(searchParams.get('number_of_cabin')) : "",
+      category_name: searchParams.get('category_name')
+        ? JSON.parse(searchParams.get('category_name'))
+        : [],
+      outdoor_equipment: searchParams.get('outdoor_equipment')
+        ? JSON.parse(searchParams.get('outdoor_equipment'))
+        : [],
+      navigation: searchParams.get('navigation')
+        ? JSON.parse(searchParams.get('navigation'))
+        : [],
+      leisure: searchParams.get('leisure')
+        ? JSON.parse(searchParams.get('leisure'))
+        : [],
+      kitchen: searchParams.get('kitchen')
+        ? JSON.parse(searchParams.get('kitchen'))
+        : [],
+      indoor: searchParams.get('indoor')
+        ? JSON.parse(searchParams.get('indoor'))
+        : [],
+      extra_comforts: searchParams.get('extra_comforts')
+        ? JSON.parse(searchParams.get('extra_comforts'))
+        : [],
+      energy: searchParams.get('energy')
+        ? JSON.parse(searchParams.get('energy'))
+        : [],
+
+
+    }
+    setFilters((prev) => ({
+      ...prev,
+      ...obj
+    }));
+    //for global state or search filter
+    setFilter({
+      ...obj
+    })
+  }, [searchParams])
+
   useEffect(() => {
     updateActiveFilters();
   }, [filters]);
 
+  //loadWishlist
   useEffect(() => {
     const loadWishlist = async () => {
       if (userId) {
@@ -254,211 +322,322 @@ const Yachts = () => {
     // loadWishlist();
   }, [userId]);
 
-  const saveFiltersToLocalStorage = (filters) => {
-    localStorage.setItem('yacht_filters', JSON.stringify(filters));
-  };
-
-  const getFiltersFromLocalStorage = () => {
-    const savedFilters = localStorage.getItem('yacht_filters');
-    return savedFilters ? JSON.parse(savedFilters) : null;
-  };
-
-  // Add this function near your other utility functions
-  const updateQueryParams = (filters) => {
-    const params = new URLSearchParams();
-
-    // Add non-empty filters to query params
-    if (filters.min_price !== 1000) params.set('min_price', filters.min_price);
-    if (filters.max_price !== 4000) params.set('max_price', filters.max_price);
-    if (filters.min_guest) params.set('min_guest', filters.min_guest);
-    if (filters.max_guest) params.set('max_guest', filters.max_guest);
-    if (filters.sleep_capacity) params.set('sleep_capacity', filters.sleep_capacity);
-    if (filters.number_of_cabin) params.set('number_of_cabin', filters.number_of_cabin);
-    if (filters.location) params.set('location', filters.location);
-    if (filters.min_length) params.set('min_length', filters.min_length);
-    if (filters.max_length) params.set('max_length', filters.max_length);
-
-    // Handle arrays
-    if (filters.category_name.length) params.set('category_name', JSON.stringify(filters.category_name));
-    if (filters.amenities.length) params.set('amenities', JSON.stringify(filters.amenities));
-    if (filters.outdoor_equipment.length) params.set('outdoor_equipment', JSON.stringify(filters.outdoor_equipment));
-    if (filters.kitchen.length) params.set('kitchen', JSON.stringify(filters.kitchen));
-    if (filters.energy.length) params.set('energy', JSON.stringify(filters.energy));
-    if (filters.leisure.length) params.set('leisure', JSON.stringify(filters.leisure));
-    if (filters.navigation.length) params.set('navigation', JSON.stringify(filters.navigation));
-    if (filters.extra_comforts.length) params.set('extra_comforts', JSON.stringify(filters.extra_comforts));
-    if (filters.indoor.length) params.set('indoor', JSON.stringify(filters.indoor));
-
-    // Update URL without page reload
-    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
-    router.push(newUrl, { scroll: false });
-  };
 
   const handleFilterChange = async (type) => {
 
     if (!userId) return;
     if (!hasMore) return;
 
-    let payload;
-    if (type == "reset") {
-      // console.log("ifff simple Yacht")
+    let payload = {
+      max_guest: parseInt(searchParams.get('guests')) || "",
+      location: searchParams.get('location'),
+      name: searchParams.get('name') || "",
+      created_on: searchParams.get('date') || "",
+      ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
+        ? { min_guest: parseInt(searchParams.get('min_guest')) }
+        : {}),
+      ...(yachtsType === "yachts"
+        ? {
+            min_per_hour: parseInt(searchParams.get('min_price')) || "1000",
+            max_per_hour: parseInt(searchParams.get('max_price')) || "4000",
+          }
+        : yachtsType === "f1yachts"
+        ? {
+            min_per_day: parseInt(searchParams.get('min_price')) || "1000",
+            max_per_day: parseInt(searchParams.get('max_price')) || "4000",
+          }
+        : {}),
+      min_length: parseInt(searchParams.get('min_length')) || "",
+      max_length: parseInt(searchParams.get('max_length')) || "",
+      sleep_capacity: parseInt(searchParams.get('sleep_capacity')) || "",
+      number_of_cabin: parseInt(searchParams.get('number_of_cabin')) || "",
+      categories: searchParams.get('category_name')
+        ? JSON.parse(searchParams.get('category_name'))
+        : [],
+      features: [
+        ...(JSON.parse(searchParams.get('outdoor_equipment') || "[]")),
+        ...(JSON.parse(searchParams.get('navigation') || "[]")),
+        ...(JSON.parse(searchParams.get('leisure') || "[]")),
+        ...(JSON.parse(searchParams.get('kitchen') || "[]")),
+        ...(JSON.parse(searchParams.get('indoor') || "[]")),
+        ...(JSON.parse(searchParams.get('extra_comforts') || "[]")),
+        ...(JSON.parse(searchParams.get('energy') || "[]"))
+      ]
 
+
+
+    };
+    if (type == "firstRender") {
       payload = {
-        source:"simpleYacht",
-        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
+        ...payload,
+        source: "simpleYacht",
+        YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
         user_id: userId,
       };
-      // router.push('/dashboard/yachts', { scroll: false });
-      setSelectedSortBy("default");
-      setFilters(initialFilterState);
-      localStorage.removeItem('yacht_filters');
-    } else {
-      // console.log("else simple Yacht")  
-      const currentFilters = type === "stored" ? getFiltersFromLocalStorage() : filters;
-      payload = {
-        source:"simpleYacht",
-        YachtType:yachtsType == "f1yachts" ? "f1yachts" :"regular",
-        user_id: userId,
-        min_per_hour: currentFilters?.min_price?.toString() || "1000",
-        max_per_hour: currentFilters?.max_price?.toString() || "4000",
-        guest: currentFilters?.max_guest || "",
-        min_guest: currentFilters?.min_guest || "",
-        max_guest: currentFilters?.max_guest || "",
-        sleep_capacity: currentFilters?.sleep_capacity || "",
-        number_of_cabin: currentFilters?.number_of_cabin || "",
-        categories: currentFilters?.category_name || [],
-        features: [
-          ...(currentFilters?.amenities || []),
-          ...(currentFilters?.outdoor_equipment || []),
-          ...(currentFilters?.kitchen || []),
-          ...(currentFilters?.energy || []),
-          ...(currentFilters?.leisure || []),
-          ...(currentFilters?.navigation || []),
-          ...(currentFilters?.extra_comforts || []),
-          ...(currentFilters?.indoor || [])
-        ],
-        price_asc: currentFilters?.price_asc || false,
-        price_des: currentFilters?.price_des || false,
-        cabin_asc: currentFilters?.cabin_asc || false,
-        cabin_des: currentFilters?.cabin_des || false,
-        created_on: currentFilters?.created_on || "",
-        location: currentFilters?.location || "",
-        min_length: currentFilters?.min_length || "",
-        max_length: currentFilters?.max_length || "",
-      };
-      if (type === "normal") {
-        saveFiltersToLocalStorage(currentFilters);
-        updateQueryParams(currentFilters);
-      }
-    }
+      try {
+        setLoading(true);
 
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            "Referer": window.location.href
 
-    try {
-      setLoading(true);
-
-     let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          "Referer": window.location.href
-
-        },
-        body: JSON.stringify(payload),
-      });
-
-
-      const responseData = await response.json();
-      if (responseData.error_code === 'pass') {
-
-        // Filter yachts based on price range
-        // const filteredYachts = responseData.data.filter(item => {
-        //   const price = item?.yacht?.per_hour_price;
-        //   return price >= filters.min_price && price <= filters.max_price;
-        // }); 
-        const filteredYachts = responseData.data;
-
-        // Sort the filtered yachts if needed
-        const sortedYachts = filteredYachts?.sort((a, b) => {
-          return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
+          },
+          body: JSON.stringify(payload),
         });
-        setOriginalYachts((prev) => [...prev, ...sortedYachts]);
-        if (sortedYachts?.length < PAGE_SIZE) setHasMore(false);
-      } else {
-        setHasMore(false);
-        setError(responseData.error || 'Failed to apply filters');
-        console.error('API Error:', responseData.error);
+
+
+        const responseData = await response.json();
+        if (responseData.error_code === 'pass') {
+
+          // Filter yachts based on price range
+          // const filteredYachts = responseData.data.filter(item => {
+          //   const price = item?.yacht?.per_hour_price;
+          //   return price >= filters.min_price && price <= filters.max_price;
+          // }); 
+          const filteredYachts = responseData.data;
+
+          // Sort the filtered yachts if needed
+          const sortedYachts = filteredYachts?.sort((a, b) => {
+            return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
+          });
+          setOriginalYachts((prev) => [...prev, ...sortedYachts]);
+          // if (sortedYachts?.length < PAGE_SIZE) setHasMore(false);
+        } else {
+          // setHasMore(false);
+          setError(responseData.error || 'Failed to apply filters');
+          console.error('API Error:', responseData.error);
+        }
+      } catch (err) {
+        setError(err.message || 'Error applying filters');
+        console.error('Filter error:', err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err.message || 'Error applying filters');
-      console.error('Filter error:', err);
-    } finally {
-      setLoading(false);
+
+
+    } else if (type == "normal") {
+      payload = {
+        ...payload,
+        source: "simpleYacht",
+        YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
+        user_id: userId,
+        ...(yachtsType === "yachts"
+          ? {
+              min_per_hour: filters?.min_price?.toString() || "1000",
+              max_per_hour: filters?.max_price?.toString() || "4000",
+            }
+          : yachtsType === "f1yachts"
+          ? {
+              min_per_day: filters?.min_price?.toString() || "1000",
+              max_per_day: filters?.max_price?.toString() || "4000",
+            }
+          : {}),
+        guest: filters?.max_guest || "",
+        min_guest: filters?.min_guest || "",
+        max_guest: filters?.max_guest || "",
+        sleep_capacity: filters?.sleep_capacity || "",
+        number_of_cabin: filters?.number_of_cabin || "",
+        categories: filters?.category_name || [],
+        features: [
+          ...(filters?.amenities || []),
+          ...(filters?.outdoor_equipment || []),
+          ...(filters?.kitchen || []),
+          ...(filters?.energy || []),
+          ...(filters?.leisure || []),
+          ...(filters?.navigation || []),
+          ...(filters?.extra_comforts || []),
+          ...(filters?.indoor || [])
+        ],
+        price_asc: filters?.price_asc || false,
+        price_des: filters?.price_des || false,
+        cabin_asc: filters?.cabin_asc || false,
+        cabin_des: filters?.cabin_des || false,
+        created_on: filters?.created_on || "",
+        location: filters?.location || "",
+        min_length: filters?.min_length || "",
+        max_length: filters?.max_length || "",
+      };
+
+      try {
+        setLoading(true);
+
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            "Referer": window.location.href
+
+          },
+          body: JSON.stringify(payload),
+        });
+
+
+        const responseData = await response.json();
+        if (responseData.error_code === 'pass') {
+
+          // Filter yachts based on price range
+          // const filteredYachts = responseData.data.filter(item => {
+          //   const price = item?.yacht?.per_hour_price;
+          //   return price >= filters.min_price && price <= filters.max_price;
+          // }); 
+          const filteredYachts = responseData.data;
+
+          // Sort the filtered yachts if needed
+          const sortedYachts = filteredYachts?.sort((a, b) => {
+            return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
+          });
+          setOriginalYachts([...sortedYachts]);
+        } else {
+          setError(responseData.error || 'Failed to apply filters');
+          console.error('API Error:', responseData.error);
+        }
+      } catch (err) {
+        setError(err.message || 'Error applying filters');
+        console.error('Filter error:', err);
+      } finally {
+        setLoading(false);
+      }
+
+
+      router.push(`${searchPath}?${new URLSearchParams({
+        guests: filters?.max_guest,
+        min_guest: filters?.min_guest,
+        min_price: filters?.min_price,
+        max_price: filters?.max_price,
+        location: filters?.location,
+        min_length: filters?.min_length,
+        max_length: filters?.max_length,
+        sleep_capacity: filters?.sleep_capacity,
+        number_of_cabin: filters?.number_of_cabin,
+        category_name: filters?.category_name?.length
+          ? `["${filters.category_name.join('","')}"]`
+          : "[]",
+        outdoor_equipment: filters?.outdoor_equipment?.length
+          ? `["${filters.outdoor_equipment.join('","')}"]`
+          : "[]",
+        navigation: filters?.navigation?.length
+          ? `["${filters.navigation.join('","')}"]`
+          : "[]",
+        leisure: filters?.leisure?.length
+          ? `["${filters.leisure.join('","')}"]`
+          : "[]",
+        kitchen: filters?.kitchen?.length
+          ? `["${filters.kitchen.join('","')}"]`
+          : "[]",
+        indoor: filters?.indoor?.length
+          ? `["${filters.indoor.join('","')}"]`
+          : "[]",
+        extra_comforts: filters?.extra_comforts?.length
+          ? `["${filters.extra_comforts.join('","')}"]`
+          : "[]",
+        energy: filters?.energy?.length
+          ? `["${filters.energy.join('","')}"]`
+          : "[]",
+
+
+      }).toString()}`);
+    } else if (type == "hardReset") {
+      let payloadHardReset = {
+        source: "simpleYacht",
+        YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
+        user_id: userId,
+      };
+      try {
+        setLoading(true);
+
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            "Referer": window.location.href
+
+          },
+          body: JSON.stringify(payloadHardReset),
+        });
+
+
+        const responseData = await response.json();
+        if (responseData.error_code === 'pass') {
+
+          // Filter yachts based on price range
+          // const filteredYachts = responseData.data.filter(item => {
+          //   const price = item?.yacht?.per_hour_price;
+          //   return price >= filters.min_price && price <= filters.max_price;
+          // }); 
+          const filteredYachts = responseData.data;
+
+          // Sort the filtered yachts if needed
+          const sortedYachts = filteredYachts?.sort((a, b) => {
+            return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
+          });
+          setOriginalYachts([...sortedYachts]);
+          // if (sortedYachts?.length < PAGE_SIZE) setHasMore(false);
+        } else {
+          // setHasMore(false);
+          setError(responseData.error || 'Failed to apply filters');
+          console.error('API Error:', responseData.error);
+        }
+      } catch (err) {
+        setError(err.message || 'Error applying filters');
+        console.error('Filter error:', err);
+      } finally {
+        setLoading(false);
+      }
+      router.push(`${searchPath}?${new URLSearchParams({
+        guests: "",
+        min_guest: "",
+        min_price: 1000,
+        max_price: 4000,
+        location: "",
+        min_length: "",
+        max_length: "",
+        sleep_capacity: "",
+        number_of_cabin: "",
+        category_name: "[]",
+        outdoor_equipment: "[]",
+        navigation: "[]",
+        leisure: "[]",
+        kitchen: "[]",
+        indoor: "[]",
+        extra_comforts: "[]",
+        energy: "[]",
+
+
+
+
+      }).toString()}`);
     }
+
+
+
+
+
+
   };
 
 
-
+  // "hitApiCall" on first render and when scroll page
   useEffect(() => {
     // console.log("this is working")
-    const savedFilters = getFiltersFromLocalStorage();
-    if (savedFilters) {
-      setFilters(savedFilters);
-      handleFilterChange("stored");
-    } else {
-      handleFilterChange("reset");
-    }
+    handleFilterChange("firstRender");
   }, [page]);
+  //page
 
-  // Modify resetFilters function
+  // hitApiCall Modify resetFilters function
   const resetFilters = () => {
-    localStorage.removeItem('yacht_filters');
-    // router.push('/dashboard/yachts', { scroll: false });
     setFilters(initialFilterState);
-    handleFilterChange("reset");
+    handleFilterChange("hardReset");
   };
 
-  // const resetFilters = () => {
-  //   setFilters(initialFilterState);
-  //   handleFilterChange("reset");
-
-  // };
-
-  /// calling on first render only
-  // useEffect(() => {
-  //   // console.log("calling on first render only")
-  //   handleFilterChange("reset");
-  // }, []);
-
-
-  // call onCancelEachFilter
+  // "hitApiCall" onCancelEachFilter
   useEffect(() => {
     if (onCancelEachFilter) {
       handleFilterChange("normal");
       setonCancelEachFilter(false);
     }
   }, [filters, onCancelEachFilter]);
-
-  // useEffect(() => {
-  //  console.log("page",page)
-  // }, [page]);
-
-
-  // useEffect(() => {
-  //   const getYachts = async () => {
-  //     if (!userId) return;
-  //     try {
-  //       const data = await fetchYachts(userId);
-  //       console.log("its works 1")
-  //       setOriginalYachts(data)
-  //     } catch (err) {
-  //       setError(err.message || 'Unexpected Error');
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   getYachts();
-  // }, [userId]);
 
   const handleWishlistToggle = async (yachtId) => {
     if (!userId) return;
@@ -478,11 +657,13 @@ const Yachts = () => {
       console.error('Error toggling wishlist:', error);
     }
   };
-
-
+  ///sorting
   useEffect(() => {
 
-    if (!startSort) {
+    // if (!startSort) {
+    //   return;
+    // }
+    if (yachts.length <= 0 || originalYachts.length <= 0) {
       return;
     }
 
@@ -491,10 +672,20 @@ const Yachts = () => {
       data = [...originalYachts];
     }
     else if (selectedOption?.value === "Price-High-Low") {
-      data.sort((a, b) => b.yacht?.per_hour_price - a.yacht?.per_hour_price);
-    } else if (selectedOption?.value === "Price-Low-High") {
-      data.sort((a, b) => a.yacht?.per_hour_price - b.yacht?.per_hour_price);
-    } else if (selectedOption?.value === "Capacity-High-Low") {
+      if (yachtsType === "yachts") {
+        data.sort((a, b) => (b.yacht?.per_hour_price) - (a.yacht?.per_hour_price));
+      } else if (yachtsType === "f1yachts") {
+        data.sort((a, b) => (b.yacht?.per_day_price) - (a.yacht?.per_day_price));
+      }
+    } 
+    else if (selectedOption?.value === "Price-Low-High") {
+      if (yachtsType === "yachts") {
+        data.sort((a, b) => (a.yacht?.per_hour_price) - (b.yacht?.per_hour_price));
+      } else if (yachtsType === "f1yachts") {
+        data.sort((a, b) => (a.yacht?.per_day_price) - (b.yacht?.per_day_price));
+      }
+    } 
+     else if (selectedOption?.value === "Capacity-High-Low") {
       data.sort((a, b) => b.yacht?.guest - a.yacht?.guest);
     } else if (selectedOption?.value === "Capacity-Low-High") {
       data.sort((a, b) => a.yacht?.guest - b.yacht?.guest);
@@ -504,11 +695,13 @@ const Yachts = () => {
       setYachts(data);
     }
   }, [selectedOption]);
+  /// set orignial yachts to yachts
   useEffect(() => {
     let data = [...originalYachts]
     setYachts(data)
   }, [originalYachts]);
 
+  /// "hitApiCall" for hit api on scroll ,setPage,setAllowFetching
   const lastYachtRef = useCallback(
     (node) => {
       if (!hasMore || !allowFetching) return;
@@ -525,8 +718,8 @@ const Yachts = () => {
 
               setAllowFetching(true)
               // setShowSkeleton(true)
-          }, 1000); // Delay to avoid multiple rapid requests
-          // setShowSkeleton(false) 
+            }, 1000); // Delay to avoid multiple rapid requests
+            // setShowSkeleton(false) 
           }
         },
         {
@@ -538,7 +731,7 @@ const Yachts = () => {
     },
     [hasMore, allowFetching, setPage]
   );
-
+  /// for scroll position
   useEffect(() => {
     if (yachts.length > 0) {
       setAllowFetching(false);
@@ -553,19 +746,26 @@ const Yachts = () => {
         // }
 
         setAllowFetching(true);
-      }, 100); 
+      }, 100);
     }
   }, [yachts.length]);
 
 
 
+  ///test
 
   // useEffect(() => {
   //   console.log("yachts", yachts);
   // }, [yachts]);
+  useEffect(() => {
+    console.log("filters", filters);
+  }, [filters]);
   // useEffect(() => {
-  //   console.log("filters", filters);
-  // }, [filters]);
+  //   console.log("selectedOption.value",selectedOption.value);
+  // }, [selectedOption]);
+  // useEffect(() => {
+  //  console.log("page",page)
+  // }, [page]);
 
 
   // if (loading) {
@@ -614,6 +814,12 @@ const Yachts = () => {
   //   );
   // }
 
+      // if (loading) {
+      //     return (
+      //         <Loading />
+      //     );
+      // }
+
   if (error) {
     return (
       <section className="py-16">
@@ -624,7 +830,7 @@ const Yachts = () => {
     );
   }
 
- return (
+  return (
     <section className="py-4 px-2">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-semibold mb-6">
@@ -672,7 +878,6 @@ const Yachts = () => {
                     <Button
                       className="w-full bg-[#BEA355] mt-6 rounded-full"
                       onClick={() => {
-                        saveFiltersToLocalStorage(filters);
                         handleFilterChange("normal");
                       }}
                     >
@@ -681,7 +886,7 @@ const Yachts = () => {
                     <div className="space-y-6 py-6 px-1">
                       {/* Price Range */}
                       <div className="space-y-2">
-                        <Label className="text-sm">Price Per Hour (AED)</Label>
+                        <Label className="text-sm"> {yachtsType == "yachts" ? "Price Per Hour (AED) ": yachtsType == "f1yachts" ? "Price Per Day (AED) ":""}</Label>
                         <div className="flex gap-4">
                           <div className="flex-1">
                             <Input
@@ -1131,7 +1336,6 @@ const Yachts = () => {
                       <Button
                         className="w-full bg-[#BEA355] mt-6 rounded-full"
                         onClick={() => {
-                          saveFiltersToLocalStorage(filters);
                           handleFilterChange("normal");
                         }}
                       >
@@ -1329,7 +1533,7 @@ const Yachts = () => {
                             <ChevronRight />
                           </Button>
                         </CarouselNext>
-                        <CarouselDots yId={item?.yacht?.id} />
+                        <CarouselDots />
                       </Carousel>
 
                       <Button
@@ -1351,14 +1555,14 @@ const Yachts = () => {
 
                       <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
 
-                      {yachtsType == "yachts" ?  <span className="font-medium text-xs">
+                        {yachtsType == "yachts" ? <span className="font-medium text-xs">
                           AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_hour_price}</span>
                           <span className="text-xs font-light ml-1">/Hour</span>
-                        </span> : yachtsType == "f1yachts" ?  <span className="font-medium text-xs">
+                        </span> : yachtsType == "f1yachts" ? <span className="font-medium text-xs">
                           AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_day_price}</span>
                           <span className="text-xs font-light ml-1">/Day</span>
-                        </span> :""}
-                       
+                        </span> : ""}
+
                       </div>
                     </div>
                     <Link href={`/dashboard/${yachtsType}/${item?.yacht?.id}`}>
@@ -1417,3 +1621,10 @@ const Yachts = () => {
 };
 
 export default Yachts;
+
+
+// changes in:
+// initialPayload
+// router.push
+// setFilters
+// setFilter
