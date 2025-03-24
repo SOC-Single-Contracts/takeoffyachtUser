@@ -108,6 +108,8 @@ const Yachts = () => {
     indoor: [],
   };
   const [isOpen, setIsOpen] = useState(false); // State to control Sheet visibility
+  const [apiCall,setapiCall] = useState("firstRender")
+
 
 
   const sortByOptions = [
@@ -501,6 +503,7 @@ const Yachts = () => {
       } finally {
         setLoading(false);
         setPage(1)
+        setapiCall("normal")
       }
 
 
@@ -586,7 +589,7 @@ const Yachts = () => {
       try {
         setLoading(true);
 
-        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=1`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -653,7 +656,9 @@ const Yachts = () => {
   // "hitApiCall" on first render and when scroll page
   useEffect(() => {
     // console.log("this is working")
-    handleFilterChange("firstRender");
+    if(apiCall=="firstRender"){
+      handleFilterChange("firstRender");
+    }
   }, [page]);
   //page
 
@@ -746,6 +751,7 @@ const Yachts = () => {
             console.log("Fetching Next Page...");
             setAllowFetching(false);
             setPage((prevPage) => prevPage + 1);
+            setapiCall("firstRender")
             setTimeout(() => {
 
               setAllowFetching(true)
@@ -795,9 +801,9 @@ const Yachts = () => {
   // useEffect(() => {
   //   console.log("selectedOption.value",selectedOption.value);
   // }, [selectedOption]);
-  // useEffect(() => {
-  //  console.log("page",page)
-  // }, [page]);
+  useEffect(() => {
+   console.log("page",page)
+  }, [page]);
 
 
   // if (loading) {
