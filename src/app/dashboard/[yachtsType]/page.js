@@ -49,8 +49,8 @@ const Yachts = () => {
 
   // console.log("yachtsType",yachtsType)
   const [filters, setFilters] = useState({
-    min_price: 1000,
-    max_price: 4000,
+    min_price: "",
+    max_price: "",
     min_guest: "",
     max_guest: "",
     sleep_capacity: "",
@@ -79,8 +79,8 @@ const Yachts = () => {
   });
 
   const initialFilterState = {
-    min_price: 1000,
-    max_price: 4000,
+    min_price: "",
+    max_price: "",
     min_guest: "",
     max_guest: "",
     sleep_capacity: "",
@@ -228,7 +228,7 @@ const Yachts = () => {
 
   const updateActiveFilters = () => {
     const newFilters = [];
-    if (filters.min_price !== 1000 || filters.max_price !== 4000) {
+    if (filters.min_price !== "" || filters.max_price !== "") {
       newFilters.push(`Price: ${filters.min_price}-${filters.max_price} AED`);
     }
     if (filters.min_guest || filters.max_guest) newFilters.push(`Guests: ${filters.min_guest}-${filters.max_guest}`);
@@ -257,8 +257,8 @@ const Yachts = () => {
       location: searchParams.get('location') || "",
       max_guest: searchParams.get('guests') ? parseInt(searchParams.get('guests')) : "",
       min_guest: searchParams.get('min_guest') ? parseInt(searchParams.get('min_guest')) : "",
-      min_price: searchParams.get('min_price') ? parseInt(searchParams.get('min_price')) : 1000,
-      max_price: searchParams.get('max_price') ? parseInt(searchParams.get('max_price')) : 4000,
+      min_price: searchParams.get('min_price') ? parseInt(searchParams.get('min_price')) : "",
+      max_price: searchParams.get('max_price') ? parseInt(searchParams.get('max_price')) : "",
       sortBy: searchParams.get('sortBy') ? searchParams.get('sortBy') : "default",
       min_length: searchParams.get('min_length') ? parseInt(searchParams.get('min_length')) : "",
       max_length: searchParams.get('max_length') ? parseInt(searchParams.get('max_length')) : "",
@@ -338,13 +338,13 @@ const Yachts = () => {
         : {}),
       ...(yachtsType === "yachts"
         ? {
-          min_per_hour: parseInt(searchParams.get('min_price')) || "1000",
-          max_per_hour: parseInt(searchParams.get('max_price')) || "4000",
+          min_per_hour: parseInt(searchParams.get('min_price')) || "",
+          max_per_hour: parseInt(searchParams.get('max_price')) || "",
         }
         : yachtsType === "f1yachts"
           ? {
-            min_per_day: parseInt(searchParams.get('min_price')) || "1000",
-            max_per_day: parseInt(searchParams.get('max_price')) || "4000",
+            min_per_day: parseInt(searchParams.get('min_price')) || "",
+            max_per_day: parseInt(searchParams.get('max_price')) || "",
           }
           : {}),
       min_length: parseInt(searchParams.get('min_length')) || "",
@@ -425,13 +425,13 @@ const Yachts = () => {
         user_id: userId,
         ...(yachtsType === "yachts"
           ? {
-            min_per_hour: filters?.min_price?.toString() || "1000",
-            max_per_hour: filters?.max_price?.toString() || "4000",
+            min_per_hour: filters?.min_price?.toString() || "",
+            max_per_hour: filters?.max_price?.toString() || "",
           }
           : yachtsType === "f1yachts"
             ? {
-              min_per_day: filters?.min_price?.toString() || "1000",
-              max_per_day: filters?.max_price?.toString() || "4000",
+              min_per_day: filters?.min_price?.toString() || "",
+              max_per_day: filters?.max_price?.toString() || "",
             }
             : {}),
         guest: filters?.max_guest || "",
@@ -540,7 +540,7 @@ const Yachts = () => {
 
 
       }).toString()}`);
-      
+
       // const queryParams = new URLSearchParams();
 
       // const addParam = (key, value) => {
@@ -625,8 +625,8 @@ const Yachts = () => {
       router.push(`${searchPath}?${new URLSearchParams({
         guests: "",
         min_guest: "",
-        min_price: 1000,
-        max_price: 4000,
+        min_price: "",
+        max_price: "",
         location: "",
         min_length: "",
         max_length: "",
@@ -1395,7 +1395,7 @@ const Yachts = () => {
                         const [type] = filter.split(':');
                         switch (type) {
                           case 'Price':
-                            setFilters(prev => ({ ...prev, min_price: 1000, max_price: 4000 }));
+                            setFilters(prev => ({ ...prev, min_price: "", max_price: "" }));
                             break;
                           case 'Guests':
                             setFilters(prev => ({ ...prev, min_guest: '', max_guest: '' }));
