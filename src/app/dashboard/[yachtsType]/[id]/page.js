@@ -34,6 +34,7 @@ import Fancybox from "@/components/Fancybox"
 import { Calendar } from "@/components/ui/calendar";
 import { addDays } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { calculateDaysBetween } from "@/helper/calculateDays";
 
 const Skeleton = ({ className }) => (
   <div className={`${className} bg-gray-200 animate-pulse`}></div>
@@ -296,9 +297,13 @@ const YachtDetail = () => {
       ny_price,
       ny_firework,
       ny_status,
+      from_date,
+      to_date 
     },
     subcategories,
   } = selectedYacht;
+  const daysCount = calculateDaysBetween(from_date, to_date);
+  
 
   const yachtImages = [
     selectedYacht?.yacht?.yacht_image,
@@ -517,7 +522,8 @@ const YachtDetail = () => {
               </Badge>
               <div className="flex justify-between items-center mt-2">
                 <h2 className="text-xl md:text-2xl font-bold">{name}</h2>
-                <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>/day</p>
+                 {yachtsType == "yachts" ?<p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>/day</p> : yachtsType == "f1yachts" ?  <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`} </p> : ""}
+
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
                 {getYachtDetailsGrid(selectedYacht?.yacht)}

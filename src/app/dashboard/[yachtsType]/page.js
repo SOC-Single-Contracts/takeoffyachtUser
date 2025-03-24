@@ -793,9 +793,9 @@ const Yachts = () => {
 
   ///test
 
-  useEffect(() => {
-    console.log("yachts", yachts);
-  }, [yachts]);
+  // useEffect(() => {
+  //   console.log("yachts", yachts);
+  // }, [yachts]);
   useEffect(() => {
     console.log("filters", filters);
   }, [filters]);
