@@ -502,78 +502,79 @@ const Yachts = () => {
       }
 
 
-      // router.push(`${searchPath}?${new URLSearchParams({
+      router.push(`${searchPath}?${new URLSearchParams({
 
-      //   guests: filters?.max_guest,
-      //   min_guest: filters?.min_guest,
-      //   min_price: filters?.min_price,
-      //   max_price: filters?.max_price,
-      //   location: filters?.location,
-      //   min_length: filters?.min_length,
-      //   max_length: filters?.max_length,
-      //   sleep_capacity: filters?.sleep_capacity,
-      //   number_of_cabin: filters?.number_of_cabin,
-      //   category_name: filters?.category_name?.length
-      //     ? `["${filters.category_name.join('","')}"]`
-      //     : "[]",
-      //   outdoor_equipment: filters?.outdoor_equipment?.length
-      //     ? `["${filters.outdoor_equipment.join('","')}"]`
-      //     : "[]",
-      //   navigation: filters?.navigation?.length
-      //     ? `["${filters.navigation.join('","')}"]`
-      //     : "[]",
-      //   leisure: filters?.leisure?.length
-      //     ? `["${filters.leisure.join('","')}"]`
-      //     : "[]",
-      //   kitchen: filters?.kitchen?.length
-      //     ? `["${filters.kitchen.join('","')}"]`
-      //     : "[]",
-      //   indoor: filters?.indoor?.length
-      //     ? `["${filters.indoor.join('","')}"]`
-      //     : "[]",
-      //   extra_comforts: filters?.extra_comforts?.length
-      //     ? `["${filters.extra_comforts.join('","')}"]`
-      //     : "[]",
-      //   energy: filters?.energy?.length
-      //     ? `["${filters.energy.join('","')}"]`
-      //     : "[]",
+        guests: filters?.max_guest,
+        min_guest: filters?.min_guest,
+        min_price: filters?.min_price,
+        max_price: filters?.max_price,
+        location: filters?.location,
+        min_length: filters?.min_length,
+        max_length: filters?.max_length,
+        sleep_capacity: filters?.sleep_capacity,
+        number_of_cabin: filters?.number_of_cabin,
+        category_name: filters?.category_name?.length
+          ? `["${filters.category_name.join('","')}"]`
+          : "[]",
+        outdoor_equipment: filters?.outdoor_equipment?.length
+          ? `["${filters.outdoor_equipment.join('","')}"]`
+          : "[]",
+        navigation: filters?.navigation?.length
+          ? `["${filters.navigation.join('","')}"]`
+          : "[]",
+        leisure: filters?.leisure?.length
+          ? `["${filters.leisure.join('","')}"]`
+          : "[]",
+        kitchen: filters?.kitchen?.length
+          ? `["${filters.kitchen.join('","')}"]`
+          : "[]",
+        indoor: filters?.indoor?.length
+          ? `["${filters.indoor.join('","')}"]`
+          : "[]",
+        extra_comforts: filters?.extra_comforts?.length
+          ? `["${filters.extra_comforts.join('","')}"]`
+          : "[]",
+        energy: filters?.energy?.length
+          ? `["${filters.energy.join('","')}"]`
+          : "[]",
 
 
-      // }).toString()}`);
-      const queryParams = new URLSearchParams();
+      }).toString()}`);
+      
+      // const queryParams = new URLSearchParams();
 
-      const addParam = (key, value) => {
-        if (value && value.length !== 0) {
-          queryParams.append(key, value);
-        }
-      };
+      // const addParam = (key, value) => {
+      //   if (value && value.length !== 0) {
+      //     queryParams.append(key, value);
+      //   }
+      // };
 
-      addParam("guests", filters?.max_guest);
-      addParam("min_guest", filters?.min_guest);
-      addParam("min_price", filters?.min_price);
-      addParam("max_price", filters?.max_price);
-      addParam("location", filters?.location);
-      addParam("min_length", filters?.min_length);
-      addParam("max_length", filters?.max_length);
-      addParam("sleep_capacity", filters?.sleep_capacity);
-      addParam("number_of_cabin", filters?.number_of_cabin);
+      // addParam("guests", filters?.max_guest);
+      // addParam("min_guest", filters?.min_guest);
+      // addParam("min_price", filters?.min_price);
+      // addParam("max_price", filters?.max_price);
+      // addParam("location", filters?.location);
+      // addParam("min_length", filters?.min_length);
+      // addParam("max_length", filters?.max_length);
+      // addParam("sleep_capacity", filters?.sleep_capacity);
+      // addParam("number_of_cabin", filters?.number_of_cabin);
 
-      const addArrayParam = (key, array) => {
-        if (array?.length) {
-          queryParams.append(key, `["${array.join('","')}"]`);
-        }
-      };
+      // const addArrayParam = (key, array) => {
+      //   if (array?.length) {
+      //     queryParams.append(key, `["${array.join('","')}"]`);
+      //   }
+      // };
 
-      addArrayParam("category_name", filters?.category_name);
-      addArrayParam("outdoor_equipment", filters?.outdoor_equipment);
-      addArrayParam("navigation", filters?.navigation);
-      addArrayParam("leisure", filters?.leisure);
-      addArrayParam("kitchen", filters?.kitchen);
-      addArrayParam("indoor", filters?.indoor);
-      addArrayParam("extra_comforts", filters?.extra_comforts);
-      addArrayParam("energy", filters?.energy);
+      // addArrayParam("category_name", filters?.category_name);
+      // addArrayParam("outdoor_equipment", filters?.outdoor_equipment);
+      // addArrayParam("navigation", filters?.navigation);
+      // addArrayParam("leisure", filters?.leisure);
+      // addArrayParam("kitchen", filters?.kitchen);
+      // addArrayParam("indoor", filters?.indoor);
+      // addArrayParam("extra_comforts", filters?.extra_comforts);
+      // addArrayParam("energy", filters?.energy);
 
-      router.push(`${searchPath}?${queryParams.toString()}`);
+      // router.push(`${searchPath}?${queryParams.toString()}`);
     } else if (type == "hardReset") {
       let payloadHardReset = {
         source: "simpleYacht",
@@ -639,11 +640,9 @@ const Yachts = () => {
         indoor: "[]",
         extra_comforts: "[]",
         energy: "[]",
-
-
-
-
       }).toString()}`);
+
+      
     }
 
 
