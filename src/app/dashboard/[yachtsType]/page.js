@@ -338,15 +338,15 @@ const Yachts = () => {
         : {}),
       ...(yachtsType === "yachts"
         ? {
-            min_per_hour: parseInt(searchParams.get('min_price')) || "1000",
-            max_per_hour: parseInt(searchParams.get('max_price')) || "4000",
-          }
+          min_per_hour: parseInt(searchParams.get('min_price')) || "1000",
+          max_per_hour: parseInt(searchParams.get('max_price')) || "4000",
+        }
         : yachtsType === "f1yachts"
-        ? {
+          ? {
             min_per_day: parseInt(searchParams.get('min_price')) || "1000",
             max_per_day: parseInt(searchParams.get('max_price')) || "4000",
           }
-        : {}),
+          : {}),
       min_length: parseInt(searchParams.get('min_length')) || "",
       max_length: parseInt(searchParams.get('max_length')) || "",
       sleep_capacity: parseInt(searchParams.get('sleep_capacity')) || "",
@@ -425,15 +425,15 @@ const Yachts = () => {
         user_id: userId,
         ...(yachtsType === "yachts"
           ? {
-              min_per_hour: filters?.min_price?.toString() || "1000",
-              max_per_hour: filters?.max_price?.toString() || "4000",
-            }
+            min_per_hour: filters?.min_price?.toString() || "1000",
+            max_per_hour: filters?.max_price?.toString() || "4000",
+          }
           : yachtsType === "f1yachts"
-          ? {
+            ? {
               min_per_day: filters?.min_price?.toString() || "1000",
               max_per_day: filters?.max_price?.toString() || "4000",
             }
-          : {}),
+            : {}),
         guest: filters?.max_guest || "",
         min_guest: filters?.min_guest || "",
         max_guest: filters?.max_guest || "",
@@ -463,7 +463,7 @@ const Yachts = () => {
       try {
         setLoading(true);
 
-        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=${page}`, {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/check_yacht/?page=1`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -498,10 +498,12 @@ const Yachts = () => {
         console.error('Filter error:', err);
       } finally {
         setLoading(false);
+        setPage(1)
       }
 
 
       router.push(`${searchPath}?${new URLSearchParams({
+
         guests: filters?.max_guest,
         min_guest: filters?.min_guest,
         min_price: filters?.min_price,
@@ -538,6 +540,41 @@ const Yachts = () => {
 
 
       }).toString()}`);
+      
+      // const queryParams = new URLSearchParams();
+
+      // const addParam = (key, value) => {
+      //   if (value && value.length !== 0) {
+      //     queryParams.append(key, value);
+      //   }
+      // };
+
+      // addParam("guests", filters?.max_guest);
+      // addParam("min_guest", filters?.min_guest);
+      // addParam("min_price", filters?.min_price);
+      // addParam("max_price", filters?.max_price);
+      // addParam("location", filters?.location);
+      // addParam("min_length", filters?.min_length);
+      // addParam("max_length", filters?.max_length);
+      // addParam("sleep_capacity", filters?.sleep_capacity);
+      // addParam("number_of_cabin", filters?.number_of_cabin);
+
+      // const addArrayParam = (key, array) => {
+      //   if (array?.length) {
+      //     queryParams.append(key, `["${array.join('","')}"]`);
+      //   }
+      // };
+
+      // addArrayParam("category_name", filters?.category_name);
+      // addArrayParam("outdoor_equipment", filters?.outdoor_equipment);
+      // addArrayParam("navigation", filters?.navigation);
+      // addArrayParam("leisure", filters?.leisure);
+      // addArrayParam("kitchen", filters?.kitchen);
+      // addArrayParam("indoor", filters?.indoor);
+      // addArrayParam("extra_comforts", filters?.extra_comforts);
+      // addArrayParam("energy", filters?.energy);
+
+      // router.push(`${searchPath}?${queryParams.toString()}`);
     } else if (type == "hardReset") {
       let payloadHardReset = {
         source: "simpleYacht",
@@ -603,11 +640,9 @@ const Yachts = () => {
         indoor: "[]",
         extra_comforts: "[]",
         energy: "[]",
-
-
-
-
       }).toString()}`);
+
+      
     }
 
 
@@ -677,15 +712,15 @@ const Yachts = () => {
       } else if (yachtsType === "f1yachts") {
         data.sort((a, b) => (b.yacht?.per_day_price) - (a.yacht?.per_day_price));
       }
-    } 
+    }
     else if (selectedOption?.value === "Price-Low-High") {
       if (yachtsType === "yachts") {
         data.sort((a, b) => (a.yacht?.per_hour_price) - (b.yacht?.per_hour_price));
       } else if (yachtsType === "f1yachts") {
         data.sort((a, b) => (a.yacht?.per_day_price) - (b.yacht?.per_day_price));
       }
-    } 
-     else if (selectedOption?.value === "Capacity-High-Low") {
+    }
+    else if (selectedOption?.value === "Capacity-High-Low") {
       data.sort((a, b) => b.yacht?.guest - a.yacht?.guest);
     } else if (selectedOption?.value === "Capacity-Low-High") {
       data.sort((a, b) => a.yacht?.guest - b.yacht?.guest);
@@ -814,11 +849,11 @@ const Yachts = () => {
   //   );
   // }
 
-      // if (loading) {
-      //     return (
-      //         <Loading />
-      //     );
-      // }
+  // if (loading) {
+  //     return (
+  //         <Loading />
+  //     );
+  // }
 
   if (error) {
     return (
@@ -886,7 +921,7 @@ const Yachts = () => {
                     <div className="space-y-6 py-6 px-1">
                       {/* Price Range */}
                       <div className="space-y-2">
-                        <Label className="text-sm"> {yachtsType == "yachts" ? "Price Per Hour (AED) ": yachtsType == "f1yachts" ? "Price Per Day (AED) ":""}</Label>
+                        <Label className="text-sm"> {yachtsType == "yachts" ? "Price Per Hour (AED) " : yachtsType == "f1yachts" ? "Price Per Day (AED) " : ""}</Label>
                         <div className="flex gap-4">
                           <div className="flex-1">
                             <Input
