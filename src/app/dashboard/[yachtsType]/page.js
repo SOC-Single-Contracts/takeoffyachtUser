@@ -23,6 +23,7 @@ import SearchFilter from '@/components/lp/shared/SearchFilter';
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useGlobalState } from '@/context/GlobalStateContext';
 import { Loading } from '@/components/ui/loading';
+import { calculateDaysBetween } from '@/helper/calculateDays';
 
 const PAGE_SIZE = 10;
 
@@ -792,18 +793,18 @@ const Yachts = () => {
 
   ///test
 
-  // useEffect(() => {
-  //   console.log("yachts", yachts);
-  // }, [yachts]);
+  useEffect(() => {
+    console.log("yachts", yachts);
+  }, [yachts]);
   useEffect(() => {
     console.log("filters", filters);
   }, [filters]);
   // useEffect(() => {
   //   console.log("selectedOption.value",selectedOption.value);
   // }, [selectedOption]);
-  useEffect(() => {
-   console.log("page",page)
-  }, [page]);
+  // useEffect(() => {
+  //  console.log("page",page)
+  // }, [page]);
 
 
   // if (loading) {
@@ -1521,6 +1522,7 @@ const Yachts = () => {
                   item?.yacht?.image19,
                   item?.yacht?.image20,
                 ].filter((image) => typeof image === "string" && image.trim() !== "");
+                const daysCount = calculateDaysBetween(item?.yacht?.from_date, item?.yacht?.to_date);
 
                 return (
                   <Card
@@ -1598,7 +1600,7 @@ const Yachts = () => {
                           <span className="text-xs font-light ml-1">/Hour</span>
                         </span> : yachtsType == "f1yachts" ? <span className="font-medium text-xs">
                           AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_day_price}</span>
-                          <span className="text-xs font-light ml-1">/Day</span>
+                          <span className="text-xs font-light ml-1">{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}                          </span>
                         </span> : ""}
 
                       </div>
@@ -1610,10 +1612,14 @@ const Yachts = () => {
                         </p>
                         <div className="flex justify-between items-center">
                           <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item?.yacht?.name}</h3>
-                          <span className="font-medium text-xs">
+                          {yachtsType == "yachts" ?         <span className="font-medium text-xs">
                             AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_day_price}</span>
                             <span className="text-xs font-light ml-1">/Day</span>
-                          </span>
+                          </span> : yachtsType == "f1yachts" ?         <span className="font-medium text-xs">
+                            AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_day_price}</span>
+                            <span className="text-xs font-light ml-1">{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}  </span>
+                          </span> : ""}
+                 
                         </div>
                         <div className="flex justify-start items-center gap-1 flex-wrap">
                           <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
