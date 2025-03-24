@@ -22,6 +22,7 @@ import { handleDispatchBookingData } from '@/helper/bookingData';
 import { useParams } from 'next/navigation';
 import { handleDispatchwalletData } from '@/helper/walletData';
 import { getWallet } from '@/api/wallet';
+import { formatDate } from '@/helper/calculateDays';
 
 const Selection = ({ onNext }) => {
   const { toast } = useToast();
@@ -34,9 +35,9 @@ const Selection = ({ onNext }) => {
   const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
   const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
   const appStatWwalletContext =
-  typeof window !== "undefined" && localStorage.getItem("walletContext")
-    ? JSON.parse(localStorage.getItem("walletContext"))
-    : {};
+    typeof window !== "undefined" && localStorage.getItem("walletContext")
+      ? JSON.parse(localStorage.getItem("walletContext"))
+      : {};
   const [extras, setExtras] = useState({
     food: [],
     extra: [],
@@ -123,6 +124,11 @@ const Selection = ({ onNext }) => {
 
       setAvailableDates(generateDateArray)
       setDateRange(generateDateRange)
+      updateBookingData({
+        date: formatDate(selectedYacht?.yacht?.from_date),
+        endDate: formatDate(selectedYacht?.yacht?.to_date),
+        bookingType: 'hourly'
+      });
 
     } else if (yachtsType == "yachts") {
       fetchAvailability();
@@ -679,102 +685,11 @@ const Selection = ({ onNext }) => {
               </Popover>
             </div> : yachtsType == "f1yachts" ? <div className="flex flex-col space-y-2">
               <Label className="text-sm font-medium">
-                Select Date Range<span className='text-red-500'>*</span>
+                <span className='text-red-5'> F1 Booking Slot:</span>
               </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full max-w-[300px] justify-start text-left font-normal",
-                      !bookingData.date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-1 h-4 w-4" />
-                    {/* {bookingData.date ? format(bookingData.date, "PPP") : <span>Pick a date</span>} */}
-                    {bookingData.date ? (
-                      bookingData.endDate ?
-                        `${format(bookingData.date, "PPP")} - ${format(bookingData.endDate, "PPP")}` :
-                        format(bookingData.date, "PPP")
-                    ) : (
-                      <span>Pick date(s)</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  {/* <Calendar
-                  mode="single"
-                  selected={bookingData.date}
-                  onSelect={(date) => updateBookingData({ date })}
-                  disabled={(date) => date < new Date()}
-                  initialFocus
-                /> */}
-                  {/* <Calendar
-              mode="single"
-              selected={bookingData.date}
-              onSelect={(date) => {
-                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
-                  updateBookingData({ date });
-                } else {
-                  toast.error("Selected date is not available.");
-                }
-              }}
-              disabled={(date) => !availableDates.includes(format(date, 'yyyy-MM-dd')) || date < new Date()} // Disable booked dates and past dates
-              initialFocus
-            /> */}
-                  {/* <Calendar
-              mode="single"
-              selected={bookingData.date}
-              onSelect={(date) => {
-                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
-                  updateBookingData({ date });
-                } else {
-                  toast.error("Selected date is not available.");
-                }
-              }}
-              disabled={(date) => 
-                !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
-                date < new Date() || 
-                date < new Date(dateRange.start_date) || 
-                date > new Date(dateRange.end_date) // Disable dates outside the range
-              }
-              initialFocus
-            /> */}
-                  <Calendar
-                    mode="range"
-                    selected={{
-                      from: bookingData.date || undefined,
-                      to: bookingData.endDate || undefined
-                    }}
-                    // onSelect={(range) => {
-                    //   if (range?.from) {
-                    //     const isDateRange = range.to && range.to !== range.from;
-                    //     updateBookingData({
-                    //       date: range.from,
-                    //       endDate: range.to,
-                    //       bookingType: isDateRange ? 'date_range' : 'hourly',
-                    //       // Reset duration if switching to date range
-                    //       duration: isDateRange ? undefined : bookingData.duration
-                    //     });
-                    //   }
-                    // }}
-                    onSelect={handleDateSelect}
-                    // disabled={(date) => 
-                    //   !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
-                    //   date < new Date() || 
-                    //   date < new Date(dateRange.start_date) || 
-                    //   date > new Date(dateRange.end_date)
-                    // }
-                    disabled={(date) =>
-                      date < new Date(new Date().setHours(0, 0, 0, 0)) || // Disable past dates
-                      (dateRange?.start_date && date < new Date(dateRange.start_date)) ||
-                      (dateRange?.end_date && date > new Date(dateRange.end_date)) ||
-                      !availableDates.includes(format(date, 'yyyy-MM-dd'))
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <span className='mt-4'> {formatDate(selectedYacht?.yacht?.from_date)} - {formatDate(selectedYacht?.yacht?.to_date)}</span>
+
+
             </div> : ""}
 
             {yachtsType == "yachts" ? "" : yachtsType == "f1yachts" ? "" : ""}

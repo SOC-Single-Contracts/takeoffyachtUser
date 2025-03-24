@@ -20,6 +20,7 @@ import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { useParams } from 'next/navigation';
+import { formatDate } from '@/helper/calculateDays';
 
 const Selection = ({ onNext }) => {
   const { toast } = useToast();
@@ -29,7 +30,7 @@ const Selection = ({ onNext }) => {
   const [loading, setLoading] = useState(false);
   const [availableDates, setAvailableDates] = useState([]);
   const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
-        const { yachtsType} = useParams();
+  const { yachtsType } = useParams();
 
   const [extras, setExtras] = useState({
     food: [],
@@ -58,7 +59,7 @@ const Selection = ({ onNext }) => {
         return prevTime - 1;
       });
     }, 1000);
-  
+
     return () => clearInterval(timer);
   }, []);
 
@@ -87,7 +88,7 @@ const Selection = ({ onNext }) => {
     };
 
 
-    if(yachtsType == "f1yachts"){
+    if (yachtsType == "f1yachts") {
       const generateDateArray = () => {
         let dates = [], d = new Date();
         for (let i = 0; i <= 60; i++) {
@@ -96,25 +97,30 @@ const Selection = ({ onNext }) => {
         }
         return dates;
       };
-      
+
       // console.log(generateDateArray());
 
       const generateDateRange = () => {
         let startDate = new Date();
         let endDate = new Date();
         endDate.setDate(startDate.getDate() + 60);
-      
+
         return {
           start_date: startDate.toISOString().split("T")[0],
           end_date: endDate.toISOString().split("T")[0]
         };
       };
-      
+
       // console.log(generateDateRange());
 
       setAvailableDates(generateDateArray)
       setDateRange(generateDateRange)
-    }else if(yachtsType == "yachts"){
+      updateBookingData({
+        date: formatDate(selectedYacht?.yacht?.from_date),
+        endDate: formatDate(selectedYacht?.yacht?.to_date),
+        bookingType: 'hourly'
+      });
+    } else if (yachtsType == "yachts") {
       fetchAvailability();
     }
   }, [selectedYacht]);
@@ -131,7 +137,7 @@ const Selection = ({ onNext }) => {
             extra: data.extra.filter(item => item.price !== null && item.menucategory !== null),
             sport: data.sport.filter(item => item.price !== null && item.menucategory !== null)
           };
-          
+
           setExtras(organizedExtras);
           updateBookingData({ extras: organizedExtras });
         } else {
@@ -170,12 +176,12 @@ const Selection = ({ onNext }) => {
 
   const calculateTotal = () => {
     if (!selectedYacht?.yacht) return 0;
-    
+
     let baseTotal = 0;
     const basePrice = selectedYacht.yacht.per_hour_price || 0;
     const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;
     const perDayPrice = selectedYacht.yacht.per_day_price || 0;
-    
+
     // Check if it's a date range booking
     if (bookingData.endDate && bookingData.date) {
       const startDate = new Date(bookingData.date);
@@ -185,49 +191,49 @@ const Selection = ({ onNext }) => {
     } else {
       // Hourly booking
       const hours = bookingData.duration || 3;
-      const isNewYearsEve = bookingData.date && 
-        new Date(bookingData.date).getMonth() === 11 && 
+      const isNewYearsEve = bookingData.date &&
+        new Date(bookingData.date).getMonth() === 11 &&
         new Date(bookingData.date).getDate() === 31;
-      
+
       const hourlyRate = isNewYearsEve ? newYearPrice : basePrice;
       baseTotal = hourlyRate * hours;
     }
-  
+
     // Calculate extras total
     const extrasTotal = Object.values(extras).reduce((total, category) => {
       return total + calculateCategoryTotal(category);
     }, 0);
-  
+
     return baseTotal + extrasTotal;
   };
 
   const handleNext = async () => {
     setLoading(true);
     try {
-      if(yachtsType == "yachts"){
+      if (yachtsType == "yachts") {
         if (!bookingData.date || !bookingData.startTime) {
           toast({ title: 'Error', description: 'Please select date and time' });
           return;
         }
-  
+
         // if (bookingData.adults + bookingData.kids === 0) {
         //   toast({ title: 'Error', description: 'Please add at least one guest' });
         //   return;
         // }
-  
+
         // Check if it's New Year's Eve
-        const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 && 
-                             new Date(bookingData.date).getDate() === 31;
-  
+        const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 &&
+          new Date(bookingData.date).getDate() === 31;
+
         // Show warning for New Year's Eve bookings
         if (isNewYearsEve) {
           toast.warning("New Year's Eve rates apply for this booking date", {
             description: "Special pricing will be calculated accordingly."
           });
         }
-  
+
         const allExtras = [...extras.food, ...extras.extra, ...extras.sport];
-  
+
         // Update booking data with quantities and pricing info
         updateBookingData({
           extras: Object.entries(quantities).reduce((acc, [itemId, qty]) => {
@@ -243,32 +249,32 @@ const Selection = ({ onNext }) => {
           }, []),
           isNewYearBooking: isNewYearsEve
         });
-  
+
         onNext();
-      }else if (yachtsType == "f1yachts") {
-        if (!bookingData.date || !bookingData.endDate ) {
+      } else if (yachtsType == "f1yachts") {
+        if (!bookingData.date || !bookingData.endDate) {
           toast({ title: 'Error', description: 'Please select Start Date and End Date' });
           return;
         }
-  
+
         // if (bookingData.adults + bookingData.kids === 0) {
         //   toast({ title: 'Error', description: 'Please add at least one guest' });
         //   return;
         // }
-  
+
         // Check if it's New Year's Eve
-        const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 && 
-                             new Date(bookingData.date).getDate() === 31;
-  
+        const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 &&
+          new Date(bookingData.date).getDate() === 31;
+
         // Show warning for New Year's Eve bookings
         if (isNewYearsEve) {
           toast.warning("New Year's Eve rates apply for this booking date", {
             description: "Special pricing will be calculated accordingly."
           });
         }
-  
+
         const allExtras = [...extras.food, ...extras.extra, ...extras.sport];
-  
+
         // Update booking data with quantities and pricing info
         updateBookingData({
           extras: Object.entries(quantities).reduce((acc, [itemId, qty]) => {
@@ -284,10 +290,10 @@ const Selection = ({ onNext }) => {
           }, []),
           isNewYearBooking: isNewYearsEve
         });
-  
+
         onNext();
       }
-    
+
     } catch (error) {
       console.error('Error:', error);
       toast({ title: 'Error', description: 'Failed to proceed. Please try again.' });
@@ -308,16 +314,16 @@ const Selection = ({ onNext }) => {
     <div key={item.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
       <div className="flex items-center space-x-4">
         <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 cursor-pointer"
-            onClick={() => {
-              if (item.food_image) {
-                Fancybox.show([
-                  {
-                    src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${item.food_image}`,
-                    type: "image",
-                  }
-                ]);
-              }
-            }}
+          onClick={() => {
+            if (item.food_image) {
+              Fancybox.show([
+                {
+                  src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${item.food_image}`,
+                  type: "image",
+                }
+              ]);
+            }
+          }}
         >
           {item.food_image ? (
             <Image
@@ -384,43 +390,43 @@ const Selection = ({ onNext }) => {
   const handleDateSelect = (range) => {
     if (!range) return;
 
-  // Check if the selected date is available
-  const selectedDate = format(range.from, 'yyyy-MM-dd');
-  if (!availableDates.includes(selectedDate)) {
-    toast.error("Selected date is not available.");
-    return;
-  }
-
-  // If clicking the same date again or selecting first date
-  if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
-    updateBookingData({
-      date: range.from,
-      endDate: null,
-      bookingType: 'hourly'
-    });
-    return;
-  }
-
-  // For date range, validate both dates
-  if (range.to) {
-    const endDate = format(range.to, 'yyyy-MM-dd');
-    if (!availableDates.includes(endDate)) {
-      toast.error("End date is not available.");
+    // Check if the selected date is available
+    const selectedDate = format(range.from, 'yyyy-MM-dd');
+    if (!availableDates.includes(selectedDate)) {
+      toast.error("Selected date is not available.");
       return;
     }
 
-    updateBookingData({
-      date: range.from,
-      endDate: range.to,
-      bookingType: 'date_range'
-    });
-  }
-};
+    // If clicking the same date again or selecting first date
+    if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
+      updateBookingData({
+        date: range.from,
+        endDate: null,
+        bookingType: 'hourly'
+      });
+      return;
+    }
+
+    // For date range, validate both dates
+    if (range.to) {
+      const endDate = format(range.to, 'yyyy-MM-dd');
+      if (!availableDates.includes(endDate)) {
+        toast.error("End date is not available.");
+        return;
+      }
+
+      updateBookingData({
+        date: range.from,
+        endDate: range.to,
+        bookingType: 'date_range'
+      });
+    }
+  };
 
 
   return (
     <>
- {/* 
+      {/* 
 <div className="w-full mb-6">
     {loading ? (
         <div className="max-w-5xl mx-auto container px-2 space-y-6 mt-8">
@@ -517,512 +523,421 @@ const Selection = ({ onNext }) => {
 </div>
 */}
 
-    <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-6">
-      <div className="flex flex-col w-full lg:w-2/4 xl:w-2/3 gap-4">
-        {/* Date and Time Selection */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6">
-       
-          {yachtsType == "yachts" ? <>
-            <div className="flex flex-col space-y-2">
-            <Label className="text-sm font-medium">
-              Select Date<span className='text-red-500'>*</span>
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full max-w-[300px] justify-start text-left font-normal",
-                    !bookingData.date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-1 h-4 w-4" />
-                  {/* {bookingData.date ? format(bookingData.date, "PPP") : <span>Pick a date</span>} */}
-                  {bookingData.date ? (
-                bookingData.endDate ? 
-                  `${format(bookingData.date, "PPP")} - ${format(bookingData.endDate, "PPP")}` :
-                  format(bookingData.date, "PPP")
-              ) : (
-                <span>Pick date(s)</span>
-              )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                {/* <Calendar
-                  mode="single"
-                  selected={bookingData.date}
-                  onSelect={(date) => updateBookingData({ date })}
-                  disabled={(date) => date < new Date()}
-                  initialFocus
-                /> */}
-               {/* <Calendar
-              mode="single"
-              selected={bookingData.date}
-              onSelect={(date) => {
-                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
-                  updateBookingData({ date });
-                } else {
-                  toast.error("Selected date is not available.");
-                }
-              }}
-              disabled={(date) => !availableDates.includes(format(date, 'yyyy-MM-dd')) || date < new Date()} // Disable booked dates and past dates
-              initialFocus
-            /> */}
-             {/* <Calendar
-              mode="single"
-              selected={bookingData.date}
-              onSelect={(date) => {
-                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
-                  updateBookingData({ date });
-                } else {
-                  toast.error("Selected date is not available.");
-                }
-              }}
-              disabled={(date) => 
-                !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
-                date < new Date() || 
-                date < new Date(dateRange.start_date) || 
-                date > new Date(dateRange.end_date) // Disable dates outside the range
-              }
-              initialFocus
-            /> */}
-             <Calendar
-        mode="range"
-        selected={{
-          from: bookingData.date || undefined,
-          to: bookingData.endDate || undefined
-        }}
-        // onSelect={(range) => {
-        //   if (range?.from) {
-        //     const isDateRange = range.to && range.to !== range.from;
-        //     updateBookingData({
-        //       date: range.from,
-        //       endDate: range.to,
-        //       bookingType: isDateRange ? 'date_range' : 'hourly',
-        //       // Reset duration if switching to date range
-        //       duration: isDateRange ? undefined : bookingData.duration
-        //     });
-        //   }
-        // }}
-        onSelect={handleDateSelect}
-        // disabled={(date) => 
-        //   !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
-        //   date < new Date() || 
-        //   date < new Date(dateRange.start_date) || 
-        //   date > new Date(dateRange.end_date)
-        // }
-        disabled={(date) => 
-          date < new Date(new Date().setHours(0, 0, 0, 0)) || // Disable past dates
-          (dateRange?.start_date && date < new Date(dateRange.start_date)) || 
-          (dateRange?.end_date && date > new Date(dateRange.end_date)) ||
-          !availableDates.includes(format(date, 'yyyy-MM-dd'))
-        }
-        initialFocus
-      />
-              </PopoverContent>
-            </Popover>
-          </div>
-          </> : yachtsType == "f1yachts" ? <>
-          <div className="flex flex-col space-y-2">
-            <Label className="text-sm font-medium">
-              Select Date Range<span className='text-red-500'>*</span>
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full max-w-[300px] justify-start text-left font-normal",
-                    !bookingData.date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-1 h-4 w-4" />
-                  {/* {bookingData.date ? format(bookingData.date, "PPP") : <span>Pick a date</span>} */}
-                  {bookingData.date ? (
-                bookingData.endDate ? 
-                  `${format(bookingData.date, "PPP")} - ${format(bookingData.endDate, "PPP")}` :
-                  format(bookingData.date, "PPP")
-              ) : (
-                <span>Pick date(s)</span>
-              )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                {/* <Calendar
-                  mode="single"
-                  selected={bookingData.date}
-                  onSelect={(date) => updateBookingData({ date })}
-                  disabled={(date) => date < new Date()}
-                  initialFocus
-                /> */}
-               {/* <Calendar
-              mode="single"
-              selected={bookingData.date}
-              onSelect={(date) => {
-                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
-                  updateBookingData({ date });
-                } else {
-                  toast.error("Selected date is not available.");
-                }
-              }}
-              disabled={(date) => !availableDates.includes(format(date, 'yyyy-MM-dd')) || date < new Date()} // Disable booked dates and past dates
-              initialFocus
-            /> */}
-             {/* <Calendar
-              mode="single"
-              selected={bookingData.date}
-              onSelect={(date) => {
-                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
-                  updateBookingData({ date });
-                } else {
-                  toast.error("Selected date is not available.");
-                }
-              }}
-              disabled={(date) => 
-                !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
-                date < new Date() || 
-                date < new Date(dateRange.start_date) || 
-                date > new Date(dateRange.end_date) // Disable dates outside the range
-              }
-              initialFocus
-            /> */}
-             <Calendar
-        mode="range"
-        selected={{
-          from: bookingData.date || undefined,
-          to: bookingData.endDate || undefined
-        }}
-        // onSelect={(range) => {
-        //   if (range?.from) {
-        //     const isDateRange = range.to && range.to !== range.from;
-        //     updateBookingData({
-        //       date: range.from,
-        //       endDate: range.to,
-        //       bookingType: isDateRange ? 'date_range' : 'hourly',
-        //       // Reset duration if switching to date range
-        //       duration: isDateRange ? undefined : bookingData.duration
-        //     });
-        //   }
-        // }}
-        onSelect={handleDateSelect}
-        // disabled={(date) => 
-        //   !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
-        //   date < new Date() || 
-        //   date < new Date(dateRange.start_date) || 
-        //   date > new Date(dateRange.end_date)
-        // }
-        disabled={(date) => 
-          date < new Date(new Date().setHours(0, 0, 0, 0)) || // Disable past dates
-          (dateRange?.start_date && date < new Date(dateRange.start_date)) || 
-          (dateRange?.end_date && date > new Date(dateRange.end_date)) ||
-          !availableDates.includes(format(date, 'yyyy-MM-dd'))
-        }
-        initialFocus
-      />
-              </PopoverContent>
-            </Popover>
-          </div>
-          </> :""}
+      <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-6">
+        <div className="flex flex-col w-full lg:w-2/4 xl:w-2/3 gap-4">
+          {/* Date and Time Selection */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6">
 
-          {/* Show duration and time only for hourly bookings */}
-        {(!bookingData.endDate || bookingData.bookingType === 'hourly') && (
-          <>
-          <div className="flex justify-between items-start">
-          {yachtsType == "yachts" ? <>
-            <div className="flex flex-col space-y-2">
-              <Label className="text-sm font-medium">
-                Start Time<span className='text-red-500'>*</span>
-              </Label>
-              <Select
-                value={format(bookingData.startTime, "HH:mm")}
-                onValueChange={(time) => {
-                  const [hours, minutes] = time.split(':');
-                  const newDate = new Date(bookingData.date);
-                  newDate.setHours(parseInt(hours), parseInt(minutes));
-                  updateBookingData({ startTime: newDate });
-                }}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select time">
-                    <div className="flex items-center">
-                      <Clock className="mr-2 h-4 w-4" />
-                      {format(bookingData.startTime, "h:mm a")}
+            {yachtsType == "yachts" ? <>
+              <div className="flex flex-col space-y-2">
+                <Label className="text-sm font-medium">
+                  Select Date<span className='text-red-500'>*</span>
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full max-w-[300px] justify-start text-left font-normal",
+                        !bookingData.date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-1 h-4 w-4" />
+                      {/* {bookingData.date ? format(bookingData.date, "PPP") : <span>Pick a date</span>} */}
+                      {bookingData.date ? (
+                        bookingData.endDate ?
+                          `${format(bookingData.date, "PPP")} - ${format(bookingData.endDate, "PPP")}` :
+                          format(bookingData.date, "PPP")
+                      ) : (
+                        <span>Pick date(s)</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    {/* <Calendar
+                  mode="single"
+                  selected={bookingData.date}
+                  onSelect={(date) => updateBookingData({ date })}
+                  disabled={(date) => date < new Date()}
+                  initialFocus
+                /> */}
+                    {/* <Calendar
+              mode="single"
+              selected={bookingData.date}
+              onSelect={(date) => {
+                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
+                  updateBookingData({ date });
+                } else {
+                  toast.error("Selected date is not available.");
+                }
+              }}
+              disabled={(date) => !availableDates.includes(format(date, 'yyyy-MM-dd')) || date < new Date()} // Disable booked dates and past dates
+              initialFocus
+            /> */}
+                    {/* <Calendar
+              mode="single"
+              selected={bookingData.date}
+              onSelect={(date) => {
+                if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
+                  updateBookingData({ date });
+                } else {
+                  toast.error("Selected date is not available.");
+                }
+              }}
+              disabled={(date) => 
+                !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
+                date < new Date() || 
+                date < new Date(dateRange.start_date) || 
+                date > new Date(dateRange.end_date) // Disable dates outside the range
+              }
+              initialFocus
+            /> */}
+                    <Calendar
+                      mode="range"
+                      selected={{
+                        from: bookingData.date || undefined,
+                        to: bookingData.endDate || undefined
+                      }}
+                      // onSelect={(range) => {
+                      //   if (range?.from) {
+                      //     const isDateRange = range.to && range.to !== range.from;
+                      //     updateBookingData({
+                      //       date: range.from,
+                      //       endDate: range.to,
+                      //       bookingType: isDateRange ? 'date_range' : 'hourly',
+                      //       // Reset duration if switching to date range
+                      //       duration: isDateRange ? undefined : bookingData.duration
+                      //     });
+                      //   }
+                      // }}
+                      onSelect={handleDateSelect}
+                      // disabled={(date) => 
+                      //   !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
+                      //   date < new Date() || 
+                      //   date < new Date(dateRange.start_date) || 
+                      //   date > new Date(dateRange.end_date)
+                      // }
+                      disabled={(date) =>
+                        date < new Date(new Date().setHours(0, 0, 0, 0)) || // Disable past dates
+                        (dateRange?.start_date && date < new Date(dateRange.start_date)) ||
+                        (dateRange?.end_date && date > new Date(dateRange.end_date)) ||
+                        !availableDates.includes(format(date, 'yyyy-MM-dd'))
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </> : yachtsType == "f1yachts" ? <>
+              <div className="flex flex-col space-y-2">
+                <Label className="text-sm font-medium">
+                  <span className='text-red-5'> F1 Booking Slot:</span>
+                </Label>
+                <span className='mt-4'> {formatDate(selectedYacht?.yacht?.from_date)} - {formatDate(selectedYacht?.yacht?.to_date)}</span>
+
+
+              </div>
+            </> : ""}
+
+            {/* Show duration and time only for hourly bookings */}
+            {(!bookingData.endDate || bookingData.bookingType === 'hourly') && (
+              <>
+                <div className="flex justify-between items-start">
+                  {yachtsType == "yachts" ? <>
+                    <div className="flex flex-col space-y-2">
+                      <Label className="text-sm font-medium">
+                        Start Time<span className='text-red-500'>*</span>
+                      </Label>
+                      <Select
+                        value={format(bookingData.startTime, "HH:mm")}
+                        onValueChange={(time) => {
+                          const [hours, minutes] = time.split(':');
+                          const newDate = new Date(bookingData.date);
+                          newDate.setHours(parseInt(hours), parseInt(minutes));
+                          updateBookingData({ startTime: newDate });
+                        }}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Select time">
+                            <div className="flex items-center">
+                              <Clock className="mr-2 h-4 w-4" />
+                              {format(bookingData.startTime, "h:mm a")}
+                            </div>
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {generateTimeSlots().map((time) => (
+                            <SelectItem key={time} value={time}>
+                              {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
+                              {time}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {generateTimeSlots().map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
-                      {time}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
 
-            <div className="flex flex-col items-end space-y-2">
-              <Label className="text-sm font-medium">Duration (min 3 hrs)<span className='text-red-500'>*</span></Label>
-              <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
-                <Button
-                  onClick={() => updateBookingData({ duration: Math.max(3, bookingData.duration - 1) })}
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="w-8 text-center font-medium">{bookingData.duration}</span>
-                <Button
-                  onClick={() => updateBookingData({ duration: bookingData.duration + 1 })}
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
+                    <div className="flex flex-col items-end space-y-2">
+                      <Label className="text-sm font-medium">Duration (min 3 hrs)<span className='text-red-500'>*</span></Label>
+                      <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
+                        <Button
+                          onClick={() => updateBookingData({ duration: Math.max(3, bookingData.duration - 1) })}
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="w-8 text-center font-medium">{bookingData.duration}</span>
+                        <Button
+                          onClick={() => updateBookingData({ duration: bookingData.duration + 1 })}
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </> : yachtsType == "f1yachts" ? "" : ""}
+
+                </div>
+              </>
+            )}
+          </div>
+          {/* Guests Selection */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+            <div className="flex flex-col md:flex-row justify-between items-start space-y-4 md:space-y-0">
+              <Label className="text-sm font-medium">Number of Guests</Label>
+              <div className="flex flex-col space-y-4 items-end">
+                <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
+                  <span className="text-sm">Adults</span>
+                  <Button
+                    onClick={() => updateBookingData({ adults: Math.max(0, bookingData.adults - 1) })}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <Input
+                    type="number"
+                    value={bookingData.adults}
+                    // onChange={(e) => updateBookingData({ adults: Math.max(0, parseInt(e.target.value) || 0) })}
+                    onChange={(e) => {
+                      const adults = Math.max(0, parseInt(e.target.value) || 0);
+                      const totalGuests = adults + bookingData.kids;
+                      if (totalGuests > capacity) {
+                        toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
+                      } else {
+                        updateBookingData({ adults });
+                      }
+                    }}
+                    className="w-16 text-center border rounded"
+                  />
+                  <Button
+                    // onClick={() => updateBookingData({ adults: bookingData.adults + 1 })}
+                    onClick={() => {
+                      const newAdults = bookingData.adults + 1;
+                      const totalGuests = newAdults + bookingData.kids;
+                      if (totalGuests > capacity) {
+                        toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
+                      } else {
+                        updateBookingData({ adults: newAdults });
+                      }
+                    }}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
+                  <span className="text-sm">Kids</span>
+                  <Button
+                    onClick={() => updateBookingData({ kids: Math.max(0, bookingData.kids - 1) })}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <Input
+                    type="number"
+                    value={bookingData.kids}
+                    // onChange={(e) => updateBookingData({ kids: Math.max(0, parseInt(e.target.value) || 0) })}
+                    onChange={(e) => {
+                      const kids = Math.max(0, parseInt(e.target.value) || 0);
+                      const totalGuests = bookingData.adults + kids;
+                      if (totalGuests > capacity) {
+                        toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
+                      } else {
+                        updateBookingData({ kids });
+                      }
+                    }}
+                    className="w-16 text-center border rounded"
+                  />
+                  <Button
+                    // onClick={() => updateBookingData({ kids: bookingData.kids + 1 })}
+                    onClick={() => {
+                      const newKids = bookingData.kids + 1;
+                      const totalGuests = bookingData.adults + newKids;
+                      if (totalGuests > capacity) {
+                        toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
+                      } else {
+                        updateBookingData({ kids: newKids });
+                      }
+                    }}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
-          </> : yachtsType == "f1yachts" ? "" :""}
-          
           </div>
-          </>
+
+          {/* Optional Extras */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+            <Label className="text-sm font-medium mb-4 block">
+              Optional Extras
+            </Label>
+            <Accordion type="multiple" className="space-y-4">
+
+              <AccordionItem value="food">
+                <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
+                  <div className="flex justify-between w-full items-center">
+                    <span className="font-semibold">Food & Beverages</span>
+                    <span className="text-black dark:text-gray-400 font-semibold">
+                      AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.food)}</span>
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4 space-y-4">
+                  {loadingExtras ? renderLoadingSkeleton() :
+                    extras.food.map(item => renderExtraItem(item, 'food'))}
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="sport">
+                <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
+                  <div className="flex justify-between w-full items-center">
+                    <span className="font-semibold">Water Sports</span>
+                    <span className="text-black dark:text-gray-400 font-semibold">
+                      AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.sport)}</span>
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4 space-y-4">
+                  {loadingExtras ? renderLoadingSkeleton() :
+                    extras.sport.map(item => renderExtraItem(item, 'sport'))}
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="extra">
+                <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
+                  <div className="flex justify-between w-full items-center">
+                    <span className="font-semibold">Miscellaneous</span>
+                    <p className="text-black dark:text-gray-400 font-semibold">
+                      AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.extra)}</span>
+                    </p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4 space-y-4">
+                  {loadingExtras ? renderLoadingSkeleton() :
+                    extras.extra.map(item => renderExtraItem(item, 'extra'))}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
+        {/* Summary Card */}
+        <div className="w-full lg:w-1/2 max-w-[400px]">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6 sticky top-4">
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">
+                AED <span className="text-2xl font-bold">{calculateTotal()}</span>
+                {bookingData.endDate ? (
+                  <span className="text-sm ml-2">
+                    for {Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)} days
+                  </span>
+                ) : (
+                  <span className="text-sm ml-2">for {bookingData.duration} hours</span>
                 )}
-        </div>
-        {/* Guests Selection */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-          <div className="flex flex-col md:flex-row justify-between items-start space-y-4 md:space-y-0">
-            <Label className="text-sm font-medium">Number of Guests</Label>
-            <div className="flex flex-col space-y-4 items-end">
-              <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
-                <span className="text-sm">Adults</span>
-                <Button
-                  onClick={() => updateBookingData({ adults: Math.max(0, bookingData.adults - 1) })}
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <Input
-                  type="number"
-                  value={bookingData.adults}
-                  // onChange={(e) => updateBookingData({ adults: Math.max(0, parseInt(e.target.value) || 0) })}
-                  onChange={(e) => {
-                    const adults = Math.max(0, parseInt(e.target.value) || 0);
-                    const totalGuests = adults + bookingData.kids;
-                    if (totalGuests > capacity) {
-                      toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
-                    } else {
-                      updateBookingData({ adults });
-                    }
-                  }}
-                  className="w-16 text-center border rounded"
-                />
-                <Button
-                  // onClick={() => updateBookingData({ adults: bookingData.adults + 1 })}
-                  onClick={() => {
-                    const newAdults = bookingData.adults + 1;
-                    const totalGuests = newAdults + bookingData.kids;
-                    if (totalGuests > capacity) {
-                      toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
-                    } else {
-                      updateBookingData({ adults: newAdults });
-                    }
-                  }}
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
-                <span className="text-sm">Kids</span>
-                <Button
-                  onClick={() => updateBookingData({ kids: Math.max(0, bookingData.kids - 1) })}
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <Input
-                  type="number"
-                  value={bookingData.kids}
-                  // onChange={(e) => updateBookingData({ kids: Math.max(0, parseInt(e.target.value) || 0) })}
-                  onChange={(e) => {
-                    const kids = Math.max(0, parseInt(e.target.value) || 0);
-                    const totalGuests = bookingData.adults + kids;
-                    if (totalGuests > capacity) {
-                      toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
-                    } else {
-                      updateBookingData({ kids });
-                    }
-                  }}
-                  className="w-16 text-center border rounded"
-                />
-                <Button
-                  // onClick={() => updateBookingData({ kids: bookingData.kids + 1 })}
-                  onClick={() => {
-                    const newKids = bookingData.kids + 1;
-                    const totalGuests = bookingData.adults + newKids;
-                    if (totalGuests > capacity) {
-                      toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
-                    } else {
-                      updateBookingData({ kids: newKids });
-                    }
-                  }}
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+              </h2>
             </div>
+
+            <Table>
+              <TableHeader className="bg-[#EBEBEB] dark:bg-gray-700">
+                <TableRow>
+                  <TableHead className="font-semibold text-black dark:text-gray-400 rounded-t-lg">
+                    {selectedYacht?.yacht?.name || 'Yacht Details'}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="border border-gray-200 dark:border-gray-700">
+                <TableRow>
+                  <TableCell className="flex justify-between">
+                    <span className="text-black dark:text-gray-400">
+                      {bookingData.endDate ? 'Date Range' : 'Departure'}
+                    </span>
+                    <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                      {bookingData.endDate ? (
+                        `${format(bookingData.date, "MMM dd, yyyy")} - ${format(bookingData.endDate, "MMM dd, yyyy")}`
+                      ) : (
+                        <>
+                          {bookingData.startTime && format(bookingData.startTime, "p")},
+                          {bookingData.date && format(bookingData.date, " MMM dd, yyyy")}
+                        </>
+                      )}
+                    </span>
+                  </TableCell>
+                </TableRow>
+                {!bookingData.endDate && (
+                  <TableRow>
+                    <TableCell className="flex justify-between">
+                      <span className="text-black dark:text-gray-400">Duration</span>
+                      <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                        {bookingData.duration} Hours
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                )}
+                <TableRow>
+                  <TableCell className="flex justify-between">
+                    <span className="text-black dark:text-gray-400">Guests</span>
+                    <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
+                      {bookingData.adults + bookingData.kids}
+                      <span className="text-xs ml-1">
+                        (max {selectedYacht?.yacht?.capacity || 0})
+                      </span>
+                    </span>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="flex justify-between items-center">
+                    <span className="text-black dark:text-gray-400">Location</span>
+                    <span className="font-medium text-xs text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-1">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {selectedYacht?.yacht?.location || 'Dubai'}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+
+            <Button
+              onClick={handleNext}
+              disabled={loading}
+              className="w-full bg-[#BEA355] text-white hover:bg-[#A68D3F] rounded-full"
+            >
+              {loading ? 'Checking availability...' : 'Continue'}
+            </Button>
           </div>
         </div>
-
-        {/* Optional Extras */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-          <Label className="text-sm font-medium mb-4 block">
-            Optional Extras
-          </Label>
-          <Accordion type="multiple" className="space-y-4">
-
-            <AccordionItem value="food">
-              <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
-                <div className="flex justify-between w-full items-center">
-                  <span className="font-semibold">Food & Beverages</span>
-                  <span className="text-black dark:text-gray-400 font-semibold">
-                    AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.food)}</span>
-                  </span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-4 space-y-4">
-                {loadingExtras ? renderLoadingSkeleton() : 
-                  extras.food.map(item => renderExtraItem(item, 'food'))}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="sport">
-              <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
-                <div className="flex justify-between w-full items-center">
-                  <span className="font-semibold">Water Sports</span>
-                  <span className="text-black dark:text-gray-400 font-semibold">
-                    AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.sport)}</span>
-                  </span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-4 space-y-4">
-                {loadingExtras ? renderLoadingSkeleton() : 
-                  extras.sport.map(item => renderExtraItem(item, 'sport'))}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="extra">
-              <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
-                <div className="flex justify-between w-full items-center">
-                  <span className="font-semibold">Miscellaneous</span>
-                  <p className="text-black dark:text-gray-400 font-semibold">
-                    AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.extra)}</span>
-                  </p>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-4 space-y-4">
-                {loadingExtras ? renderLoadingSkeleton() : 
-                  extras.extra.map(item => renderExtraItem(item, 'extra'))}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
       </div>
-      {/* Summary Card */}
-      <div className="w-full lg:w-1/2 max-w-[400px]">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6 sticky top-4">
-    <div className="space-y-2">
-      <h2 className="text-lg font-semibold">
-        AED <span className="text-2xl font-bold">{calculateTotal()}</span>
-        {bookingData.endDate ? (
-          <span className="text-sm ml-2">
-            for {Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)} days
-          </span>
-        ) : (
-          <span className="text-sm ml-2">for {bookingData.duration} hours</span>
-        )}
-      </h2>
-    </div>
-
-    <Table>
-      <TableHeader className="bg-[#EBEBEB] dark:bg-gray-700">
-        <TableRow>
-          <TableHead className="font-semibold text-black dark:text-gray-400 rounded-t-lg">
-            {selectedYacht?.yacht?.name || 'Yacht Details'}
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody className="border border-gray-200 dark:border-gray-700">
-        <TableRow>
-          <TableCell className="flex justify-between">
-            <span className="text-black dark:text-gray-400">
-              {bookingData.endDate ? 'Date Range' : 'Departure'}
-            </span>
-            <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-              {bookingData.endDate ? (
-                `${format(bookingData.date, "MMM dd, yyyy")} - ${format(bookingData.endDate, "MMM dd, yyyy")}`
-              ) : (
-                <>
-                  {bookingData.startTime && format(bookingData.startTime, "p")}, 
-                  {bookingData.date && format(bookingData.date, " MMM dd, yyyy")}
-                </>
-              )}
-            </span>
-          </TableCell>
-        </TableRow>
-        {!bookingData.endDate && (
-          <TableRow>
-            <TableCell className="flex justify-between">
-              <span className="text-black dark:text-gray-400">Duration</span>
-              <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-                {bookingData.duration} Hours
-              </span>
-            </TableCell>
-          </TableRow>
-        )}
-        <TableRow>
-          <TableCell className="flex justify-between">
-            <span className="text-black dark:text-gray-400">Guests</span>
-            <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-              {bookingData.adults + bookingData.kids} 
-              <span className="text-xs ml-1">
-                (max {selectedYacht?.yacht?.capacity || 0})
-              </span>
-            </span>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="flex justify-between items-center">
-            <span className="text-black dark:text-gray-400">Location</span>
-            <span className="font-medium text-xs text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-1">
-              <MapPin className="h-4 w-4 mr-1" />
-              {selectedYacht?.yacht?.location || 'Dubai'}
-            </span>
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-
-          <Button 
-            onClick={handleNext}
-            disabled={loading}
-            className="w-full bg-[#BEA355] text-white hover:bg-[#A68D3F] rounded-full"
-          >
-            {loading ? 'Checking availability...' : 'Continue'}
-          </Button>
-        </div>
-      </div>
-    </div>
     </>
   );
 };
