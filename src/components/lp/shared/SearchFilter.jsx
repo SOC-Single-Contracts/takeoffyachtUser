@@ -305,9 +305,9 @@ const SearchFilter = () => {
   const handleCloseSheet = () => {
     setIsDialogOpen(false); // Close the dialog when clicking on the specific div
   };
-  useEffect(()=>{
-  console.log("globalStateFilter",state)
-  },[state])
+  // useEffect(()=>{
+  // console.log("globalStateFilter",state)
+  // },[state])
 
   return (
     <section className="">

@@ -22,6 +22,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchFilter from '@/components/lp/shared/SearchFilter';
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useGlobalState } from '@/context/GlobalStateContext';
+import { Loading } from '@/components/ui/loading';
 
 const PAGE_SIZE = 10;
 
@@ -335,8 +336,17 @@ const Yachts = () => {
       ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
         ? { min_guest: parseInt(searchParams.get('min_guest')) }
         : {}),
-      min_per_hour: parseInt(searchParams.get('min_price')) || "1000",
-      max_per_hour: parseInt(searchParams.get('max_price')) || "4000",
+      ...(yachtsType === "yachts"
+        ? {
+            min_per_hour: parseInt(searchParams.get('min_price')) || "1000",
+            max_per_hour: parseInt(searchParams.get('max_price')) || "4000",
+          }
+        : yachtsType === "f1yachts"
+        ? {
+            min_per_day: parseInt(searchParams.get('min_price')) || "1000",
+            max_per_day: parseInt(searchParams.get('max_price')) || "4000",
+          }
+        : {}),
       min_length: parseInt(searchParams.get('min_length')) || "",
       max_length: parseInt(searchParams.get('max_length')) || "",
       sleep_capacity: parseInt(searchParams.get('sleep_capacity')) || "",
@@ -413,8 +423,17 @@ const Yachts = () => {
         source: "simpleYacht",
         YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
         user_id: userId,
-        min_per_hour: filters?.min_price?.toString() || "1000",
-        max_per_hour: filters?.max_price?.toString() || "4000",
+        ...(yachtsType === "yachts"
+          ? {
+              min_per_hour: filters?.min_price?.toString() || "1000",
+              max_per_hour: filters?.max_price?.toString() || "4000",
+            }
+          : yachtsType === "f1yachts"
+          ? {
+              min_per_day: filters?.min_price?.toString() || "1000",
+              max_per_day: filters?.max_price?.toString() || "4000",
+            }
+          : {}),
         guest: filters?.max_guest || "",
         min_guest: filters?.min_guest || "",
         max_guest: filters?.max_guest || "",
@@ -653,10 +672,20 @@ const Yachts = () => {
       data = [...originalYachts];
     }
     else if (selectedOption?.value === "Price-High-Low") {
-      data.sort((a, b) => b.yacht?.per_hour_price - a.yacht?.per_hour_price);
-    } else if (selectedOption?.value === "Price-Low-High") {
-      data.sort((a, b) => a.yacht?.per_hour_price - b.yacht?.per_hour_price);
-    } else if (selectedOption?.value === "Capacity-High-Low") {
+      if (yachtsType === "yachts") {
+        data.sort((a, b) => (b.yacht?.per_hour_price) - (a.yacht?.per_hour_price));
+      } else if (yachtsType === "f1yachts") {
+        data.sort((a, b) => (b.yacht?.per_day_price) - (a.yacht?.per_day_price));
+      }
+    } 
+    else if (selectedOption?.value === "Price-Low-High") {
+      if (yachtsType === "yachts") {
+        data.sort((a, b) => (a.yacht?.per_hour_price) - (b.yacht?.per_hour_price));
+      } else if (yachtsType === "f1yachts") {
+        data.sort((a, b) => (a.yacht?.per_day_price) - (b.yacht?.per_day_price));
+      }
+    } 
+     else if (selectedOption?.value === "Capacity-High-Low") {
       data.sort((a, b) => b.yacht?.guest - a.yacht?.guest);
     } else if (selectedOption?.value === "Capacity-Low-High") {
       data.sort((a, b) => a.yacht?.guest - b.yacht?.guest);
@@ -785,6 +814,12 @@ const Yachts = () => {
   //   );
   // }
 
+      // if (loading) {
+      //     return (
+      //         <Loading />
+      //     );
+      // }
+
   if (error) {
     return (
       <section className="py-16">
@@ -851,7 +886,7 @@ const Yachts = () => {
                     <div className="space-y-6 py-6 px-1">
                       {/* Price Range */}
                       <div className="space-y-2">
-                        <Label className="text-sm">Price Per Hour (AED)</Label>
+                        <Label className="text-sm"> {yachtsType == "yachts" ? "Price Per Hour (AED) ": yachtsType == "f1yachts" ? "Price Per Day (AED) ":""}</Label>
                         <div className="flex gap-4">
                           <div className="flex-1">
                             <Input
@@ -1591,5 +1626,5 @@ export default Yachts;
 // changes in:
 // initialPayload
 // router.push
-// setFilters 
+// setFilters
 // setFilter
