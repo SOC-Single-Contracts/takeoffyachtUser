@@ -107,6 +107,8 @@ const Yachts = () => {
     extra_comforts: [],
     indoor: [],
   };
+  const [isOpen, setIsOpen] = useState(false); // State to control Sheet visibility
+
 
   const sortByOptions = [
     { value: "default", label: "Default" },
@@ -644,12 +646,7 @@ const Yachts = () => {
 
       
     }
-
-
-
-
-
-
+    setIsOpen(false);
   };
 
 
@@ -876,7 +873,7 @@ const Yachts = () => {
         <div className="flex flex-col space-y-4 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center w-full gap-2 flex-wrap">
-              <Sheet>
+              <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <div className="flex justify-between w-full">
                   <SheetTrigger asChild>
                     <Button variant="outline" className="gap-2">
