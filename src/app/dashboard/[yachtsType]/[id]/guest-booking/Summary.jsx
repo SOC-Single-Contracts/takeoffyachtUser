@@ -93,7 +93,7 @@ const Summary = ({ onNext, initialBookingId }) => {
             return;
           }
   
-          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${currentBookingId}/`, {
+          const response = await fetch(`${API_BASE_URL}/yacht/f1_detail/${currentBookingId}/`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
