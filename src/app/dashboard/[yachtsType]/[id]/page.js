@@ -522,7 +522,8 @@ const YachtDetail = () => {
               </Badge>
               <div className="flex justify-between items-center mt-2">
                 <h2 className="text-xl md:text-2xl font-bold">{name}</h2>
-                 {yachtsType == "yachts" ?<p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>/day</p> : yachtsType == "f1yachts" ?  <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`} </p> : ""}
+                 {yachtsType == "yachts" ?<p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>/day</p> : yachtsType == "f1yachts" ?  <p className="text-gray-600 dark:text-gray-400">AED 
+                  <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`} </p> : ""}
                  {/* f1yachtsTotal(per_day_price,from_date,to_date,[]) */}
 
               </div>
