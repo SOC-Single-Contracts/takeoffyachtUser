@@ -55,9 +55,6 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   const [showStripeStuff, setshowStripeStuff] = useState(true)
 
 
-
-
-
   useEffect(() => {
     const initializePaymentState = async () => {
       if (!bookingData.bookingId) return;
@@ -130,7 +127,6 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
 
     initializePaymentState();
   }, [bookingData.bookingId]);
-
   const handleCardChange = (event) => {
     setError(event.error ? event.error.message : null);
     setCardComplete(event.complete);
@@ -144,43 +140,12 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
     return true;
   };
 
-  const calculatePaymentAmount = () => {
-    // If there's a remaining cost, use that
-    if (bookingData.remainingCost > 0) {
-      return bookingData.remainingCost;
-    }
-    // Otherwise calculate based on total cost and partial payment
-    const totalCost = bookingData.totalCost || calculateTotal();
-    return bookingData.isPartialPayment ? totalCost * 0.25 : totalCost;
-  };
-
   const getPaymentButtonText = () => {
-    // if (isProcessing) return 'Processing...';
-
-    const paymentAmount = calculatePaymentAmount();
-
-    // If there's a remaining balance to be paid
     if (bookingData.remainingCost > 0) {
       return `Pay Balance Due (AED ${bookingData.remainingCost.toFixed(2)})`;
     }
-
-    // // For new bookings
-    // if (isPartialPayment) {
-    //   return `Pay Deposit (AED ${(calculateTotal() * 0.25).toFixed(2)})`;
-    // }
-
     return `Pay Full Amount (AED ${calculateTotal().toFixed(2)})`;
   };
-
-  //test
-  // useEffect(() => {
-  //   console.log("deductFromWallet", deductFromWallet)
-  // }, [deductFromWallet])
-
-//   useEffect(()=>{
-// console.log("calculateTotal",calculateTotal())
-//   },[calculateTotal])
-
 
   const handleSubmitFull = async (e, type) => {
     e.preventDefault();
@@ -753,8 +718,6 @@ const Payment = () => {
   const { toast } = useToast();
   const { yachtsType } = useParams();
 
-
-
   useEffect(() => {
     updateBookingData({
       ...bookingData,
@@ -773,13 +736,9 @@ const Payment = () => {
   };
 
   useEffect(() => {
-
     const bookingId = new URLSearchParams(window.location.search).get('bookingId');
-    const yachtId = selectedYacht?.id;
-
     const fetchBookingDetails = async () => {
-     
-
+    
       if (yachtsType == "yachts"){
         try {
           const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingId}/?user_id=${session?.user?.userid}`);
@@ -806,11 +765,7 @@ const Payment = () => {
         }
       }
     };
-   
-
   
-  
-
     if (bookingId) {
       fetchBookingDetails();
     }
@@ -897,10 +852,6 @@ const Payment = () => {
       </div>
     );
   }
-
-  const totalCost = bookingDetails ? bookingDetails.total_cost : calculateTotal();
-  const initialPayment = totalCost * 0.25;
-
   return (
     <div className='mx-auto container flex justify-between md:flex-row flex-col items-start gap-8 px-2'>
       <div className='w-full md:w-1/2 space-y-4'>
