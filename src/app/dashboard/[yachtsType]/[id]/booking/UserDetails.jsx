@@ -225,7 +225,7 @@ const UserDetails = ({ onNext, onBack }) => {
           booking_type: bookingData.bookingType || 'hourly',
           // starting_time: format(bookingData.startTime, 'HH:mm'),
           starting_time: formattedTime,
-          per_day_price: bookingData.bookingType === 'date_range' ? selectedYacht?.yacht?.per_day_price || 0 : 0,
+          per_day_price:  selectedYacht?.yacht?.per_day_price ,
           food: 0,
           waterSports: 0,
           misc: 0,

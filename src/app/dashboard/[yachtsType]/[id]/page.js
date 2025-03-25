@@ -34,7 +34,7 @@ import Fancybox from "@/components/Fancybox"
 import { Calendar } from "@/components/ui/calendar";
 import { addDays } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
-import { calculateDaysBetween } from "@/helper/calculateDays";
+import { calculateDaysBetween, f1yachtsTotal } from "@/helper/calculateDays";
 
 const Skeleton = ({ className }) => (
   <div className={`${className} bg-gray-200 animate-pulse`}></div>
@@ -523,6 +523,7 @@ const YachtDetail = () => {
               <div className="flex justify-between items-center mt-2">
                 <h2 className="text-xl md:text-2xl font-bold">{name}</h2>
                  {yachtsType == "yachts" ?<p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>/day</p> : yachtsType == "f1yachts" ?  <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`} </p> : ""}
+                 {/* f1yachtsTotal(per_day_price,from_date,to_date,[]) */}
 
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">

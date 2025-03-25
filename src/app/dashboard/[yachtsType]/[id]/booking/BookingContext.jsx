@@ -62,6 +62,7 @@ export const BookingProvider = ({ children }) => {
 
     let baseTotal = 0;
 
+    // console.log("bookingData.bookingType",bookingData.bookingType)
     if (bookingData.bookingType === 'hourly') {
       const basePrice = selectedYacht.yacht.per_hour_price || 0;
       const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;

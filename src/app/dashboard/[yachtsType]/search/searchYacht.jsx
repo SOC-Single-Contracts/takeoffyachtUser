@@ -43,8 +43,8 @@ const SearchYacht = () => {
     const [onCancelEachFilter, setonCancelEachFilter] = useState(false);
         const { yachtsType} = useParams();
     const [filters, setFilters] = useState({
-        min_price: 1000,
-        max_price: 4000,
+        min_price: "",
+        max_price: "",
         min_guest: "",
         max_guest: "",
         sleep_capacity: "",
@@ -72,8 +72,8 @@ const SearchYacht = () => {
         indoor: [],
     });
     const initialFilterState = {
-        min_price: 1000,
-        max_price: 4000,
+        min_price: "",
+        max_price: "",
         min_guest: "",
         max_guest: "",
         sleep_capacity: "",
@@ -211,7 +211,7 @@ const SearchYacht = () => {
 
     const updateActiveFilters = () => {
         const newFilters = [];
-        if (filters.min_price !== 1000 || filters.max_price !== 4000) {
+        if (filters.min_price !== "" || filters.max_price !== "") {
             newFilters.push(`Price: ${filters.min_price}-${filters.max_price} AED`);
         }
         if (filters.min_guest) newFilters.push(`Guests: ${filters.min_guest}-${filters.max_guest}`);
@@ -287,8 +287,17 @@ const SearchYacht = () => {
             };
             payload = {
                 ...payload, user_id: userId,
-                min_per_hour: filters.min_price.toString(),
-                max_per_hour: filters.max_price.toString(),
+                ...(yachtsType === "yachts"
+                    ? {
+                      min_per_hour: filters?.min_price?.toString() || "",
+                      max_per_hour: filters?.max_price?.toString() || "",
+                    }
+                    : yachtsType === "f1yachts"
+                      ? {
+                        min_per_day: filters?.min_price?.toString() || "",
+                        max_per_day: filters?.max_price?.toString() || "",
+                      }
+                      : {}),
                 // guest: filters.max_guest,
                 // min_guest: filters?.min_guest,
                 max_guest: filters?.max_guest,
@@ -426,10 +435,19 @@ const SearchYacht = () => {
             data = [...originalYachts];
         }
         else if (selectedOption?.value === "Price-High-Low") {
-            data.sort((a, b) => b.yacht?.per_hour_price - a.yacht?.per_hour_price);
-        } else if (selectedOption?.value === "Price-Low-High") {
-            data.sort((a, b) => a.yacht?.per_hour_price - b.yacht?.per_hour_price);
-        } else if (selectedOption?.value === "Capacity-High-Low") {
+            if (yachtsType === "yachts") {
+              data.sort((a, b) => (b.yacht?.per_hour_price) - (a.yacht?.per_hour_price));
+            } else if (yachtsType === "f1yachts") {
+              data.sort((a, b) => (b.yacht?.per_day_price) - (a.yacht?.per_day_price));
+            }
+          }
+          else if (selectedOption?.value === "Price-Low-High") {
+            if (yachtsType === "yachts") {
+              data.sort((a, b) => (a.yacht?.per_hour_price) - (b.yacht?.per_hour_price));
+            } else if (yachtsType === "f1yachts") {
+              data.sort((a, b) => (a.yacht?.per_day_price) - (b.yacht?.per_day_price));
+            }
+          } else if (selectedOption?.value === "Capacity-High-Low") {
             data.sort((a, b) => b.yacht?.guest - a.yacht?.guest);
         } else if (selectedOption?.value === "Capacity-Low-High") {
             data.sort((a, b) => a.yacht?.guest - b.yacht?.guest);
@@ -553,7 +571,8 @@ const SearchYacht = () => {
                                         <div className="space-y-6 py-6 px-1">
                                             {/* Price Range */}
                                             <div className="space-y-2">
-                                                <Label className="text-sm">Price Per Hour (AED)</Label>
+                        <Label className="text-sm"> {yachtsType == "yachts" ? "Price Per Hour (AED) " : yachtsType == "f1yachts" ? "Price Per Day (AED) " : ""}</Label>
+
                                                 <div className="flex gap-4">
                                                     <div className="flex-1">
                                                         <Input
@@ -1012,7 +1031,7 @@ const SearchYacht = () => {
                                             const [type] = filter.split(':');
                                             switch (type) {
                                                 case 'Price':
-                                                    setFilters(prev => ({ ...prev, min_price: 1000, max_price: 4000 }));
+                                                    setFilters(prev => ({ ...prev, min_price: "", max_price: "" }));
                                                     break;
                                                 case 'Guests':
                                                     setFilters(prev => ({ ...prev, min_guest: '', max_guest: '' }));
