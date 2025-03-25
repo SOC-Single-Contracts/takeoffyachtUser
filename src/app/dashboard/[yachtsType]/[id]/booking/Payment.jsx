@@ -23,7 +23,7 @@ import { f1yachtsTotal } from '@/helper/calculateDays';
 
 const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`);
 
-const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) => {
+const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sendTotal }) => {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -144,7 +144,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
     if (bookingData.remainingCost > 0) {
       return `Pay Balance Due (AED ${bookingData.remainingCost.toFixed(2)})`;
     }
-    return `Pay Full Amount (AED ${calculateTotal().toFixed(2)})`;
+    return `Pay Full Amount (AED ${dueAmountAlltime.toFixed(2)})`;
   };
 
   const handleSubmitFull = async (e, type) => {
@@ -464,15 +464,16 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
 
 
   useEffect(() => {
-    console.log("calculateTotal", calculateTotal())
+    console.log("dueAmountAlltime", dueAmountAlltime)
 
-    if (deductFromWallet && appStatWwalletContext?.balance >= calculateTotal()) {
+    if (deductFromWallet && appStatWwalletContext?.balance >= dueAmountAlltime) {
       setshowStripeStuff(false)
     } else {
       setshowStripeStuff(true)
 
     }
-  }, [calculateTotal, appStatWwalletContext, deductFromWallet])
+    sendTotal(dueAmountAlltime)
+  }, [dueAmountAlltime, appStatWwalletContext, deductFromWallet])
 
   useEffect(() => {
     if (!showStripeStuff && elements) {
@@ -669,7 +670,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
           disabled={isProcessing || isWalletDisabled}
           className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
-          {`Pay Full Amount (AED ${calculateTotal().toFixed(2)})`}
+          {`Pay Full Amount (AED ${dueAmountAlltime.toFixed(2)})`}
         </Button>
 
         {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
@@ -678,7 +679,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             disabled={isProcessing || isWalletDisabled}
             className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
           >
-            {`Pay Partial  (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
+            {`Pay Partial  (AED ${(dueAmountAlltime * 0.25).toFixed(2)})`}
           </Button>
         )}
       </div>}
@@ -699,7 +700,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
             disabled={isProcessing || !stripe || !cardComplete}
             className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
           >
-            {`Pay Partial (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
+            {`Pay Partial (AED ${(dueAmountAlltime * 0.25).toFixed(2)})`}
           </Button>
         )}
       </div>}
@@ -717,6 +718,11 @@ const Payment = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { yachtsType } = useParams();
+  const [dueAmountAlltime, setdueAmountAlltime] = useState("");
+
+  const handleChildData = (value) => {
+    setdueAmountAlltime(value);
+  };
 
   useEffect(() => {
     updateBookingData({
@@ -815,6 +821,7 @@ const Payment = () => {
     fetchBookingDetails();
   }, [bookingData.bookingId]);
 
+  console.log("dfdfdfdfd",dueAmountAlltime)
   if (loading) {
     return (
       <div className='mx-auto container flex justify-between md:flex-row flex-col items-start gap-8 px-2'>
@@ -890,17 +897,17 @@ const Payment = () => {
               <div className='flex justify-between font-semibold text-lg'>
                 <span>Total Due</span>
                 {yachtsType == "yachts" ? "" : yachtsType == "f1yachts" ? "" : ""}
-                <span className='text-xl font-bold'>AED {bookingDetails ? bookingDetails.total_cost : calculateTotal()}</span>
+                <span className='text-xl font-bold'>AED {bookingDetails ? bookingDetails.total_cost : dueAmountAlltime}</span>
               </div>
               {isPartialPayment && bookingDetails?.paid_cost === 0 && (
                 <>
                   <div className='flex justify-between text-blue-600 dark:text-blue-400 font-semibold mt-3'>
                     <span>Deposit (25%)</span>
-                    <span>AED {(calculateTotal() * 0.25).toFixed(2)}</span>
+                    <span>AED {(dueAmountAlltime * 0.25).toFixed(2)}</span>
                   </div>
                   <div className='flex justify-between text-gray-600 dark:text-gray-400 font-semibold mt-1'>
                     <span>Outstanding Amount (75%)</span>
-                    <span>AED {(calculateTotal() * 0.75).toFixed(2)}</span>
+                    <span>AED {(dueAmountAlltime * 0.75).toFixed(2)}</span>
                   </div>
                 </>
               )}
@@ -925,11 +932,11 @@ const Payment = () => {
                     <>
                       <div className='flex justify-between text-blue-600 dark:text-blue-400 font-semibold mt-3'>
                         <span>Deposit (25%)</span>
-                        <span>AED {(calculateTotal() * 0.25).toFixed(2)}</span>
+                        <span>AED {(dueAmountAlltime * 0.25).toFixed(2)}</span>
                       </div>
                       <div className='flex justify-between text-gray-600 dark:text-gray-400 font-semibold mt-1'>
                         <span>Outstanding Amount (75%)</span>
-                        <span>AED {(calculateTotal() * 0.75).toFixed(2)}</span>
+                        <span>AED {(dueAmountAlltime * 0.75).toFixed(2)}</span>
                       </div>
                     </>
                   )}
@@ -951,7 +958,7 @@ const Payment = () => {
       {/* Payment Form */}
       <div className='w-full md:w-1/2'>
         <Elements stripe={stripePromise}>
-          <PaymentForm bookingDetails={bookingDetails} isPartialPayment={isPartialPayment} setIsPartialPayment={setIsPartialPayment} />
+          <PaymentForm sendTotal={handleChildData} bookingDetails={bookingDetails} isPartialPayment={isPartialPayment} setIsPartialPayment={setIsPartialPayment} />
         </Elements>
       </div>
     </div>
