@@ -473,7 +473,7 @@ const SearchFilter = () => {
                     </TabsTrigger>
                     <TabsContent
                       value="who"
-                      className="absolute right-0 top-full mt-2 z-10 md:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl h-[230px] overflow-y-auto shadow-lg border border-gray-200 dark:border-gray-700"
+                      className="absolute right-0 top-full mt-2 z-10 w-full sm:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl h-[230px] overflow-y-auto shadow-lg border border-gray-200 dark:border-gray-700"
                     >
                       <h3 className="text-xl font-semibold">Who&apos;s coming?</h3>
                       {Object.keys(guests).map(type => (

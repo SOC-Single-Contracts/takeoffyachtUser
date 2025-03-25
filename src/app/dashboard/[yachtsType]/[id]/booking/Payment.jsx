@@ -59,15 +59,15 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
     const initializePaymentState = async () => {
       if (!bookingData.bookingId) return;
 
-      if (yachtsType == "yachts"){
+      if (yachtsType == "yachts") {
         try {
-     
+
 
           const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingData.bookingId}/?user_id=${session?.user?.userid}`);
           if (!response.ok) throw new Error('Failed to fetch booking details');
-  
+
           const data = await response.json();
-  
+
           if (!data.paid_cost || data.paid_cost === 0) {
             setPaymentType('initial');
             updateBookingData({
@@ -90,15 +90,15 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
         } catch (error) {
           console.error('Error fetching booking details:', error);
         }
-      } else if (yachtsType == "f1yachts"){
+      } else if (yachtsType == "f1yachts") {
         try {
-     
+
 
           const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`);
           if (!response.ok) throw new Error('Failed to fetch booking details');
-  
+
           const data = await response.json();
-  
+
           if (!data.paid_cost || data.paid_cost === 0) {
             setPaymentType('initial');
             updateBookingData({
@@ -122,7 +122,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
           console.error('Error fetching booking details:', error);
         }
       }
-     
+
     };
 
     initializePaymentState();
@@ -464,15 +464,15 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
 
 
   useEffect(() => {
-    console.log("dueAmountAlltime", dueAmountAlltime)
+    console.log("calculateTotal", calculateTotal())
 
-    if (deductFromWallet && appStatWwalletContext?.balance >= dueAmountAlltime) {
+    if (deductFromWallet && appStatWwalletContext?.balance >= calculateTotal()) {
       setshowStripeStuff(false)
     } else {
       setshowStripeStuff(true)
 
     }
-  }, [dueAmountAlltime, appStatWwalletContext, deductFromWallet])
+  }, [calculateTotal, appStatWwalletContext, deductFromWallet])
 
   useEffect(() => {
     if (!showStripeStuff && elements) {
@@ -738,8 +738,8 @@ const Payment = () => {
   useEffect(() => {
     const bookingId = new URLSearchParams(window.location.search).get('bookingId');
     const fetchBookingDetails = async () => {
-    
-      if (yachtsType == "yachts"){
+
+      if (yachtsType == "yachts") {
         try {
           const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingId}/?user_id=${session?.user?.userid}`);
           if (!response.ok) {
@@ -751,7 +751,7 @@ const Payment = () => {
         } catch (error) {
           console.error('Error fetching booking details:', error);
         }
-      } else if (yachtsType == "f1yachts"){
+      } else if (yachtsType == "f1yachts") {
         try {
           const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`);
           if (!response.ok) {
@@ -765,7 +765,7 @@ const Payment = () => {
         }
       }
     };
-  
+
     if (bookingId) {
       fetchBookingDetails();
     }
@@ -774,11 +774,11 @@ const Payment = () => {
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
-      if (yachtsType == "yachts"){
+      if (yachtsType == "yachts") {
         try {
           const bookingId = bookingData.bookingId;
           if (!bookingId) return;
-  
+
           const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingId}/?user_id=${session?.user?.userid}`);
           if (!response.ok) {
             throw new Error('Failed to fetch booking details');
@@ -791,11 +791,11 @@ const Payment = () => {
         } finally {
           setLoading(false);
         }
-      } else if (yachtsType == "f1yachts"){
+      } else if (yachtsType == "f1yachts") {
         try {
           const bookingId = bookingData.bookingId;
           if (!bookingId) return;
-  
+
           const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`);
           if (!response.ok) {
             throw new Error('Failed to fetch booking details');
@@ -809,7 +809,7 @@ const Payment = () => {
           setLoading(false);
         }
       }
-   
+
     };
 
     fetchBookingDetails();
@@ -861,22 +861,22 @@ const Payment = () => {
           <div className='space-y-3'>
             <div className='flex justify-between text-sm'>
               <span>
-              {yachtsType == "yachts" ? bookingDetails?.booking_type === 'date_range' ? (
+                {yachtsType == "yachts" ? bookingDetails?.booking_type === 'date_range' ? (
                   `Charter (${calculateDays(bookingDetails?.selected_date, bookingDetails?.end_date)} days)`
                 ) : (
                   `Charter (${bookingDetails?.duration_hour || bookingData.duration} hours)`
-                ) : yachtsType == "f1yachts" ? "" :""}
-                
+                ) : yachtsType == "f1yachts" ? "" : ""}
+
               </span>
-              {yachtsType == "yachts" ?   <span className='font-medium'>
+              {yachtsType == "yachts" ? <span className='font-medium'>
                 AED {(bookingData.isNewYearBooking ?
                   (selectedYacht?.yacht?.new_year_price || 0) :
                   (selectedYacht?.yacht?.per_hour_price || 0)) *
                   (bookingDetails?.booking_type === 'date_range' ?
                     calculateDays(bookingDetails?.selected_date, bookingDetails?.end_date) :
                     bookingData.duration)}
-              </span> : yachtsType == "f1yachts" ? "" :""}
-           
+              </span> : yachtsType == "f1yachts" ? "" : ""}
+
             </div>
             {(bookingDetails?.extras_data || bookingData.extras)?.map((item) => (
               item.quantity > 0 && (
@@ -889,7 +889,7 @@ const Payment = () => {
             <div className='border-t dark:border-gray-600 pt-4 mt-4'>
               <div className='flex justify-between font-semibold text-lg'>
                 <span>Total Due</span>
-                {yachtsType == "yachts" ? "" : yachtsType == "f1yachts" ? "" :""}
+                {yachtsType == "yachts" ? "" : yachtsType == "f1yachts" ? "" : ""}
                 <span className='text-xl font-bold'>AED {bookingDetails ? bookingDetails.total_cost : calculateTotal()}</span>
               </div>
               {isPartialPayment && bookingDetails?.paid_cost === 0 && (
@@ -964,6 +964,6 @@ export default Payment;
 // fullstripe =
 // halfstripe =
 // fullwallet = payOnlywithWallet
-// halfwallet = 
-// full+card+wallet = 
+// halfwallet =
+// full+card+wallet =
 // half+card+wallet = 
