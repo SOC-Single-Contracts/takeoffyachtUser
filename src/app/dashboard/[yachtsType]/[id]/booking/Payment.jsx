@@ -718,7 +718,7 @@ const Payment = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { yachtsType } = useParams();
-  const [dueAmountAlltime, setdueAmountAlltime] = useState("");
+  const [dueAmountAlltime, setdueAmountAlltime] = useState(0);
 
   const handleChildData = (value) => {
     setdueAmountAlltime(value);
