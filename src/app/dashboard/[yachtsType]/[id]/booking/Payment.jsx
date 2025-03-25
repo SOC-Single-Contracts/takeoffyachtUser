@@ -821,7 +821,7 @@ const Payment = () => {
     fetchBookingDetails();
   }, [bookingData.bookingId]);
 
-  console.log("dfdfdfdfd",dueAmountAlltime)
+  // console.log("dfdfdfdfd",dueAmountAlltime)
   if (loading) {
     return (
       <div className='mx-auto container flex justify-between md:flex-row flex-col items-start gap-8 px-2'>
