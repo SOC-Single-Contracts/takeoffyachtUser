@@ -18,6 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { handleDispatchBookingData } from '@/helper/bookingData';
 import { handleDispatchwalletData } from '@/helper/walletData';
 import { getWallet } from '@/api/wallet';
+import { f1yachtsTotal } from '@/helper/calculateDays';
 
 
 const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`);
@@ -175,6 +176,10 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails }) 
   // useEffect(() => {
   //   console.log("deductFromWallet", deductFromWallet)
   // }, [deductFromWallet])
+
+//   useEffect(()=>{
+// console.log("calculateTotal",calculateTotal())
+//   },[calculateTotal])
 
 
   const handleSubmitFull = async (e, type) => {
@@ -905,20 +910,22 @@ const Payment = () => {
           <div className='space-y-3'>
             <div className='flex justify-between text-sm'>
               <span>
-                {bookingDetails?.booking_type === 'date_range' ? (
+              {yachtsType == "yachts" ? bookingDetails?.booking_type === 'date_range' ? (
                   `Charter (${calculateDays(bookingDetails?.selected_date, bookingDetails?.end_date)} days)`
                 ) : (
                   `Charter (${bookingDetails?.duration_hour || bookingData.duration} hours)`
-                )}
+                ) : yachtsType == "f1yachts" ? "" :""}
+                
               </span>
-              <span className='font-medium'>
+              {yachtsType == "yachts" ?   <span className='font-medium'>
                 AED {(bookingData.isNewYearBooking ?
                   (selectedYacht?.yacht?.new_year_price || 0) :
                   (selectedYacht?.yacht?.per_hour_price || 0)) *
                   (bookingDetails?.booking_type === 'date_range' ?
                     calculateDays(bookingDetails?.selected_date, bookingDetails?.end_date) :
                     bookingData.duration)}
-              </span>
+              </span> : yachtsType == "f1yachts" ? "" :""}
+           
             </div>
             {(bookingDetails?.extras_data || bookingData.extras)?.map((item) => (
               item.quantity > 0 && (
@@ -931,6 +938,7 @@ const Payment = () => {
             <div className='border-t dark:border-gray-600 pt-4 mt-4'>
               <div className='flex justify-between font-semibold text-lg'>
                 <span>Total Due</span>
+                {yachtsType == "yachts" ? "" : yachtsType == "f1yachts" ? "" :""}
                 <span className='text-xl font-bold'>AED {bookingDetails ? bookingDetails.total_cost : calculateTotal()}</span>
               </div>
               {isPartialPayment && bookingDetails?.paid_cost === 0 && (
@@ -1000,3 +1008,11 @@ const Payment = () => {
 };
 
 export default Payment;
+
+// payment senario
+// fullstripe =
+// halfstripe =
+// fullwallet = payOnlywithWallet
+// halfwallet = 
+// full+card+wallet = 
+// half+card+wallet = 

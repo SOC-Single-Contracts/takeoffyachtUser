@@ -689,6 +689,51 @@ const Selection = ({ onNext }) => {
               </Label>
               <span className='mt-4'> {formatDate(selectedYacht?.yacht?.from_date)} - {formatDate(selectedYacht?.yacht?.to_date)}</span>
 
+              {/* <div className="flex flex-col space-y-2">
+              <Label className="text-sm font-medium">
+                Select Date<span className='text-red-500'>*</span>
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full max-w-[300px] justify-start text-left font-normal",
+                      !bookingData.date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-1 h-4 w-4" />
+                    {bookingData.date ? (
+                      bookingData.endDate ?
+                        `${format(bookingData.date, "PPP")} - ${format(bookingData.endDate, "PPP")}` :
+                        format(bookingData.date, "PPP")
+                    ) : (
+                      <span>Pick date(s)</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  
+                  <Calendar
+                    mode="range"
+                    selected={{
+                      from: bookingData.date || undefined,
+                      to: bookingData.endDate || undefined
+                    }}
+               
+                    onSelect={handleDateSelect}
+               
+                    disabled={(date) =>
+                      date < new Date(new Date().setHours(0, 0, 0, 0)) || // Disable past dates
+                      (dateRange?.start_date && date < new Date(dateRange.start_date)) ||
+                      (dateRange?.end_date && date > new Date(dateRange.end_date)) ||
+                      !availableDates.includes(format(date, 'yyyy-MM-dd'))
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>  */}
 
             </div> : ""}
 

@@ -27,3 +27,18 @@ export const calculateDaysBetween = (fromDate, toDate) => {
     
     return `${year}-${month}-${day}`
 }
+
+
+export const f1yachtsTotal = (price, date, endDate, extras) => {
+    const startDate = new Date(date);
+    const finalEndDate = new Date(endDate || date);
+    const days = Math.ceil((finalEndDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    const baseTotal = (price || 0) * days; 
+  
+    const extrasTotal = (extras || []).reduce((total, item) => {
+      return total + item.price * item.quantity;
+    }, 0);
+  
+    return baseTotal + extrasTotal;
+  };
+  
