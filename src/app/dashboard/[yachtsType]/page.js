@@ -46,6 +46,7 @@ const Yachts = () => {
   const { state, setFilter } = useGlobalState()
   const searchParams = useSearchParams();
   let searchPath = `/dashboard/${yachtsType == "f1yachts" ? "f1yachts" : "yachts"}`;
+  const [totalYachts,settotalYachts] = useState(0)
 
 
   // console.log("yachtsType",yachtsType)
@@ -402,6 +403,7 @@ const Yachts = () => {
           //   return price >= filters.min_price && price <= filters.max_price;
           // }); 
           const filteredYachts = responseData.data;
+          settotalYachts(responseData?.total_yachts)
 
           // Sort the filtered yachts if needed
           const sortedYachts = filteredYachts?.sort((a, b) => {
@@ -488,6 +490,8 @@ const Yachts = () => {
           //   return price >= filters.min_price && price <= filters.max_price;
           // }); 
           const filteredYachts = responseData.data;
+          settotalYachts(responseData?.total_yachts)
+
 
           // Sort the filtered yachts if needed
           const sortedYachts = filteredYachts?.sort((a, b) => {
@@ -610,6 +614,8 @@ const Yachts = () => {
           //   return price >= filters.min_price && price <= filters.max_price;
           // }); 
           const filteredYachts = responseData.data;
+          settotalYachts(responseData?.total_yachts)
+
 
           // Sort the filtered yachts if needed
           const sortedYachts = filteredYachts?.sort((a, b) => {
@@ -668,6 +674,7 @@ const Yachts = () => {
     setFilters(initialFilterState);
     handleFilterChange("hardReset");
   };
+
 
   // "hitApiCall" onCancelEachFilter
   useEffect(() => {
@@ -873,7 +880,7 @@ const Yachts = () => {
     <section className="py-4 px-2">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-semibold mb-6">
-          Listing ({yachts.length}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
+          Listing ({totalYachts}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
         </h1>
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
 
