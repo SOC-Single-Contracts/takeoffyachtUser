@@ -242,7 +242,8 @@ const SearchFilter = () => {
           date: formattedStartDate || '',
           guests: totalGuests > 0 ? totalGuests : '',
           name: searchByName || "",
-          ...(minGuest ? { min_guest: parseInt(minGuest) } : {})
+          min_guest: minGuest > 0 ? parseInt(minGuest) : 1
+          // ...(minGuest ? { min_guest: parseInt(minGuest) } :1 )
         }).toString()}`);
         setIsDialogOpen(false);
       } else {

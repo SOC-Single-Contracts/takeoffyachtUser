@@ -9,8 +9,8 @@ export default function Page() {
 
   return (
     <div>
-      <SearchYacht/>
-      {/* <SearchYachtNew/> */}
+      {/* <SearchYacht/> */}
+      <SearchYachtNew/>
     </div>
   );
 }
