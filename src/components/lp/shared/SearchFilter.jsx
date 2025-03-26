@@ -240,7 +240,7 @@ const SearchFilter = () => {
         router.push(`${searchPath}?${new URLSearchParams({
           location: selectedCity || '',
           date: formattedStartDate || '',
-          guests: totalGuests > 0 ? totalGuests : '',
+          guests: totalGuests > 1 ? totalGuests : '',
           name: searchByName || "",
           min_guest: minGuest > 0 ? parseInt(minGuest) : 1
           // ...(minGuest ? { min_guest: parseInt(minGuest) } :1 )
