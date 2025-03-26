@@ -341,7 +341,7 @@ const SearchYachtNew = () => {
     if (!hasMore) return;
 
     let payload = {
-      max_guest: parseInt(searchParams.get('guests')) || 1,
+      max_guest: parseInt(searchParams.get('guests')) || "",
       location: searchParams.get('location'),
       name: searchParams.get('name') || "",
       created_on: searchParams.get('date') || "",
