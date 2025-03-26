@@ -35,6 +35,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { addDays } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { calculateDaysBetween, f1yachtsTotal } from "@/helper/calculateDays";
+import DetailPageGallery from "@/components/lp/DetailPageGallery";
 
 const Skeleton = ({ className }) => (
   <div className={`${className} bg-gray-200 animate-pulse`}></div>
@@ -138,8 +139,8 @@ const YachtDetail = () => {
       {
         imgSrc: "/assets/images/yacht.svg",
         text: Array.isArray(selectedYacht?.categories) && typeof selectedYacht.categories[0] === "string"
-            ? selectedYacht.categories[0].replace(/'/g, '') 
-            : "Super Yacht", // Show first category or default to "Super Yacht"
+          ? selectedYacht.categories[0].replace(/'/g, '')
+          : "Super Yacht", // Show first category or default to "Super Yacht"
         condition: true
       }
     ];
@@ -298,12 +299,12 @@ const YachtDetail = () => {
       ny_firework,
       ny_status,
       from_date,
-      to_date 
+      to_date
     },
     subcategories,
   } = selectedYacht;
   const daysCount = calculateDaysBetween(from_date, to_date);
-  
+
 
   const yachtImages = [
     selectedYacht?.yacht?.yacht_image,
@@ -380,7 +381,7 @@ const YachtDetail = () => {
                     onClick={openGalleryView}
                   />
                 </div> */}
-                <Carousel className="w-full mt-4">
+                {/* <Carousel className="w-full mt-4">
                   <CarouselContent>
                     {uniqueYachtImages.map((image, index) => (
                       <CarouselItem key={index}>
@@ -398,10 +399,9 @@ const YachtDetail = () => {
                   </CarouselContent>
                   <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
                   <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
-                </Carousel>
-
+                </Carousel> */}
                 {/* Thumbnail Gallery */}
-                <div className="grid grid-cols-5 gap-2">
+                {/* <div className="grid grid-cols-5 gap-2">
                   {yachtImages.map((image, index) => (
                     <div
                       key={index}
@@ -418,6 +418,16 @@ const YachtDetail = () => {
                       />
                     </div>
                   ))}
+                </div> */}
+
+                <div className="w-full">
+                  {!selectedYacht || !selectedYacht?.yacht ? null : (() => {
+                    const images = uniqueYachtImages
+                      .filter((image) => typeof image === "string" && image.trim() !== "")
+                      .map((image) => `${process.env.NEXT_PUBLIC_S3_URL}${image}`)
+
+                    return <DetailPageGallery images={images} />
+                  })()}
                 </div>
 
                 {/* Gallery Overlay */}
@@ -522,9 +532,9 @@ const YachtDetail = () => {
               </Badge>
               <div className="flex justify-between items-center mt-2">
                 <h2 className="text-xl md:text-2xl font-bold">{name}</h2>
-                 {yachtsType == "yachts" ?<p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>/day</p> : yachtsType == "f1yachts" ?  <p className="text-gray-600 dark:text-gray-400">AED 
+                {yachtsType == "yachts" ? <p className="text-gray-600 dark:text-gray-400">AED <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>/day</p> : yachtsType == "f1yachts" ? <p className="text-gray-600 dark:text-gray-400">AED
                   <span className="text-xl font-bold !text-black dark:!text-white">{per_day_price}</span>{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`} </p> : ""}
-                 {/* f1yachtsTotal(per_day_price,from_date,to_date,[]) */}
+                {/* f1yachtsTotal(per_day_price,from_date,to_date,[]) */}
 
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">

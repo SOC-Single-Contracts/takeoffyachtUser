@@ -467,7 +467,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
           disabled={isProcessing || !stripe || !cardComplete}
           className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
-          {`Pay Partial (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
+          {`Pay Deposit 25% (AED ${(calculateTotal() * 0.25).toFixed(2)})`}
         </Button>
     </div>
   )}

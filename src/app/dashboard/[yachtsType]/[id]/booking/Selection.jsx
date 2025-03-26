@@ -353,7 +353,7 @@ const Selection = ({ onNext }) => {
 
   const generateTimeSlots = () => {
     const slots = [];
-    for (let hour = 9; hour <= 21; hour++) {
+    for (let hour = 0; hour <= 23; hour++) {
       slots.push(format(new Date().setHours(hour, 0, 0, 0), 'HH:mm'));
     }
     return slots;

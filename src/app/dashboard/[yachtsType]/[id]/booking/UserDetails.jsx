@@ -290,43 +290,43 @@ const UserDetails = ({ onNext, onBack }) => {
 
 
 
-  if (loading) {
-    return (
-      <form className="mt-8 md:grid grid-cols-2 gap-4 md:space-y-0 space-y-4 container mx-auto bg-white dark:bg-gray-900 rounded-md p-6">
-        <div className="animate-pulse">
-          <Label className="block text-sm font-medium">
-            Full Name <span className="text-red-500">*</span>
-          </Label>
-          <div className="mt-1 block w-full h-10 bg-gray-200 rounded"></div>
-        </div>
+  // if (loading) {
+  //   return (
+  //     <form className="mt-8 md:grid grid-cols-2 gap-4 md:space-y-0 space-y-4 container mx-auto bg-white dark:bg-gray-900 rounded-md p-6">
+  //       <div className="animate-pulse">
+  //         <Label className="block text-sm font-medium">
+  //           Full Name <span className="text-red-500">*</span>
+  //         </Label>
+  //         <div className="mt-1 block w-full h-10 bg-gray-200 rounded"></div>
+  //       </div>
 
-        <div className="animate-pulse">
-          <Label className="block text-sm font-medium">
-            Email <span className="text-red-500">*</span>
-          </Label>
-          <div className="mt-1 block w-full h-10 bg-gray-200 rounded"></div>
-        </div>
+  //       <div className="animate-pulse">
+  //         <Label className="block text-sm font-medium">
+  //           Email <span className="text-red-500">*</span>
+  //         </Label>
+  //         <div className="mt-1 block w-full h-10 bg-gray-200 rounded"></div>
+  //       </div>
 
-        <div className="animate-pulse">
-          <Label className="block text-sm font-medium">
-            Country <span className="text-red-500">*</span>
-          </Label>
-          <div className="mt-1 block w-full h-10 bg-gray-200 rounded"></div>
-        </div>
+  //       <div className="animate-pulse">
+  //         <Label className="block text-sm font-medium">
+  //           Country <span className="text-red-500">*</span>
+  //         </Label>
+  //         <div className="mt-1 block w-full h-10 bg-gray-200 rounded"></div>
+  //       </div>
 
-        <div className="animate-pulse">
-          <Label className="block text-sm font-medium">
-            Phone Number <span className="text-red-500">*</span>
-          </Label>
-          <div className="mt-1 block w-full h-10 bg-gray-200 rounded"></div>
-        </div>
+  //       <div className="animate-pulse">
+  //         <Label className="block text-sm font-medium">
+  //           Phone Number <span className="text-red-500">*</span>
+  //         </Label>
+  //         <div className="mt-1 block w-full h-10 bg-gray-200 rounded"></div>
+  //       </div>
 
-        <div className="col-span-2 flex justify-end animate-pulse">
-          <div className="rounded-full bg-[#BEA355] px-6 py-2 text-white h-10 w-32"></div>
-        </div>
-      </form>
-    );
-  }
+  //       <div className="col-span-2 flex justify-end animate-pulse">
+  //         <div className="rounded-full bg-[#BEA355] px-6 py-2 text-white h-10 w-32"></div>
+  //       </div>
+  //     </form>
+  //   );
+  // }
 
   return (
     <form onSubmit={handleSubmit} className="mt-8 md:grid grid-cols-2 gap-4 md:space-y-0 space-y-4 container mx-auto bg-white dark:bg-gray-900 rounded-md p-6">
@@ -335,6 +335,7 @@ const UserDetails = ({ onNext, onBack }) => {
           Full Name <span className="text-red-500">*</span>
         </Label>
         <Input
+          disabled={loading}
           id="fullName"
           type="text"
           placeholder="Enter your full name"
@@ -350,6 +351,7 @@ const UserDetails = ({ onNext, onBack }) => {
           Email <span className="text-red-500">*</span>
         </Label>
         <Input
+          disabled={loading}
           id="email"
           type="email"
           placeholder="Enter your email"
@@ -365,6 +367,7 @@ const UserDetails = ({ onNext, onBack }) => {
           Country <span className="text-red-500">*</span>
         </Label>
         <Select
+          disabled={loading}
           value={bookingData.country}
           onValueChange={(value) => updateBookingData({ country: value })}
         >
@@ -397,6 +400,8 @@ const UserDetails = ({ onNext, onBack }) => {
             updateBookingData({ phone: sanitizedValue });
           }}
           className="mt-1 block w-full"
+          disabled={loading}
+
         />
       </div>
 
