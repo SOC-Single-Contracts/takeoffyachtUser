@@ -46,6 +46,7 @@ const SearchYachtNew = () => {
   const { state, setFilter } = useGlobalState()
   const searchParams = useSearchParams();
   let searchPath = `/dashboard/${yachtsType == "f1yachts" ? "f1yachts" : "yachts"}/search`;
+  const [totalYachts,settotalYachts] = useState(0)
 
 
   // console.log("yachtsType",yachtsType)
@@ -77,6 +78,7 @@ const SearchYachtNew = () => {
     navigation: [],
     extra_comforts: [],
     indoor: [],
+    name:""
   });
 
   const initialFilterState = {
@@ -252,6 +254,8 @@ const SearchYachtNew = () => {
     if (filters.navigation.length) newFilters.push(`Navigation Equipment: ${filters.navigation.length}`); // Added navigation equipment filter
     if (filters.extra_comforts.length) newFilters.push(`Extra Comforts: ${filters.extra_comforts.length}`); // Added extra comforts filter
     if (filters.indoor.length) newFilters.push(`Indoor Equipment: ${filters.indoor.length}`); // Added indoor equipment filter
+    if (filters.name) newFilters.push(`name: ${filters.name}`);
+
     setActiveFilters(newFilters);
   };
 
@@ -293,6 +297,8 @@ const SearchYachtNew = () => {
       energy: searchParams.get('energy')
         ? JSON.parse(searchParams.get('energy'))
         : [],
+      name: searchParams.get('name') || "",
+
 
 
     }
@@ -305,6 +311,7 @@ const SearchYachtNew = () => {
       ...obj
     })
   }, [searchParams])
+  
 
   useEffect(() => {
     updateActiveFilters();
@@ -376,6 +383,7 @@ const SearchYachtNew = () => {
       payload = {
         ...payload,
         source: "searchYacht",
+        reqType:"firstRender",
         YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
         user_id: userId,
       };
@@ -402,6 +410,8 @@ const SearchYachtNew = () => {
           //   return price >= filters.min_price && price <= filters.max_price;
           // }); 
           const filteredYachts = responseData.data;
+          settotalYachts(responseData?.total_yachts)
+
 
           // Sort the filtered yachts if needed
           const sortedYachts = filteredYachts?.sort((a, b) => {
@@ -426,6 +436,7 @@ const SearchYachtNew = () => {
       payload = {
         ...payload,
         source: "searchYacht",
+        reqType:"normal",
         YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
         user_id: userId,
         ...(yachtsType === "yachts"
@@ -463,6 +474,8 @@ const SearchYachtNew = () => {
         location: filters?.location || "",
         min_length: filters?.min_length || "",
         max_length: filters?.max_length || "",
+        name: filters?.name || "",
+
       };
 
       try {
@@ -488,6 +501,8 @@ const SearchYachtNew = () => {
           //   return price >= filters.min_price && price <= filters.max_price;
           // }); 
           const filteredYachts = responseData.data;
+          settotalYachts(responseData?.total_yachts)
+
 
           // Sort the filtered yachts if needed
           const sortedYachts = filteredYachts?.sort((a, b) => {
@@ -543,6 +558,8 @@ const SearchYachtNew = () => {
         energy: filters?.energy?.length
           ? `["${filters.energy.join('","')}"]`
           : "[]",
+        name: filters?.name
+
 
 
       }).toString()}`);
@@ -584,6 +601,7 @@ const SearchYachtNew = () => {
     } else if (type == "hardReset") {
       let payloadHardReset = {
         source: "searchYacht",
+        reqType:"hardReset",
         YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
         user_id: userId,
       };
@@ -610,6 +628,8 @@ const SearchYachtNew = () => {
           //   return price >= filters.min_price && price <= filters.max_price;
           // }); 
           const filteredYachts = responseData.data;
+          settotalYachts(responseData?.total_yachts)
+
 
           // Sort the filtered yachts if needed
           const sortedYachts = filteredYachts?.sort((a, b) => {
@@ -646,6 +666,8 @@ const SearchYachtNew = () => {
         indoor: "[]",
         extra_comforts: "[]",
         energy: "[]",
+        name: "",
+
       }).toString()}`);
 
       
@@ -656,11 +678,11 @@ const SearchYachtNew = () => {
 
   // "hitApiCall" on first render and when scroll page
   useEffect(() => {
-    // console.log("this is working")
     if(apiCall=="firstRender"){
+      console.log("this is working")
       handleFilterChange("firstRender");
     }
-  }, [page]);
+  }, [page,searchParams]);
   //page
 
   // hitApiCall Modify resetFilters function
@@ -673,6 +695,7 @@ const SearchYachtNew = () => {
   useEffect(() => {
     if (onCancelEachFilter) {
       handleFilterChange("normal");
+      console.log("jjj")
       setonCancelEachFilter(false);
     }
   }, [filters, onCancelEachFilter]);
@@ -873,7 +896,7 @@ const SearchYachtNew = () => {
     <section className="py-4 px-2">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-semibold mb-6">
-          Listing ({yachts.length}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
+          Listing ({totalYachts}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
         </h1>
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
 
@@ -1448,6 +1471,9 @@ const SearchYachtNew = () => {
                             break;
                           case 'Indoor Equipment':
                             setFilters(prev => ({ ...prev, indoor: [] }));
+                            break;
+                            case 'name':
+                            setFilters(prev => ({ ...prev, name: "" }));
                             break;
                         }
                         setonCancelEachFilter(true);
