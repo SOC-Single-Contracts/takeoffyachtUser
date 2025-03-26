@@ -670,7 +670,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
           disabled={isProcessing || isWalletDisabled}
           className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
-          {`Pay Full Amount (AED ${dueAmountAlltime.toFixed(2)})`}
+          {bookingData.remainingCost > 0 ? `Pay Balance Due (AED ${bookingData.remainingCost.toFixed(2)})`: `Pay Full Amount (AED ${dueAmountAlltime.toFixed(2)})`}
         </Button>
 
         {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
@@ -679,7 +679,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
             disabled={isProcessing || isWalletDisabled}
             className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
           >
-            {`Pay Partial  (AED ${(dueAmountAlltime * 0.25).toFixed(2)})`}
+            {`Pay Deposit 25%  (AED ${(dueAmountAlltime * 0.25).toFixed(2)})`}
           </Button>
         )}
       </div>}
@@ -691,7 +691,8 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
           disabled={isProcessing || !stripe || !cardComplete}
           className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
-          {getPaymentButtonText()}
+          {bookingData.remainingCost > 0 ? `Pay Balance Due (AED ${bookingData.remainingCost.toFixed(2)})`: `Pay Full Amount (AED ${dueAmountAlltime.toFixed(2)})`}
+          {/* {getPaymentButtonText()} */}
         </Button>
 
         {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
@@ -700,7 +701,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
             disabled={isProcessing || !stripe || !cardComplete}
             className="w-full mt-4 bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
           >
-            {`Pay Partial (AED ${(dueAmountAlltime * 0.25).toFixed(2)})`}
+            {`Pay Deposit 25% (AED ${(dueAmountAlltime * 0.25).toFixed(2)})`}
           </Button>
         )}
       </div>}

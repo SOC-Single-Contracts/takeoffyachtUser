@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { Button } from "../ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
-const BookingGallery = ({ images }) => {
+const DetailPageGallery = ({ images }) => {
     // Ensure there's always at least one image
     const IMAGES = images.length > 0 ? [...images] : ["/assets/images/fycht.jpg"]
 
@@ -14,7 +14,7 @@ const BookingGallery = ({ images }) => {
     const [progress, setProgress] = useState(0)
 
     const advanceImage = useCallback(() => {
-        setCurrentImageIndex((prevIndex) => 
+        setCurrentImageIndex((prevIndex) =>
             (prevIndex + 1) % IMAGES.length
         )
         setProgress(0)
@@ -27,7 +27,7 @@ const BookingGallery = ({ images }) => {
         const progressInterval = 80
 
         const imageTimer = setTimeout(advanceImage, intervalDuration)
-        
+
         const progressTimer = setInterval(() => {
             setProgress((prevProgress) => {
                 if (prevProgress >= 100) {
@@ -65,20 +65,20 @@ const BookingGallery = ({ images }) => {
                     {IMAGES.length > 1 && (
                         <>
                             <div className="absolute top-1/2 left-[1rem] z-10 transform -translate-y-1/2">
-                                <Button 
-                                    className="rounded-full" 
-                                    variant="outline" 
-                                    size="icon" 
+                                <Button
+                                    className="rounded-full"
+                                    variant="outline"
+                                    size="icon"
                                     onClick={() => setCurrentImageIndex((currentImageIndex - 1 + IMAGES.length) % IMAGES.length)}
                                 >
                                     <ChevronLeft />
                                 </Button>
                             </div>
                             <div className="absolute top-1/2 right-[1rem] z-10 transform -translate-y-1/2">
-                                <Button 
-                                    className="rounded-full" 
-                                    variant="outline" 
-                                    size="icon" 
+                                <Button
+                                    className="rounded-full"
+                                    variant="outline"
+                                    size="icon"
                                     onClick={() => setCurrentImageIndex((currentImageIndex + 1) % IMAGES.length)}
                                 >
                                     <ChevronRight />
@@ -88,32 +88,34 @@ const BookingGallery = ({ images }) => {
                     )}
                 </div>
 
-                {/* Thumbnails */}
-                {/* {IMAGES.length > 1 && (
-                    <div className="flex overflow-x-auto space-x-1 md:space-x-1 h-[150px] scrollbar-hide mt-2">
-                        {IMAGES.map((image, index) => (
-                            <div 
-                                key={index} 
-                                className={`relative w-[30%] sm:w-[20%] md:w-[15%] lg:w-[30%] h-[55%] sm:h-[60%] md:h-[100%] overflow-hidden transition-all duration-300 
-                                    ${currentImageIndex === index ? 'opacity-100' : 'opacity-70 hover:opacity-100'} 
-                                    cursor-pointer
-                                `}
-                                onClick={() => handleThumbnailClick(index)}
-                            >
-                                <Image
-                                    src={image}
-                                    fill
-                                    alt={`yachts gallery image ${index + 1}`}
-                                    className="object-cover"
-                                    sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 16vw"
-                                />
-                            </div>
-                        ))}
-                    </div>
-                )} */}
+
+                <div className="w-full flex flex-col items-center">
+
+                    {images.length > 1 && (
+                        <div className="flex overflow-x-auto space-x-2 md:space-x-3 h-[100px] scrollbar-hide mt-2">
+                            {images.map((image, index) => (
+                                <div
+                                    key={index}
+                                    className={`relative w-[80px] sm:w-[100px] md:w-[120px] h-full overflow-hidden transition-all duration-300 rounded-lg 
+                ${currentImageIndex === index ? 'opacity-100 border-2 border-blue-500' : 'opacity-70 hover:opacity-100'} 
+                cursor-pointer`
+                                    }
+                                    onClick={() => handleThumbnailClick(index)}
+                                >
+                                    <Image
+                                        src={image}
+                                        layout="fill"
+                                        alt={`Thumbnail ${index + 1}`}
+                                        className="object-cover rounded-lg"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </section>
     )
 }
 
-export default BookingGallery
+export default DetailPageGallery
