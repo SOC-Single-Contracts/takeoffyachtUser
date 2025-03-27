@@ -480,6 +480,7 @@ const Payment = () => {
   const [isPartialPayment, setIsPartialPayment] = useState(false);
   const [bookingDetails, setBookingDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const {  yachtsType } = useParams();
 
   useEffect(() => {
     updateBookingData({
