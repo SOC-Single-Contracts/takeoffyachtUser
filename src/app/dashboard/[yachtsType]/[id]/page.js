@@ -53,6 +53,9 @@ const YachtDetail = () => {
     from: new Date(2024, 0, 20),
     to: addDays(new Date(2024, 0, 20), 20),
   })
+  const [markers, setMarkers] = useState([
+    { lng: -74.006, lat: 40.7128 }, // NYC
+]);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -227,7 +230,20 @@ const YachtDetail = () => {
     const ampm = hour >= 12 ? 'PM' : 'AM'; // Determine AM/PM
     return `${formattedHour}:${minute} ${ampm}`;
   };
+  useEffect(() => {
+    // Simulate a new marker every 5 seconds
+    const interval = setInterval(() => {
+        setMarkers((prevMarkers) => [
+            ...prevMarkers,
+            {
+                lng: -74.00 + Math.random() * 0.1,
+                lat: 40.71 + Math.random() * 0.1,
+            },
+        ]);
+    }, 5000);
 
+    return () => clearInterval(interval);
+}, []);
   if (loading) {
     return (
       <section className="py-16 max-w-5xl mx-auto">
@@ -854,10 +870,15 @@ const YachtDetail = () => {
                   </div>
                 </div>
                 {(longitude || latitude) && (
-                  <MapSectionWrapper
+                  <>
+                    <MapSectionWrapper
                     latitude={parseFloat(latitude)}
                     longitude={parseFloat(longitude)}
                   />
+                   <h1 className="text-xl font-bold">Live Map Updates</h1>
+                   <Map markers={markers} />
+                  </>
+                
                 )}
               </div>
               {/* Special Notes */}
