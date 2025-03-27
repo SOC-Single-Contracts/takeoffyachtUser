@@ -463,7 +463,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
       {(!bookingData.remainingCost || bookingData.remainingCost === 0) && (
     <div className="flex items-center space-x-2">
         <Button
-          onClick={() => handleSubmitPartial()}
+          onClick={(e) => handleSubmitPartial(e)}
           disabled={isProcessing || !stripe || !cardComplete}
           className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
