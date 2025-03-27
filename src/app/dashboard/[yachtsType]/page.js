@@ -147,7 +147,7 @@ const Yachts = () => {
   const categories = ['Catamarans', 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
   const locations = ['Dubai', 'Abu Dhabi', 'Sharjah'];
   const outdoorEquipment = [
-    { name: 'Bath Towels', icon: '/assets/images/bathtowels.svg' },
+    { name: 'Bath Towels', icon: '/assets/images/filterSvgs/bathtowels.svg' },
     { name: 'Bathing Ladder', icon: '/assets/images/bathingladder.svg' },
     { name: 'Beach Towels', icon: '/assets/images/beachtowels.svg' },
     { name: 'Bathing Platform', icon: '/assets/images/bathingplatform.svg' },
