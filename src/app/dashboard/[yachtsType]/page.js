@@ -1553,6 +1553,7 @@ const Yachts = () => {
                                   onError={(e) => {
                                     e.target.src = '/assets/images/fycht.jpg';
                                   }}
+                                  priority={true}
                                 />
                               </CarouselItem>
                             ))
