@@ -875,8 +875,8 @@ const YachtDetail = () => {
                     latitude={parseFloat(latitude)}
                     longitude={parseFloat(longitude)}
                   />
-                   <h1 className="text-xl font-bold">Live Map Updates</h1>
-                   <Map markers={markers} />
+                   {/* <h1 className="text-xl font-bold">Live Map Updates</h1>
+                   <Map markers={markers} /> */}
                   </>
                 
                 )}
