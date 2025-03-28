@@ -67,14 +67,23 @@ const Map = ({ markers = [], movingObjects = [] }) => {
                         <img src="${yachtImage}" alt="${yachtName}" class="object-cover px-3 pt-3 rounded-3xl w-full h-[221px]" onerror="this.src='/assets/images/fycht.jpg'">
                         <p class="absolute inset-0"></p>
         
-                
-        
-                        <div class="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
-                            <span class="font-medium text-xs">
-                                AED <span class="font-bold font-medium text-primary">${pricePerHour}</span>
-                                <span class="text-xs font-light ml-1">/Hour</span>
-                            </span>
-                        </div>
+                        ${
+                          yachtsType === "yachts"
+                            ? `<div class="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
+                                <span class="font-medium text-xs">
+                                    AED <span class="font-bold font-medium text-primary">${pricePerHour}</span>
+                                    <span class="text-xs font-light ml-1">/Hour</span>
+                                </span>
+                              </div>`
+                            : yachtsType === "f1yachts"
+                            ? `<div class="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
+                                <span class="font-medium text-xs">
+                                    AED <span class="font-bold font-medium text-primary">${pricePerDay}</span>
+                                    <span class="text-xs font-light ml-1">/Day</span>
+                                </span>
+                              </div>`
+                            : ""
+                        }
                     </div>
         
                     <div class="px-4 py-2">
@@ -105,6 +114,7 @@ const Map = ({ markers = [], movingObjects = [] }) => {
                     </div>
                 </a>
             </div>`;
+        
           
             new mapboxgl.Marker(el)
               .setLngLat([longitude, latitude])
