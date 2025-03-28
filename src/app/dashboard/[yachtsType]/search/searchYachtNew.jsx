@@ -1498,7 +1498,7 @@ const SearchYachtNew = () => {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
-          {showSkeleton || loading ? (
+          {showSkeleton  ? (
             // Render skeleton UI
             Array.from({ length: 9 }).map((_, index) => (
               <Card
