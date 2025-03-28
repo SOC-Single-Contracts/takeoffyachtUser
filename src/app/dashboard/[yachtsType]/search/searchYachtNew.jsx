@@ -152,7 +152,7 @@ const SearchYachtNew = () => {
     { name: 'Bathing Ladder', icon: '/assets/images/bathingladder.svg' },
     { name: 'Beach Towels', icon: '/assets/images/beachtowels.svg' },
     { name: 'Bathing Platform', icon: '/assets/images/bathingplatform.svg' },
-    { name: 'Outdoor Table', icon: '/assets/images/outdoortable.svg' },
+    { name: 'Outdoor Table', icon: '/assets/images/outdoortable.svg' },  
     { name: 'Aft Sundeck', icon: '/assets/images/aftsundeck.svg' },
     { name: 'Teak deck', icon: '/assets/images/teakdeck.svg' },
     { name: 'Bimini', icon: '/assets/images/bimini.svg' },
@@ -896,7 +896,7 @@ const SearchYachtNew = () => {
     <section className="py-4 px-2">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-semibold mb-6">
-          Listing ({totalYachts}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
+          Listing ({yachts.length}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
         </h1>
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
 
@@ -1498,7 +1498,7 @@ const SearchYachtNew = () => {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
-          {showSkeleton ? (
+          {showSkeleton || loading ? (
             // Render skeleton UI
             Array.from({ length: 9 }).map((_, index) => (
               <Card

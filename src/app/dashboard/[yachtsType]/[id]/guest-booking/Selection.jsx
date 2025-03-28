@@ -116,9 +116,9 @@ const Selection = ({ onNext }) => {
       setAvailableDates(generateDateArray)
       setDateRange(generateDateRange)
       updateBookingData({
-        date: formatDate(selectedYacht?.yacht?.from_date),
-        endDate: formatDate(selectedYacht?.yacht?.to_date),
-        bookingType: 'hourly'
+        date: selectedYacht?.yacht?.from_date,
+        endDate: selectedYacht?.yacht?.to_date,
+        bookingType: 'date_range'
       });
     } else if (yachtsType == "yachts") {
       fetchAvailability();
@@ -153,7 +153,7 @@ const Selection = ({ onNext }) => {
 
     fetchExtras();
 
-    if (!bookingData.startTime) {
+    if (!bookingData?.startTime) {
       const defaultTime = new Date();
       defaultTime.setHours(9, 0, 0, 0);
       updateBookingData({ startTime: defaultTime });
@@ -183,17 +183,17 @@ const Selection = ({ onNext }) => {
     const perDayPrice = selectedYacht.yacht.per_day_price || 0;
 
     // Check if it's a date range booking
-    if (bookingData.endDate && bookingData.date) {
-      const startDate = new Date(bookingData.date);
-      const endDate = new Date(bookingData.endDate);
+    if (bookingData?.endDate && bookingData?.date) {
+      const startDate = new Date(bookingData?.date);
+      const endDate = new Date(bookingData?.endDate);
       const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
       baseTotal = perDayPrice * days;
     } else {
       // Hourly booking
-      const hours = bookingData.duration || 3;
-      const isNewYearsEve = bookingData.date &&
-        new Date(bookingData.date).getMonth() === 11 &&
-        new Date(bookingData.date).getDate() === 31;
+      const hours = bookingData?.duration || 3;
+      const isNewYearsEve = bookingData?.date &&
+        new Date(bookingData?.date).getMonth() === 11 &&
+        new Date(bookingData?.date).getDate() === 31;
 
       const hourlyRate = isNewYearsEve ? newYearPrice : basePrice;
       baseTotal = hourlyRate * hours;
@@ -211,19 +211,19 @@ const Selection = ({ onNext }) => {
     setLoading(true);
     try {
       if (yachtsType == "yachts") {
-        if (!bookingData.date || !bookingData.startTime) {
+        if (!bookingData?.date || !bookingData?.startTime) {
           toast({ title: 'Error', description: 'Please select date and time' });
           return;
         }
 
-        // if (bookingData.adults + bookingData.kids === 0) {
+        // if (bookingData?.adults + bookingData?.kids === 0) {
         //   toast({ title: 'Error', description: 'Please add at least one guest' });
         //   return;
         // }
 
         // Check if it's New Year's Eve
-        const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 &&
-          new Date(bookingData.date).getDate() === 31;
+        const isNewYearsEve = new Date(bookingData?.date).getMonth() === 11 &&
+          new Date(bookingData?.date).getDate() === 31;
 
         // Show warning for New Year's Eve bookings
         if (isNewYearsEve) {
@@ -252,19 +252,19 @@ const Selection = ({ onNext }) => {
 
         onNext();
       } else if (yachtsType == "f1yachts") {
-        if (!bookingData.date || !bookingData.endDate) {
+        if (!bookingData?.date || !bookingData?.endDate) {
           toast({ title: 'Error', description: 'Please select Start Date and End Date' });
           return;
         }
 
-        // if (bookingData.adults + bookingData.kids === 0) {
+        // if (bookingData?.adults + bookingData?.kids === 0) {
         //   toast({ title: 'Error', description: 'Please add at least one guest' });
         //   return;
         // }
 
         // Check if it's New Year's Eve
-        const isNewYearsEve = new Date(bookingData.date).getMonth() === 11 &&
-          new Date(bookingData.date).getDate() === 31;
+        const isNewYearsEve = new Date(bookingData?.date).getMonth() === 11 &&
+          new Date(bookingData?.date).getDate() === 31;
 
         // Show warning for New Year's Eve bookings
         if (isNewYearsEve) {
@@ -539,15 +539,15 @@ const Selection = ({ onNext }) => {
                       variant={"outline"}
                       className={cn(
                         "w-full max-w-[300px] justify-start text-left font-normal",
-                        !bookingData.date && "text-muted-foreground"
+                        !bookingData?.date && "text-muted-foreground"
                       )}
                     >
                       <CalendarIcon className="mr-1 h-4 w-4" />
-                      {/* {bookingData.date ? format(bookingData.date, "PPP") : <span>Pick a date</span>} */}
-                      {bookingData.date ? (
-                        bookingData.endDate ?
-                          `${format(bookingData.date, "PPP")} - ${format(bookingData.endDate, "PPP")}` :
-                          format(bookingData.date, "PPP")
+                      {/* {bookingData?.date ? format(bookingData?.date, "PPP") : <span>Pick a date</span>} */}
+                      {bookingData?.date ? (
+                        bookingData?.endDate ?
+                          `${format(bookingData?.date, "PPP")} - ${format(bookingData?.endDate, "PPP")}` :
+                          format(bookingData?.date, "PPP")
                       ) : (
                         <span>Pick date(s)</span>
                       )}
@@ -556,14 +556,14 @@ const Selection = ({ onNext }) => {
                   <PopoverContent className="w-auto p-0" align="start">
                     {/* <Calendar
                   mode="single"
-                  selected={bookingData.date}
+                  selected={bookingData?.date}
                   onSelect={(date) => updateBookingData({ date })}
                   disabled={(date) => date < new Date()}
                   initialFocus
                 /> */}
                     {/* <Calendar
               mode="single"
-              selected={bookingData.date}
+              selected={bookingData?.date}
               onSelect={(date) => {
                 if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
                   updateBookingData({ date });
@@ -576,7 +576,7 @@ const Selection = ({ onNext }) => {
             /> */}
                     {/* <Calendar
               mode="single"
-              selected={bookingData.date}
+              selected={bookingData?.date}
               onSelect={(date) => {
                 if (availableDates.includes(format(date, 'yyyy-MM-dd'))) {
                   updateBookingData({ date });
@@ -595,8 +595,8 @@ const Selection = ({ onNext }) => {
                     <Calendar
                       mode="range"
                       selected={{
-                        from: bookingData.date || undefined,
-                        to: bookingData.endDate || undefined
+                        from: bookingData?.date || undefined,
+                        to: bookingData?.endDate || undefined
                       }}
                       // onSelect={(range) => {
                       //   if (range?.from) {
@@ -606,7 +606,7 @@ const Selection = ({ onNext }) => {
                       //       endDate: range.to,
                       //       bookingType: isDateRange ? 'date_range' : 'hourly',
                       //       // Reset duration if switching to date range
-                      //       duration: isDateRange ? undefined : bookingData.duration
+                      //       duration: isDateRange ? undefined : bookingData?.duration
                       //     });
                       //   }
                       // }}
@@ -640,7 +640,7 @@ const Selection = ({ onNext }) => {
             </> : ""}
 
             {/* Show duration and time only for hourly bookings */}
-            {(!bookingData.endDate || bookingData.bookingType === 'hourly') && (
+            {(!bookingData?.endDate || bookingData?.bookingType === 'hourly') && (
               <>
                 <div className="flex justify-between items-start">
                   {yachtsType == "yachts" ? <>
@@ -649,10 +649,10 @@ const Selection = ({ onNext }) => {
                         Start Time<span className='text-red-500'>*</span>
                       </Label>
                       <Select
-                        value={format(bookingData.startTime, "HH:mm")}
+                        value={format(bookingData?.startTime, "HH:mm")}
                         onValueChange={(time) => {
                           const [hours, minutes] = time.split(':');
-                          const newDate = new Date(bookingData.date);
+                          const newDate = new Date(bookingData?.date);
                           newDate.setHours(parseInt(hours), parseInt(minutes));
                           updateBookingData({ startTime: newDate });
                         }}
@@ -661,7 +661,7 @@ const Selection = ({ onNext }) => {
                           <SelectValue placeholder="Select time">
                             <div className="flex items-center">
                               <Clock className="mr-2 h-4 w-4" />
-                              {format(bookingData.startTime, "h:mm a")}
+                              {format(bookingData?.startTime, "h:mm a")}
                             </div>
                           </SelectValue>
                         </SelectTrigger>
@@ -680,16 +680,16 @@ const Selection = ({ onNext }) => {
                       <Label className="text-sm font-medium">Duration (min 3 hrs)<span className='text-red-500'>*</span></Label>
                       <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
                         <Button
-                          onClick={() => updateBookingData({ duration: Math.max(3, bookingData.duration - 1) })}
+                          onClick={() => updateBookingData({ duration: Math.max(3, bookingData?.duration - 1) })}
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
-                        <span className="w-8 text-center font-medium">{bookingData.duration}</span>
+                        <span className="w-8 text-center font-medium">{bookingData?.duration}</span>
                         <Button
-                          onClick={() => updateBookingData({ duration: bookingData.duration + 1 })}
+                          onClick={() => updateBookingData({ duration: bookingData?.duration + 1 })}
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
@@ -712,7 +712,7 @@ const Selection = ({ onNext }) => {
                 <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
                   <span className="text-sm">Adults</span>
                   <Button
-                    onClick={() => updateBookingData({ adults: Math.max(0, bookingData.adults - 1) })}
+                    onClick={() => updateBookingData({ adults: Math.max(0, bookingData?.adults - 1) })}
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
@@ -721,11 +721,11 @@ const Selection = ({ onNext }) => {
                   </Button>
                   <Input
                     type="number"
-                    value={bookingData.adults}
+                    value={bookingData?.adults}
                     // onChange={(e) => updateBookingData({ adults: Math.max(0, parseInt(e.target.value) || 0) })}
                     onChange={(e) => {
                       const adults = Math.max(0, parseInt(e.target.value) || 0);
-                      const totalGuests = adults + bookingData.kids;
+                      const totalGuests = adults + bookingData?.kids;
                       if (totalGuests > capacity) {
                         toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
                       } else {
@@ -735,10 +735,10 @@ const Selection = ({ onNext }) => {
                     className="w-16 text-center border rounded"
                   />
                   <Button
-                    // onClick={() => updateBookingData({ adults: bookingData.adults + 1 })}
+                    // onClick={() => updateBookingData({ adults: bookingData?.adults + 1 })}
                     onClick={() => {
-                      const newAdults = bookingData.adults + 1;
-                      const totalGuests = newAdults + bookingData.kids;
+                      const newAdults = bookingData?.adults + 1;
+                      const totalGuests = newAdults + bookingData?.kids;
                       if (totalGuests > capacity) {
                         toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
                       } else {
@@ -755,7 +755,7 @@ const Selection = ({ onNext }) => {
                 <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
                   <span className="text-sm">Kids</span>
                   <Button
-                    onClick={() => updateBookingData({ kids: Math.max(0, bookingData.kids - 1) })}
+                    onClick={() => updateBookingData({ kids: Math.max(0, bookingData?.kids - 1) })}
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
@@ -764,11 +764,11 @@ const Selection = ({ onNext }) => {
                   </Button>
                   <Input
                     type="number"
-                    value={bookingData.kids}
+                    value={bookingData?.kids}
                     // onChange={(e) => updateBookingData({ kids: Math.max(0, parseInt(e.target.value) || 0) })}
                     onChange={(e) => {
                       const kids = Math.max(0, parseInt(e.target.value) || 0);
-                      const totalGuests = bookingData.adults + kids;
+                      const totalGuests = bookingData?.adults + kids;
                       if (totalGuests > capacity) {
                         toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
                       } else {
@@ -778,10 +778,10 @@ const Selection = ({ onNext }) => {
                     className="w-16 text-center border rounded"
                   />
                   <Button
-                    // onClick={() => updateBookingData({ kids: bookingData.kids + 1 })}
+                    // onClick={() => updateBookingData({ kids: bookingData?.kids + 1 })}
                     onClick={() => {
-                      const newKids = bookingData.kids + 1;
-                      const totalGuests = bookingData.adults + newKids;
+                      const newKids = bookingData?.kids + 1;
+                      const totalGuests = bookingData?.adults + newKids;
                       if (totalGuests > capacity) {
                         toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
                       } else {
@@ -859,12 +859,12 @@ const Selection = ({ onNext }) => {
             <div className="space-y-2">
               <h2 className="text-lg font-semibold">
                 AED <span className="text-2xl font-bold">{calculateTotal()}</span>
-                {bookingData.endDate ? (
+                {bookingData?.endDate ? (
                   <span className="text-sm ml-2">
-                    for {Math.ceil((new Date(bookingData.endDate) - new Date(bookingData.date)) / (1000 * 60 * 60 * 24) + 1)} days
+                    for {Math.ceil((new Date(bookingData?.endDate) - new Date(bookingData?.date)) / (1000 * 60 * 60 * 24) + 1)} days
                   </span>
                 ) : (
-                  <span className="text-sm ml-2">for {bookingData.duration} hours</span>
+                  <span className="text-sm ml-2">for {bookingData?.duration} hours</span>
                 )}
               </h2>
             </div>
@@ -881,26 +881,26 @@ const Selection = ({ onNext }) => {
                 <TableRow>
                   <TableCell className="flex justify-between">
                     <span className="text-black dark:text-gray-400">
-                      {bookingData.endDate ? 'Date Range' : 'Departure'}
+                      {bookingData?.endDate ? 'Date Range' : 'Departure'}
                     </span>
                     <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-                      {bookingData.endDate ? (
-                        `${format(bookingData.date, "MMM dd, yyyy")} - ${format(bookingData.endDate, "MMM dd, yyyy")}`
+                      {bookingData?.endDate ? (
+                        `${format(bookingData?.date, "MMM dd, yyyy")} - ${format(bookingData?.endDate, "MMM dd, yyyy")}`
                       ) : (
                         <>
-                          {bookingData.startTime && format(bookingData.startTime, "p")},
-                          {bookingData.date && format(bookingData.date, " MMM dd, yyyy")}
+                          {bookingData?.startTime && format(bookingData?.startTime, "p")},
+                          {bookingData?.date && format(bookingData?.date, " MMM dd, yyyy")}
                         </>
                       )}
                     </span>
                   </TableCell>
                 </TableRow>
-                {!bookingData.endDate && (
+                {!bookingData?.endDate && (
                   <TableRow>
                     <TableCell className="flex justify-between">
                       <span className="text-black dark:text-gray-400">Duration</span>
                       <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-                        {bookingData.duration} Hours
+                        {bookingData?.duration} Hours
                       </span>
                     </TableCell>
                   </TableRow>
@@ -909,7 +909,7 @@ const Selection = ({ onNext }) => {
                   <TableCell className="flex justify-between">
                     <span className="text-black dark:text-gray-400">Guests</span>
                     <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
-                      {bookingData.adults + bookingData.kids}
+                      {bookingData?.adults + bookingData?.kids}
                       <span className="text-xs ml-1">
                         (max {selectedYacht?.yacht?.capacity || 0})
                       </span>
