@@ -5,10 +5,12 @@ import mapboxgl from "mapbox-gl";
 import 'mapbox-gl/dist/mapbox-gl.css';
 mapboxgl.accessToken = "pk.eyJ1IjoidGFrZW9mZnlhY2h0cyIsImEiOiJjbThzZjVzMnIxNTdwMmxzYWZjY2V2MmdsIn0.b-adD8juJslnBX5RGUx4Hw";
 
-const Map = ({ markers = [], movingObjects = [] }) => {
+const MapBoxComponent = ({ markers = [], movingObjects = [] }) => {
     const mapContainerRef = useRef(null);
     const mapRef = useRef(null);
 
+    // console.log("markers",markers)
+    // console.log("movingObjects",movingObjects)
     useEffect(() => {
         if (!mapContainerRef.current) return;
 
@@ -40,15 +42,24 @@ const Map = ({ markers = [], movingObjects = [] }) => {
                 addMovingObjects(map);
             }
 
-          markers.forEach(({ latitude, longitude, yacht,yachtsType }) => {
+          markers?.forEach(({latitude, longitude, yacht,yachtsType }) => {
             const el = document.createElement("div");
             el.className = "marker";
             el.style.backgroundImage = "url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOgJ5SI2oD-qfojLOmcIslE0eBkg-kT5dMlw&s)";
-            el.style.width = "70px";
-            el.style.height = "70px";
+            el.style.width = "30px";
+            el.style.height = "30px";
             el.style.backgroundSize = "cover";
             el.style.borderRadius = "50%";
             el.style.cursor = "pointer";
+
+
+            // el.className = "marker";
+            // el.style.backgroundImage = "url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvKwVW_FId6zWXEw7gKjxQhzpl50GP4ed5Iw&s)";
+            // el.style.width = "30px";
+            // el.style.height = "30px";
+            // el.style.backgroundSize = "cover";
+            // el.style.borderRadius = "50%";
+            // el.style.cursor = "pointer";
           
             const yachtName = yacht?.name || "Yacht Name";
             const yachtImage = yacht?.yacht_image ? `${process.env.NEXT_PUBLIC_S3_URL}${yacht.yacht_image}` : "/assets/images/fycht.jpg";
@@ -204,7 +215,7 @@ const Map = ({ markers = [], movingObjects = [] }) => {
     return <div ref={mapContainerRef} className="relative w-full h-[500px]" />;
 };
 
-export default Map;
+export default MapBoxComponent;
 
         // <button class="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white p-2">
                         //     <img src="/assets/images/unwishlist.svg" alt="wishlist" width="20" height="20">

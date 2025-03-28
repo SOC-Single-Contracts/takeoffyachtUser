@@ -319,7 +319,7 @@ const YachtDetail = () => {
       to_date,
       guest,
       title,
-      
+
     },
     subcategories,
   } = selectedYacht;
@@ -888,16 +888,16 @@ const YachtDetail = () => {
                     latitude={parseFloat(latitude)}
                     longitude={parseFloat(longitude)}
                   /> */}
-      <h2 className="text-lg font-medium my-4">Location</h2>
+                    <h2 className="text-lg font-medium my-4">Location</h2>
 
                     <MapBoxComponent
                       markers={[
-                        { latitude, longitude,yacht:selectedYacht?.yacht,yachtsType }
-                    
+                        { latitude, longitude, yacht: selectedYacht?.yacht, yachtsType },
+
                       ]}
-                      movingObjects={[
-                        { id: id, name: name, coordinates: [longitude, latitude] },
-                      ]}
+                      // movingObjects={[
+                      //   { id: id, name: name, coordinates: [longitude, latitude] },
+                      // ]}
                     />
 
 
