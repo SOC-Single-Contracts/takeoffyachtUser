@@ -186,3 +186,17 @@ main {
 .embla__dot.is-selected {
   background-color: #007aff; /* Blue color for selected dot */
 }
+
+/* popup.css */
+
+/* Container for the entire popup */
+.mapboxgl-map{
+  .mapboxgl-popup{
+    max-width: 310px !important;
+    width: 310px !important;
+  }
+  .mapboxgl-popup-close-button{
+    display: none !important;
+  }
+}
+
