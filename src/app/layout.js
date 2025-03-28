@@ -1,6 +1,7 @@
 "use client";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+// import 'mapbox-gl/dist/mapbox-gl.css';
 import { ThemeProvider } from "@/components/theme-provider";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/toaster";
