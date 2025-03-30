@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Loading } from '@/components/ui/loading';
 import { getWallet } from '@/api/wallet';
+import { handleDispatchwalletData } from '@/helper/walletData';
 
 const steps = [
   { id: 1, title: 'Booking Details', component: Selection },
@@ -30,6 +31,12 @@ const BookingWizardContent = ({ initialBookingId }) => {
   const { setSelectedYacht, updateBookingData,bookingData } = useBookingContext();
   const router = useRouter();
   const { toast } = useToast();
+  const appStatWwalletContext =
+  typeof window !== "undefined" && localStorage.getItem("walletContext")
+    ? JSON.parse(localStorage.getItem("walletContext"))
+    : {};
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
+    const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
   // Authentication check
   // useEffect(() => {
   //   if (status === 'unauthenticated') {
@@ -70,6 +77,31 @@ const BookingWizardContent = ({ initialBookingId }) => {
     }
   }, [initialBookingId]);
 
+  useEffect(() => {
+    const getWalletResponse = async () => {
+      if (!userId || !token) return;
+      try {
+        // console.log("workingg",userId,token)
+        const data = await getWallet(token);
+
+        handleDispatchwalletData({
+          ...appStatWwalletContext, balance: data?.balance ?? prev.balance,
+          freezeWallet: data?.freeze ?? prev.freezeWallet,
+          transactions: data?.transactions ?? prev.transactions
+        })
+        // console.log("hello",data)
+
+      } catch (err) {
+        // setError(err.message || "Unexpected Error");
+        console.error(err)
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    getWalletResponse();
+  }, [userId, token]);
+
   // Show loading while checking session
   if (status === 'loading') {
     return <Loading />;
@@ -92,28 +124,7 @@ const BookingWizardContent = ({ initialBookingId }) => {
 
 
 
-    // useEffect(() => {
-  //   const getWalletResponse = async () => {
-  //     if (!userId || !token) return;
-  //     try {
-  //       const data = await getWallet(token);
 
-  //       handleDispatchwalletData({
-  //         ...appStatWwalletContext, balance: data?.balance ?? prev.balance,
-  //         freezeWallet: data?.freeze ?? prev.freezeWallet,
-  //         transactions: data?.transactions ?? prev.transactions
-  //       })
-  //     console.log("hello",data)
-
-  //     } catch (err) {
-  //       setError(err.message || "Unexpected Error");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   getWalletResponse();
-  // }, [userId, token]);
 
 
 ///test

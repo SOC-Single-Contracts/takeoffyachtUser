@@ -237,17 +237,36 @@ const SearchFilter = () => {
       }
       setFilter({ max_guest: totalGuests, location: selectedCity })
       if (searchResults?.error_code === 'pass') {
-        router.push(`${searchPath}?${new URLSearchParams({
-          location: selectedCity || '',
-          date: formattedStartDate || '',
-          guests: totalGuests > 1 ? totalGuests : '',
+        // router.push(`${searchPath}?${new URLSearchParams({
+        //   location: selectedCity || '',
+        //   date: formattedStartDate || '',
+        //   guests: totalGuests > 1 ? totalGuests : '',
+        //   name: searchByName || "",
+        //   min_guest: minGuest > 0 ? parseInt(minGuest) : 1
+        //   // ...(minGuest ? { min_guest: parseInt(minGuest) } :1 )
+        // }).toString()}`);
+        // if (typeof window !== "undefined") {
+        //   window.location.reload();
+        // }
+        const queryParams = new URLSearchParams({
+          location: selectedCity || "",
+          date: formattedStartDate || "",
+          guests: totalGuests > 1 ? totalGuests : "",
           name: searchByName || "",
-          min_guest: minGuest > 0 ? parseInt(minGuest) : 1
-          // ...(minGuest ? { min_guest: parseInt(minGuest) } :1 )
-        }).toString()}`);
+          min_guest: minGuest > 0 ? parseInt(minGuest) : 1,
+        }).toString();
+      
+        const newPath = `${searchPath}?${queryParams}`;
+      
+        // Navigate and reload
+        if (typeof window !== "undefined") {
+          window.location.assign(newPath);
+        }
+      
+      
         setIsDialogOpen(false);
       } else {
-        toast.error('No results found. Please try different search criteria.');
+        // toast.error('No results found. Please try different search criteria.');
       }
     } catch (error) {
       console.error('Search error:', error);

@@ -71,60 +71,45 @@ const MapBoxComponent = ({ markers = [], movingObjects = [] }) => {
             const yachtId = yacht?.id || "1";
 
 
-            const popupHtml = `
-            <div class="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out">
-                <a href="/dashboard/${yachtsType}/${yachtId}">
-                    <div class="relative">
-                        <img src="${yachtImage}" alt="${yachtName}" class="object-cover px-3 pt-3 rounded-3xl w-full h-[221px]" onerror="this.src='/assets/images/fycht.jpg'">
-                        <p class="absolute inset-0"></p>
+          const popupHtml = `
+  <div class="overflow-hidden cursor-pointer bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl shadow-lg hover:shadow-2xl transition duration-500 ease-in-out">
+    <a class="flex pb-2 items-center" href="/dashboard/${yachtsType}/${yachtId}">
+      <div class="relative">
+        <img src="${yachtImage}" alt="${yachtName}" class="object-cover px-3 pt-3 rounded-3xl max-w-[130px] w-[130px] h-[129px]" 
+          onerror="this.src='/assets/images/fycht.jpg'">
         
-                        ${
-                          yachtsType === "yachts"
-                            ? `<div class="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
-                                <span class="font-medium text-xs">
-                                    AED <span class="font-bold font-medium text-primary">${pricePerHour}</span>
-                                    <span class="text-xs font-light ml-1">/Hour</span>
-                                </span>
-                              </div>`
-                            : yachtsType === "f1yachts"
-                            ? `<div class="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
-                                <span class="font-medium text-xs">
-                                    AED <span class="font-bold font-medium text-primary">${pricePerDay}</span>
-                                    <span class="text-xs font-light ml-1">/Day</span>
-                                </span>
-                              </div>`
-                            : ""
-                        }
-                    </div>
-        
-                    <div class="px-4 py-2">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-[20px] font-semibold mb-1 truncate max-w-[230px]">${yachtName}</h3>
-                            <span class="font-medium text-xs">
-                                AED <span class="font-bold text-sm text-primary">${pricePerDay}</span>
-                                <span class="text-xs font-light ml-1">/Day</span>
-                            </span>
-                        </div>
-        
-                        <div class="flex mt-4 justify-start items-center gap-1 flex-wrap">
-                            <img src="/assets/images/transfer.svg" alt="length" width="9" height="9">
-                            <p class="font-semibold text-xs">${yachtLength} ft</p>
-                            <span class="text-xs">•</span>
-                            <div class="text-center font-semibold flex items-center text-xs space-x-2">
-                                <img src="/assets/images/person.svg" alt="guests" width="8" height="8">
-                                <p>Guests</p>
-                                <p>${yachtGuests}</p>
-                            </div>
-                            <span class="text-xs">•</span>
-                            <div class="text-center font-semibold flex items-center text-xs space-x-2">
-                                <img src="/assets/images/cabin.svg" alt="cabins" width="8" height="8">
-                                <p>Cabins</p>
-                                <p>${yachtCabins}</p>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>`;
+      </div>
+
+      <div class="px-4 py-2">
+        <div class="flex justify-between items-center">
+          <h3 class="text-[20px] font-semibold mb-1 truncat max-w-[230px]">${yachtName}</h3>
+        </div>
+
+        <div class="flex mt-4 justify-start items-center gap-1 flex-wrap">
+          <img src="/assets/images/transfer.svg" alt="length" width="9" height="9">
+          <p class="font-semibold text-xs">${yachtLength} ft</p>
+          <span class="text-xs">•</span>
+          <div class="text-center font-semibold flex items-center text-xs space-x-2">
+            <img src="/assets/images/person.svg" alt="guests" width="8" height="8">
+            <p>Guests</p>
+            <p>${yachtGuests}</p>
+          </div>
+          <span class="text-xs">•</span>
+          <div class="text-center font-semibold flex items-center text-xs space-x-2">
+            <img src="/assets/images/cabin.svg" alt="cabins" width="8" height="8">
+            <p>Cabins</p>
+            <p>${yachtCabins}</p>
+
+               <span class="font-medium text-xs">
+            AED <span class="font-bold text-sm text-primary">${pricePerDay}</span>
+            <span class="text-xs font-light ml-1">/Day</span>
+          </span>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>`;
+
         
           
             new mapboxgl.Marker(el)
