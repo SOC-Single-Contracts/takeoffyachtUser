@@ -170,30 +170,26 @@ const Selection = ({ onNext }) => {
     }
   }, [selectedYacht]);
 
-  useEffect(() => {
-    const getWalletResponse = async () => {
-      if (!userId || !token) return;
-      try {
-        // console.log("workingg",userId,token)
-        const data = await getWallet(token);
+  // useEffect(() => {
+  //   const getWalletResponse = async () => {
+  //     if (!userId || !token) return;
+  //     try {
+  //       const data = await getWallet(token);
 
-        handleDispatchwalletData({
-          ...appStatWwalletContext, balance: data?.balance ?? prev.balance,
-          freezeWallet: data?.freeze ?? prev.freezeWallet,
-          transactions: data?.transactions ?? prev.transactions
-        })
-        // console.log("hello",data)
+  //       handleDispatchwalletData({
+  //         ...appStatWwalletContext, balance: data?.balance ?? prev.balance,
+  //         freezeWallet: data?.freeze ?? prev.freezeWallet,
+  //         transactions: data?.transactions ?? prev.transactions
+  //       })
 
-      } catch (err) {
-        // setError(err.message || "Unexpected Error");
-        console.error(err)
-      } finally {
-        // setLoading(false);
-      }
-    };
+  //     } catch (err) {
+  //       console.error(err)
+  //     } finally {
+  //     }
+  //   };
 
-    getWalletResponse();
-  }, [userId, token]);
+  //   getWalletResponse();
+  // }, [userId, token]);
   //   useEffect(()=>{
   // // console.log("availableDates,dateRange",availableDates,dateRange)
   // //   },[availableDates,dateRange])

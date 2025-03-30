@@ -64,8 +64,11 @@ const Summary = ({ onNext, initialBookingId }) => {
             toast.error('No booking ID found. Please complete the booking process again.');
             return;
           }
+          const url = session?.user?.userid 
+  ? `${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`
+  : `${API_BASE_URL}/yacht/booking/${currentBookingId}/`;
 
-          const response = await fetch(`${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`, {
+          const response = await fetch(url, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -102,8 +105,10 @@ const Summary = ({ onNext, initialBookingId }) => {
             toast.error('No booking ID found. Please complete the booking process again.');
             return;
           }
-
-          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${currentBookingId}/?user_id=${session?.user?.userid}`, {
+          const url = session?.user?.userid 
+          ? `${API_BASE_URL}/yacht/f1_details/${currentBookingId}/?user_id=${session?.user?.userid}`
+          : `${API_BASE_URL}/yacht/f1_detail/${currentBookingId}/`;
+          const response = await fetch(url, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -211,8 +216,10 @@ const Summary = ({ onNext, initialBookingId }) => {
         total_cost: totalCost,
         remaining_cost: totalCost - (bookingDetails?.paid_cost || 0)
       };
-
-      const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingId}/`, {
+      const url = session?.user?.userid 
+      ? `${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`
+      : `${API_BASE_URL}/yacht/booking/${currentBookingId}/`;
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -273,8 +280,10 @@ const Summary = ({ onNext, initialBookingId }) => {
         remaining_cost: isPartialPayment ? totalCost * 0.75 : 0,
         extras: editableExtras,
       };
-
-      const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingId}/`, {
+      const url = session?.user?.userid 
+      ? `${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`
+      : `${API_BASE_URL}/yacht/booking/${currentBookingId}/`;
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

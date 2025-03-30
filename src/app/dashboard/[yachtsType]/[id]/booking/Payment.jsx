@@ -23,7 +23,7 @@ import { f1yachtsTotal } from '@/helper/calculateDays';
 
 const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`);
 
-const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sendTotal }) => {
+const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails, sendTotal }) => {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -61,9 +61,11 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
 
       if (yachtsType == "yachts") {
         try {
+          const url = session?.user?.userid
+            ? `${API_BASE_URL}/yacht/bookings/${bookingData.bookingId}/?user_id=${session?.user?.userid}`
+            : `${API_BASE_URL}/yacht/booking/${bookingData.bookingId}/`;
 
-
-          const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingData.bookingId}/?user_id=${session?.user?.userid}`);
+          const response = await fetch(url);
           if (!response.ok) throw new Error('Failed to fetch booking details');
 
           const data = await response.json();
@@ -93,8 +95,12 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
       } else if (yachtsType == "f1yachts") {
         try {
 
+          const url = session?.user?.userid
+            ? `${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`
+            : `${API_BASE_URL}/yacht/f1_detail/${bookingData.bookingId}/`;
 
-          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`);
+
+          const response = await fetch(url);
           if (!response.ok) throw new Error('Failed to fetch booking details');
 
           const data = await response.json();
@@ -171,22 +177,26 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
         // Use paymentType to determine endpoint
         let endpoint;
         if (yachtsType == "yachts") {
-          endpoint = paymentType === 'remaining'
-            ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
-            : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+          if (paymentType === "remaining") {
+            endpoint = `${API_BASE_URL}/yacht/capture-remaining-payment${session?.user?.userid ? "s" : ""}/${bookingData.bookingId}/`;
+          } else {
+            endpoint = `${API_BASE_URL}/yacht/capture-initial-payment${session?.user?.userid ? "s" : ""}/${bookingData.bookingId}/`;
+          }
         } else if (yachtsType == "f1yachts") {
-          endpoint = paymentType === 'remaining'
-            ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
-            : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+          if (paymentType === "remaining") {
+            endpoint = `${API_BASE_URL}/yacht/f1-capture-remaining-payment${session?.user?.userid ? "" : ""}/${bookingData.bookingId}/`;
+          } else {
+            endpoint = `${API_BASE_URL}/yacht/f1-capture-initial-payment${session?.user?.userid ? "" : ""}/${bookingData.bookingId}/`;
+          }
         }
-
+        
 
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             is_partial_payment: false,
-            user_id: userId,
+              ...(session?.user?.userid && { user_id: session.user.userid }),
             wallet: true
 
           }),
@@ -255,13 +265,17 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
         // Use paymentType to determine endpoint
         let endpoint;
         if (yachtsType == "yachts") {
-          endpoint = paymentType === 'remaining'
-            ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
-            : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+          if (paymentType === "remaining") {
+            endpoint = `${API_BASE_URL}/yacht/capture-remaining-payment${session?.user?.userid ? "s" : ""}/${bookingData.bookingId}/`;
+          } else {
+            endpoint = `${API_BASE_URL}/yacht/capture-initial-payment${session?.user?.userid ? "s" : ""}/${bookingData.bookingId}/`;
+          }
         } else if (yachtsType == "f1yachts") {
-          endpoint = paymentType === 'remaining'
-            ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
-            : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+          if (paymentType === "remaining") {
+            endpoint = `${API_BASE_URL}/yacht/f1-capture-remaining-payment${session?.user?.userid ? "" : ""}/${bookingData.bookingId}/`;
+          } else {
+            endpoint = `${API_BASE_URL}/yacht/f1-capture-initial-payment${session?.user?.userid ? "" : ""}/${bookingData.bookingId}/`;
+          }
         }
 
 
@@ -271,7 +285,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
           body: JSON.stringify({
             payment_method_id: paymentMethod.id,
             is_partial_payment: false,
-            user_id: userId,
+              ...(session?.user?.userid && { user_id: session.user.userid }),
             wallet: deductFromWallet
 
           }),
@@ -329,13 +343,17 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
         // Use paymentType to determine endpoint
         let endpoint;
         if (yachtsType == "yachts") {
-          endpoint = paymentType === 'remaining'
-            ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
-            : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+          if (paymentType === "remaining") {
+            endpoint = `${API_BASE_URL}/yacht/capture-remaining-payment${session?.user?.userid ? "s" : ""}/${bookingData.bookingId}/`;
+          } else {
+            endpoint = `${API_BASE_URL}/yacht/capture-initial-payment${session?.user?.userid ? "s" : ""}/${bookingData.bookingId}/`;
+          }
         } else if (yachtsType == "f1yachts") {
-          endpoint = paymentType === 'remaining'
-            ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
-            : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+          if (paymentType === "remaining") {
+            endpoint = `${API_BASE_URL}/yacht/f1-capture-remaining-payment${session?.user?.userid ? "" : ""}/${bookingData.bookingId}/`;
+          } else {
+            endpoint = `${API_BASE_URL}/yacht/f1-capture-initial-payment${session?.user?.userid ? "" : ""}/${bookingData.bookingId}/`;
+          }
         }
 
         const response = await fetch(endpoint, {
@@ -343,7 +361,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             is_partial_payment: true,
-            user_id: userId,
+              ...(session?.user?.userid && { user_id: session.user.userid }),
             wallet: true
           }),
         });
@@ -409,13 +427,17 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
         // Use paymentType to determine endpoint
         let endpoint;
         if (yachtsType == "yachts") {
-          endpoint = paymentType === 'remaining'
-            ? `${API_BASE_URL}/yacht/capture-remaining-payments/${bookingData.bookingId}/`
-            : `${API_BASE_URL}/yacht/capture-initial-payments/${bookingData.bookingId}/`;
+          if (paymentType === "remaining") {
+            endpoint = `${API_BASE_URL}/yacht/capture-remaining-payment${session?.user?.userid ? "s" : ""}/${bookingData.bookingId}/`;
+          } else {
+            endpoint = `${API_BASE_URL}/yacht/capture-initial-payment${session?.user?.userid ? "s" : ""}/${bookingData.bookingId}/`;
+          }
         } else if (yachtsType == "f1yachts") {
-          endpoint = paymentType === 'remaining'
-            ? `${API_BASE_URL}/yacht/f1-capture-remaining-payment/${bookingData.bookingId}/`
-            : `${API_BASE_URL}/yacht/f1-capture-initial-payment/${bookingData.bookingId}/`;
+          if (paymentType === "remaining") {
+            endpoint = `${API_BASE_URL}/yacht/f1-capture-remaining-payment${session?.user?.userid ? "" : ""}/${bookingData.bookingId}/`;
+          } else {
+            endpoint = `${API_BASE_URL}/yacht/f1-capture-initial-payment${session?.user?.userid ? "" : ""}/${bookingData.bookingId}/`;
+          }
         }
 
         const response = await fetch(endpoint, {
@@ -424,7 +446,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
           body: JSON.stringify({
             payment_method_id: paymentMethod.id,
             is_partial_payment: true,
-            user_id: userId,
+              ...(session?.user?.userid && { user_id: session.user.userid }),
             wallet: deductFromWallet
 
           }),
@@ -670,7 +692,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
           disabled={isProcessing || isWalletDisabled}
           className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
-          {bookingData.remainingCost > 0 ? `Pay Balance Due (AED ${bookingData.remainingCost.toFixed(2)})`: `Pay Full Amount (AED ${dueAmountAlltime.toFixed(2)})`}
+          {bookingData.remainingCost > 0 ? `Pay Balance Due (AED ${bookingData.remainingCost.toFixed(2)})` : `Pay Full Amount (AED ${dueAmountAlltime.toFixed(2)})`}
         </Button>
 
         {(!bookingDetails?.paid_cost || bookingDetails.paid_cost === 0) && (
@@ -691,7 +713,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails,sen
           disabled={isProcessing || !stripe || !cardComplete}
           className="w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-12"
         >
-          {bookingData.remainingCost > 0 ? `Pay Balance Due (AED ${bookingData.remainingCost.toFixed(2)})`: `Pay Full Amount (AED ${dueAmountAlltime.toFixed(2)})`}
+          {bookingData.remainingCost > 0 ? `Pay Balance Due (AED ${bookingData.remainingCost.toFixed(2)})` : `Pay Full Amount (AED ${dueAmountAlltime.toFixed(2)})`}
           {/* {getPaymentButtonText()} */}
         </Button>
 
@@ -748,7 +770,10 @@ const Payment = () => {
 
       if (yachtsType == "yachts") {
         try {
-          const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingId}/?user_id=${session?.user?.userid}`);
+          const url = session?.user?.userid
+            ? `${API_BASE_URL}/yacht/bookings/${bookingId}/?user_id=${session?.user?.userid}`
+            : `${API_BASE_URL}/yacht/booking/${bookingId}/`;
+          const response = await fetch(url);
           if (!response.ok) {
             throw new Error('Failed to fetch booking details');
           }
@@ -760,7 +785,12 @@ const Payment = () => {
         }
       } else if (yachtsType == "f1yachts") {
         try {
-          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`);
+          const url = session?.user?.userid
+            ? `${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`
+            : `${API_BASE_URL}/yacht/f1_detail/${bookingData.bookingId}/`;
+
+
+          const response = await fetch(url);
           if (!response.ok) {
             throw new Error('Failed to fetch booking details');
           }
@@ -785,8 +815,10 @@ const Payment = () => {
         try {
           const bookingId = bookingData.bookingId;
           if (!bookingId) return;
-
-          const response = await fetch(`${API_BASE_URL}/yacht/bookings/${bookingId}/?user_id=${session?.user?.userid}`);
+          const url = session?.user?.userid
+            ? `${API_BASE_URL}/yacht/bookings/${bookingId}/?user_id=${session?.user?.userid}`
+            : `${API_BASE_URL}/yacht/booking/${bookingId}/`;
+          const response = await fetch(url);
           if (!response.ok) {
             throw new Error('Failed to fetch booking details');
           }
@@ -803,7 +835,12 @@ const Payment = () => {
           const bookingId = bookingData.bookingId;
           if (!bookingId) return;
 
-          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`);
+          const url = session?.user?.userid
+            ? `${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`
+            : `${API_BASE_URL}/yacht/f1_detail/${bookingData.bookingId}/`;
+
+
+          const response = await fetch(url);
           if (!response.ok) {
             throw new Error('Failed to fetch booking details');
           }
