@@ -205,7 +205,7 @@ const Selection = ({ onNext }) => {
       const newQty = type === 'increment' ? currentQty + 1 : Math.max(0, currentQty - 1);
       return { ...prev, [itemId]: newQty };
     });
-    appDispatch({ type: "changeNumber", numberInc: appState.number + 2 })
+    // appDispatch({ type: "changeNumber", numberInc: appState.number + 2 })
 
   };
 
