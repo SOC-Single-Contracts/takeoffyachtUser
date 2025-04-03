@@ -947,9 +947,16 @@ const SearchYachtGlobalCompo = () => {
   }, [validMarkers]);
 
 
-  useEffect(() => {
-    console.log("filters", filters);
-  }, [filters]);
+
+
+  //test
+  // useEffect(() => {
+  //   console.log("filters", filters);
+  // }, [filters]);
+
+  // useEffect(() => {
+  //   console.log("activeFilters", activeFilters);
+  // }, [activeFilters]);
 
 
 
@@ -1031,11 +1038,17 @@ const SearchYachtGlobalCompo = () => {
   return (
     <section className="py-4 px-2">
       <div className="max-w-5xl mx-auto">
-        {componentType == "searchYacht" ? <h1 className="text-2xl font-semibold mb-6">
+        {/* {componentType == "searchYacht" ? <h1 className="text-2xl font-semibold mb-6">
           Listing ({yachts.length}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
         </h1> : componentType == "simpleYacht" ? <h1 className="text-2xl font-semibold mb-6">
           Listing ({totalYachts}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
-        </h1> : ""}
+        </h1> : ""} */}
+
+        {activeFilters.length>0 ? <h1 className="text-2xl font-semibold mb-6">
+          Listing ({yachts.length}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
+        </h1> :<h1 className="text-2xl font-semibold mb-6">
+          Listing ({totalYachts}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
+        </h1>}
 
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
 

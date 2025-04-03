@@ -244,7 +244,7 @@ const YachtDetail = () => {
   //     return () => clearInterval(interval);
   // }, []);
 
-  console.log(selectedYacht)
+  // console.log(selectedYacht)
   if (loading) {
     return (
       <section className="py-16 max-w-5xl mx-auto">

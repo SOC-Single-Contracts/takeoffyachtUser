@@ -64,6 +64,7 @@
     "react-intl": "^7.1.6",
     "react-map-gl": "^7.0.25",
     "react-scrollspy": "^3.4.3",
+    "react-swipeable": "^7.0.2",
     "sendbird": "^3.1.33",
     "shadcn": "^2.1.8",
     "sonner": "^1.7.1",
