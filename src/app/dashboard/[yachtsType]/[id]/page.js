@@ -37,6 +37,7 @@ import { useToast } from "@/hooks/use-toast";
 import { calculateDaysBetween, f1yachtsTotal } from "@/helper/calculateDays";
 import DetailPageGallery from "@/components/lp/DetailPageGallery";
 import MapBoxComponent from "@/components/shared/dashboard/mapBox";
+import DetailPageGallery2 from "@/components/lp/DetailPageGallery2";
 
 const Skeleton = ({ className }) => (
   <div className={`${className} bg-gray-200 animate-pulse`}></div>
@@ -455,7 +456,12 @@ const YachtDetail = () => {
                       .filter((image) => typeof image === "string" && image.trim() !== "")
                       .map((image) => `${process.env.NEXT_PUBLIC_S3_URL}${image}`)
 
-                    return <DetailPageGallery images={images} />
+                    return (
+                      <>
+                      <DetailPageGallery images={images} />
+                      {/* <DetailPageGallery2 images={images} /> */}
+                      </>
+                    )
                   })()}
                 </div>
 

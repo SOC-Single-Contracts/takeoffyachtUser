@@ -370,7 +370,7 @@ const SearchYachtGlobalCompo = () => {
       max_length: parseInt(searchParams.get('max_length')) || "",
       sleep_capacity: parseInt(searchParams.get('sleep_capacity')) || "",
       number_of_cabin: parseInt(searchParams.get('number_of_cabin')) || "",
-      categories: searchParams.get('category_name')
+      category_names: searchParams.get('category_name')
         ? JSON.parse(searchParams.get('category_name'))
         : [],
       features: [
@@ -563,7 +563,7 @@ const SearchYachtGlobalCompo = () => {
       max_length: parseInt(searchParams.get('max_length')) || "",
       sleep_capacity: parseInt(searchParams.get('sleep_capacity')) || "",
       number_of_cabin: parseInt(searchParams.get('number_of_cabin')) || "",
-      categories: searchParams.get('category_name')
+      category_names: searchParams.get('category_name')
         ? JSON.parse(searchParams.get('category_name'))
         : [],
       features: [
@@ -601,7 +601,7 @@ const SearchYachtGlobalCompo = () => {
       max_guest: filters?.max_guest || "",
       sleep_capacity: filters?.sleep_capacity || "",
       number_of_cabin: filters?.number_of_cabin || "",
-      categories: filters?.category_name || [],
+      category_names: filters?.category_name || [],
       features: [
         ...(filters?.amenities || []),
         ...(filters?.outdoor_equipment || []),

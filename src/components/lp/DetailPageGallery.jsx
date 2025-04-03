@@ -98,3 +98,6 @@ const DetailPageGallery = ({ images }) => {
 };
 
 export default DetailPageGallery;
+
+
+//correct
