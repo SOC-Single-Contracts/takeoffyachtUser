@@ -124,7 +124,7 @@ const WalletWizardContent = () => {
           return updatedDetails;
         });
       } catch (err) {
-        setError(err.message || "Unexpected Error");
+        setError(err?.response?.data?.detail || "Unexpected Error");
       } finally {
         setLoading(false);
       }
@@ -154,6 +154,7 @@ const WalletWizardContent = () => {
    
   }, [walletDetails]);
 
+
   // If not logged in, show login prompt
   if (!userId && !token) {
     return (
@@ -174,6 +175,10 @@ const WalletWizardContent = () => {
     );
   }
 
+  if (error) {
+    return <div className="text-center text-red-500 p-4">{error}</div>;
+  }
+
 
   // Show loading state while checking session
   if (loading || error) {
@@ -191,6 +196,8 @@ const WalletWizardContent = () => {
       </section>
     );
   }
+
+
 
 
 
