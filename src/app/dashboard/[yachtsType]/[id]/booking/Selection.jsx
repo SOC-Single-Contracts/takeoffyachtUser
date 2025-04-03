@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CalendarIcon, Clock, Minus, Plus, MapPin } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
@@ -24,10 +24,13 @@ import { handleDispatchwalletData } from '@/helper/walletData';
 import { getWallet } from '@/api/wallet';
 import { calculateDaysBetween, formatDate } from '@/helper/calculateDays';
 import { Loading } from '@/components/ui/loading';
+import { GlobalStateContext } from '@/context/GlobalStateContext';
 
 const Selection = ({ onNext }) => {
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht, setBookingData, appStatBookingContext } = useBookingContext();
+  const { globalState: appState, dispatch: appDispatch } = useContext(GlobalStateContext)
+  // console.log("appState", appState)
   const capacity = selectedYacht?.yacht?.capacity || 0;
   const [loading, setLoading] = useState(false);
   const [availableDates, setAvailableDates] = useState([]);
@@ -202,6 +205,8 @@ const Selection = ({ onNext }) => {
       const newQty = type === 'increment' ? currentQty + 1 : Math.max(0, currentQty - 1);
       return { ...prev, [itemId]: newQty };
     });
+    appDispatch({ type: "changeNumber", numberInc: appState.number + 2 })
+
   };
 
   const calculateCategoryTotal = (items) => {
@@ -355,8 +360,8 @@ const Selection = ({ onNext }) => {
     }
     return slots;
   };
-    const daysCount = calculateDaysBetween(selectedYacht?.yacht?.from_date, selectedYacht?.yacht?.to_date);
-  
+  const daysCount = calculateDaysBetween(selectedYacht?.yacht?.from_date, selectedYacht?.yacht?.to_date);
+
 
   const renderExtraItem = (item, category) => (
     <div key={item.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -481,15 +486,15 @@ const Selection = ({ onNext }) => {
   // console.log("bookingData",bookingData?.startTime)
   // },[bookingData])
 
-//   useEffect(()=>{
-// console.log("selectedYacht",selectedYacht)
-//   },[selectedYacht])
+  //   useEffect(()=>{
+  // console.log("selectedYacht",selectedYacht)
+  //   },[selectedYacht])
 
 
   if (loading || !selectedYacht) {
-      return (
-          <Loading />
-      );
+    return (
+      <Loading />
+    );
   }
 
 
