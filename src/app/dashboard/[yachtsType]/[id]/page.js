@@ -398,7 +398,7 @@ const YachtDetail = () => {
       <section>
         <div className="max-w-5xl mx-auto px-4 py-4 md:py-8">
           <div className="flex flex-col lg:flex-row -mx-4">
-            <div className="w-full lg:w-1/2 px-2 mb-8 lg:mb-0">
+            <div className="w-full overflow-hidden lg:w-1/2 px-2 mb-8 lg:mb-0">
               <div className="flex flex-col gap-6">
                 {/* Default View */}
                 {/* <div className="w-full mb-0">
@@ -450,7 +450,7 @@ const YachtDetail = () => {
                   ))}
                 </div> */}
 
-                <div className="w-full">
+                <div className="w-full mt-8">
                   {!selectedYacht || !selectedYacht?.yacht ? null : (() => {
                     const images = uniqueYachtImages
                       .filter((image) => typeof image === "string" && image.trim() !== "")
@@ -458,8 +458,8 @@ const YachtDetail = () => {
 
                     return (
                       <>
-                      <DetailPageGallery images={images} />
-                      {/* <DetailPageGallery2 images={images} /> */}
+                      {/* <DetailPageGallery images={images} /> */}
+                      <DetailPageGallery2 images={images} />
                       </>
                     )
                   })()}
@@ -818,7 +818,7 @@ const YachtDetail = () => {
                       >
                         <Image
                           src={
-                            sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_API_URL}${sub?.dark_icon}`
+                            sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_S3_URL}/${sub?.dark_icon}`
                               : '/assets/images/f1.png'
                           }
                           width={20}
@@ -871,7 +871,7 @@ const YachtDetail = () => {
                         >
                           <Image
                             src={
-                              sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_API_URL}${sub?.dark_icon}`
+                              sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_S3_URL}/${sub?.dark_icon}`
                                 : '/assets/images/f1.png'
                             }
                             width={20}
