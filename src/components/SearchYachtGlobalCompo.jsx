@@ -49,7 +49,8 @@ const SearchYachtGlobalCompo = () => {
   const queryString = typeof window !== "undefined" ? window.location.search : "";
   const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
   const searchParams = useSearchParams(queryString);
-  const [totalYachts, settotalYachts] = useState(0)
+  const [totalYachts, settotalYachts] = useState(0);
+  const [paginateYachts, setpaginateYachts] = useState(0);
   const [componentType, setcomponentType] = useState("simpleYacht")
   const [searchPath, setSearchPath] = useState(`/dashboard/${yachtsType == "f1yachts" ? "f1yachts" : "yachts"}`)
   const targetPath = `/dashboard/${yachtsType == "f1yachts" ? "f1yachts" : "yachts"}/search`;
@@ -272,7 +273,7 @@ const SearchYachtGlobalCompo = () => {
     /// for this compo
     let obj = {
       location: searchParams.get('location') || "",
-      max_guest: searchParams.get('guests') ? parseInt(searchParams.get('guests')) : "",
+      max_guest: searchParams.get('max_guest') ? parseInt(searchParams.get('max_guest')) : "",
       min_guest: searchParams.get('min_guest') ? parseInt(searchParams.get('min_guest')) : "",
       min_price: searchParams.get('min_price') ? parseInt(searchParams.get('min_price')) : "",
       max_price: searchParams.get('max_price') ? parseInt(searchParams.get('max_price')) : "",
@@ -348,7 +349,7 @@ const SearchYachtGlobalCompo = () => {
     if (!hasMore) return;
 
     let payload = {
-      max_guest: parseInt(searchParams.get('guests')) || "",
+      max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
       name: searchParams.get('name') || "",
       created_on: searchParams.get('date') || "",
@@ -417,6 +418,7 @@ const SearchYachtGlobalCompo = () => {
         // }); 
         const filteredYachts = responseData.data;
         settotalYachts(responseData?.total_yachts)
+        setpaginateYachts(responseData?.paginate_count)
 
 
         // Sort the filtered yachts if needed
@@ -482,6 +484,8 @@ const SearchYachtGlobalCompo = () => {
         // }); 
         const filteredYachts = responseData.data;
         settotalYachts(responseData?.total_yachts)
+        setpaginateYachts(responseData?.paginate_count)
+
 
 
         // Sort the filtered yachts if needed
@@ -541,7 +545,7 @@ const SearchYachtGlobalCompo = () => {
     if (!userId) return;
 
     let payload = {
-      max_guest: parseInt(searchParams.get('guests')) || "",
+      max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
       name: searchParams.get('name') || "",
       created_on: searchParams.get('date') || "",
@@ -596,7 +600,7 @@ const SearchYachtGlobalCompo = () => {
             max_per_day: filters?.max_price?.toString() || "",
           }
           : {}),
-      guest: filters?.max_guest || "",
+      // guest: filters?.max_guest || "",
       min_guest: filters?.min_guest || "",
       max_guest: filters?.max_guest || "",
       sleep_capacity: filters?.sleep_capacity || "",
@@ -648,6 +652,7 @@ const SearchYachtGlobalCompo = () => {
         // }); 
         const filteredYachts = responseData.data;
         settotalYachts(responseData?.total_yachts)
+        setpaginateYachts(responseData?.paginate_count)
 
 
         // Sort the filtered yachts if needed
@@ -684,7 +689,7 @@ const SearchYachtGlobalCompo = () => {
 
     router.push(`${searchPath}?${new URLSearchParams({
 
-      guests: filters?.max_guest,
+      // guests: filters?.max_guest,
       min_guest: filters?.min_guest,
       min_price: filters?.min_price,
       max_price: filters?.max_price,
@@ -767,8 +772,14 @@ const SearchYachtGlobalCompo = () => {
     //   console.log("this is working")
  
     // }
-    handlePagination();
+    if(page>1){
+      handlePagination();
+    }
   }, [page]);
+
+  useEffect(() => {
+    handlePagination();
+  }, []);
   //page
 
   // hitApiCall Modify resetFilters function
@@ -897,7 +908,7 @@ const SearchYachtGlobalCompo = () => {
   }, [yachts.length]);
 
   useEffect(() => {
-    console.log(currentPath,"=>",targetPath)
+    // console.log(currentPath,"=>",targetPath)
     if (currentPath === targetPath) {
       let value = `/dashboard/${yachtsType == "f1yachts" ? "f1yachts" : "yachts"}/search`;
       setSearchPath(value)
@@ -910,21 +921,6 @@ const SearchYachtGlobalCompo = () => {
     }
   }, [currentPath, targetPath, yachtsType])
 
-
-
-
-
-
-  useEffect(() => {
-    console.log("componentType", componentType, searchPath)
-
-  }, [componentType, searchPath])
-
-
-
-
-
-  ///test
 
   useEffect(() => {
     let validArr = checkValidateLatLong(yachts);
@@ -950,6 +946,12 @@ const SearchYachtGlobalCompo = () => {
 
 
   //test
+
+  // console.log("Page",page)
+    // useEffect(() => {
+    //   console.log("componentType", componentType, searchPath)
+  
+    // }, [componentType, searchPath])
   // useEffect(() => {
   //   console.log("filters", filters);
   // }, [filters]);
@@ -1045,7 +1047,7 @@ const SearchYachtGlobalCompo = () => {
         </h1> : ""} */}
 
         {activeFilters.length>0 ? <h1 className="text-2xl font-semibold mb-6">
-          Listing ({yachts.length}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
+          Search Results ({paginateYachts ? paginateYachts :0 }) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
         </h1> :<h1 className="text-2xl font-semibold mb-6">
           Listing ({totalYachts}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
         </h1>}
