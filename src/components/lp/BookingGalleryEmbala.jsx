@@ -5,7 +5,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const DetailPageGallery2 = ({ images }) => {
+const BookingGalleryEmbala = ({ images }) => {
     const IMAGES = images.length > 0 ? [...images] : ["/assets/images/fycht.jpg"];
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
@@ -32,7 +32,7 @@ const DetailPageGallery2 = ({ images }) => {
     }, [emblaApi, onSelect]);
 
     return (
-        <section id ="detailPageEmblaCarosuel" className="px-2 sm:px-4">
+        <section id ="BookingEmblaCarosuel" className="px-2 sm:px-4">
             <div className="embla" ref={emblaRef}>
                 <div className="embla__container">
                     {IMAGES.map((src, index) => (
@@ -82,4 +82,4 @@ const Thumb = ({ src, onClick, selected }) => (
     </button>
 );
 
-export default DetailPageGallery2;
+export default BookingGalleryEmbala;

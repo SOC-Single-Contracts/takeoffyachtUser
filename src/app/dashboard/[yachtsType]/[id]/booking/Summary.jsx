@@ -23,6 +23,7 @@ import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import BookingGallery from "@/components/lp/BookingGallery";
 import { useParams } from "next/navigation";
+import BookingGalleryEmbala from "@/components/lp/BookingGalleryEmbala";
 
 const safeFormat = (dateString, formatString, fallback = 'N/A') => {
   try {
@@ -703,7 +704,7 @@ const Summary = ({ onNext, initialBookingId }) => {
                 );
               })()}
             </div> */}
-        <div className="w-full">
+        <div className="w-full overflow-hidden">
           {!selectedYacht || !selectedYacht?.yacht ? null : (() => {
             const images = [
               selectedYacht?.yacht?.yacht_image,
@@ -731,7 +732,14 @@ const Summary = ({ onNext, initialBookingId }) => {
               .filter((image) => typeof image === "string" && image.trim() !== "")
               .map((image) => `${process.env.NEXT_PUBLIC_S3_URL}${image}`)
 
-            return <BookingGallery images={images} />
+            return (
+              <>
+              {/* <BookingGallery images={images} /> */}
+
+              <BookingGalleryEmbala images={images} />
+              </>
+
+            ) 
           })()}
         </div>
 
