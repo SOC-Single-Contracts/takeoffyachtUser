@@ -819,9 +819,9 @@ const SearchYachtNew = () => {
   // useEffect(() => {
   //   console.log("yachts", yachts);
   // }, [yachts]);
-  useEffect(() => {
-    console.log("filters", filters);
-  }, [filters]);
+  // useEffect(() => {
+  //   console.log("filters", filters);
+  // }, [filters]);
   // useEffect(() => {
   //   console.log("selectedOption.value",selectedOption.value);
   // }, [selectedOption]);

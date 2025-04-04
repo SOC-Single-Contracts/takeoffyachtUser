@@ -410,9 +410,9 @@ const Summary = ({ onNext, initialBookingId }) => {
 
   //test
 
-  useEffect(()=>{
-   console.log("bookingDetails",bookingDetails)
-  },[bookingDetails])
+  // useEffect(()=>{
+  //  console.log("bookingDetails",bookingDetails)
+  // },[bookingDetails])
 
   const renderPriceSummary = () => {
     const totalCost = bookingDetails?.total_cost || calculateTotal();
