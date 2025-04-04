@@ -1,6 +1,6 @@
 import React from 'react'
 import FeaturedListings from './Listings'
-import Events from '../events/page'
+import Events from '@/components/lp/Events'
 
 const Featured = () => {
   return (

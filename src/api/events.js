@@ -66,3 +66,18 @@ export const makeRemainingPayment = async (bookingId) => {
         throw error;
     }
 };
+
+export const fetchAllEventsList = async (id) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/yacht/events_list/`);
+ 
+    if (response.data.success === true) {
+      return response.data.events;
+    }
+
+    throw new Error(response.data.error || "Failed to fetch events.");
+  }
+   catch (error) {
+    throw error;
+  }
+};

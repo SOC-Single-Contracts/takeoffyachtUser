@@ -27,8 +27,8 @@ import { fetchFormulaOne } from "@/api/yachts";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useToast } from "@/hooks/use-toast";
-import Events from "../page";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import Events from "@/components/lp/Events";
 
 const EventDetail = () => {
   const { id } = useParams();
