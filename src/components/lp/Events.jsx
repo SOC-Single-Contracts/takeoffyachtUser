@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { fetchEvents } from '@/api/yachts';
 import { useSession } from 'next-auth/react';
 import { Sailboat, RefreshCw } from 'lucide-react';
+import { fetchAllEventsList } from '@/api/events';
 
 const SkeletonCard = () => (
   <Card className="overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[250px] h-full max-h-[260px] animate-pulse">
@@ -63,7 +64,8 @@ const Events = ({ limit = 4 }) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchEvents(1);
+      // const data = await fetchEvents(1);
+      const data = await fetchAllEventsList()
       setEvents(data);
     } catch (err) {
       console.error('Events fetching error:', err);
@@ -72,6 +74,11 @@ const Events = ({ limit = 4 }) => {
       setLoading(false);
     }
   };
+
+  //test
+  // useEffect(() => {
+  //   console.log("events",events)
+  // }, [events]);
 
   useEffect(() => {
     getEvents();
@@ -131,11 +138,11 @@ const Events = ({ limit = 4 }) => {
         <h1 className="md:text-4xl text-[32px] font-semibold text-start">Our Events</h1>
         <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[0.6rem]  place-items-center my-8">
           {eventsToDisplay.map((item) => {
-            if (!item?.event) {
+            if (!item) {
               return null;
             }
 
-            const { event } = item;
+            const  event  = item;
             return (
               <Card
                 key={event.id}
@@ -164,7 +171,7 @@ const Events = ({ limit = 4 }) => {
 
                   <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-900 backdrop-blur-sm p-1.5 rounded-md">
                     <span className="text-xs font-medium">
-                      {item.packages.length} Package Available
+                      {item?.packages_system?.length} Package Available
                     </span>
                   </div>
                 </div>
