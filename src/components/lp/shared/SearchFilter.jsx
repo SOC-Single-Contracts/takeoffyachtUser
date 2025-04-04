@@ -44,13 +44,13 @@ const SearchFilter = () => {
   });
   const { yachtsType } = useParams();
 
-  const [guests, setGuests] = useState({
+  const [minimumGuests, setMinimumGuests] = useState({
     // adults: 1,
     // children: 0,
     // infants: 0,
     capacity: 1,
   });
-  const [minGuest, setMinGuest] = useState(0)
+  const [maxGuest, setMaxGuest] = useState(0)
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -151,7 +151,8 @@ const SearchFilter = () => {
   //   },[guests])
 
   const handleGuestChange = (type, action) => {
-    setGuests(prev => ({
+    setMaxGuest("")
+    setMinimumGuests(prev => ({
       ...prev,
       [type]: action === 'increase'
         ? prev[type] + 1
@@ -162,7 +163,7 @@ const SearchFilter = () => {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const totalGuests = guests?.capacity;
+      const totalGuests = minimumGuests?.capacity;
       const formattedStartDate = selectedDateRange?.from ? format(selectedDateRange?.from, 'yyyy-MM-dd') : null;
       const formattedEndDate = selectedDateRange?.to ? format(selectedDateRange?.to, 'yyyy-MM-dd') : null;
 
@@ -242,8 +243,8 @@ const SearchFilter = () => {
         //   date: formattedStartDate || '',
         //   guests: totalGuests > 1 ? totalGuests : '',
         //   name: searchByName || "",
-        //   min_guest: minGuest > 0 ? parseInt(minGuest) : 1
-        //   // ...(minGuest ? { min_guest: parseInt(minGuest) } :1 )
+        //   min_guest: maxGuest > 0 ? parseInt(maxGuest) : 1
+        //   // ...(maxGuest ? { min_guest: parseInt(maxGuest) } :1 )
         // }).toString()}`);
         // if (typeof window !== "undefined") {
         //   window.location.reload();
@@ -251,9 +252,9 @@ const SearchFilter = () => {
         const queryParams = new URLSearchParams({
           location: selectedCity || "",
           date: formattedStartDate || "",
-          guests: totalGuests > 1 ? totalGuests : "",
+          min_guest: totalGuests > 1 ? totalGuests : "",
           name: searchByName || "",
-          min_guest: minGuest > 0 ? parseInt(minGuest) : 1,
+          max_guest: maxGuest > 0 ? parseInt(maxGuest) : "",
         }).toString();
       
         const newPath = `${searchPath}?${queryParams}`;
@@ -292,18 +293,18 @@ const SearchFilter = () => {
       min_guest = 30
       capacity = 50;
     } else if (range === "50+") {
-      capacity = 100;
+      min_guest = 50;
     }
 
-    setMinGuest(min_guest)
-    setGuests({ capacity });
+    setMaxGuest(capacity)
+    setMinimumGuests({ capacity: min_guest });
   };
 
   const resetSearch = () => {
     setActiveSearchTab("where");
     setSelectedCity("");
     setSelectedDateRange({ from: null, to: null });
-    setGuests({ capacity: 1 });
+    setMinimumGuests({ capacity: 1 });
     setsearchByName("")
   };
 
@@ -328,6 +329,12 @@ const SearchFilter = () => {
   // useEffect(()=>{
   // console.log("globalStateFilter",state)
   // },[state])
+
+  //test
+  // useEffect(()=>{
+  //   console.log("minimumGuests",minimumGuests)
+  //   console.log("maxGuest",maxGuest)
+  // },[minimumGuests,maxGuest])
 
   return (
     <section className="">
@@ -356,7 +363,7 @@ const SearchFilter = () => {
               <div className="flex items-center px-2 md:px-4 py-1.5 md:py-3 text-sm">
                 <Users className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
                 <span className="dark:text-gray-300 text-xs">
-                  {state?.filters?.max_guest ? state?.filters?.max_guest : 1} Guests
+                  {state?.filters?.min_guest ? state?.filters?.min_guest : 1} Guests
                 </span>
               </div>
             </div>
@@ -468,7 +475,7 @@ const SearchFilter = () => {
                     >
                       <div className="flex flex-col items-start md:pl-2 w-full">
                         <span className="font-semibold text-xs">Who</span>
-                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{guests.capacity > 0 ? `${guests.capacity} Guests` : "Add Guests"}</span>
+                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{minimumGuests.capacity > 0 ? `${minimumGuests.capacity} Guests` : "Add Guests"}</span>
                       </div>
                     </TabsTrigger>
                     <div>
@@ -496,7 +503,7 @@ const SearchFilter = () => {
                       className="absolute right-0 top-full mt-2 z-10 w-full sm:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl h-[230px] overflow-y-auto shadow-lg border border-gray-200 dark:border-gray-700"
                     >
                       <h3 className="text-xl font-semibold">Who&apos;s coming?</h3>
-                      {Object.keys(guests).map(type => (
+                      {Object.keys(minimumGuests).map(type => (
                         <div
                           key={type}
                           className="flex items-center justify-between"
@@ -514,25 +521,25 @@ const SearchFilter = () => {
                             <Input
                               type="number"
                               min="0"
-                              value={guests[type]}
+                              value={minimumGuests[type]}
                               // onChange={(e) => {
                               //   const value = parseInt(e.target.value, 10) || 0;
-                              //   setGuests(prev => ({
+                              //   setMinimumGuests(prev => ({
                               //     ...prev,
                               //     [type]: Math.max(0, value)
                               //   }));
                               // }}
                               onChange={(e) => {
-                                setMinGuest(0)
+                                setMaxGuest(0)
                                 const value = e.target.value;
                                 if (value === "") {
-                                  setGuests(prev => ({
+                                  setMinimumGuests(prev => ({
                                     ...prev,
                                     [type]: "" // Allow empty input temporarily
                                   }));
                                 } else {
                                   const parsedValue = Math.max(0, parseInt(value, 10)); // Remove leading 0s
-                                  setGuests(prev => ({
+                                  setMinimumGuests(prev => ({
                                     ...prev,
                                     [type]: parsedValue // Ensure no leading zeroes
                                   }));
