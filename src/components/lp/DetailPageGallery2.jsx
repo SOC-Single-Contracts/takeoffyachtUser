@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const DetailPageGallery2 = ({ images }) => {
     const IMAGES = images.length > 0 ? [...images] : ["/assets/images/fycht.jpg"];
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+    const [emblaRef, emblaApi] = useEmblaCarousel({});
     const [thumbsRef, thumbsApi] = useEmblaCarousel({ containScroll: "keepSnaps", dragFree: true });
 
     const scrollTo = useCallback(
@@ -32,26 +32,30 @@ const DetailPageGallery2 = ({ images }) => {
     }, [emblaApi, onSelect]);
 
     return (
-        <section id ="detailPageEmblaCarosuel" className="px-2 sm:px-4">
-            <div className="embla" ref={emblaRef}>
-                <div className="embla__container">
-                    {IMAGES.map((src, index) => (
-                        <div className="embla__slide" key={index}>
-                            <div className="relative cursor-pointer h-[300px] sm:h-[300px] md:h-[400px] w-full">
-                                <Image
-                                    src={src}
-                                    fill
-                                    alt={`Gallery Image ${index + 1}`}
-                                    className="object-cover rounded-xl md:rounded-3xl"
-                                    priority
-                                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, (max-width: 1024px) 70vw, 60vw"
-                                    draggable={false}
-                                />
+        <section id="detailPageEmblaCarosuel" className="px-2 sm:px-4">
+            <section className="embla">
+                <div className="embla__viewport" ref={emblaRef}>
+                    <div className="embla__container">
+                        {IMAGES.map((src, index) => (
+                            <div className="embla__slide" key={index}>
+                                <div className="relative cursor-pointer h-[300px] sm:h-[300px] md:h-[400px] w-full">
+                                    <Image
+                                        src={src}
+                                        fill
+                                        alt={`Gallery Image ${index + 1}`}
+                                        className="object-cover rounded-xl md:rounded-3xl"
+                                        priority
+                                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, (max-width: 1024px) 70vw, 60vw"
+                                        draggable={false}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
+
+
+            </section>
 
             {IMAGES.length > 1 && (
                 <div className="embla-thumbs" ref={thumbsRef}>
