@@ -1716,10 +1716,10 @@ const SearchYachtGlobalCompo = () => {
                         <CarouselContent>
                           {images.length > 0 ? (
                             images.map((image, index) => (
-                              <CarouselItem key={index}>
+                              <CarouselItem key={`${image}-${index}`}>
                                 <Image
                                   src={image ? `https://images-yacht.s3.us-east-1.amazonaws.com${image}` : '/assets/images/fycht.jpg'}
-                                   loading="lazy"
+                                   loading="eager"
                                   alt="not found"
                                   width={326}
                                   height={300}
