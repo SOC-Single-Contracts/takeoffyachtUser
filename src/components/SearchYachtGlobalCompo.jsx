@@ -1652,7 +1652,7 @@ const SearchYachtGlobalCompo = () => {
 
         {/* Cards Grid */}
         {!mapBox ? <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
-          {showSkeleton ? (
+          {showSkeleton || loading ? (
             // Render skeleton UI
             Array.from({ length: 9 }).map((_, index) => (
               <Card
@@ -1719,6 +1719,7 @@ const SearchYachtGlobalCompo = () => {
                               <CarouselItem key={index}>
                                 <Image
                                   src={image ? `https://images-yacht.s3.us-east-1.amazonaws.com${image}` : '/assets/images/fycht.jpg'}
+                                   loading="lazy"
                                   alt="not found"
                                   width={326}
                                   height={300}
