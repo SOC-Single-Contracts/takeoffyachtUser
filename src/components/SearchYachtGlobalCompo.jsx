@@ -1786,6 +1786,14 @@ const SearchYachtGlobalCompo = () => {
 
                       </div>
                     </div>
+                    {/* <YachtCarousel
+        images={images}
+        item={item}
+        favorites={favorites}
+        s={handleWishlistToggle}
+        yachtsType={yachtsType}
+        daysCount={daysCount}
+      /> */}
                     <Link href={`/dashboard/${yachtsType}/${item?.yacht?.id}`}>
                       <CardContent className="px-4 py-2">
                         <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
