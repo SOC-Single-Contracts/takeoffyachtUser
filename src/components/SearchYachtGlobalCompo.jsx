@@ -1719,7 +1719,6 @@ const SearchYachtGlobalCompo = () => {
                               <CarouselItem key={`${image}-${index}`}>
                                 <Image
                                   src={image ? `https://images-yacht.s3.us-east-1.amazonaws.com${image}` : '/assets/images/fycht.jpg'}
-                                   loading="eager"
                                   alt="not found"
                                   width={326}
                                   height={300}
