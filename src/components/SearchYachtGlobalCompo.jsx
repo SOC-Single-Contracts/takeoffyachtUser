@@ -689,7 +689,7 @@ const SearchYachtGlobalCompo = () => {
 
     router.push(`${searchPath}?${new URLSearchParams({
 
-      // guests: filters?.max_guest,
+      max_guest: filters?.max_guest,
       min_guest: filters?.min_guest,
       min_price: filters?.min_price,
       max_price: filters?.max_price,
