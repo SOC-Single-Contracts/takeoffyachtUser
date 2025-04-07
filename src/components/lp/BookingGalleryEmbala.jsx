@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const BookingGalleryEmbala = ({ images }) => {
-    const IMAGES = images.length > 0 ? [...images] : ["/assets/images/fycht.jpg"];
+    const IMAGES = images?.length > 0 ? [...images] : ["/assets/images/fycht.jpg"];
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [emblaRef, emblaApi] = useEmblaCarousel({});
     const [thumbsRef, thumbsApi] = useEmblaCarousel({ containScroll: "keepSnaps", dragFree: true });
@@ -36,7 +36,7 @@ const BookingGalleryEmbala = ({ images }) => {
               <section className="embla">
                          <div className="embla__viewport" ref={emblaRef}>
                              <div className="embla__container">
-                                 {IMAGES.map((src, index) => (
+                                 {IMAGES?.map((src, index) => (
                                      <div className="embla__slide" key={index}>
                                          <div className="relative cursor-pointer h-[300px] sm:h-[300px] md:h-[400px] w-full">
                                              <Image
@@ -57,10 +57,10 @@ const BookingGalleryEmbala = ({ images }) => {
          
                      </section>
 
-            {/* {IMAGES.length > 1 && (
+            {/* {IMAGES?.length > 1 && (
                 <div className="embla-thumbs" ref={thumbsRef}>
                     <div className="embla-thumbs__container">
-                        {IMAGES.map((src, index) => (
+                        {IMAGES?.map((src, index) => (
                             <Thumb
                                 key={index}
                                 src={src}
