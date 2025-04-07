@@ -392,7 +392,7 @@ const YachtDetail = () => {
   // },[selectedYacht])
 
   //test
-  console.log(selectedYacht)
+  // console.log(selectedYacht)
 
   return (
     <>
