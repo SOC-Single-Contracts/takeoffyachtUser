@@ -1652,31 +1652,7 @@ const SearchYachtGlobalCompo = () => {
 
         {/* Cards Grid */}
         {!mapBox ? <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
-          {showSkeleton || loading ? (
-            // Render skeleton UI
-            Array.from({ length: 9 }).map((_, index) => (
-              <Card
-                key={`skeleton-${index}`}
-                className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
-              >
-                <div className="relative">
-                  <div className="bg-gray-200 dark:bg-gray-700 w-full h-[221px] rounded-t-2xl"></div>
-                  <div className="absolute top-6 right-6 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                  <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
-                </div>
-
-                <CardContent className="px-4 py-4 space-y-3">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
-                  <div className="flex justify-start items-center gap-2">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            yachts.length > 0 ? (
+          { yachts.length > 0 ? (
               yachts.map((item, ind) => {
                 if (!item || !item?.yacht) return null;
                 const images = [
@@ -1718,7 +1694,7 @@ const SearchYachtGlobalCompo = () => {
                             images.map((image, index) => (
                               <CarouselItem key={`${image}-${index}`}>
                                 <Image
-                                  src={`https://images-yacht.s3.us-east-1.amazonaws.com${image}`}
+                                  src={`${process.env.NEXT_PUBLIC_S3_URL}${image}`}
                                   alt="not found"
                                   loading='lazy'
                                   width={326}
@@ -1845,7 +1821,31 @@ const SearchYachtGlobalCompo = () => {
                 </Button>
 
               </div>
-            )
+            )}
+
+          {loading && (
+            // Render skeleton UI
+            Array.from({ length: 9 }).map((_, index) => (
+              <Card
+                key={`skeleton-${index}`}
+                className="overflow-hidden bg-white dark:bg-gray-800 w-full max-w-[350px] rounded-2xl h-full min-h-[280px] shadow-lg animate-pulse"
+              >
+                <div className="relative">
+                  <div className="bg-gray-200 dark:bg-gray-700 w-full h-[221px] rounded-t-2xl"></div>
+                  <div className="absolute top-6 right-6 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                  <div className="absolute bottom-4 right-6 w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+                </div>
+
+                <CardContent className="px-4 py-4 space-y-3">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 w-2/3 rounded-md"></div>
+                  <div className="flex justify-start items-center gap-2">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-16 rounded-md"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
           )}
         </div> : <>
           <MapBoxComponent
