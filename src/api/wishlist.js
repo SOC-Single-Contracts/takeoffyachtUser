@@ -61,5 +61,5 @@ export const removeFromWishlist = async (userId, itemId, itemType) => {
 
 export const fetchWishlist = async (userId) => {
   const response = await axios.get(BASE_URL);
-  return response?.data?.results.filter(item => item.Auth_user === userId);
+  return response?.data?.filter(item => item.Auth_user == userId);
 };
