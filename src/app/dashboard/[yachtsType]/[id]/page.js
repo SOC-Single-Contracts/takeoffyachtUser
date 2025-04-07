@@ -62,6 +62,7 @@ const YachtDetail = () => {
   useEffect(() => {
     const getYachts = async () => {
       if (status === "loading") return; // Wait for session to load
+      setLoading(true)
 
       try {
         const newData = await fetchYachts(session?.user?.userid || 1, yachtsType == "f1yachts" ? "f1yachts" : "regular");
