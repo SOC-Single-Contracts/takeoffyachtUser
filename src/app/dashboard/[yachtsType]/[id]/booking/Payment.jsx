@@ -97,7 +97,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails, se
 
           const url = session?.user?.userid
             ? `${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`
-            : `${API_BASE_URL}/yacht/f1_detail/${bookingData.bookingId}/`;
+            : `${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/`;
 
 
           const response = await fetch(url);
@@ -787,7 +787,7 @@ const Payment = () => {
         try {
           const url = session?.user?.userid
             ? `${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`
-            : `${API_BASE_URL}/yacht/f1_detail/${bookingData.bookingId}/`;
+            : `${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/`;
 
 
           const response = await fetch(url);
@@ -837,7 +837,7 @@ const Payment = () => {
 
           const url = session?.user?.userid
             ? `${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/?user_id=${session?.user?.userid}`
-            : `${API_BASE_URL}/yacht/f1_detail/${bookingData.bookingId}/`;
+            : `${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/`;
 
 
           const response = await fetch(url);
