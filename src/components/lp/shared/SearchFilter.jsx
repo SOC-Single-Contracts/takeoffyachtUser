@@ -252,7 +252,7 @@ const SearchFilter = () => {
         const queryParams = new URLSearchParams({
           location: selectedCity || "",
           date: formattedStartDate || "",
-          min_guest: totalGuests > 1 ? totalGuests : "",
+          min_guest: totalGuests > 0 ? totalGuests : "",
           name: searchByName || "",
           max_guest: maxGuest > 0 ? parseInt(maxGuest) : "",
         }).toString();
