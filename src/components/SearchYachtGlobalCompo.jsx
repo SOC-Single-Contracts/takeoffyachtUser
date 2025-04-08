@@ -213,6 +213,7 @@ const SearchYachtGlobalCompo = () => {
     { name: 'Bow Thruster', icon: '/assets/images/Icon_Bowthruster.svg' },
     { name: 'Depth Sounder', icon: '/assets/images/Icon_Depthsounder.svg' },
     { name: 'Wi-Fi', icon: '/assets/images/Icon_Wi-Fi.svg' },
+    { name: 'Animals Allowed', icon: '/assets/images/Icon_FishingSonar.svg' },
     { name: 'VHF', icon: '/assets/images/Icon_VHF.svg' },
     { name: 'Dinghy', icon: '/assets/images/Icon_Dinghy.svg' },
     { name: "Dinghy's motor", icon: '/assets/images/Icon_Dinghysmotor.svg' },
@@ -223,7 +224,7 @@ const SearchYachtGlobalCompo = () => {
     { name: 'Towable Tube', icon: '/assets/images/Icon_TowableTube.svg' },
     { name: 'Washing Machine', icon: '/assets/images/Icon_Washingmachine.svg' },
     { name: 'Watermaker', icon: '/assets/images/Icon_Watermaker.svg' },
-    { name: 'Air conditioning', icon: '/assets/images/Icon_AirConditioning.svg' },
+    { name: 'A.C', icon: '/assets/images/Icon_AirConditioning.svg' },
     { name: 'Bluetooth', icon: '/assets/images/Icon_Bluetooth.svg' },
     { name: 'TV', icon: '/assets/images/Icon_TV.svg' },
     { name: 'USB Socket', icon: '/assets/images/Icon_USBsocket.svg' },
@@ -237,7 +238,7 @@ const SearchYachtGlobalCompo = () => {
     { name: 'Indoor Table', icon: '/assets/images/Icon_IndoorTable.svg' },
     { name: 'Restrooms', icon: '/assets/images/Icon_Restrooms.svg' },
     { name: 'Shower', icon: '/assets/images/Icon_Shower.svg' },
-    { name: 'Sound system', icon: '/assets/images/Icon_SoundSystem.svg' },
+    { name: 'Sound System', icon: '/assets/images/Icon_SoundSystem.svg' },
     { name: 'Speakers', icon: '/assets/images/Icon_Speakers.svg' }];
 
   const [activeFilters, setActiveFilters] = useState([]);
