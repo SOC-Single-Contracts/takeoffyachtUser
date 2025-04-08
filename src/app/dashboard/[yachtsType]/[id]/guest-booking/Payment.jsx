@@ -66,7 +66,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
         try {
           if (!bookingData.bookingId) return;
   
-          const response = await fetch(`${API_BASE_URL}/yacht/f1_detail/${bookingData.bookingId}`);
+          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}`);
           if (!response.ok) throw new Error('Failed to fetch booking details');
           
           const data = await response.json();
@@ -521,7 +521,7 @@ const Payment = () => {
         }
       } else if (yachtsType == "f1yachts"){
         try {
-          const response = await fetch(`${API_BASE_URL}/yacht/f1_detail/${bookingId}/`);
+          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingId}/`);
           if (!response.ok) {
             throw new Error('Failed to fetch booking details');
           }
@@ -565,7 +565,7 @@ const Payment = () => {
           const bookingId = bookingData.bookingId;
           if (!bookingId) return;
   
-          const response = await fetch(`${API_BASE_URL}/yacht/f1_detail/${bookingId}/`);
+          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingId}/`);
           if (!response.ok) {
             throw new Error('Failed to fetch booking details');
           }
