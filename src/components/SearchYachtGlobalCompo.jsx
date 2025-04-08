@@ -154,7 +154,7 @@ const SearchYachtGlobalCompo = () => {
 
   const userId = session?.user?.userid || 1;
 
-  const categories = ['Catamarans', 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
+  const categories = ['Catamarans',"motor boat", "motor", 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
   const locations = ['Dubai', 'Abu Dhabi', 'Sharjah'];
   const outdoorEquipment = [
     { name: 'Bath Towels', icon: '/assets/images/bathtowels.svg' },
