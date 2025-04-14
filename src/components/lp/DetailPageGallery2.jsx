@@ -57,7 +57,7 @@ const DetailPageGallery2 = ({ images }) => {
 
             </section>
 
-            {IMAGES?.length > 1 && (
+            {IMAGES?.length >= 1 && (
                 <div className="embla-thumbs" ref={thumbsRef}>
                     <div className="embla-thumbs__container">
                         {IMAGES?.map((src, index) => (

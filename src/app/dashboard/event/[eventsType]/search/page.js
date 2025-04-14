@@ -8,8 +8,9 @@ import SearchResults from './searchEvents';
 const Page = () => {
 
   return (
-    // <SearchEventGlobalCompo  />
-    <SearchResults/>
+    <SearchEventGlobalCompo  />
+    // <SearchResults/>
+
   );
 };
   

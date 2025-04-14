@@ -13,28 +13,6 @@ export const fetchAllEvents = async (userId) => {
     }
 };
 
-export const findEventById = async (eventId) => {
-    const id = parseInt(eventId, 10);
-    
-    if (isNaN(id) || id <= 0) {
-        throw new Error('Invalid event ID');
-    }
-
-    try {
-        const response = await axios.get(`${API_BASE_URL}/yacht/get_event/${id}`);
-        if (!response.data.data || response.data.data.length === 0) {
-            throw new Error('Event not found');
-        }
-        return response.data.data[0];
-    } catch (error) {
-        if (error.response && error.response.status === 404) {
-            throw new Error('Event not found');
-        }
-        console.error(`Error finding event with ID ${id}:`, error);
-        throw error;
-    }
-};
-
 export const createEventBooking = async (bookingData) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/yacht/event_booking/`, bookingData);
@@ -80,4 +58,21 @@ export const fetchAllEventsList = async (id) => {
    catch (error) {
     throw error;
   }
+};
+
+export const findEventById = async (eventId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/yacht/get_single_event/${eventId}/`);
+
+        // console.log(response)
+     
+        if (response.data.success === true) {
+          return response.data.events;
+        }
+    
+        throw new Error(response.data.error || "Failed to fetch events.");
+      }
+       catch (error) {
+        throw error;
+      }
 };

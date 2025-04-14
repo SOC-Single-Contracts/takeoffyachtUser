@@ -23,11 +23,16 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Image from 'next/image';
-import { summaryimg } from '../../../../../../public/assets/images';
+import { summaryimg } from '../../../../../../../public/assets/images';
+import { useParams } from 'next/navigation';
+import { Label } from '@/components/ui/label';
+import { formatDate } from '@/helper/calculateDays';
 
-const Selection = ({ onNext }) => {
-  const { bookingData, updateBookingData, eventData } = useBookingContext();
+const Selection = ({ onNext,eventData }) => {
+  const { bookingData, updateBookingData } = useBookingContext();
   const [loading, setLoading] = useState(false);
+    const { eventsType } = useParams();
+  
 
   useEffect(() => {
     if (!bookingData.startTime) {
@@ -40,17 +45,17 @@ const Selection = ({ onNext }) => {
   const handlePackageSelect = (pkg) => {
     updateBookingData({ 
       selectedPackage: pkg,
-      duration: pkg.duration_hour || 3
+      duration: pkg?.duration_hour || 3
     });
   };
 
   const calculateTotal = () => {
     if (!bookingData.selectedPackage) return 0;
     
-    const packagePrice = bookingData.selectedPackage.package_price || 0;
+    const packagePrice = bookingData.selectedPackage.price || 0;
     const totalGuests = bookingData.adults + bookingData.kids;
     const featuresPrices = bookingData.selectedPackage.features?.reduce((total, feature) => 
-      total + (feature.price || 0), 0) || 0;
+      total + (feature.price || 0), 0) || 0; 
     
     return (packagePrice + featuresPrices) * totalGuests;
   };
@@ -94,41 +99,43 @@ const Selection = ({ onNext }) => {
         <h3 className="text-lg font-semibold mb-4">Select Package</h3>
         <Carousel>
           <CarouselContent>
-            {eventData?.packages?.map((pkg, index) => (
+            {console.log("eventData",eventData)}
+            {eventData?.packages_system?.map((pkg, index) => (
               <CarouselItem key={index} className="ml-4 p-2">
                 <div 
                   className={cn(
                     'bg-white dark:bg-gray-800 rounded-2xl border p-4 space-y-2 w-full max-w-[270px] h-full min-h-[250px] shadow-md flex flex-col justify-between cursor-pointer transition-all',
-                    bookingData.selectedPackage?.id === pkg.id 
+                    bookingData.selectedPackage?.id === pkg?.id 
                       ? "border-[#BEA355] bg-[#F4F0E4]" 
                       : "hover:border-[#BEA355]"
                   )}
                   onClick={() => handlePackageSelect(pkg)}
                 >
                   <div>
-                    <h3 className='text-gray-700 dark:text-gray-100 capitalize font-semibold text-lg'>{pkg.name}</h3>
+                    <h3 className='text-gray-700 dark:text-gray-100 capitalize font-semibold text-lg'>{pkg?.package_type}</h3>
                     <p className='text-gray-700 dark:text-gray-300 font-normal text-sm flex-grow truncate overflow-hidden ellipsis'>
-                      {pkg.description || 'No description available'}
+                      {pkg?.description || 'No description available'}
                     </p>
                   </div>
                   <div className='flex flex-col justify-start space-y-2'>
                     <p className='font-semibold text-3xl text-[#BEA355] flex items-center'>
-                      <DollarSign className='size-4 text-gray-700 dark:text-gray-300 mr-1' />
-                      {pkg.package_price}
+                      {/* <DollarSign className='size-4 text-gray-700 dark:text-gray-300 mr-1' /> */}
+                      <span className="text-sm mx-2">AED</span>     
+                      {pkg?.price}
                       <span className='text-sm text-gray-700 dark:text-gray-300 mt-2'>.00/ticket</span>
                     </p>
                     <div className="text-sm text-gray-600 dark:text-gray-300">
-                      Duration: {pkg.duration_hour || 3} hours
+                      Duration: {pkg?.duration_hour || 3} hours
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-300">
-                      Available Tickets: {pkg.number_of_ticket}
+                      Available Tickets: {pkg?.quantity_available}
                     </div>
                   </div>
-                  {pkg.features && pkg.features.length > 0 && (
+                  {pkg?.features && pkg?.features.length > 0 && (
                     <div className='flex flex-col justify-start items-start space-y-2 mt-2 ml-2'>
                       <h5 className='text-gray-700 dark:text-gray-300 font-semibold text-lg capitalize mb-2'>What's included?</h5>
                       <ul className='list-disc list-inside text-gray-700 dark:text-gray-300 font-light text-sm'>
-                        {pkg.features.map((feature, idx) => (
+                        {pkg?.features.map((feature, idx) => (
                           <li key={idx} className='flex items-center capitalize'>
                             <CheckCircle className='size-6 mr-2 text-green-500 bg-green-500/10 rounded-full p-1' />
                             {feature.name} (${feature.price})
@@ -144,11 +151,19 @@ const Selection = ({ onNext }) => {
         </Carousel>
       </div>
 
-      {/* Date, Time & Guests Selection */}
       <div className="grid grid-cols-2 gap-8">
         <div className="space-y-6">
-          {/* Date & Time Selection */}
-          <div className="space-y-4">
+
+            {eventsType == "events" ? <div className="flex flex-col space-y-2">
+                        <Label className="text-sm font-medium">
+                          <span className='text-red-5'> Event Booking Slot:</span>
+                        </Label>
+                        <span className='mt-4'> {formatDate(eventData?.from_date)} - {formatDate(eventData?.to_date)}</span>
+          
+                      
+          
+                      </div>: eventsType == "f1events" ? "" : ""}
+          {/* <div className="space-y-4">
             <div className="grid gap-2">
               <Popover>
                 <PopoverTrigger asChild>
@@ -173,12 +188,7 @@ const Selection = ({ onNext }) => {
                 </PopoverContent>
               </Popover>
             </div>
-
-            {/* <TimePicker 
-              date={bookingData.startTime} 
-              setDate={(time) => updateBookingData({ startTime: time })} 
-            /> */}
-          </div>
+          </div> */}
 
           {/* Guests Selection */}
           <div className="space-y-4">

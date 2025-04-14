@@ -42,7 +42,7 @@ const SearchFilter = () => {
     from: null,
     to: null
   });
-  const { yachtsType } = useParams();
+  const { yachtsType,eventsType } = useParams();
 
   const [minimumGuests, setMinimumGuests] = useState({
     // adults: 1,
@@ -233,7 +233,8 @@ const SearchFilter = () => {
 
           };
           searchResults = await yachtApi.checkEvents(eventParams);
-          searchPath = '/dashboard/events/search';
+          searchPath = `/dashboard/event/${eventsType == "f1events" ? "f1events" : "events"}/search`;
+
           break;
       }
       setFilter({ max_guest: totalGuests, location: selectedCity })

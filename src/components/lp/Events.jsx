@@ -8,6 +8,7 @@ import { fetchEvents } from '@/api/yachts';
 import { useSession } from 'next-auth/react';
 import { Sailboat, RefreshCw } from 'lucide-react';
 import { fetchAllEventsList } from '@/api/events';
+import { useParams } from 'next/navigation';
 
 const SkeletonCard = () => (
   <Card className="overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[250px] h-full max-h-[260px] animate-pulse">
@@ -40,7 +41,7 @@ const EmptyEventState = ({ onRetry }) => {
             <RefreshCw className="mr-2 w-4 h-4" />
             Retry Loading
           </Button>
-          <Link href="/dashboard/events">
+          <Link href="/dashboard/event/events">
             <Button 
               variant="outline" 
               className="rounded-full border-[#BEA355] text-[#BEA355] hover:bg-[#BEA355]/10"
@@ -59,6 +60,8 @@ const Events = ({ limit = 4 }) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+    const { id } = useParams();
+  
 
   const getEvents = async () => {
     try {
@@ -145,27 +148,26 @@ const Events = ({ limit = 4 }) => {
             const  event  = item;
             return (
               <Card
-                key={event.id}
+                key={event?.id}
                 className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[298px] h-full md:max-h-[260px] max-h-[310px]"
               >
                 <div className="relative">
                 {/* <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" /> */}
                 <Image
-                    src={
-                        event.event_image 
-                        ? `https://api.takeoffyachts.com${event.event_image}`
-                        : '/assets/images/f1.png'
-                    }
-                    alt={event.name || 'Event Image'}
+                     src={event.event_image
+                      ? `${process.env.NEXT_PUBLIC_S3_URL}${event.event_image}`
+                      : '/assets/images/dubai.png'
+                  }
+                    alt={event?.name || 'Event Image'}
                     width={400}
                     height={250}
-                    className="object-cover ml-0 sm:ml-1 px-1 pt-3 rounded-3xl md:h-[170px] h-[220px]"
+                    className="object-cover px-3 pt-3 rounded-3xl md:h-[170px] h-[220px]"
                     onError={(e) => {
-                        e.target.src = '/assets/images/f1.png'
+                        e.target.src = '/assets/images/dubai.png'
                     }}
                     />
 
-                  <Link href={`/dashboard/events/${event.id}`}>
+                  <Link href={`/dashboard/event/events/${event?.id}`}>
                     <p className="absolute inset-0 z-10"></p>
                   </Link>
 
@@ -176,21 +178,21 @@ const Events = ({ limit = 4 }) => {
                   </div>
                 </div>
                 <CardContent className="px-4 py-2">
-                  <h3 className="text-md font-semibold mb-1">{event.name || 'Unnamed Event'}</h3>
+                  <h3 className="text-md font-semibold mb-1">{event?.name || 'Unnamed Event'}</h3>
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-black dark:text-gray-400">
-                      {event.location || 'Location N/A'}
+                      {event?.location || 'Location N/A'}
                     </span>
                   </div>
                   <p className="text-xs text-black mb-4 dark:text-gray-400">
-                    {(event.description || '').substring(0, 24)}...
+                    {(event?.description || '').substring(0, 24)}...
                   </p>
                 </CardContent>
               </Card>
             );
           })}
         </div>
-        <Link href="/dashboard/events">
+        {!id &&     <Link href="/dashboard/event/events">
         <Button variant="outline" className="text-black hover:underline font-semibold uppercase md:text-[16px] hover:shadow-2xl transition duration-500 ease-in-out dark:text-white text-[12px] rounded-full flex items-center group">
             See All
             <svg
@@ -206,7 +208,8 @@ const Events = ({ limit = 4 }) => {
               />
             </svg>
           </Button>
-        </Link>
+        </Link>}
+    
       </div>
     </section>
   );

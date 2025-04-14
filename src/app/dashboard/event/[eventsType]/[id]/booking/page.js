@@ -9,6 +9,7 @@ import { Loading } from '@/components/ui/loading';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { findEventById } from '@/api/events';
 
 export default function BookingPage() {
   const { id } = useParams();
@@ -24,8 +25,11 @@ export default function BookingPage() {
       try {
         // Only fetch if session is fully loaded and user is authenticated
         if (session?.user?.userid) {
-          const events = await fetchEvents(session.user.userid);
-          const event = events.find(item => item.event.id.toString() === id);
+          // const events = await fetchEvents(session.user.userid);
+          // const event = events.find(item => item.event.id.toString() === id);
+                  const event = await findEventById(id)
+                  // console.log("event",event)
+          
           
           if (!event) {
             throw new Error('Event not found');
