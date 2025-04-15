@@ -34,21 +34,27 @@ const AllBookings = () => {
       try {
         // Fetch bookings from multiple endpoints
         const [yachtResponse, eventResponse, experienceResponse] = await Promise.all([
-          fetch(`https://api.takeoffyachts.com/yacht/get_yacht_booking/${userId}`),
-          fetch(`https://api.takeoffyachts.com/yacht/get_event_booking/${userId}`),
-          fetch(`https://api.takeoffyachts.com/yacht/get_experience_booking/${userId}`)
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}`),
+          // fetch(`${process.env.NEXT_PUBLIC_API_URL}/f1_yacht/get_f1_yacht_booking/${userId}`),
+          // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_event_booking/${userId}`),
+          // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_experience_booking/${userId}`)
         ]);
 
         // Check responses
-        if (!yachtResponse.ok || !eventResponse.ok || !experienceResponse.ok) {
+        // if (!yachtResponse.ok || !eventResponse.ok || !experienceResponse.ok) {
+        //   throw new Error('Failed to fetch bookings');
+        // }
+        if (!yachtResponse.ok) {
           throw new Error('Failed to fetch bookings');
         }
 
         const [yachtData, eventData, experienceData] = await Promise.all([
           yachtResponse.json(),
-          eventResponse.json(),
-          experienceResponse.json()
+          // eventResponse.json(),
+          // experienceResponse.json()
         ]);
+
+        console.log("yach",yachtData)
 
         // Process yacht bookings
         const yachtBookings = yachtData.data ? yachtData.data.map(item => ({
@@ -59,9 +65,10 @@ const AllBookings = () => {
           image: item.yacht[0]?.yacht_image,
           location: item.yacht[0]?.location
         })) : [];
-
+        console.log("yachtBookings",yachtBookings)
+ 
         // Process event bookings
-        const eventBookings = eventData.data ? eventData.data.map(item => ({
+        const eventBookings = eventData?.data ? eventData?.data.map(item => ({
           ...item,
           event: item.package,
           type: 'event',
@@ -73,7 +80,7 @@ const AllBookings = () => {
         })) : [];
 
         // Process experience bookings
-        const experienceBookings = experienceData.data ? experienceData.data.map(item => ({
+        const experienceBookings = experienceData?.data ? experienceData?.data.map(item => ({
           ...item,
           experience: item.experience,
           type: 'experience',
@@ -88,7 +95,7 @@ const AllBookings = () => {
         const allBookings = [...yachtBookings, ...eventBookings, ...experienceBookings];
 
         // Categorize bookings based on date
-        const processedBookings = allBookings.map(booking => {
+        const processedBookings = allBookings?.map(booking => {
           const selectedDate = new Date(booking.selected_date);
           const today = new Date();
           

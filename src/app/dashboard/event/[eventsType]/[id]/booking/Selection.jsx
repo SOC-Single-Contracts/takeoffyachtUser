@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/carousel";
 import Image from 'next/image';
 import { summaryimg } from '../../../../../../../public/assets/images';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { formatDate } from '@/helper/calculateDays';
 
@@ -32,20 +32,24 @@ const Selection = ({ onNext,eventData }) => {
   const { bookingData, updateBookingData } = useBookingContext();
   const [loading, setLoading] = useState(false);
     const { eventsType } = useParams();
+      const queryString = typeof window !== "undefined" ? window.location.search : "";
+      const searchParams = useSearchParams(queryString);
+      let tickets = Number(searchParams.get('tickets'))
+      let packageId = searchParams.get('package')
   
 
-  useEffect(() => {
-    if (!bookingData.startTime) {
-      const defaultTime = new Date();
-      defaultTime.setHours(9, 0, 0, 0);
-      updateBookingData({ startTime: defaultTime });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!bookingData.startTime) {
+  //     const defaultTime = new Date();
+  //     defaultTime.setHours(9, 0, 0, 0);
+  //     updateBookingData({ startTime: defaultTime });
+  //   }
+  // }, []);
 
   const handlePackageSelect = (pkg) => {
     updateBookingData({ 
       selectedPackage: pkg,
-      duration: pkg?.duration_hour || 3
+      duration: eventData?.duration_hour || 3
     });
   };
 
@@ -53,7 +57,7 @@ const Selection = ({ onNext,eventData }) => {
     if (!bookingData.selectedPackage) return 0;
     
     const packagePrice = bookingData.selectedPackage.price || 0;
-    const totalGuests = bookingData.adults + bookingData.kids;
+    const totalGuests = bookingData.tickets + bookingData.kids;
     const featuresPrices = bookingData.selectedPackage.features?.reduce((total, feature) => 
       total + (feature.price || 0), 0) || 0; 
     
@@ -66,13 +70,25 @@ const Selection = ({ onNext,eventData }) => {
       return;
     }
 
-    if (bookingData.adults + bookingData.kids === 0) {
+    if (bookingData.tickets + bookingData.kids === 0) {
       toast.error('Please add at least one guest');
       return;
     }
 
     onNext();
   };
+  ///test
+  useEffect(() => {
+    const selectedPackage = eventData?.packages_system?.find((v) => v?.id == packageId);  
+    if (selectedPackage) {
+      updateBookingData({ 
+        selectedPackage: selectedPackage,
+      duration: eventData?.duration_hour || 3,
+        tickets:tickets
+      });
+    }
+  }, [eventData,packageId,tickets])
+
 
   return (
     <div className="space-y-8">
@@ -80,11 +96,16 @@ const Selection = ({ onNext,eventData }) => {
       <Card className="p-4">
         <div className="relative w-full h-48 mb-4">
           <Image
-            // src={eventData?.event?.event_image || summaryimg}
-            src={summaryimg}
+            src={eventData?.event_image
+              ? `${process.env.NEXT_PUBLIC_S3_URL}${eventData?.event_image}`
+              : '/assets/images/dubai.png'
+          }
             alt={eventData?.event?.name}
             fill
             className="object-cover rounded-lg"
+            onError={(e) => {
+              e.target.src = '/assets/images/dubai.png'
+          }}
           />
         </div>
         <h2 className="text-xl font-semibold mb-2">{eventData?.event?.name}</h2>
@@ -95,7 +116,7 @@ const Selection = ({ onNext,eventData }) => {
       </Card>
 
       {/* Package Selection */}
-      <div className="my-5">
+      {/* <div className="my-5">
         <h3 className="text-lg font-semibold mb-4">Select Package</h3>
         <Carousel>
           <CarouselContent>
@@ -119,7 +140,6 @@ const Selection = ({ onNext,eventData }) => {
                   </div>
                   <div className='flex flex-col justify-start space-y-2'>
                     <p className='font-semibold text-3xl text-[#BEA355] flex items-center'>
-                      {/* <DollarSign className='size-4 text-gray-700 dark:text-gray-300 mr-1' /> */}
                       <span className="text-sm mx-2">AED</span>     
                       {pkg?.price}
                       <span className='text-sm text-gray-700 dark:text-gray-300 mt-2'>.00/ticket</span>
@@ -149,7 +169,7 @@ const Selection = ({ onNext,eventData }) => {
             ))}
           </CarouselContent>
         </Carousel>
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-2 gap-8">
         <div className="space-y-6">
@@ -200,15 +220,15 @@ const Selection = ({ onNext,eventData }) => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => updateBookingData({ adults: Math.max(0, bookingData.adults - 1) })}
+                    onClick={() => updateBookingData({ tickets: Math.max(0, bookingData.tickets - 1) })}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span>{bookingData.adults}</span>
+                  <span>{bookingData.tickets}</span>
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => updateBookingData({ adults: bookingData.adults + 1 })}
+                    onClick={() => updateBookingData({ tickets: bookingData.tickets + 1 })}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -248,7 +268,7 @@ const Selection = ({ onNext,eventData }) => {
 
           <Button 
             onClick={handleNext}
-            disabled={loading || !bookingData.selectedPackage}
+            disabled={loading || bookingData?.tickets <=0}
             className="bg-[#BEA355] text-white rounded-full w-full h-10"
           >
             {loading ? 'Processing...' : 'Continue'}

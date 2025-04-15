@@ -169,59 +169,61 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
-const Summary = ({ onNext }) => {
-  const { bookingData, eventData } = useBookingContext();
+const Summary = ({ onNext,eventData }) => {
+  const { bookingData } = useBookingContext();
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
 
   const calculateTotal = () => {
     if (!bookingData.selectedPackage) return 0;
     
-    const packagePrice = bookingData.selectedPackage.package_price || 0;
-    const totalGuests = bookingData.adults + bookingData.kids;
+    const packagePrice = bookingData.selectedPackage.price || 0;
+    const totalGuests = bookingData?.tickets;
     const featuresPrices = bookingData.selectedPackage.features?.reduce((total, feature) => 
       total + (feature.price || 0), 0) || 0;
     
     return (packagePrice + featuresPrices) * totalGuests;
   };
+  
 
   const handleConfirm = async () => {
     if (!bookingData.selectedPackage) {
       toast.error('Please select a package first');
       return;
     }
+    onNext();
 
-    setLoading(true);
-    try {
-      const bookingPayload = {
-        guest: bookingData.adults + bookingData.kids,
-        event: eventData.event.id,
-        package: bookingData.selectedPackage.id,
-        user_id: session.user.userid,
-        duration_hour: bookingData.selectedPackage.duration_hour || 3,
-        booking_date: format(new Date(bookingData.date), 'yyyy-MM-dd'),
-        booking_time: format(new Date(bookingData.startTime), 'HH:mm:ss'),
-        phone_number: bookingData.phone,
-        country: bookingData.country,
-        message: bookingData.notes,
-        adults: bookingData.adults,
-        kid_teen: bookingData.kids,
-        total_cost: calculateTotal(),
-      };
+    // setLoading(true);
+    // try {
+    //   const bookingPayload = {
+    //     guest: bookingData.adults + bookingData.kids,
+    //     event: eventData?.id,
+    //     package: bookingData.selectedPackage.id,
+    //     user_id: session.user.userid,
+    //     duration_hour: bookingData.selectedPackage.duration_hour || 3,
+    //     booking_date: format(new Date(bookingData.date), 'yyyy-MM-dd'),
+    //     booking_time: format(new Date(bookingData.startTime), 'HH:mm:ss'),
+    //     phone_number: bookingData.phone,
+    //     country: bookingData.country,
+    //     message: bookingData.notes,
+    //     adults: bookingData.adults,
+    //     kid_teen: bookingData.kids,
+    //     total_cost: calculateTotal(),
+    //   };
 
-      const response = await yachtApi.createEventBooking(bookingPayload);
+    //   const response = await yachtApi.createEventBooking(bookingPayload);
 
-      if (response.error_code === 'pass') {
-        onNext();
-      } else {
-        throw new Error(response.error || 'Failed to create booking');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to create booking. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    //   if (response.error_code === 'pass') {
+    //     onNext();
+    //   } else {
+    //     throw new Error(response.error || 'Failed to create booking');
+    //   }
+    // } catch (error) {
+    //   console.error('Error:', error);
+    //   toast.error('Failed to create booking. Please try again.');
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   return (
@@ -239,25 +241,25 @@ const Summary = ({ onNext }) => {
           <TableRow>
             <TableCell className="font-semibold">Selected Package</TableCell>
             <TableCell className="font-medium">
-              {bookingData.selectedPackage?.name || 'No package selected'}
+              {bookingData.selectedPackage?.package_type || 'No package selected'}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-semibold">Package Price</TableCell>
             <TableCell className="font-medium">
-              ${bookingData.selectedPackage?.package_price || 0}/ticket
+              ${bookingData.selectedPackage?.price || 0}/ticket
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-semibold">Duration</TableCell>
             <TableCell className="font-medium">
-              {bookingData.selectedPackage?.duration_hour || 3} hours
+              {bookingData?.duration || 3} hours
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-semibold">Total Tickets</TableCell>
             <TableCell className="font-medium">
-              {bookingData.adults + bookingData.kids} tickets
+              {bookingData.tickets} tickets
             </TableCell>
           </TableRow>
           {bookingData.selectedPackage?.features?.length > 0 && (

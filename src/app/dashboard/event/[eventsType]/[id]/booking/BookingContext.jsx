@@ -1,5 +1,6 @@
 "use client";
-import { createContext, useContext, useState } from 'react';
+import { Ticket } from 'lucide-react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const BookingContext = createContext();
 
@@ -19,6 +20,7 @@ export const BookingProvider = ({ children, initialEventData }) => {
     isPartialPayment: false,
     termsAccepted: false,
     selectedPackage: null,
+    tickets:0
   });
 
   const updateBookingData = (newData) => {
@@ -28,13 +30,17 @@ export const BookingProvider = ({ children, initialEventData }) => {
   const calculateTotal = () => {
     if (!bookingData.selectedPackage) return 0;
     
-    const packagePrice = bookingData.selectedPackage.package_price || 0;
-    const totalGuests = bookingData.adults + bookingData.kids;
+    const packagePrice = bookingData.selectedPackage?.price || 0;
+    const totalTickets = bookingData.tickets;
     const featuresPrices = bookingData.selectedPackage.features?.reduce((total, feature) => 
       total + (feature.price || 0), 0) || 0;
     
-    return (packagePrice + featuresPrices) * totalGuests;
+    return (packagePrice + featuresPrices) * totalTickets;
   };
+
+  useEffect(()=>{
+    console.log("bookingData",bookingData)
+      },[bookingData])
 
   return (
     <BookingContext.Provider value={{

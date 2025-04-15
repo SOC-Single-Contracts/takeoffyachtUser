@@ -54,7 +54,7 @@ const EventDetail = () => {
 
         // const event = data.find(
         //   (item) => item.event.id.toString() === id
-        // );
+        // ); 
 
         if (!event) {
           throw new Error('Event not found');
