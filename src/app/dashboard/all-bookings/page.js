@@ -65,7 +65,7 @@ const AllBookings = () => {
           image: item.yacht[0]?.yacht_image,
           location: item.yacht[0]?.location
         })) : [];
-        console.log("yachtBookings",yachtBookings)
+        // console.log("yachtBookings",yachtBookings)
  
         // Process event bookings
         const eventBookings = eventData?.data ? eventData?.data.map(item => ({
