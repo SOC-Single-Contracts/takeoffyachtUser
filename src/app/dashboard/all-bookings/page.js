@@ -120,12 +120,12 @@ const AllBookings = () => {
 
   // Memoize filtered bookings
   const upcomingBookings = useMemo(() => 
-    bookings.filter(booking => !booking.cancel), 
+    bookings.filter(booking => booking.cancel), 
     [bookings]
   );
 
   const pastBookings = useMemo(() => 
-    bookings.filter(booking => booking.cancel), 
+    bookings.filter(booking => !booking.cancel), 
     [bookings]
   );
 

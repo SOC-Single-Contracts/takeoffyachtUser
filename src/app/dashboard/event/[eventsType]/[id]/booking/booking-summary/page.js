@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { dubai, summaryimg } from "../../../../../../../public/assets/images";
+import { dubai, summaryimg } from "../../../../../../../../public/assets/images";
 import Image from "next/image";
 
 const BookingSummary = () => {
