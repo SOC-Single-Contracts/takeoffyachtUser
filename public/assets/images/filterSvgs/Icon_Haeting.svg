@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 10">
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10.41 10">
   <defs>
     <style>
       .cls-1 {
@@ -11,12 +11,12 @@
       }
     </style>
   </defs>
-  <rect class="cls-1" x="7.24" y="1.51" width="1.5" height="6.21" rx=".75" ry=".75"/>
-  <rect class="cls-1" x="8.74" y="1.51" width="1.5" height="6.21" rx=".75" ry=".75"/>
-  <rect class="cls-1" x="10.24" y="1.51" width="1.5" height="6.21" rx=".75" ry=".75"/>
-  <rect class="cls-1" x="11.74" y="1.51" width="1.5" height="6.21" rx=".75" ry=".75"/>
-  <rect class="cls-1" x="6.3" y="2.44" width=".94" height=".75"/>
-  <rect class="cls-1" x="6.3" y="6.18" width=".94" height=".75"/>
-  <rect class="cls-1" x="13.24" y="2.44" width=".94" height=".75"/>
-  <rect class="cls-1" x="13.24" y="6.18" width=".94" height=".75"/>
+  <rect class="cls-1" x="2.22" y="1.51" width="1.5" height="6.21" rx=".75" ry=".75"/>
+  <rect class="cls-1" x="3.72" y="1.51" width="1.5" height="6.21" rx=".75" ry=".75"/>
+  <rect class="cls-1" x="5.22" y="1.51" width="1.5" height="6.21" rx=".75" ry=".75"/>
+  <rect class="cls-1" x="6.72" y="1.51" width="1.5" height="6.21" rx=".75" ry=".75"/>
+  <rect class="cls-1" x="1.28" y="2.44" width=".94" height=".75"/>
+  <rect class="cls-1" x="1.28" y="6.18" width=".94" height=".75"/>
+  <rect class="cls-1" x="8.22" y="2.44" width=".94" height=".75"/>
+  <rect class="cls-1" x="8.22" y="6.18" width=".94" height=".75"/>
 </svg>
