@@ -486,7 +486,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails, se
 
 
   useEffect(() => {
-    console.log("dueAmountAlltime", dueAmountAlltime)
+    // console.log("dueAmountAlltime", dueAmountAlltime)
 
     if (deductFromWallet && appStatWwalletContext?.balance >= dueAmountAlltime) {
       setshowStripeStuff(false)
@@ -506,9 +506,9 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails, se
     }
   }, [showStripeStuff, elements]);
 
-  useEffect(() => {
-    console.log("showStripeStuff", showStripeStuff)
-  }, [showStripeStuff])
+  // useEffect(() => {
+  //   console.log("showStripeStuff", showStripeStuff)
+  // }, [showStripeStuff])
 
 
   return (
