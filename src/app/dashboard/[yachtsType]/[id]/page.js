@@ -848,7 +848,7 @@ const YachtDetail = () => {
                               (feature?.image != "") ? `${process.env.NEXT_PUBLIC_S3_URL}${feature?.image}`
                                 : '/assets/images/f1.png'
                             }
-                             alt={feature.name} width={40} height={40} className="mr-2" />
+                             alt={feature.name} width={25} height={25} className="mr-2" />
                           )}
                         </div>
                         <div className="flex-grow">
