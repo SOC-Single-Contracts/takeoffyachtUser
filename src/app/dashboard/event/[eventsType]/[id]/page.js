@@ -27,7 +27,9 @@ import { fetchEvents } from "@/api/yachts";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useToast } from "@/hooks/use-toast";
-import Events from "../page";
+import Events from "@/components/lp/Events";
+import { fetchAllEventsList, findEventById } from "@/api/events";
+import DetailPageGallery2 from "@/components/lp/DetailPageGallery2";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -45,11 +47,14 @@ const EventDetail = () => {
   useEffect(() => {
     const getEvent = async () => {
       try {
-        const data = await fetchEvents(session?.user?.userid || 1);
+        // const data = await fetchEvents(session?.user?.userid || 1);
+        const event = await findEventById(id)
+        console.log(event)
 
-        const event = data.find(
-          (item) => item.event.id.toString() === id
-        );
+
+        // const event = data.find(
+        //   (item) => item.event.id.toString() === id
+        // ); 
 
         if (!event) {
           throw new Error('Event not found');
@@ -92,22 +97,20 @@ const EventDetail = () => {
   }
 
   const {
-    event: {
-      name,
-      location,
-      title,
-      event_image,
-      total_tickets,
-      from_date,
-      to_date,
-      duration_hour,
-      cancel_time_in_hour,
-      description,
-      notes,
-      longitude,
-      latitude,
-    },
-    packages,
+    name,
+    location,
+    title,
+    event_image,
+    total_tickets, //
+    from_date,
+    to_date,
+    duration_hour,
+    cancel_time_in_hours, //
+    description,
+    notes, //
+    longitude, //
+    latitude, //
+    packages_system,
   } = selectedEvent;
 
   const handleBookNow = () => {
@@ -117,7 +120,7 @@ const EventDetail = () => {
       return;
     }
 
-    router.push(`/dashboard/events/${id}/booking`);
+    router.push(`/dashboard/event/events/${id}/booking`);
   };
 
   const handleMainImageSelect = (image) => {
@@ -138,21 +141,43 @@ const EventDetail = () => {
   };
 
   const eventImages = [
-    event_image,
-    selectedEvent.event.image1,
-    selectedEvent.event.image2,
-    selectedEvent.event.image3,
-    selectedEvent.event.image4,
-    selectedEvent.event.image5,
+    selectedEvent?.event_image,
+    selectedEvent?.event?.image1,
+    selectedEvent?.event?.image2,
+    selectedEvent?.event?.image3,
+    selectedEvent?.event?.image4,
+    selectedEvent?.event?.image5,
   ].filter(Boolean);
 
-  const uniqueEventImages = [...new Set([event_image, ...eventImages])].filter(Boolean);
+  const uniqueEventImages = [...new Set([selectedEvent?.event_image, ...eventImages])].filter(Boolean);
+
+
+  //   useEffect(()=>{
+  //  console.log("selectedEvent",selectedEvent)
+  //   },[selectedEvent])
 
   return (
     <>
       <section>
         <div className="max-w-5xl mx-auto px-4 py-8">
           <div className="flex flex-col lg:flex-row -mx-4">
+            <div className="w-full mt-8 mb-10">
+              {/* {console.log("eventImages",eventImages)} */}
+              {!selectedEvent || !selectedEvent ? null : (() => {
+                const images = eventImages
+                  .filter((image) => typeof image === "string" && image.trim() !== "")
+                  .map((image) => `${process.env.NEXT_PUBLIC_S3_URL}${image}`)
+                  // .map((image) => `https://api.takeoffyachts.com${image}`)
+
+
+                return (
+                  <>
+                    {/* <DetailPageGallery images={images} /> */}
+                    <DetailPageGallery2 images={images} />
+                  </>
+                )
+              })()}
+            </div>
             {/* Image Column */}
             {/* <div className="w-full lg:w-1/2 px-4 mb-8 lg:mb-0">
               <div className="flex flex-col gap-6">
@@ -171,9 +196,9 @@ const EventDetail = () => {
               </div>
             </div> */}
             {/* Image Column */}
-            <div className="w-full lg:w-1/2 px-2 mb-8 lg:mb-0">
-              <div className="flex flex-col gap-6">
-                <Carousel className="w-full">
+            {/* <div className="w-full lg:w-1/2 px-2 mb-8 lg:mb-0"> */}
+            {/* <div className="flex flex-col gap-6"> */}
+            {/* <Carousel className="w-full">
                   <CarouselContent>
                     {uniqueEventImages.map((image, index) => (
                       <CarouselItem key={index}>
@@ -191,10 +216,10 @@ const EventDetail = () => {
                   </CarouselContent>
                   <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
                   <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
-                </Carousel>
+                </Carousel> */}
 
-                {/* Thumbnail Gallery */}
-                <div className="grid grid-cols-5 gap-2">
+            {/* Thumbnail Gallery */}
+            {/* <div className="grid grid-cols-5 gap-2">
                   {eventImages.map((image, index) => (
                     <div
                       key={index}
@@ -211,10 +236,10 @@ const EventDetail = () => {
                       />
                     </div>
                   ))}
-                </div>
+                </div> */}
 
-                {/* Gallery Overlay */}
-                {isGalleryOpen && (
+            {/* Gallery Overlay */}
+            {/* {isGalleryOpen && (
                   <Fancybox
                     options={{
                       Carousel: {
@@ -231,7 +256,6 @@ const EventDetail = () => {
                         className="bg-white dark:bg-gray-800 p-4 rounded-lg max-w-5xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {/* Selected Image Display */}
                         <div className="md:col-span-2 mb-4">
                           <a
                             href={`https://api.takeoffyachts.com${selectedGalleryImage || eventImages[0]}`}
@@ -248,7 +272,6 @@ const EventDetail = () => {
                           </a>
                         </div>
 
-                        {/* Gallery Grid */}
                         {eventImages.map((image, index) => (
                           <a
                             key={index}
@@ -275,9 +298,9 @@ const EventDetail = () => {
                       </div>
                     </div>
                   </Fancybox>
-                )}
-              </div>
-            </div>
+                )} */}
+            {/* </div> */}
+            {/* </div> */}
             {/* Details Column */}
             <div className="w-full md:w-2/2 lg:w-2/4 px-4">
               <Badge className="bg-[#BEA355]/30 text-black dark:text-white font-medium p-1 hover:bg-[#BEA355]/40">
@@ -286,7 +309,7 @@ const EventDetail = () => {
               </Badge>
               <div className="flex justify-between items-center mt-6">
                 <h2 className="text-xl md:text-3xl font-bold">{name}</h2>
-                <p className="text-gray-600 dark:text-gray-400">{packages.length} Packages Available</p>
+                <p className="text-gray-600 dark:text-gray-400">{packages_system?.length} Packages Available</p>
               </div>
 
               {/* Event Details Grid */}
@@ -305,7 +328,7 @@ const EventDetail = () => {
                 </div>
                 <div className="flex flex-col justify-center items-center w-full h-20 space-y-2 font-semibold text-sm py-4 border border-gray-300 rounded-lg shadow-sm">
                   <UserRound className="size-5" />
-                  <p className="text-gray-700 dark:text-gray-400">Cancellation: {cancel_time_in_hour}h</p>
+                  <p className="text-gray-700 dark:text-gray-400">Cancellation: {cancel_time_in_hours}h</p>
                 </div>
               </div>
 
@@ -319,19 +342,19 @@ const EventDetail = () => {
                 <h2 className="text-2xl font-semibold mb-4">Available Packages</h2>
                 <Carousel>
                   <CarouselContent>
-                    {packages?.map((pkg, index) => (
+                    {packages_system?.map((pkg, index) => (
                       <CarouselItem key={index} className="ml-4 p-2">
                         <div className='bg-white dark:bg-gray-800 rounded-3xl border p-4 space-y-2 w-full max-w-[270px] h-full min-h-[220px] flex flex-col justify-between'>
                           <div>
-                            <h3 className='text-gray-700 font-semibold text-lg dark:text-white'>{pkg.name}</h3>
+                            <h3 className='text-gray-700 font-semibold text-lg dark:text-white'>{pkg?.name}</h3>
                             <p className='text-gray-700 font-normal text-sm flex-grow dark:text-white truncate overflow-hidden ellipsis'>
-                              {pkg.description || 'No description available'}
+                              {pkg?.description || 'No description available'}
                             </p>
                           </div>
                           <div className='flex flex-col justify-start space-y-4'>
                             <p className='font-semibold text-3xl text-[#BEA355] flex items-center dark:text-white mt-6'>
                               {/* <DollarSign className='size-4 text-gray-700 dark:text-white' /> */}
-                              <span className="text-sm mx-2">AED</span>     {pkg.package_price}
+                              <span className="text-sm mx-2">AED</span>     {pkg?.price}
                               <span className='text-sm text-gray-700 mt-2 dark:text-white'>.00/per ticket</span>
                             </p>
 
@@ -342,18 +365,18 @@ const EventDetail = () => {
                                 <Button
                                   variant="outline"
                                   size="icon"
-                                  onClick={() => handleTicketChange(pkg.id, 'decrease')}
+                                  onClick={() => handleTicketChange(pkg?.id, 'decrease')}
                                   className="h-8 w-8 rounded-xl bg-[#F4F4F4] dark:bg-gray-800"
                                 >
                                   -
                                 </Button>
                                 <span className="text-lg font-medium w-6 text-center">
-                                  {ticketCounts[pkg.id] || 0}
+                                  {ticketCounts[pkg?.id] || 0}
                                 </span>
                                 <Button
                                   variant="outline"
                                   size="icon"
-                                  onClick={() => handleTicketChange(pkg.id, 'increase')}
+                                  onClick={() => handleTicketChange(pkg?.id, 'increase')}
                                   className="h-8 w-8 rounded-xl bg-[#F4F4F4] dark:bg-gray-800"
                                 >
                                   +
@@ -365,17 +388,17 @@ const EventDetail = () => {
                             <div className="text-sm font-medium flex justify-between items-center">
                               <span>Total Amount:</span>
                               <span className="text-[#BEA355]">
-                                AED {(ticketCounts[pkg.id] || 0) * pkg.package_price}
+                                AED {(ticketCounts[pkg?.id] || 0) * pkg?.price}
                               </span>
                             </div>
 
                             {/* Book Now Button */}
                             <Link
                               className="w-full"
-                              href={`/dashboard/events/${id}/booking?tickets=${ticketCounts[pkg.id] || 0}&package=${pkg.id}`}
+                              href={`/dashboard/event/events/${id}/booking?tickets=${ticketCounts[pkg?.id] || 0}&package=${pkg?.id}`}
                               onClick={(e) => {
                                 // Check if no tickets are selected
-                                if (!ticketCounts[pkg.id]) {
+                                if (!ticketCounts[pkg?.id]) {
                                   e.preventDefault();
                                   toast({
                                     title: "Select Tickets",
@@ -399,12 +422,12 @@ const EventDetail = () => {
                             >
                               <Button
                                 className='bg-[#BEA355] text-white rounded-full px-4 h-10 w-full disabled:opacity-50'
-                                disabled={!ticketCounts[pkg.id]}
+                                disabled={!ticketCounts[pkg?.id]}
                               >
                                 Book Now
                               </Button>
                             </Link>
-                            {/* <Link className="w-full" href={`/dashboard/events/${id}/booking`}>
+                            {/* <Link className="w-full" href={`/dashboard/event/events/${id}/booking`}>
                             <Button className='bg-[#BEA355] text-white rounded-full px-4 h-10 w-full'>Book Now</Button>
                           </Link> */}
                           </div>
@@ -447,10 +470,10 @@ const EventDetail = () => {
       </section>
 
       {/* Featured Events Section */}
-      <section className="px-2 py-20">
+      <section className="px-2 pb-10">
         <Events />
         <div className="flex justify-center">
-          <Link href="/dashboard/events">
+          <Link href="/dashboard/event/events">
             <Button className="rounded-full bg-[#BEA355] text-white flex justify-center mx-auto">
               View All Events
             </Button>

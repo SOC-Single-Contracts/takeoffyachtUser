@@ -49,11 +49,11 @@ const BookingCard = ({ booking }) => {
           booking.event_name || 
           'Unknown',
     image: booking.yacht?.yacht_image 
-      ? `https://api.takeoffyachts.com/${booking.yacht.yacht_image}` 
+      ? `${process.env.NEXT_PUBLIC_S3_URL}${booking.yacht.yacht_image}` 
       : booking.package?.package_image 
-        ? `https://api.takeoffyachts.com/${booking.package.package_image}` 
+        ? `${process.env.NEXT_PUBLIC_S3_URL}${booking.package.package_image}` 
         : booking.experience?.experience_image 
-          ? `https://api.takeoffyachts.com/${booking.experience.experience_image}` 
+          ? `${process.env.NEXT_PUBLIC_S3_URL}${booking.experience.experience_image}` 
           : "/assets/images/abudhabi.png",
     location: booking.yacht?.location || 
               booking.package?.location || 
@@ -219,7 +219,7 @@ const BookingCard = ({ booking }) => {
       </div>
 
       <Link 
-        href={`/dashboard/${type}/${id}/booking/booking-summary?bookingId=${booking.id}`}
+        href={`/dashboard/${type}/${id}/booking/?bookingId=${booking.id}`}
         className="mt-4 block"
       >
         <Button

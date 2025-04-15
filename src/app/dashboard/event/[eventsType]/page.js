@@ -8,8 +8,8 @@ import Events from './simpleEvents';
 const Page = ({limit}) => {
 
   return (
-    <Events limit={limit}/>
-    // <SearchEventGlobalCompo limit={limit} />
+    // <Events limit={limit}/>
+    <SearchEventGlobalCompo limit={limit} />
   );
 };
   
