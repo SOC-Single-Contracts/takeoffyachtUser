@@ -157,89 +157,89 @@ const SearchYachtGlobalCompo = () => {
   const categories = ['Catamarans',"motor boat", "motor", 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
   const locations = ['Dubai', 'Abu Dhabi', 'Sharjah'];
   const outdoorEquipment = [
-    { name: 'Bath Towels', icon: '/assets/images/bathtowels.svg' },
-    { name: 'Bathing Ladder', icon: '/assets/images/bathingladder.svg' },
-    { name: 'Beach Towels', icon: '/assets/images/beachtowels.svg' },
-    { name: 'Bathing Platform', icon: '/assets/images/bathingplatform.svg' },
-    { name: 'Outdoor Table', icon: '/assets/images/outdoortable.svg' },
-    { name: 'Aft Sundeck', icon: '/assets/images/aftsundeck.svg' },
-    { name: 'Teak deck', icon: '/assets/images/teakdeck.svg' },
-    { name: 'Bimini', icon: '/assets/images/bimini.svg' },
-    { name: 'Cooker', icon: '/assets/images/cooker.svg' },
-    { name: 'Outdoor shower', icon: '/assets/images/outdoorshower.svg' },
-    { name: 'External speakers', icon: '/assets/images/externalspeakers.svg' },
-    { name: 'External table', icon: '/assets/images/externaltable.svg' },
+    { name: 'Bath Towels', icon: '/assets/images/filterSvgs/bathtowels.svg' },
+    { name: 'Bathing Ladder', icon: '/assets/images/filterSvgs/bathingladder.svg' },
+    { name: 'Beach Towels', icon: '/assets/images/filterSvgs/beachtowels.svg' },
+    { name: 'Bathing Platform', icon: '/assets/images/filterSvgs/bathingplatform.svg' },
+    { name: 'Outdoor Table', icon: '/assets/images/filterSvgs/outdoortable.svg' },
+    { name: 'Aft Sundeck', icon: '/assets/images/filterSvgs/aftsundeck.svg' },
+    { name: 'Teak deck', icon: '/assets/images/filterSvgs/teakdeck.svg' },
+    { name: 'Bimini', icon: '/assets/images/filterSvgs/bimini.svg' },
+    { name: 'Cooker', icon: '/assets/images/filterSvgs/cooker.svg' },
+    { name: 'Outdoor shower', icon: '/assets/images/filterSvgs/outdoorshower.svg' },
+    { name: 'External speakers', icon: '/assets/images/filterSvgs/externalspeakers.svg' },
+    { name: 'External table', icon: '/assets/images/filterSvgs/externaltable.svg' },
   ];
   const kitchenOptions = [
-    { name: 'Tableware', icon: '/assets/images/Icon_Tableware.svg' },
-    { name: 'BBQ Grill', icon: '/assets/images/Icon_BBQgrill.svg' },
-    { name: 'Ice machine', icon: '/assets/images/Icon_Icemachine.svg' },
-    { name: 'Coffee Machine', icon: '/assets/images/Icon_Coffeemachine.svg' },
-    { name: 'Bar', icon: '/assets/images/Icon_Bar.svg' },
-    { name: 'Barware', icon: '/assets/images/Icon_Barware.svg' },
-    { name: 'Dining Utensils', icon: '/assets/images/Icon_DiningUtensils.svg' },
-    { name: 'Dishwasher', icon: '/assets/images/Icon_Dishwasher.svg' },
-    { name: 'Microwave', icon: '/assets/images/Icon_Microwave.svg' },
-    { name: 'Oven/stovetop', icon: '/assets/images/Icon_Oven.svg' },
-    { name: 'Freezer', icon: '/assets/images/Icon_Freezer.svg' }
+    { name: 'Tableware', icon: '/assets/images/filterSvgs/Icon_Tableware.svg' },
+    { name: 'BBQ Grill', icon: '/assets/images/filterSvgs/Icon_BBQgrill.svg' },
+    { name: 'Ice machine', icon: '/assets/images/filterSvgs/Icon_Icemachine.svg' },
+    { name: 'Coffee Machine', icon: '/assets/images/filterSvgs/Icon_Coffeemachine.svg' },
+    { name: 'Bar', icon: '/assets/images/filterSvgs/Icon_Bar.svg' },
+    { name: 'Barware', icon: '/assets/images/filterSvgs/Icon_Barware.svg' },
+    { name: 'Dining Utensils', icon: '/assets/images/filterSvgs/Icon_DiningUtensils.svg' },
+    { name: 'Dishwasher', icon: '/assets/images/filterSvgs/Icon_Dishwasher.svg' },
+    { name: 'Microwave', icon: '/assets/images/filterSvgs/Icon_Microwave.svg' },
+    { name: 'Oven/stovetop', icon: '/assets/images/filterSvgs/Icon_Oven.svg' },
+    { name: 'Freezer', icon: '/assets/images/filterSvgs/Icon_Freezer.svg' }
   ];
-  const energyOptions = [{ name: '220V Power Outlet', icon: '/assets/images/Icon_220Vpoweroutlet.svg' }, { name: 'Power Inverter', icon: '/assets/images/Icon_Powerinverter.svg' }, { name: 'Solar Panels', icon: '/assets/images/Icon_Solarpanels.svg' }, { name: 'Generator', icon: '/assets/images/Icon_Generator.svg' }];
+  const energyOptions = [{ name: '220V Power Outlet', icon: '/assets/images/filterSvgs/Icon_220Vpoweroutlet.svg' }, { name: 'Power Inverter', icon: '/assets/images/filterSvgs/Icon_Powerinverter.svg' }, { name: 'Solar Panels', icon: '/assets/images/filterSvgs/Icon_Solarpanels.svg' }, { name: 'Generator', icon: '/assets/images/filterSvgs/Icon_Generator.svg' }];
   const leisureActivities = [
-    { name: 'Swimming Pool', icon: '/assets/images/Icon_Swimmingpool.svg' },
-    { name: 'Inflatable banana', icon: '/assets/images/Icon_Inflatablebanana.svg' },
-    { name: 'Kneeboard', icon: '/assets/images/Icon_Kneeboard.svg' },
-    { name: 'Video Camera', icon: '/assets/images/Icon_Videocamera.svg' },
-    { name: 'Windsuft equipment', icon: '/assets/images/Icon_Windsuftequipment.svg' },
-    { name: 'Diving equipment', icon: '/assets/images/Icon_Divingequipment.svg' },
-    { name: 'Kitesurfing equipment', icon: '/assets/images/Icon_Kitesurfingequipment.svg' },
-    { name: 'Drone', icon: '/assets/images/Icon_Drone.svg' },
-    { name: 'Wakeboard', icon: '/assets/images/Icon_Wakeboard.svg' },
-    { name: 'Gym', icon: '/assets/images/Icon_Gym.svg' },
-    { name: 'Inflatable waterslide', icon: '/assets/images/Icon_Inflatablewaterslide.svg' },
-    { name: 'Jacuzzi', icon: '/assets/images/Icon_Jacuzzi.svg' },
-    { name: 'Fishing equipment', icon: '/assets/images/Icon_Fishingequipment.svg' },
-    { name: 'Water skis', icon: '/assets/images/Icon_Waterskis.svg' },
-    { name: 'Jet ski', icon: '/assets/images/Icon_Jetski.svg' },
-    { name: 'Kayak', icon: '/assets/images/Icon_Kayak.svg' },
-    { name: 'Paddle board', icon: '/assets/images/Icon_Paddleboard.svg' },
-    { name: 'Sea scooter', icon: '/assets/images/Icon_Seascooter.svg' },
-    { name: 'Seabob', icon: '/assets/images/Icon_Seabob.svg' },
-    { name: 'Flyboard', icon: '/assets/images/Icon_Flyboard.svg' }
+    { name: 'Swimming Pool', icon: '/assets/images/filterSvgs/Icon_Swimmingpool.svg' },
+    { name: 'Inflatable banana', icon: '/assets/images/filterSvgs/Icon_Inflatablebanana.svg' },
+    { name: 'Kneeboard', icon: '/assets/images/filterSvgs/Icon_Kneeboard.svg' },
+    { name: 'Video Camera', icon: '/assets/images/filterSvgs/Icon_Videocamera.svg' },
+    { name: 'Windsuft equipment', icon: '/assets/images/filterSvgs/Icon_Windsuftequipment.svg' },
+    { name: 'Diving equipment', icon: '/assets/images/filterSvgs/Icon_Divingequipment.svg' },
+    { name: 'Kitesurfing equipment', icon: '/assets/images/filterSvgs/Icon_Kitesurfingequipment.svg' },
+    { name: 'Drone', icon: '/assets/images/Icon_Drone.svg' }, //?
+    { name: 'Wakeboard', icon: '/assets/images/filterSvgs/Icon_Wakeboard.svg' },
+    { name: 'Gym', icon: '/assets/images/filterSvgs/Icon_Gym.svg' },
+    { name: 'Inflatable waterslide', icon: '/assets/images/filterSvgs/Icon_Inflatablewaterslide.svg' },
+    { name: 'Jacuzzi', icon: '/assets/images/filterSvgs/Icon_Jacuzzi.svg' },
+    { name: 'Fishing equipment', icon: '/assets/images/filterSvgs/Icon_Fishingequipment.svg' },
+    { name: 'Water skis', icon: '/assets/images/filterSvgs/Icon_Waterskis.svg' },
+    { name: 'Jet ski', icon: '/assets/images/filterSvgs/Icon_Jetski.svg' },
+    { name: 'Kayak', icon: '/assets/images/filterSvgs/Icon_Kayak.svg' },
+    { name: 'Paddle board', icon: '/assets/images/filterSvgs/Icon_Paddleboard.svg' },
+    { name: 'Sea scooter', icon: '/assets/images/filterSvgs/Icon_Seascooter.svg' },
+    { name: 'Seabob', icon: '/assets/images/filterSvgs/Icon_Seabob.svg' },
+    { name: 'Flyboard', icon: '/assets/images/filterSvgs/Icon_Flyboard.svg' }
   ];
   const navigationEquipment = [
-    { name: 'Fishing Sonar', icon: '/assets/images/Icon_FishingSonar.svg' },
-    { name: 'Autopilot', icon: '/assets/images/Icon_Autopilot.svg' },
-    { name: 'Bow Sundeck', icon: '/assets/images/Icon_Bowsundeck.svg' },
-    { name: 'Bow Thruster', icon: '/assets/images/Icon_Bowthruster.svg' },
-    { name: 'Depth Sounder', icon: '/assets/images/Icon_Depthsounder.svg' },
-    { name: 'Wi-Fi', icon: '/assets/images/Icon_Wi-Fi.svg' },
-    { name: 'Animals Allowed', icon: '/assets/images/Icon_FishingSonar.svg' },
-    { name: 'VHF', icon: '/assets/images/Icon_VHF.svg' },
-    { name: 'Dinghy', icon: '/assets/images/Icon_Dinghy.svg' },
-    { name: "Dinghy's motor", icon: '/assets/images/Icon_Dinghysmotor.svg' },
-    { name: 'GPS', icon: '/assets/images/Icon_GPS.svg' }
+    { name: 'Fishing Sonar', icon: '/assets/images/filterSvgs/Icon_FishingSonar.svg' },
+    { name: 'Autopilot', icon: '/assets/images/filterSvgs/Icon_Autopilot.svg' },
+    { name: 'Bow Sundeck', icon: '/assets/images/filterSvgs/Icon_Bowsundeck.svg' },
+    { name: 'Bow Thruster', icon: '/assets/images/filterSvgs/Icon_Bowthruster.svg' },
+    { name: 'Depth Sounder', icon: '/assets/images/filterSvgs/Icon_Depthsounder.svg' },
+    { name: 'Wi-Fi', icon: '/assets/images/filterSvgs/Icon_Wi-Fi.svg' },
+    { name: 'Animals Allowed', icon: '/assets/images/filterSvgs/Icon_FishingSonar.svg' },
+    { name: 'VHF', icon: '/assets/images/filterSvgs/Icon_VHF.svg' },
+    { name: 'Dinghy', icon: '/assets/images/filterSvgs/Icon_Dinghy.svg' },
+    { name: "Dinghy's motor", icon: '/assets/images/filterSvgs/Icon_Dinghysmotor.svg' },
+    { name: 'GPS', icon: '/assets/images/filterSvgs/Icon_GPS.svg' }
   ];
   const extraComforts = [
-    { name: 'Parking', icon: '/assets/images/Icon_Parking.svg' },
-    { name: 'Towable Tube', icon: '/assets/images/Icon_TowableTube.svg' },
-    { name: 'Washing Machine', icon: '/assets/images/Icon_Washingmachine.svg' },
-    { name: 'Watermaker', icon: '/assets/images/Icon_Watermaker.svg' },
-    { name: 'A.C', icon: '/assets/images/Icon_AirConditioning.svg' },
-    { name: 'Bluetooth', icon: '/assets/images/Icon_Bluetooth.svg' },
-    { name: 'TV', icon: '/assets/images/Icon_TV.svg' },
-    { name: 'USB Socket', icon: '/assets/images/Icon_USBsocket.svg' },
-    { name: 'Bed Linen', icon: '/assets/images/Icon_Bedlinen.svg' },
-    { name: 'Haeting', icon: '/assets/images/Icon_Haeting.svg' },
-    { name: 'Hot Water', icon: '/assets/images/Icon_Hotwater.svg' },
-    { name: 'Electric toilet', icon: '/assets/images/Icon_Electrictoilet.svg' },
-    { name: 'Fans', icon: '/assets/images/Icon_Fans.svg' }
+    { name: 'Parking', icon: '/assets/images/filterSvgs/Icon_Parking.svg' },
+    { name: 'Towable Tube', icon: '/assets/images/filterSvgs/Icon_TowableTube.svg' },
+    { name: 'Washing Machine', icon: '/assets/images/filterSvgs/Icon_Washingmachine.svg' },
+    { name: 'Watermaker', icon: '/assets/images/filterSvgs/Icon_Watermaker.svg' },
+    { name: 'A.C', icon: '/assets/images/filterSvgs/Icon_AirConditioning.svg' },
+    { name: 'Bluetooth', icon: '/assets/images/filterSvgs/Icon_Bluetooth.svg' },
+    { name: 'TV', icon: '/assets/images/Icon_TV.svg' }, //?
+    { name: 'USB Socket', icon: '/assets/images/filterSvgs/Icon_USBsocket.svg' },
+    { name: 'Bed Linen', icon: '/assets/images/filterSvgs/Icon_Bedlinen.svg' },
+    { name: 'Haeting', icon: '/assets/images/filterSvgs/Icon_Haeting.svg' },
+    { name: 'Hot Water', icon: '/assets/images/filterSvgs/Icon_Hotwater.svg' },
+    { name: 'Electric toilet', icon: '/assets/images/filterSvgs/Icon_Electrictoilet.svg' },
+    { name: 'Fans', icon: '/assets/images/filterSvgs/Icon_Fans.svg' }
   ];
   const indoorEquipment = [
-    { name: 'Indoor Table', icon: '/assets/images/Icon_IndoorTable.svg' },
-    { name: 'Restrooms', icon: '/assets/images/Icon_Restrooms.svg' },
-    { name: 'Shower', icon: '/assets/images/Icon_Shower.svg' },
-    { name: 'Sound System', icon: '/assets/images/Icon_SoundSystem.svg' },
-    { name: 'Speakers', icon: '/assets/images/Icon_Speakers.svg' }];
+    { name: 'Indoor Table', icon: '/assets/images/filterSvgs/Icon_IndoorTable.svg' },
+    { name: 'Restrooms', icon: '/assets/images/filterSvgs/Icon_Restrooms.svg' },
+    { name: 'Shower', icon: '/assets/images/filterSvgs/Icon_Shower.svg' },
+    { name: 'Sound System', icon: '/assets/images/filterSvgs/Icon_SoundSystem.svg' },
+    { name: 'Speakers', icon: '/assets/images/filterSvgs/Icon_Speakers.svg' }];
 
   const [activeFilters, setActiveFilters] = useState([]);
 
@@ -1341,7 +1341,7 @@ const SearchYachtGlobalCompo = () => {
                                       {outdoorEquipment.map(({ name, icon }) => (
                                         <div key={name} className="flex items-center justify-between space-x-2">
                                           <div className="flex items-center space-x-2">
-                                            <Image src={icon} alt={`${name} icon`} width={25} height={25}
+                                            <Image src={icon} alt={`${name} icon`} width={35} height={35}
                                             //  className="w-5 h-5"
                                             />
                                             <label htmlFor={name} className="text-sm">{name}</label>
@@ -1373,7 +1373,7 @@ const SearchYachtGlobalCompo = () => {
                                     {kitchenOptions.map((option) => (
                                       <div key={option.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={option.icon} alt={`${option.name} icon`} width={25} height={25}
+                                          <Image src={option.icon} alt={`${option.name} icon`} width={35} height={35}
                                           //  className="w-5 h-5"
                                           />
                                           <label htmlFor={option.name} className="text-sm">{option.name}</label>
@@ -1403,7 +1403,7 @@ const SearchYachtGlobalCompo = () => {
                                     {energyOptions.map((option) => (
                                       <div key={option.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={option.icon} alt={`${option.name} icon`} width={25} height={25}
+                                          <Image src={option.icon} alt={`${option.name} icon`} width={35} height={35}
                                           //  className="w-5 h-5"
                                           />
                                           <label htmlFor={option.name} className="text-sm">{option.name}</label>
@@ -1433,7 +1433,7 @@ const SearchYachtGlobalCompo = () => {
                                     {leisureActivities.map((activity) => (
                                       <div key={activity.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={activity.icon} alt={`${activity.name} icon`} width={25} height={25}
+                                          <Image src={activity.icon} alt={`${activity.name} icon`} width={35} height={35}
                                           // className="w-5 h-5"
                                           />
                                           <label htmlFor={activity.name} className="text-sm">{activity.name}</label>
@@ -1463,7 +1463,7 @@ const SearchYachtGlobalCompo = () => {
                                     {navigationEquipment.map((equipment) => (
                                       <div key={equipment.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={equipment.icon} alt={`${equipment.name} icon`} width={25} height={25}
+                                          <Image src={equipment.icon} alt={`${equipment.name} icon`} width={35} height={35}
                                           //  className="w-5 h-5"
                                           />
                                           <label htmlFor={equipment.name} className="text-sm">{equipment.name}</label>
@@ -1493,7 +1493,7 @@ const SearchYachtGlobalCompo = () => {
                                     {extraComforts.map((comfort) => (
                                       <div key={comfort.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={comfort.icon} alt={`${comfort.name} icon`} width={25} height={25}
+                                          <Image src={comfort.icon} alt={`${comfort.name} icon`} width={35} height={35}
                                           //  className="w-5 h-5"
                                           />
                                           <label htmlFor={comfort.name} className="text-sm">{comfort.name}</label>
@@ -1523,7 +1523,7 @@ const SearchYachtGlobalCompo = () => {
                                     {indoorEquipment.map((equipment) => (
                                       <div key={equipment.name} className="flex items-center justify-between space-x-2">
                                         <div className="flex items-center space-x-2">
-                                          <Image src={equipment.icon} alt={`${equipment.name} icon`} width={25} height={25}
+                                          <Image src={equipment.icon} alt={`${equipment.name} icon`} width={35} height={35}
                                           //  className="w-5 h-5"
                                           />
                                           <label htmlFor={equipment.name} className="text-sm">{equipment.name}</label>

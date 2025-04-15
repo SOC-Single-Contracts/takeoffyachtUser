@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9.4 10">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .25px;
+      }
+
+      .cls-2 {
+        stroke-dasharray: 0 0 .45 .45;
+      }
+    </style>
+  </defs>
+  <g>
+    <line class="cls-1" x1="3.55" y1="4.04" x2="3.65" y2="4.27"/>
+    <line class="cls-2" x1="3.83" y1="4.68" x2="4.85" y2="6.97"/>
+    <line class="cls-1" x1="4.95" y1="7.17" x2="5.05" y2="7.4"/>
+  </g>
+  <g>
+    <line class="cls-1" x1="4.38" y1="3.69" x2="4.48" y2="3.91"/>
+    <line class="cls-2" x1="4.67" y1="4.33" x2="5.69" y2="6.61"/>
+    <line class="cls-1" x1="5.78" y1="6.82" x2="5.88" y2="7.05"/>
+  </g>
+  <g>
+    <line class="cls-1" x1="4.96" y1="3.5" x2="5.07" y2="3.72"/>
+    <line class="cls-2" x1="5.29" y1="4.12" x2="6.46" y2="6.33"/>
+    <line class="cls-1" x1="6.56" y1="6.53" x2="6.68" y2="6.75"/>
+  </g>
+  <g>
+    <line class="cls-1" x1="5.76" y1="3.12" x2="5.87" y2="3.34"/>
+    <line class="cls-2" x1="6.09" y1="3.74" x2="7.26" y2="5.95"/>
+    <line class="cls-1" x1="7.36" y1="6.15" x2="7.48" y2="6.38"/>
+  </g>
+  <g>
+    <line class="cls-1" x1="6.36" y1="2.85" x2="6.48" y2="3.06"/>
+    <line class="cls-2" x1="6.71" y1="3.46" x2="7.94" y2="5.64"/>
+    <line class="cls-1" x1="8.05" y1="5.83" x2="8.18" y2="6.05"/>
+  </g>
+  <path class="cls-1" d="M3.22,3.6l2.92-1.23-.07-.13c-.38-.66-1.19-.94-1.9-.64l-.13,.05c-.76,.32-1.12,1.18-.82,1.95h0Z"/>
+  <path class="cls-1" d="M1.72,8.09V3.16c0-.86,.69-1.55,1.55-1.55h.9"/>
+</svg>
