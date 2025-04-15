@@ -54,7 +54,7 @@ const AllBookings = () => {
           // experienceResponse.json()
         ]);
 
-        console.log("yach",yachtData)
+        // console.log("yach",yachtData)
 
         // Process yacht bookings
         const yachtBookings = yachtData.data ? yachtData.data.map(item => ({
