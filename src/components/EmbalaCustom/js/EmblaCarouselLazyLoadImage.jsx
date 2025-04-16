@@ -13,7 +13,18 @@ export const LazyLoadImage = (props) => {
 
   return (
     <div className="embla__slide">
-        {!hasLoaded && <span className="embla__lazy-load__spinner" />}
+        {/* {!hasLoaded && <span className="embla__lazy-load__spinner" />} */}
+
+       {!hasLoaded && <Image
+                  className="object-cover px-2 pt-3 rounded-[1.8rem] w-full h-[240px] "
+                    src={`/assets/images/fycht.jpg`}
+                    alt="loadAlt"
+                    height={240}
+                    width={100}
+                    onError={(e) => {
+                      e.target.src = '/assets/images/fycht.jpg';
+                    }}
+                  />} 
 
         {/* <span className="embla__lazy-load__spinner" /> */}
 
