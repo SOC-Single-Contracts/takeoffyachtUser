@@ -38,7 +38,7 @@ const EmblaCarouselYacht = (props) => {
         .filter((index) => !slidesInView.includes(index))
       return slidesInView.concat(inView)
     })
-  }, [])
+  }, [emblaApi])
 
   useEffect(() => {
     if (!emblaApi) return
@@ -52,7 +52,7 @@ const EmblaCarouselYacht = (props) => {
     <div className="embla">
       <div className="embla__viewport" ref={emblaRed}>
         <div className="embla__container">
-          {slides.map((slide, index) => (
+          {slides?.length > 1 ? slides?.map((slide, index) => (
             // <LazyLoadImage
             //   key={index}
             //   index={index}
@@ -60,15 +60,23 @@ const EmblaCarouselYacht = (props) => {
             //   inView={slidesInView.indexOf(index) > -1}
             // />
             <LazyLoadImage
-            key={`${slide}-${index}`}
+              key={`${slide}-${index}`}
               index={index}
               imgSrc={`${process.env.NEXT_PUBLIC_S3_URL}${slide}`}
               inView={slidesInView.indexOf(index) > -1}
-              onError={(e) => {
-                e.target.src = '/assets/images/fycht.jpg';
-              }}
+
             />
-          ))}
+          )) : <Image
+          className="object-cover px-4 pt-3 rounded-3xl w-full h-[240px] ml-1.5"
+            src={`/assets/images/fycht.jpg`}
+            alt="loadAlt"
+            height={240}
+            width={100}
+            onError={(e) => {
+              e.target.src = '/assets/images/fycht.jpg';
+            }}
+          />
+          }
         </div>
       </div>
 
