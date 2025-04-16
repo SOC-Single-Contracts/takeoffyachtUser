@@ -1690,7 +1690,7 @@ const SearchYachtGlobalCompo = () => {
                 <Card
                     key={item?.yacht?.id}
                     id={`yacht-${item?.yacht?.id}`}
-                    className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-fulll md:min-h-[280px]] min-h-[300px]] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                    className="overflow-hidden classForEmbalaCaroselYacht bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-fulll md:min-h-[280px]] min-h-[300px]] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
                     ref={ind === yachts.length - 1 ? lastYachtRef : null}
                   >
                     {/* <div className="relative">
