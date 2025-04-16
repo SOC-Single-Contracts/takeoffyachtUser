@@ -26,8 +26,13 @@ import { Loading } from '@/components/ui/loading';
 import { calculateDaysBetween } from '@/helper/calculateDays';
 import MapBoxComponent from "@/components/shared/dashboard/mapBox";
 import { checkValidateLatLong } from '@/helper/validateLatlong';
+import EmblaCarouselYacht from './EmbalaCustom/js/EmblaCarouselYacht';
 
 const PAGE_SIZE = 10;
+
+const OPTIONS = {}
+const SLIDE_COUNT = 5
+const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
 
 
 const SearchYachtGlobalCompo = () => {
@@ -1682,13 +1687,13 @@ const SearchYachtGlobalCompo = () => {
                 const daysCount = calculateDaysBetween(item?.yacht?.from_date, item?.yacht?.to_date);
 
                 return (
-                  <Card
+                <Card
                     key={item?.yacht?.id}
                     id={`yacht-${item?.yacht?.id}`}
-                    className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-full md:min-h-[280px] min-h-[300px] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                    className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-fulll md:min-h-[280px]] min-h-[300px]] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
                     ref={ind === yachts.length - 1 ? lastYachtRef : null}
                   >
-                    <div className="relative">
+                    {/* <div className="relative">
                       <Carousel className="">
                         <CarouselContent>
                           {images.length > 0 ? (
@@ -1762,15 +1767,11 @@ const SearchYachtGlobalCompo = () => {
                         </span> : ""}
 
                       </div>
-                    </div>
-                    {/* <YachtCarousel
-        images={images}
-        item={item}
-        favorites={favorites}
-        s={handleWishlistToggle}
-        yachtsType={yachtsType}
-        daysCount={daysCount}
-      /> */}
+                    </div> */}
+                        <EmblaCarouselYacht slides={images} options={OPTIONS} yachtsType={yachtsType} item={item} daysCount={daysCount} handleWishlistToggle={handleWishlistToggle} favorites={favorites} />
+                        {/* <EmblaCarousel slides={SLIDES} options={OPTIONS} /> */}
+
+
                     <Link href={`/dashboard/${yachtsType}/${item?.yacht?.id}`}>
                       <CardContent className="px-4 py-2">
                         <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
@@ -1806,6 +1807,7 @@ const SearchYachtGlobalCompo = () => {
 
                       </CardContent>
                     </Link>
+
                   </Card>
                 );
               })
