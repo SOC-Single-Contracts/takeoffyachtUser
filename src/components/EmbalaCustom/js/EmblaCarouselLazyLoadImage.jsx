@@ -1,40 +1,38 @@
-import Image from 'next/image'
-import React, { useState, useCallback } from 'react'
+import Image from 'next/image';
+import React, { useState, useCallback } from 'react';
 
-const PLACEHOLDER_SRC = `/assets/images/fycht.jpg`
+const PLACEHOLDER_SRC = '/assets/images/fycht.jpg';
 
-export const LazyLoadImage = (props) => {
-  const { imgSrc, inView } = props
-  const [hasLoaded, setHasLoaded] = useState(false)
+export const LazyLoadImage = ({ imgSrc, inView }) => {
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [src, setSrc] = useState(imgSrc);
 
-  const setLoaded = useCallback(() => {
-    if (inView) setHasLoaded(true)
-  }, [inView, setHasLoaded])
+  const handleLoad = useCallback(() => {
+    if (inView) setHasLoaded(true);
+  }, [inView]);
+
+  const handleError = useCallback(() => {
+    if (src !== PLACEHOLDER_SRC) {
+      setSrc(PLACEHOLDER_SRC);
+    }
+    setHasLoaded(true);
+  }, [src]);
 
   return (
     <div className="embla__slide">
-        {!hasLoaded && <span className="embla__lazy-load__spinner" />}
-
-        {/* <span className="embla__lazy-load__spinner" /> */}
-
-      <div
-        className={'embla__lazy-load'.concat(
-          hasLoaded ? ' embla__lazy-load--has-loaded' : ''
-        )}
-      >
+      {!hasLoaded && <span className="embla__lazy-load__spinner" />}
+      <div className={`embla__lazy-load${hasLoaded ? ' embla__lazy-load--has-loaded' : ''}`}>
         <Image
           className="embla__slide__img embla__lazy-load__img"
-          onLoad={setLoaded}
-          src={inView ? imgSrc : PLACEHOLDER_SRC}
+          onLoad={handleLoad}
+          onError={handleError}
+          src={inView ? src : PLACEHOLDER_SRC}
           alt="loadAlt"
+          width={100} // Adjusted to maintain aspect ratio
           height={240}
-          width={100}
-          data-src={imgSrc}
-          onError={(e) => {
-            e.target.src = '/assets/images/fycht.jpg';
-          }}
+          style={{ width: '100%', height: '240px', objectFit: 'cover' }}
         />
       </div>
     </div>
-  )
-}
+  );
+};
