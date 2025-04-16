@@ -70,7 +70,7 @@ const SearchFilter = () => {
         let locationResults;
         switch (activeMainTab) {
           case 'yachts':
-            locationResults = await yachtApi.checkYachts({ user_id: session?.user?.userid || 1, yachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular" });
+            locationResults = await yachtApi.checkYachts({ user_id: session?.user?.userid || 1, yachtType: yachtsType == "f1yachts" ? "f1yachts" : "regularr" });
             // For yachts, extract location and yacht_image from the nested yacht object
             if (locationResults?.data) {
               const transformedLocations = locationResults.data
@@ -120,7 +120,8 @@ const SearchFilter = () => {
     };
 
     fetchLocations();
-  }, [activeMainTab, session]);
+
+  }, [activeMainTab]); 
 
   // Fetch cities from City API
   useEffect(() => {
