@@ -1693,7 +1693,7 @@ const SearchYachtGlobalCompo = () => {
                     className="overflow-hidden classForEmbalaCaroselYacht bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-fulll md:min-h-[280px]] min-h-[300px]] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
                     ref={ind === yachts.length - 1 ? lastYachtRef : null}
                   >
-                    <div className="relative">
+                    {/* <div className="relative">
                       <Carousel className="">
                         <CarouselContent>
                           {images.length > 0 ? (
@@ -1767,8 +1767,8 @@ const SearchYachtGlobalCompo = () => {
                         </span> : ""}
 
                       </div>
-                    </div>
-                        {/* <EmblaCarouselYacht slides={images} options={OPTIONS} yachtsType={yachtsType} item={item} daysCount={daysCount} handleWishlistToggle={handleWishlistToggle} favorites={favorites} /> */}
+                    </div> */}
+                        <EmblaCarouselYacht slides={images} options={OPTIONS} yachtsType={yachtsType} item={item} daysCount={daysCount} handleWishlistToggle={handleWishlistToggle} favorites={favorites} />
                         {/* <EmblaCarousel slides={SLIDES} options={OPTIONS} /> */}
 
                     <Link href={`/dashboard/${yachtsType}/${item?.yacht?.id}`}>
