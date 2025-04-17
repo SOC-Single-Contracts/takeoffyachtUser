@@ -64,6 +64,7 @@ const EmblaCarouselYacht = (props) => {
               index={index}
               imgSrc={`${process.env.NEXT_PUBLIC_S3_URL}${slide}`}
               inView={slidesInView.indexOf(index) > -1}
+              slidesInView={slidesInView}
 
             />
           )) : <Image

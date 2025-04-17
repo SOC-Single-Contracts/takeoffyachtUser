@@ -1,32 +1,37 @@
 import Image from 'next/image'
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 
 const PLACEHOLDER_SRC = `/assets/images/fycht.jpg`
 
 export const LazyLoadImage = (props) => {
-  const { imgSrc, inView } = props
+  const { imgSrc, inView, slidesInView } = props
   const [hasLoaded, setHasLoaded] = useState(false)
 
   const setLoaded = useCallback(() => {
     if (inView) setHasLoaded(true)
   }, [inView, setHasLoaded])
 
+  //test
+  // useEffect(() => {
+  //   console.log("slidesInView", slidesInView)
+  // }, [slidesInView])
+
   return (
     <div className="embla__slide">
-        {/* {!hasLoaded && <span className="embla__lazy-load__spinner" />} */}
+      {/* {!hasLoaded && <span className="embla__lazy-load__spinner" />} */}
 
-       {!hasLoaded && <Image
-                  className="object-cover px-2 pt-3 rounded-[1.8rem] w-full h-[240px] "
-                    src={`/assets/images/fycht.jpg`}
-                    alt="loadAlt"
-                    height={240}
-                    width={100}
-                    onError={(e) => {
-                      e.target.src = '/assets/images/fycht.jpg';
-                    }}
-                  />} 
+      {(!hasLoaded && slidesInView?.length > 2) ? <span className="embla__lazy-load__spinner" /> : !hasLoaded ? <Image
+        className="object-cover px-2 pt-3 rounded-[1.8rem] w-full h-[240px] "
+        src={`/assets/images/fycht.jpg`}
+        alt="loadAlt"
+        height={240}
+        width={100}
+        onError={(e) => {
+          e.target.src = '/assets/images/fycht.jpg';
+        }}
+      /> : ""}
 
-        {/* <span className="embla__lazy-load__spinner" /> */}
+      {/* <span className="embla__lazy-load__spinner" /> */}
 
       <div
         className={'embla__lazy-load'.concat(
