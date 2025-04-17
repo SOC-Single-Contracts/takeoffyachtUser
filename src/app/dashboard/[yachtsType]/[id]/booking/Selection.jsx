@@ -22,7 +22,7 @@ import { handleDispatchBookingData } from '@/helper/bookingData';
 import { useParams } from 'next/navigation';
 import { handleDispatchwalletData } from '@/helper/walletData';
 import { getWallet } from '@/api/wallet';
-import { calculateDaysBetween, formatDate } from '@/helper/calculateDays';
+import { calculateDaysBetween, formatDate, removeLeadingZeros } from '@/helper/calculateDays';
 import { Loading } from '@/components/ui/loading';
 import { GlobalStateContext } from '@/context/GlobalStateContext';
 
@@ -483,7 +483,7 @@ const Selection = ({ onNext }) => {
 
   //test
   // useEffect(()=>{
-  // console.log("bookingData",bookingData?.startTime)
+  // console.log("bookingData",bookingData)
   // },[bookingData])
 
   //   useEffect(()=>{
@@ -885,7 +885,10 @@ const Selection = ({ onNext }) => {
                     value={bookingData?.kids}
                     // onChange={(e) => updateBookingData({ kids: Math.max(0, parseInt(e.target.value) || 0) })}
                     onChange={(e) => {
-                      const kids = e.target.value === "" ? "" : Math.max(0, parseInt(e.target.value) || 0);
+                      // let inputValue = removeLeadingZeros(e.target.value);
+                      let inputValue = e.target.value;
+                      // console.log("ddd")
+                      const kids = inputValue === "" ? "" : Math.max(0, parseInt(inputValue) || 0);
                       const totalGuests = bookingData?.adults + kids;
                       if (totalGuests > capacity) {
                         toast({ title: 'Error', description: `Total guests cannot exceed capacity of ${capacity}.` });
