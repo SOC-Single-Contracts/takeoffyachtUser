@@ -43,3 +43,9 @@ export const f1yachtsTotal = (price, date, endDate, extras) => {
     return baseTotal + extrasTotal;
   };
   
+
+  export function removeLeadingZeros(value) {
+    if (typeof value !== "string") return value; // Make sure it's a string
+    const newValue = value.replace(/^0+/, '');
+    return newValue === "" ? "0" : newValue;
+  }

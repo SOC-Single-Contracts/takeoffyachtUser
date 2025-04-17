@@ -81,7 +81,8 @@ const SearchYachtGlobalCompo = () => {
     cabin_asc: false,
     engine_type: "",
     number_of_cabin: "",
-    created_on: "",
+    start_date: "",
+    end_date: "",
     min_length: "",
     max_length: "",
     amenities: [],
@@ -112,7 +113,8 @@ const SearchYachtGlobalCompo = () => {
     cabin_asc: false,
     engine_type: "",
     number_of_cabin: "",
-    created_on: "",
+    start_date: "",
+    end_date: "",
     min_length: "",
     max_length: "",
     amenities: [],
@@ -159,7 +161,7 @@ const SearchYachtGlobalCompo = () => {
 
   const userId = session?.user?.userid || 1;
 
-  const categories = ['Catamarans',"motor boat", "motor", 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
+  const categories = ['Catamarans', "motor boat", "motor", 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
   const locations = ['Dubai', 'Abu Dhabi', 'Sharjah'];
   const outdoorEquipment = [
     { name: 'Bath Towels', icon: '/assets/images/filterSvgs/bathtowels.svg' },
@@ -250,26 +252,29 @@ const SearchYachtGlobalCompo = () => {
 
   const updateActiveFilters = () => {
     const newFilters = [];
-    if (filters.min_price !== "" || filters.max_price !== "") {
-      newFilters.push(`Price: ${filters.min_price}-${filters.max_price} AED`);
+    if (filters?.min_price !== "" || filters?.max_price !== "") {
+      newFilters.push(`Price: ${filters?.min_price}-${filters?.max_price} AED`);
     }
-    if (filters.min_guest || filters.max_guest) newFilters.push(`Guests: ${filters.min_guest}-${filters.max_guest}`);
-    if (filters.location) newFilters.push(`Location: ${filters.location}`);
-    if (filters.category_name.length) newFilters.push(`Categories: ${filters.category_name.length}`);
-    if (filters.boat_category.length) newFilters.push(`Boat Categories: ${filters.boat_category.length}`);
-    if (filters.engine_type) newFilters.push(`Type: ${filters.engine_type}`);
-    if (filters.min_length) newFilters.push(`Length: ${filters.min_length}-${filters.max_length}ft`);
-    if (filters.number_of_cabin) newFilters.push(`Min No. of Cabins: ${filters.number_of_cabin}`);
-    if (filters.sleep_capacity) newFilters.push(`Min Sleeping Capacity: ${filters.sleep_capacity}`);
-    if (filters.amenities.length) newFilters.push(`Amenities: ${filters.amenities.length}`); // Added amenities filter
-    if (filters.outdoor_equipment.length) newFilters.push(`Outdoor Equipment: ${filters.outdoor_equipment.length}`); // Added outdoor equipment filter
-    if (filters.kitchen.length) newFilters.push(`Kitchen: ${filters.kitchen.length}`); // Added kitchen filter
-    if (filters.energy.length) newFilters.push(`Onboard Energy: ${filters.energy.length}`); // Added energy filter
-    if (filters.leisure.length) newFilters.push(`Leisure Activities: ${filters.leisure.length}`); // Added leisure activities filter
-    if (filters.navigation.length) newFilters.push(`Navigation Equipment: ${filters.navigation.length}`); // Added navigation equipment filter
-    if (filters.extra_comforts.length) newFilters.push(`Extra Comforts: ${filters.extra_comforts.length}`); // Added extra comforts filter
-    if (filters.indoor.length) newFilters.push(`Indoor Equipment: ${filters.indoor.length}`); // Added indoor equipment filter
-    if (filters.name) newFilters.push(`name: ${filters.name}`);
+    if (filters?.min_guest || filters?.max_guest) newFilters.push(`Guests: ${filters?.min_guest}-${filters?.max_guest}`);
+    if (filters?.location) newFilters.push(`Location: ${filters?.location}`);
+    if (filters?.category_name.length) newFilters.push(`Categories: ${filters?.category_name.length}`);
+    if (filters?.boat_category.length) newFilters.push(`Boat Categories: ${filters?.boat_category.length}`);
+    if (filters?.engine_type) newFilters.push(`Type: ${filters?.engine_type}`);
+    if (filters?.min_length) newFilters.push(`Length: ${filters?.min_length}-${filters?.max_length}ft`);
+    if (filters?.number_of_cabin) newFilters.push(`Min No. of Cabins: ${filters?.number_of_cabin}`);
+    if (filters?.sleep_capacity) newFilters.push(`Min Sleeping Capacity: ${filters?.sleep_capacity}`);
+    if (filters?.amenities.length) newFilters.push(`Amenities: ${filters?.amenities.length}`); // Added amenities filter
+    if (filters?.outdoor_equipment.length) newFilters.push(`Outdoor Equipment: ${filters?.outdoor_equipment.length}`); // Added outdoor equipment filter
+    if (filters?.kitchen.length) newFilters.push(`Kitchen: ${filters?.kitchen.length}`); // Added kitchen filter
+    if (filters?.energy.length) newFilters.push(`Onboard Energy: ${filters?.energy.length}`); // Added energy filter
+    if (filters?.leisure.length) newFilters.push(`Leisure Activities: ${filters?.leisure.length}`); // Added leisure activities filter
+    if (filters?.navigation.length) newFilters.push(`Navigation Equipment: ${filters?.navigation.length}`); // Added navigation equipment filter
+    if (filters?.extra_comforts.length) newFilters.push(`Extra Comforts: ${filters?.extra_comforts.length}`); // Added extra comforts filter
+    if (filters?.indoor.length) newFilters.push(`Indoor Equipment: ${filters?.indoor.length}`); // Added indoor equipment filter
+    if (filters?.name) newFilters.push(`name: ${filters?.name}`);
+    if (filters?.start_date) newFilters.push(`start date: ${filters?.start_date}`);
+    if (filters?.end_date) newFilters.push(`end date: ${filters?.end_date}`);
+
 
     setActiveFilters(newFilters);
   };
@@ -313,6 +318,9 @@ const SearchYachtGlobalCompo = () => {
         ? JSON.parse(searchParams.get('energy'))
         : [],
       name: searchParams.get('name') || "",
+      start_date: searchParams.get('start_date') || "",
+      end_date: searchParams.get('end_date') || "",
+
 
 
 
@@ -358,7 +366,8 @@ const SearchYachtGlobalCompo = () => {
       max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
       name: searchParams.get('name') || "",
-      created_on: searchParams.get('date') || "",
+      start_date: searchParams.get('start_date') || "",
+      end_date: searchParams.get('end_date') || "",
       ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
         ? { min_guest: parseInt(searchParams.get('min_guest')) }
         : {}),
@@ -420,7 +429,7 @@ const SearchYachtGlobalCompo = () => {
         // Filter yachts based on price range
         // const filteredYachts = responseData.data.filter(item => {
         //   const price = item?.yacht?.per_hour_price;
-        //   return price >= filters.min_price && price <= filters.max_price;
+        //   return price >= filters?.min_price && price <= filters?.max_price;
         // }); 
         const filteredYachts = responseData.data;
         settotalYachts(responseData?.total_yachts)
@@ -428,12 +437,12 @@ const SearchYachtGlobalCompo = () => {
 
 
         // Sort the filtered yachts if needed
-        let sortedYachts=[];
-        if (yachtsType == "yachts"){
-           sortedYachts = filteredYachts?.sort((a, b) => {
+        let sortedYachts = [];
+        if (yachtsType == "yachts") {
+          sortedYachts = filteredYachts?.sort((a, b) => {
             return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
           });
-        } else if (yachtsType == "f1yachts"){
+        } else if (yachtsType == "f1yachts") {
           sortedYachts = filteredYachts?.sort((a, b) => {
             return a.yacht?.per_day_price - b.yacht?.per_day_price;
           });
@@ -441,7 +450,7 @@ const SearchYachtGlobalCompo = () => {
         setOriginalYachts((prev) => [...prev, ...sortedYachts]);
         if (sortedYachts?.length < PAGE_SIZE) {
           setHasMore(false)
-        }else{
+        } else {
           setHasMore(true)
         }
       } else {
@@ -486,7 +495,7 @@ const SearchYachtGlobalCompo = () => {
         // Filter yachts based on price range
         // const filteredYachts = responseData.data.filter(item => {
         //   const price = item?.yacht?.per_hour_price;
-        //   return price >= filters.min_price && price <= filters.max_price;
+        //   return price >= filters?.min_price && price <= filters?.max_price;
         // }); 
         const filteredYachts = responseData.data;
         settotalYachts(responseData?.total_yachts)
@@ -495,12 +504,12 @@ const SearchYachtGlobalCompo = () => {
 
 
         // Sort the filtered yachts if needed
-        let sortedYachts=[];
-        if (yachtsType == "yachts"){
-           sortedYachts = filteredYachts?.sort((a, b) => {
+        let sortedYachts = [];
+        if (yachtsType == "yachts") {
+          sortedYachts = filteredYachts?.sort((a, b) => {
             return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
           });
-        } else if (yachtsType == "f1yachts"){
+        } else if (yachtsType == "f1yachts") {
           sortedYachts = filteredYachts?.sort((a, b) => {
             return a.yacht?.per_day_price - b.yacht?.per_day_price;
           });
@@ -539,6 +548,8 @@ const SearchYachtGlobalCompo = () => {
       extra_comforts: "[]",
       energy: "[]",
       name: "",
+      start_date:  "",
+      end_date:  "",
 
     }).toString()}`);
 
@@ -554,7 +565,8 @@ const SearchYachtGlobalCompo = () => {
       max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
       name: searchParams.get('name') || "",
-      created_on: searchParams.get('date') || "",
+      start_date: searchParams.get('start_date') || "",
+      end_date: searchParams.get('end_date') || "",
       ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
         ? { min_guest: parseInt(searchParams.get('min_guest')) }
         : {}),
@@ -626,7 +638,8 @@ const SearchYachtGlobalCompo = () => {
       price_des: filters?.price_des || false,
       cabin_asc: filters?.cabin_asc || false,
       cabin_des: filters?.cabin_des || false,
-      created_on: filters?.created_on || "",
+      start_date: filters?.start_date || "",
+      end_date: filters?.end_date || "",
       location: filters?.location || "",
       min_length: filters?.min_length || "",
       max_length: filters?.max_length || "",
@@ -654,7 +667,7 @@ const SearchYachtGlobalCompo = () => {
         // Filter yachts based on price range
         // const filteredYachts = responseData.data.filter(item => {
         //   const price = item?.yacht?.per_hour_price;
-        //   return price >= filters.min_price && price <= filters.max_price;
+        //   return price >= filters?.min_price && price <= filters?.max_price;
         // }); 
         const filteredYachts = responseData.data;
         settotalYachts(responseData?.total_yachts)
@@ -662,20 +675,20 @@ const SearchYachtGlobalCompo = () => {
 
 
         // Sort the filtered yachts if needed
-        let sortedYachts=[];
-        if (yachtsType == "yachts"){
-           sortedYachts = filteredYachts?.sort((a, b) => {
+        let sortedYachts = [];
+        if (yachtsType == "yachts") {
+          sortedYachts = filteredYachts?.sort((a, b) => {
             return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
           });
-        } else if (yachtsType == "f1yachts"){
+        } else if (yachtsType == "f1yachts") {
           sortedYachts = filteredYachts?.sort((a, b) => {
             return a.yacht?.per_day_price - b.yacht?.per_day_price;
           });
         }
         setOriginalYachts([...sortedYachts]);
-        if (sortedYachts?.length < PAGE_SIZE){
+        if (sortedYachts?.length < PAGE_SIZE) {
           setHasMore(false);
-        } else{
+        } else {
           setHasMore(true);
 
         }
@@ -705,30 +718,32 @@ const SearchYachtGlobalCompo = () => {
       sleep_capacity: filters?.sleep_capacity,
       number_of_cabin: filters?.number_of_cabin,
       category_name: filters?.category_name?.length
-        ? `["${filters.category_name.join('","')}"]`
+        ? `["${filters?.category_name.join('","')}"]`
         : "[]",
       outdoor_equipment: filters?.outdoor_equipment?.length
-        ? `["${filters.outdoor_equipment.join('","')}"]`
+        ? `["${filters?.outdoor_equipment.join('","')}"]`
         : "[]",
       navigation: filters?.navigation?.length
-        ? `["${filters.navigation.join('","')}"]`
+        ? `["${filters?.navigation.join('","')}"]`
         : "[]",
       leisure: filters?.leisure?.length
-        ? `["${filters.leisure.join('","')}"]`
+        ? `["${filters?.leisure.join('","')}"]`
         : "[]",
       kitchen: filters?.kitchen?.length
-        ? `["${filters.kitchen.join('","')}"]`
+        ? `["${filters?.kitchen.join('","')}"]`
         : "[]",
       indoor: filters?.indoor?.length
-        ? `["${filters.indoor.join('","')}"]`
+        ? `["${filters?.indoor.join('","')}"]`
         : "[]",
       extra_comforts: filters?.extra_comforts?.length
-        ? `["${filters.extra_comforts.join('","')}"]`
+        ? `["${filters?.extra_comforts.join('","')}"]`
         : "[]",
       energy: filters?.energy?.length
-        ? `["${filters.energy.join('","')}"]`
+        ? `["${filters?.energy.join('","')}"]`
         : "[]",
-      name: filters?.name
+      name: filters?.name,
+      start_date: filters?.start_date,
+      end_date: filters?.end_date,
 
 
 
@@ -776,9 +791,9 @@ const SearchYachtGlobalCompo = () => {
   useEffect(() => {
     // if (apiCall == "firstRender") {
     //   console.log("this is working")
- 
+
     // }
-    if(page>1){
+    if (page > 1) {
       handlePagination();
     }
   }, [page]);
@@ -954,10 +969,10 @@ const SearchYachtGlobalCompo = () => {
   //test
 
   // console.log("Page",page)
-    // useEffect(() => {
-    //   console.log("componentType", componentType, searchPath)
-  
-    // }, [componentType, searchPath])
+  // useEffect(() => {
+  //   console.log("componentType", componentType, searchPath)
+
+  // }, [componentType, searchPath])
   // useEffect(() => {
   //   console.log("filters", filters);
   // }, [filters]);
@@ -1052,9 +1067,9 @@ const SearchYachtGlobalCompo = () => {
           Listing ({totalYachts}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
         </h1> : ""} */}
 
-        {activeFilters.length>0 ? <h1 className="text-2xl font-semibold mb-6">
-          Search Results ({paginateYachts ? paginateYachts :0 }) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
-        </h1> :<h1 className="text-2xl font-semibold mb-6">
+        {activeFilters.length > 0 ? <h1 className="text-2xl font-semibold mb-6">
+          Search Results ({paginateYachts ? paginateYachts : 0}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
+        </h1> : <h1 className="text-2xl font-semibold mb-6">
           Listing ({totalYachts}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
         </h1>}
 
@@ -1115,7 +1130,7 @@ const SearchYachtGlobalCompo = () => {
                               type="number"
                               min="0"
                               placeholder="Min"
-                              value={filters.min_price}
+                              value={filters?.min_price}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
@@ -1130,7 +1145,7 @@ const SearchYachtGlobalCompo = () => {
                               type="number"
                               min="0"
                               placeholder="Max"
-                              value={filters.max_price}
+                              value={filters?.max_price}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
@@ -1152,7 +1167,7 @@ const SearchYachtGlobalCompo = () => {
                               type="number"
                               min="0"
                               placeholder="Min"
-                              value={filters.min_guest}
+                              value={filters?.min_guest}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
@@ -1167,7 +1182,7 @@ const SearchYachtGlobalCompo = () => {
                               type="number"
                               min="0"
                               placeholder="Max"
-                              value={filters.max_guest}
+                              value={filters?.max_guest}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
@@ -1189,7 +1204,7 @@ const SearchYachtGlobalCompo = () => {
                               type="number"
                               min="0"
                               placeholder="Min ft"
-                              value={filters.min_length}
+                              value={filters?.min_length}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
@@ -1204,7 +1219,7 @@ const SearchYachtGlobalCompo = () => {
                               type="number"
                               min="0"
                               placeholder="Max ft"
-                              value={filters.max_length}
+                              value={filters?.max_length}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
@@ -1230,9 +1245,9 @@ const SearchYachtGlobalCompo = () => {
                           <Input
                             type="number"
                             min="0"
-                            // value={filters.sleep_capacity || 0}
+                            // value={filters?.sleep_capacity || 0}
                             // onChange={(e) => setFilters(prev => ({ ...prev, sleep_capacity: Math.max(0, parseInt(e.target.value) || 0) }))}
-                            value={filters.sleep_capacity === undefined ? "" : filters.sleep_capacity}
+                            value={filters?.sleep_capacity === undefined ? "" : filters?.sleep_capacity}
                             onChange={(e) => {
                               const value = e.target.value;
                               setFilters(prev => ({
@@ -1264,9 +1279,9 @@ const SearchYachtGlobalCompo = () => {
                           <Input
                             type="number"
                             min="0"
-                            // value={filters.number_of_cabin || 0}
+                            // value={filters?.number_of_cabin || 0}
                             // onChange={(e) => setFilters(prev => ({ ...prev, number_of_cabin: Math.max(0, parseInt(e.target.value) || 0) }))}
-                            value={filters.number_of_cabin === undefined ? "" : filters.number_of_cabin}
+                            value={filters?.number_of_cabin === undefined ? "" : filters?.number_of_cabin}
                             onChange={(e) => {
                               const value = e.target.value;
                               setFilters(prev => ({
@@ -1289,7 +1304,7 @@ const SearchYachtGlobalCompo = () => {
                       <div className="space-y-2">
                         <Label className="text-base">Location</Label>
                         <Select
-                          value={filters.location}
+                          value={filters?.location}
                           onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}
                         >
                           <SelectTrigger className="w-full">
@@ -1315,7 +1330,7 @@ const SearchYachtGlobalCompo = () => {
                                 <div key={category} className="flex items-center space-x-2">
                                   <Checkbox
                                     id={category}
-                                    checked={filters.category_name.includes(category)}
+                                    checked={filters?.category_name.includes(category)}
                                     onCheckedChange={(checked) => {
                                       setFilters(prev => ({
                                         ...prev,
@@ -1353,7 +1368,7 @@ const SearchYachtGlobalCompo = () => {
                                           </div>
                                           <Checkbox
                                             id={name}
-                                            checked={filters.outdoor_equipment.includes(name)}
+                                            checked={filters?.outdoor_equipment.includes(name)}
                                             onCheckedChange={(checked) => {
                                               setFilters(prev => ({
                                                 ...prev,
@@ -1385,7 +1400,7 @@ const SearchYachtGlobalCompo = () => {
                                         </div>
                                         <Checkbox
                                           id={option.name}
-                                          checked={filters.kitchen.includes(option.name)}
+                                          checked={filters?.kitchen.includes(option.name)}
                                           onCheckedChange={(checked) => {
                                             setFilters(prev => ({
                                               ...prev,
@@ -1415,7 +1430,7 @@ const SearchYachtGlobalCompo = () => {
                                         </div>
                                         <Checkbox
                                           id={option.name}
-                                          checked={filters.energy.includes(option.name)}
+                                          checked={filters?.energy.includes(option.name)}
                                           onCheckedChange={(checked) => {
                                             setFilters(prev => ({
                                               ...prev,
@@ -1445,7 +1460,7 @@ const SearchYachtGlobalCompo = () => {
                                         </div>
                                         <Checkbox
                                           id={activity.name}
-                                          checked={filters.leisure.includes(activity.name)}
+                                          checked={filters?.leisure.includes(activity.name)}
                                           onCheckedChange={(checked) => {
                                             setFilters(prev => ({
                                               ...prev,
@@ -1475,7 +1490,7 @@ const SearchYachtGlobalCompo = () => {
                                         </div>
                                         <Checkbox
                                           id={equipment.name}
-                                          checked={filters.navigation.includes(equipment.name)}
+                                          checked={filters?.navigation.includes(equipment.name)}
                                           onCheckedChange={(checked) => {
                                             setFilters(prev => ({
                                               ...prev,
@@ -1505,7 +1520,7 @@ const SearchYachtGlobalCompo = () => {
                                         </div>
                                         <Checkbox
                                           id={comfort.name}
-                                          checked={filters.extra_comforts.includes(comfort.name)}
+                                          checked={filters?.extra_comforts.includes(comfort.name)}
                                           onCheckedChange={(checked) => {
                                             setFilters(prev => ({
                                               ...prev,
@@ -1535,7 +1550,7 @@ const SearchYachtGlobalCompo = () => {
                                         </div>
                                         <Checkbox
                                           id={equipment.name}
-                                          checked={filters.indoor.includes(equipment.name)}
+                                          checked={filters?.indoor.includes(equipment.name)}
                                           onCheckedChange={(checked) => {
                                             setFilters(prev => ({
                                               ...prev,
@@ -1635,6 +1650,12 @@ const SearchYachtGlobalCompo = () => {
                           case 'name':
                             setFilters(prev => ({ ...prev, name: "" }));
                             break;
+                            case 'start date':
+                              setFilters(prev => ({ ...prev, start_date: "" }));
+                              break;
+                              case 'end date':
+                                setFilters(prev => ({ ...prev, end_date: "" }));
+                                break;
                         }
                         setonCancelEachFilter(true);
                       }}
@@ -1658,42 +1679,42 @@ const SearchYachtGlobalCompo = () => {
 
         {/* Cards Grid */}
         {!mapBox ? <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
-          { yachts.length > 0 ? (
-              yachts.map((item, ind) => {
-                if (!item || !item?.yacht) return null;
-                const images = [
-                  item?.yacht?.yacht_image,
-                  item?.yacht?.image1,
-                  item?.yacht?.image2,
-                  item?.yacht?.image3,
-                  item?.yacht?.image4,
-                  item?.yacht?.image5,
-                  item?.yacht?.image6,
-                  item?.yacht?.image7,
-                  item?.yacht?.image8,
-                  item?.yacht?.image9,
-                  item?.yacht?.image10,
-                  item?.yacht?.image11,
-                  item?.yacht?.image12,
-                  item?.yacht?.image13,
-                  item?.yacht?.image14,
-                  item?.yacht?.image15,
-                  item?.yacht?.image16,
-                  item?.yacht?.image17,
-                  item?.yacht?.image18,
-                  item?.yacht?.image19,
-                  item?.yacht?.image20,
-                ].filter((image) => typeof image === "string" && image.trim() !== "");
-                const daysCount = calculateDaysBetween(item?.yacht?.from_date, item?.yacht?.to_date);
+          {yachts.length > 0 ? (
+            yachts.map((item, ind) => {
+              if (!item || !item?.yacht) return null;
+              const images = [
+                item?.yacht?.yacht_image,
+                item?.yacht?.image1,
+                item?.yacht?.image2,
+                item?.yacht?.image3,
+                item?.yacht?.image4,
+                item?.yacht?.image5,
+                item?.yacht?.image6,
+                item?.yacht?.image7,
+                item?.yacht?.image8,
+                item?.yacht?.image9,
+                item?.yacht?.image10,
+                item?.yacht?.image11,
+                item?.yacht?.image12,
+                item?.yacht?.image13,
+                item?.yacht?.image14,
+                item?.yacht?.image15,
+                item?.yacht?.image16,
+                item?.yacht?.image17,
+                item?.yacht?.image18,
+                item?.yacht?.image19,
+                item?.yacht?.image20,
+              ].filter((image) => typeof image === "string" && image.trim() !== "");
+              const daysCount = calculateDaysBetween(item?.yacht?.from_date, item?.yacht?.to_date);
 
-                return (
+              return (
                 <Card
-                    key={item?.yacht?.id}
-                    id={`yacht-${item?.yacht?.id}`}
-                    className="overflow-hidden classForEmbalaCaroselYacht bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-fulll md:min-h-[280px]] min-h-[300px]] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
-                    ref={ind === yachts.length - 1 ? lastYachtRef : null}
-                  >
-                    {/* <div className="relative">
+                  key={item?.yacht?.id}
+                  id={`yacht-${item?.yacht?.id}`}
+                  className="overflow-hidden classForEmbalaCaroselYacht bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-fulll md:min-h-[280px]] min-h-[300px]] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
+                  ref={ind === yachts.length - 1 ? lastYachtRef : null}
+                >
+                  {/* <div className="relative">
                       <Carousel className="">
                         <CarouselContent>
                           {images.length > 0 ? (
@@ -1768,62 +1789,62 @@ const SearchYachtGlobalCompo = () => {
 
                       </div>
                     </div> */}
-                        <EmblaCarouselYacht slides={images} options={OPTIONS} yachtsType={yachtsType} item={item} daysCount={daysCount} handleWishlistToggle={handleWishlistToggle} favorites={favorites} />
-                        {/* <EmblaCarousel slides={SLIDES} options={OPTIONS} /> */}
+                  <EmblaCarouselYacht slides={images} options={OPTIONS} yachtsType={yachtsType} item={item} daysCount={daysCount} handleWishlistToggle={handleWishlistToggle} favorites={favorites} />
+                  {/* <EmblaCarousel slides={SLIDES} options={OPTIONS} /> */}
 
-                    <Link href={`/dashboard/${yachtsType}/${item?.yacht?.id}`}>
-                      <CardContent className="px-4 py-2">
-                        <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
-                          <MapPin className="size-3 mr-1" /> {item?.yacht?.location || "Location Not Available"}
-                        </p>
-                        <div className="flex justify-between items-center">
-                          <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item?.yacht?.name}</h3>
-                          {yachtsType == "yachts" ? <span className="font-medium text-xs">
-                            AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_day_price}</span>
-                            <span className="text-xs font-light ml-1">/Day</span>
-                          </span> : yachtsType == "f1yachts" ? <span className="font-medium text-xs">
-                            AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_day_price}</span>
-                            <span className="text-xs font-light ml-1">{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}  </span>
-                          </span> : ""}
+                  <Link href={`/dashboard/${yachtsType}/${item?.yacht?.id}`}>
+                    <CardContent className="px-4 py-2">
+                      <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
+                        <MapPin className="size-3 mr-1" /> {item?.yacht?.location || "Location Not Available"}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item?.yacht?.name}</h3>
+                        {yachtsType == "yachts" ? <span className="font-medium text-xs">
+                          AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_day_price}</span>
+                          <span className="text-xs font-light ml-1">/Day</span>
+                        </span> : yachtsType == "f1yachts" ? <span className="font-medium text-xs">
+                          AED <span className="font-bold text-sm text-primary">{item?.yacht?.per_day_price}</span>
+                          <span className="text-xs font-light ml-1">{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}  </span>
+                        </span> : ""}
 
+                      </div>
+                      <div className="flex justify-start items-center gap-1 flex-wrap">
+                        <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
+                        <p className="font-semibold text-xs">{item?.yacht?.length || 0} ft</p>
+                        <Dot />
+                        <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                          <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
+                          <p>Guests</p>
+                          <p>{item?.yacht?.guest || 0}</p>
                         </div>
-                        <div className="flex justify-start items-center gap-1 flex-wrap">
-                          <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
-                          <p className="font-semibold text-xs">{item?.yacht?.length || 0} ft</p>
-                          <Dot />
-                          <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                            <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
-                            <p>Guests</p>
-                            <p>{item?.yacht?.guest || 0}</p>
-                          </div>
-                          <Dot />
-                          <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                            <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
-                            <p>Cabins</p>
-                            <p>{item?.yacht?.number_of_cabin || 0}</p>
-                          </div>
+                        <Dot />
+                        <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                          <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
+                          <p>Cabins</p>
+                          <p>{item?.yacht?.number_of_cabin || 0}</p>
                         </div>
+                      </div>
 
-                      </CardContent>
-                    </Link>
+                    </CardContent>
+                  </Link>
 
-                  </Card>
-                );
-              })
-            ) : (
-              <div className="col-span-full flex flex-col items-center justify-center py-12">
-                <p className="text-gray-500 text-lg mb-4">No yachts found</p>
-                <Button
-                  variant="outline"
-                  onClick={resetFilters}
-                  className="gap-2"
-                >
-                  <X className="h-4 w-4" />
-                  Reset Filters
-                </Button>
+                </Card>
+              );
+            })
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-12">
+              <p className="text-gray-500 text-lg mb-4">No yachts found</p>
+              <Button
+                variant="outline"
+                onClick={resetFilters}
+                className="gap-2"
+              >
+                <X className="h-4 w-4" />
+                Reset Filters
+              </Button>
 
-              </div>
-            )}
+            </div>
+          )}
 
           {loading && (
             // Render skeleton UI

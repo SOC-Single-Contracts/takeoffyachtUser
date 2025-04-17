@@ -11,6 +11,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { initialFilterGlobal } from "@/helper/filterData";
 import { initialBookingGlobal } from "@/helper/bookingData";
 import { GlobalStateProvider } from "@/context/GlobalStateContext";
+import { useParams } from "next/navigation";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -25,6 +26,8 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export default function RootLayout({ children }) {
+    const { id } = useParams();
+  
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -80,7 +83,7 @@ export default function RootLayout({ children }) {
             <ThemeProvider>
               {isLoading && <GlobalLoading />}
               {children}
-              <WhatsAppButton />
+              {!id && <WhatsAppButton /> }
               <Toaster />
             </ThemeProvider>
           </Providers>

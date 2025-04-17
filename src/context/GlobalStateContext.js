@@ -27,7 +27,9 @@ export const GlobalStateProvider = ({ children }) => {
       filters: {
         min_guest: 0,
         max_guest: 0,
-        location: ""
+        location: "",
+        start_date:"",
+        end_date:""
       }
     }
   ); // Example of global state

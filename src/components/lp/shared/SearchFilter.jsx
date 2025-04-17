@@ -42,7 +42,7 @@ const SearchFilter = () => {
     from: null,
     to: null
   });
-  const { yachtsType,eventsType } = useParams();
+  const { yachtsType, eventsType } = useParams();
 
   const [minimumGuests, setMinimumGuests] = useState({
     // adults: 1,
@@ -61,6 +61,7 @@ const SearchFilter = () => {
   // New state for cities
   const [cities, setCities] = useState([]);
   const [isCitiesLoading, setIsCitiesLoading] = useState(true);
+  const [initialRender, setInitialRender] = useState(true)
 
   // Fetch locations based on active tab
   useEffect(() => {
@@ -121,7 +122,7 @@ const SearchFilter = () => {
 
     fetchLocations();
 
-  }, [activeMainTab]); 
+  }, [activeMainTab]);
 
   // Fetch cities from City API
   useEffect(() => {
@@ -151,15 +152,21 @@ const SearchFilter = () => {
   // console.log("guests",guests)
   //   },[guests])
 
-  const handleGuestChange = (type, action) => {
-    setMaxGuest("")
-    setMinimumGuests(prev => ({
-      ...prev,
-      [type]: action === 'increase'
-        ? prev[type] + 1
-        : Math.max(0, prev[type] - 1)
-    }));
+  const handleGuestChange = (type, action) => { 
+    setMaxGuest("");
+  
+    setMinimumGuests(prev => {
+      const currentValue = prev[type] === "" ? 0 : prev[type]; // if "" treat as 0
+  
+      return {
+        ...prev,
+        [type]: action === 'increase'
+          ? currentValue + 1
+          : Math.max(0, currentValue - 1)
+      };
+    });
   };
+  
 
   const handleSearch = async () => {
     setLoading(true);
@@ -167,7 +174,7 @@ const SearchFilter = () => {
       const totalGuests = minimumGuests?.capacity;
       const formattedStartDate = selectedDateRange?.from ? format(selectedDateRange?.from, 'yyyy-MM-dd') : null;
       const formattedEndDate = selectedDateRange?.to ? format(selectedDateRange?.to, 'yyyy-MM-dd') : null;
-
+  
       // Check if at least one criterion is provided
       if (!selectedCity && !formattedStartDate && (totalGuests === 0 || totalGuests == "")) {
         toast({
@@ -253,20 +260,22 @@ const SearchFilter = () => {
         // }
         const queryParams = new URLSearchParams({
           location: selectedCity || "",
-          date: formattedStartDate || "",
           min_guest: totalGuests > 0 ? totalGuests : "",
           name: searchByName || "",
           max_guest: maxGuest > 0 ? parseInt(maxGuest) : "",
+          start_date: formattedStartDate || "",
+          end_date: formattedEndDate || ""
+
         }).toString();
-      
+
         const newPath = `${searchPath}?${queryParams}`;
-      
+
         // Navigate and reload
         if (typeof window !== "undefined") {
           window.location.assign(newPath);
         }
-      
-      
+
+
         setIsDialogOpen(false);
       } else {
         // toast.error('No results found. Please try different search criteria.');
@@ -308,6 +317,9 @@ const SearchFilter = () => {
     setSelectedDateRange({ from: null, to: null });
     setMinimumGuests({ capacity: 1 });
     setsearchByName("")
+    setInitialRender(true)
+
+    // console.log("hdhhddhhd")
   };
 
   // useEffect(() => {
@@ -327,16 +339,26 @@ const SearchFilter = () => {
 
   const handleCloseSheet = () => {
     setIsDialogOpen(false); // Close the dialog when clicking on the specific div
+    // setInitialRender(true)
+    // resetSearch()
   };
   // useEffect(()=>{
   // console.log("globalStateFilter",state)
   // },[state])
 
   //test
-  // useEffect(()=>{
+  // useEffect(() => {
   //   console.log("minimumGuests",minimumGuests)
   //   console.log("maxGuest",maxGuest)
-  // },[minimumGuests,maxGuest])
+  //   console.log("initialRender",initialRender)
+    // return()=>{
+    //   setInitialRender(true)
+    // }
+  // }, [minimumGuests, maxGuest, initialRender])
+
+  // useEffect(() => {
+  //   console.log("selectedDateRange", selectedDateRange)
+  // }, [selectedDateRange])
 
   return (
     <section className="">
@@ -348,7 +370,7 @@ const SearchFilter = () => {
       // ref={sheetRef} // Assign the ref here
       >
         <SheetTrigger asChild>
-          <div className="flex items-center justify-between bg-white dark:bg-gray-700 lg:w-[400px] rounded-full shadow-lg cursor-pointer">
+          <div className="flex items-center justify-between bg-white dark:bg-gray-700 lg:w-[425px] rounded-full shadow-lg cursor-pointer">
             <div className="flex items-center">
               <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
                 <MapPin className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
@@ -356,10 +378,16 @@ const SearchFilter = () => {
               </div>
               <div className="flex items-center px-2 md:px-4 lg:px-6 py-1.5 md:py-3 border-r text-sm">
                 <CalendarIcon className="mr-2 h-3 w-3 text-gray-500 dark:text-gray-300" />
-                <span className="dark:text-gray-300 text-xs">
-                  {selectedDateRange?.from && selectedDateRange?.to
-                    ? `${format(selectedDateRange?.from, 'MMM dd')} - ${format(selectedDateRange?.to, 'MMM dd')}`
-                    : "When?"}
+                <span className="dark:text-gray-300 text-center text-xs">
+
+                  {state?.filters?.start_date || state?.filters?.end_date ? (
+                    <>
+                      {state?.filters?.start_date && format(state?.filters?.start_date, 'MMM dd')}
+                      {state?.filters?.end_date && ` - ${format(state?.filters?.end_date, 'MMM dd')}`}
+                    </>
+                  ) : (
+                    "When?"
+                  )}
                 </span>
               </div>
               <div className="flex items-center px-2 md:px-4 py-1.5 md:py-3 text-sm">
@@ -467,7 +495,17 @@ const SearchFilter = () => {
                     >
                       <div className="flex flex-col items-start md:pl-2 w-full">
                         <span className="font-semibold text-xs">When</span>
-                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{selectedDateRange.from && selectedDateRange.to ? `${format(selectedDateRange.from, 'MMM dd')} - ${format(selectedDateRange.to, 'MMM dd')}` : "Add Dates"}</span>
+                        <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">
+                          {selectedDateRange?.from || selectedDateRange?.to ? (
+                            <>
+                              {selectedDateRange?.from && format(selectedDateRange.from, 'MMM dd')}
+                              {selectedDateRange?.to && ` - ${format(selectedDateRange.to, 'MMM dd')}`}
+                            </>
+                          ) : (
+                            "Add Dates"
+                          )}
+                        </span>
+
                       </div>
                     </TabsTrigger>
                     <TabsTrigger
@@ -540,11 +578,20 @@ const SearchFilter = () => {
                                     [type]: "" // Allow empty input temporarily
                                   }));
                                 } else {
-                                  const parsedValue = Math.max(0, parseInt(value, 10)); // Remove leading 0s
-                                  setMinimumGuests(prev => ({
-                                    ...prev,
-                                    [type]: parsedValue // Ensure no leading zeroes
-                                  }));
+                                  if (initialRender) {
+                                    const lastDigit = parseInt(value[value.length - 1], 10); // Take only last character
+                                    setMinimumGuests(prev => ({
+                                      ...prev,
+                                      [type]: lastDigit
+                                    }));
+                                    setInitialRender(false);
+                                  } else {
+                                    const parsedValue = Math.max(0, parseInt(value, 10));
+                                    setMinimumGuests(prev => ({
+                                      ...prev,
+                                      [type]: parsedValue
+                                    }));
+                                  }
                                 }
                               }}
                               className="w-14 text-center text-lg font-medium border rounded-md px-1 py-1 focus:outline-none focus:ring-0 focus:ring-[#BEA355] dark:bg-gray-700 dark:text-white dark:border-gray-600"
@@ -560,7 +607,7 @@ const SearchFilter = () => {
                           </div>
                         </div>
                       ))}
-                      <div className="flex flex-wra pt-4 items-center md:space-y-0 space-y-1.5 overflow-y-auto md:space-x-1 justify-between">
+                      <div className="flex flex-wra pt-4 items-end gap-2 md:gap-0 md:space-y-0 space-y-1.5 overflow-y-auto md:space-x-1 justify-between">
                         <Button
                           variant="outline"
                           type="button" // Change to button to prevent form submission
