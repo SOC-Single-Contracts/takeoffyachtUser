@@ -10,8 +10,8 @@
 
 .classForEmbalaCaroselYacht .embla .priceContainer {
   position: absolute;
-  bottom: 7px !important;
-  z-index: 9999 !important;
+  bottom: 9px !important;
+  /* z-index: 9999 !important; */
 }
 
 .classForEmbalaCaroselYacht .embla__viewport {
