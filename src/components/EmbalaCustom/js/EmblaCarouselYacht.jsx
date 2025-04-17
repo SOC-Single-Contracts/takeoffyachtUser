@@ -52,7 +52,7 @@ const EmblaCarouselYacht = (props) => {
     <div className="embla">
       <div className="embla__viewport" ref={emblaRed}>
         <div className="embla__container">
-          {slides?.length > 1 ? slides?.map((slide, index) => (
+          {slides?.length > 0 ? slides?.map((slide, index) => (
             // <LazyLoadImage
             //   key={index}
             //   index={index}
