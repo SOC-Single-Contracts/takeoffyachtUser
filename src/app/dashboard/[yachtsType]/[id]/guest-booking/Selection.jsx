@@ -20,7 +20,7 @@ import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { useParams } from 'next/navigation';
-import { formatDate, removeLeadingZeros } from '@/helper/calculateDays';
+import { calculateDaysBetween, formatDate, removeLeadingZeros } from '@/helper/calculateDays';
 
 const Selection = ({ onNext }) => {
   const { toast } = useToast();
@@ -309,6 +309,8 @@ const Selection = ({ onNext }) => {
     }
     return slots;
   };
+    const daysCount = calculateDaysBetween(selectedYacht?.yacht?.from_date, selectedYacht?.yacht?.to_date);
+  
 
   const renderExtraItem = (item, category) => (
     <div key={item.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -856,18 +858,39 @@ const Selection = ({ onNext }) => {
         {/* Summary Card */}
         <div className="w-full lg:w-1/2 max-w-[400px]">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6 sticky top-4">
-            <div className="space-y-2">
-              <h2 className="text-lg font-semibold">
-                AED <span className="text-2xl font-bold">{calculateTotal()}</span>
-                {bookingData?.endDate ? (
+          {yachtsType == "yachts" ? <div className="space-y-2">
+              {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
+                {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
+                AED <span className="text-2xl font-bold">{selectedYacht?.yacht?.per_hour_price}/hour</span>
+
+
+                {/* {bookingData?.endDate ? (
                   <span className="text-sm ml-2">
                     for {Math.ceil((new Date(bookingData?.endDate) - new Date(bookingData?.date)) / (1000 * 60 * 60 * 24) + 1)} days
                   </span>
                 ) : (
                   <span className="text-sm ml-2">for {bookingData?.duration} hours</span>
-                )}
-              </h2>
+                )} */}
+              </h2>}
+
             </div>
+              : yachtsType == "f1yachts" ? <div className="space-y-2">
+                {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
+                  {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
+                  AED <span className="text-2xl font-bold">{selectedYacht?.yacht?.per_day_price}{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}</span>
+
+
+                  {/* {bookingData?.endDate ? (
+     <span className="text-sm ml-2">
+       for {Math.ceil((new Date(bookingData?.endDate) - new Date(bookingData?.date)) / (1000 * 60 * 60 * 24) + 1)} days
+     </span>
+   ) : (
+     <span className="text-sm ml-2">for {bookingData?.duration} hours</span>
+   )} */}
+                </h2>}
+
+              </div>
+                : ""}
 
             <Table>
               <TableHeader className="bg-[#EBEBEB] dark:bg-gray-700">
