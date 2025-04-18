@@ -839,7 +839,7 @@ const Selection = ({ onNext }) => {
                   </Button>
                   <Input
                     type="number"
-                    value={bookingData?.adults}
+                    value={removeLeadingZeros(bookingData?.adults.toString())}
                     // onChange={(e) => updateBookingData({ adults: Math.max(0, parseInt(e.target.value) || 0) })}
                     onChange={(e) => {
                       const adults = e.target.value === "" ? "" : Math.max(0, parseInt(e.target.value) || 0);
@@ -882,7 +882,7 @@ const Selection = ({ onNext }) => {
                   </Button>
                   <Input
                     type="number"
-                    value={bookingData?.kids}
+                    value={removeLeadingZeros(bookingData?.kids.toString())}
                     // onChange={(e) => updateBookingData({ kids: Math.max(0, parseInt(e.target.value) || 0) })}
                     onChange={(e) => {
                       // let inputValue = removeLeadingZeros(e.target.value);
