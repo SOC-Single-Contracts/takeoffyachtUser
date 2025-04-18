@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import BrandCard from './DiscountCard';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { fetchBrands } from '@/api/yachts';
 
 
 
@@ -21,6 +22,7 @@ const PartnerDiscount = () => {
     const [promoCode, setPromoCode] = useState("");
     const { data: session } = useSession();
     const { toast } = useToast();
+    const token = session?.user?.token;
     const [brands, setBrands] = useState([
 
         // {
@@ -41,7 +43,19 @@ const PartnerDiscount = () => {
         //     description: "Experience the finest sea voyages",
         //     image: "/brands/oceanic-cruises.jpg"
         // }
-    ]); 
+    ]);
+
+    const getAllBrands = async () => {
+        try {
+            const data = await fetchBrands(token)
+            // console.log(data)
+            // const multipliedBrands = [...data, ...data,...data,...data,...data];
+            // setBrands(data)
+        } catch (err) {
+            console.error('Yacht fetching error:', err);
+        } finally {
+        }
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsProcessing(true);
@@ -58,7 +72,7 @@ const PartnerDiscount = () => {
                 })
             });
             const result = await response.json();
-            console.log(result)
+            // console.log(result)
 
             if (!response.ok) {
                 throw new Error(result.error || 'Promocode processing failed');
@@ -85,30 +99,36 @@ const PartnerDiscount = () => {
             setIsProcessing(false);
         }
     };
+
+    useEffect(() => {
+        if (session) {
+            getAllBrands()
+        }
+    }, [token])
     //test
-    // useEffect(() => {
-    //     console.log("branfds", brands)
-    // }, [brands])
-      // If not logged in, show login prompt
-      if (!session) {
+    useEffect(() => {
+        // console.log("branfds", brands)
+    }, [brands])
+    // If not logged in, show login prompt
+    if (!session) {
         return (
-          <section className="py-16 text-center">
-            <div className="max-w-md mx-auto px-4">
-              <h2 className="text-2xl font-bold mb-4">Welcome to Get Discount</h2>
-              <p className="text-gray-600 mb-6">
-                Looks like you're not logged in. Please sign in to view and manage your Wallet.
-              </p>
-              <Button
-                onClick={() => router.push('/login')}
-                className="bg-[#BEA355] hover:bg-[#a68f4b] text-white rounded-full"
-              >
-                Login to Continue
-              </Button>
-            </div>
-          </section>
+            <section className="py-16 text-center">
+                <div className="max-w-md mx-auto px-4">
+                    <h2 className="text-2xl font-bold mb-4">Welcome to Get Discount</h2>
+                    <p className="text-gray-600 mb-6">
+                        Looks like you're not logged in. Please sign in to view and manage your Wallet.
+                    </p>
+                    <Button
+                        onClick={() => router.push('/login')}
+                        className="bg-[#BEA355] hover:bg-[#a68f4b] text-white rounded-full"
+                    >
+                        Login to Continue
+                    </Button>
+                </div>
+            </section>
         );
-      }
-    
+    }
+
     return (
 
 

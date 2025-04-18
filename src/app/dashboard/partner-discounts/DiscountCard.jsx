@@ -10,7 +10,7 @@ const BrandCard = ({ brand }) => {
     ? `${process.env.NEXT_PUBLIC_API_URL}${brand.image}`
     : "/assets/images/f1.png";
 
-    console.log(imageUrl)
+    // console.log(imageUrl)
 
   return (
     <Dialog>

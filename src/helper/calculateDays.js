@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export const calculateDaysBetween = (fromDate, toDate) => {
     if (!fromDate || !toDate) return 1; // Default to 1 if input is missing
   
@@ -49,3 +51,22 @@ export const f1yachtsTotal = (price, date, endDate, extras) => {
     const newValue = value.replace(/^0+/, '');
     return newValue === "" ? "0" : newValue;
   }
+
+  export function isDateDisabled(date, availableDates, dateRange) {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const dateYear = date.getFullYear();
+    // console.log(dateYear,currentYear)
+  
+    // if (dateYear !== currentYear) {
+    //   return false; // ✅ Allow dates outside current year
+    // }
+  
+    return (
+      date < new Date(today.setHours(0, 0, 0, 0)) || // Past dates
+      (dateRange?.start_date && date < new Date(dateRange.start_date)) ||
+      (dateRange?.end_date && date > new Date(dateRange.end_date)) ||
+      !availableDates.includes(format(date, 'yyyy-MM-dd'))
+    );
+  }
+  

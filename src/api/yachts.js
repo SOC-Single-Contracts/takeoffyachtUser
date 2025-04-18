@@ -260,3 +260,25 @@ export const createYachtBookingWithStripe = async (bookingData) => {
       throw error;
   }
 };
+
+export const fetchBrands = async (token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/yacht/brands/`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (response.data.error_code === "pass") {
+      return response.data.data;
+    }
+
+    throw new Error(response.data.error || "Failed to fetch Brands.");
+
+  } catch (error) {
+    throw error;
+  }
+
+
+
+};
