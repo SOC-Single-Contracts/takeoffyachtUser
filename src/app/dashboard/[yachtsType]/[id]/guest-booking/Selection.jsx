@@ -20,7 +20,7 @@ import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { useParams } from 'next/navigation';
-import { formatDate } from '@/helper/calculateDays';
+import { formatDate, removeLeadingZeros } from '@/helper/calculateDays';
 
 const Selection = ({ onNext }) => {
   const { toast } = useToast();
@@ -721,7 +721,7 @@ const Selection = ({ onNext }) => {
                   </Button>
                   <Input
                     type="number"
-                    value={bookingData?.adults}
+                    value={removeLeadingZeros(bookingData?.adults.toString())}
                     // onChange={(e) => updateBookingData({ adults: Math.max(0, parseInt(e.target.value) || 0) })}
                     onChange={(e) => {
                       const adults = Math.max(0, parseInt(e.target.value) || 0);
@@ -764,7 +764,7 @@ const Selection = ({ onNext }) => {
                   </Button>
                   <Input
                     type="number"
-                    value={bookingData?.kids}
+                    value={removeLeadingZeros(bookingData?.kids).toString()}
                     // onChange={(e) => updateBookingData({ kids: Math.max(0, parseInt(e.target.value) || 0) })}
                     onChange={(e) => {
                       const kids = Math.max(0, parseInt(e.target.value) || 0);
