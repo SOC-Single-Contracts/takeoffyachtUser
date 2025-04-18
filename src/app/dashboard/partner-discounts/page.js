@@ -50,7 +50,7 @@ const PartnerDiscount = () => {
             const data = await fetchBrands(token)
             // console.log(data)
             // const multipliedBrands = [...data, ...data,...data,...data,...data];
-            // setBrands(data)
+            setBrands(data)
         } catch (err) {
             console.error('Yacht fetching error:', err);
         } finally {
