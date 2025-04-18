@@ -981,7 +981,7 @@ const Selection = ({ onNext }) => {
             {yachtsType == "yachts" ? <div className="space-y-2">
               {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
                 {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
-                AED <span className="text-2xl font-bold">{selectedYacht?.yacht?.per_day_price}/day</span>
+                AED <span className="text-2xl font-bold">{selectedYacht?.yacht?.per_hour_price}/hour</span>
 
 
                 {/* {bookingData?.endDate ? (
