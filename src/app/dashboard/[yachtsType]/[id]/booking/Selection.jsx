@@ -22,7 +22,7 @@ import { handleDispatchBookingData } from '@/helper/bookingData';
 import { useParams } from 'next/navigation';
 import { handleDispatchwalletData } from '@/helper/walletData';
 import { getWallet } from '@/api/wallet';
-import { calculateDaysBetween, formatDate, removeLeadingZeros } from '@/helper/calculateDays';
+import { calculateDaysBetween, formatDate, isDateDisabled, removeLeadingZeros } from '@/helper/calculateDays';
 import { Loading } from '@/components/ui/loading';
 import { GlobalStateContext } from '@/context/GlobalStateContext';
 
@@ -88,8 +88,8 @@ const Selection = ({ onNext }) => {
         if (data.error_code === 'pass') {
           const available = data.availability.filter(item => item.is_available).map(item => item.date);
           setAvailableDates(available); // Store available dates
-          // console.log('Available Dates:', available);
           setDateRange(data.date_range); // Store date range
+          // console.log('Available Dates:', available,data);
         } else {
           toast.error('Failed to check availability.');
         }
@@ -441,43 +441,53 @@ const Selection = ({ onNext }) => {
   );
 
   const handleDateSelect = (range) => {
-    if (!range) return;
+    // const today = new Date();
+    // const currentYear = today.getFullYear();
+    // const dateYear = date.getFullYear();
+//  console.log(range)
+    // if(dateYear !== currentYear){
+// console.log("working")
+    // }else{
 
-    // Check if the selected date is available
-    const selectedDate = format(range.from, 'yyyy-MM-dd');
-    if (!availableDates.includes(selectedDate)) {
-      toast({
-        title: "Error",
-        description: "Selected date is not available.",
-        variant: "destructive",
-      });
-      return;
-    }
+      if (!range) return;
 
-    // If clicking the same date again or selecting first date
-    if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
-      updateBookingData({
-        date: range.from,
-        endDate: null,
-        bookingType: 'hourly'
-      });
-      return;
-    }
-
-    // For date range, validate both dates
-    if (range.to) {
-      const endDate = format(range.to, 'yyyy-MM-dd');
-      if (!availableDates.includes(endDate)) {
-        // toast.error("End date is not available.");
+      // Check if the selected date is available
+      const selectedDate = format(range.from, 'yyyy-MM-dd');
+      if (!availableDates.includes(selectedDate)) {
+        toast({
+          title: "Error",
+          description: "Selected date is not available.",
+          variant: "destructive",
+        });
         return;
       }
+  
+      // If clicking the same date again or selecting first date
+      if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
+        updateBookingData({
+          date: range.from,
+          endDate: null,
+          bookingType: 'hourly'
+        });
+        return;
+      }
+  
+      // For date range, validate both dates
+      if (range.to) {
+        const endDate = format(range.to, 'yyyy-MM-dd');
+        if (!availableDates.includes(endDate)) {
+          // toast.error("End date is not available.");
+          return;
+        }
+  
+        updateBookingData({
+          date: range.from,
+          endDate: range.to,
+          bookingType: 'date_range'
+        });
+      }
+    // }
 
-      updateBookingData({
-        date: range.from,
-        endDate: range.to,
-        bookingType: 'date_range'
-      });
-    }
   };
 
 
@@ -690,12 +700,7 @@ const Selection = ({ onNext }) => {
                     //   date < new Date(dateRange.start_date) || 
                     //   date > new Date(dateRange.end_date)
                     // }
-                    disabled={(date) =>
-                      date < new Date(new Date().setHours(0, 0, 0, 0)) || // Disable past dates
-                      (dateRange?.start_date && date < new Date(dateRange.start_date)) ||
-                      (dateRange?.end_date && date > new Date(dateRange.end_date)) ||
-                      !availableDates.includes(format(date, 'yyyy-MM-dd'))
-                    }
+                    disabled={(date) => isDateDisabled(date, availableDates, dateRange)}
                     initialFocus
                   />
                 </PopoverContent>

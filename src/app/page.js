@@ -9,6 +9,7 @@ import ListExperience from "@/components/lp/ListExperience";
 import Gallery from "@/components/lp/Gallery";
 import FormulaOne from "@/components/lp/FormulaOne";
 import Events from "@/components/lp/Events";
+import FormulaOneDashboard from "@/components/lp/FormulaOneDashboard";
 
 export const metadata = {
   metadataBase: new URL('https://takeoffyachts.com/'),
@@ -92,7 +93,8 @@ export default function Home() {
           <Hero />
           <Gallery />
           <Featured />
-          <FormulaOne />
+          <FormulaOneDashboard/>
+          {/* <FormulaOne /> */}
           <Events />
           <Experience />
           <MaximizeExp />

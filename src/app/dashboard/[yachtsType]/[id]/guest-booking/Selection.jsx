@@ -121,8 +121,8 @@ const Selection = ({ onNext }) => {
         bookingType: 'date_range'
       });
     } else if (yachtsType == "yachts") {
-      fetchAvailability();
-    }
+      fetchAvailability();     
+    } 
   }, [selectedYacht]);
 
   useEffect(() => {
@@ -145,7 +145,7 @@ const Selection = ({ onNext }) => {
         }
       } catch (error) {
         console.error('Error fetching extras:', error);
-        toast.error('Error fetching extras.');
+        toast.error('Error fetching extras.'); 
       } finally {
         setLoadingExtras(false);
       }

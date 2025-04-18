@@ -139,7 +139,7 @@ const SearchYachtGlobalCompo = () => {
     { value: "Capacity-Low-High", label: "Capacity: Low to High" }
   ];
 
-  const [selectedSortBy, setSelectedSortBy] = useState(searchParams.get('sortBy') || "default");
+  const [selectedSortBy, setSelectedSortBy] = useState(searchParams.get('sortBy') || "Price-Low-High");
   const [startSort, setStartSort] = useState(false);
 
   const handleChange = (value) => {
@@ -288,7 +288,7 @@ const SearchYachtGlobalCompo = () => {
       min_guest: searchParams.get('min_guest') ? parseInt(searchParams.get('min_guest')) : "",
       min_price: searchParams.get('min_price') ? parseInt(searchParams.get('min_price')) : "",
       max_price: searchParams.get('max_price') ? parseInt(searchParams.get('max_price')) : "",
-      sortBy: searchParams.get('sortBy') ? searchParams.get('sortBy') : "default",
+      sortBy: searchParams.get('sortBy') ? searchParams.get('sortBy') : "Price-Low-High",
       min_length: searchParams.get('min_length') ? parseInt(searchParams.get('min_length')) : "",
       max_length: searchParams.get('max_length') ? parseInt(searchParams.get('max_length')) : "",
       sleep_capacity: searchParams.get('sleep_capacity') ? parseInt(searchParams.get('sleep_capacity')) : "",
