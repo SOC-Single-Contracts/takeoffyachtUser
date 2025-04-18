@@ -80,9 +80,9 @@ const Thumb = ({ src, onClick, selected }) => (
         onClick={onClick}
         className={`embla-thumbs__slide ${selected ? "embla-thumbs__slide--selected" : ""}`}
     >
-        <Image src={src} width={80} height={80} alt="Thumbnail" className="rounded-lg object-cover  relative w-[80px] h-[80px] sm:w-[80px] md:w-[120px]  overflow-hidden transition-all duration-300 rounded-lg 
-                                    opacity-70 hover:opacity-100 
-                                    cursor-pointer" />
+      <Image src={src} width={80} height={80} alt="Thumbnail" className={`rounded-lg object-cover  relative w-[80px] h-[80px] sm:w-[80px] md:w-[120px]  overflow-hidden transition-all duration-300 rounded-lg 
+                                          hover:opacity-100 
+                                         cursor-pointer ${selected ? "opacity-100" : "opacity-70"}`} />
     </button>
 );
 
