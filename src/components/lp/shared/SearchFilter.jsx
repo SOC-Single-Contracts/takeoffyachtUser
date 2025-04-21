@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from "@/hooks/use-toast";
 import { useGlobalState } from '@/context/GlobalStateContext';
+import { removeLeadingZeros } from '@/helper/calculateDays';
 
 
 const SearchFilter = () => {
@@ -561,7 +562,7 @@ const SearchFilter = () => {
                             <Input
                               type="number"
                               min="0"
-                              value={minimumGuests[type]}
+                             value={removeLeadingZeros(minimumGuests[type].toString())}  
                               // onChange={(e) => {
                               //   const value = parseInt(e.target.value, 10) || 0;
                               //   setMinimumGuests(prev => ({
