@@ -354,7 +354,7 @@ const SearchYachtGlobalCompo = () => {
       }
     };
 
-    // loadWishlist();
+    loadWishlist();
   }, [userId]);
 
   const handlePagination = async () => {
@@ -818,7 +818,14 @@ const SearchYachtGlobalCompo = () => {
   }, [filters, onCancelEachFilter]);
 
   const handleWishlistToggle = async (yachtId) => {
-    if (!userId) return;
+    if (!userId) {
+      toast({
+        title: "Error",
+        description: "You must Login First",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const updatedFavorites = new Set(favorites);
     try {

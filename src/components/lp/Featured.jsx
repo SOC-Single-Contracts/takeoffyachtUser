@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import { addToWishlist, removeFromWishlist, fetchWishlist } from "@/api/wishlist";
 import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
 import { useParams } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 // Empty State Component
 const EmptyYachtState = ({ onRetry }) => {
@@ -49,10 +50,13 @@ const EmptyYachtState = ({ onRetry }) => {
 const Featured = () => {
   const [yachts, setYachts] = useState([]);
   const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const { data } = useSession();
     const { yachtsType } = useParams();
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
+    const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;  
   
 
   const getYachts = async () => {
@@ -74,7 +78,7 @@ const Featured = () => {
     const loadWishlist = async () => {
       if (data?.user?.userid) {
         try {
-          const wishlistItems = await fetchWishlist(data.user.userid);
+          const wishlistItems = await fetchWishlist(userId);
           const wishlistIds = new Set(wishlistItems.map(item => item.yacht));
           setFavorites(wishlistIds);
         } catch (err) {
@@ -85,10 +89,10 @@ const Featured = () => {
     };
 
     getYachts();
-    if (data) {
+    if (userId) {
       loadWishlist();
     }
-  }, [data]);
+  }, [userId]);
 
   if (loading) {
     return (
@@ -166,6 +170,14 @@ const Featured = () => {
   }
 
   const handleWishlistToggle = async (yachtId) => {
+    if (!data) {
+      toast({
+        title: "Error",
+        description: "You must Login First",
+        variant: "destructive",
+      });
+      return;
+    }
     const updatedFavorites = new Set(favorites);
     if (updatedFavorites.has(yachtId)) {
       await removeFromWishlist(data.user.userid, yachtId, 'yacht');
@@ -380,17 +392,23 @@ const Featured = () => {
                       quality={100}
                     />
                   </Button>
-                  {yachtsType == "yachts" ?   <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                  
+                  {yachtsType == "yachts" ? <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                     <span className="font-medium text-xs">
                       AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_hour_price}</span>
                       <span className="text-xs font-light ml-1">/Hour</span>
                     </span>
-                  </div> : yachtsType == "f1yachts" ?   <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                  </div>   : yachtsType == "f1yachts" ?   <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                     <span className="font-medium text-xs">
                       AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_day_price}</span>
                       <span className="text-xs font-light ml-1">/Day</span>
                     </span>
-                  </div> :""}
+                  </div> : <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                    <span className="font-medium text-xs">
+                      AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_hour_price}</span>
+                      <span className="text-xs font-light ml-1">/Hour</span>
+                    </span>
+                  </div>}
                 
                 </div>
                 <CardContent className="px-4 py-2">

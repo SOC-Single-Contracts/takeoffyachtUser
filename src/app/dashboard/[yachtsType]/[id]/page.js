@@ -38,6 +38,7 @@ import { calculateDaysBetween, f1yachtsTotal } from "@/helper/calculateDays";
 import DetailPageGallery from "@/components/lp/DetailPageGallery";
 import MapBoxComponent from "@/components/shared/dashboard/mapBox";
 import DetailPageGallery2 from "@/components/lp/DetailPageGallery2";
+import FormulaOneDashboard from "@/components/lp/FormulaOneDashboard";
 
 const Skeleton = ({ className }) => (
   <div className={`${className} bg-gray-200 animate-pulse`}></div>
@@ -946,7 +947,10 @@ const YachtDetail = () => {
       </section>
       {/* Featured Yachts Section */}
       <section className="">
-        <Featured />
+        {yachtsType == "f1yachts" ? <FormulaOneDashboard/> :  <Featured />}
+       
+            
+        
         {/* <div className="flex justify-center">
             <Link href="/dashboard/yachts">
               <Button className="rounded-full bg-[#BEA355] text-white flex justify-center mx-auto">
