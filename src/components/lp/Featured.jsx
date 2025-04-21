@@ -56,8 +56,9 @@ const Featured = () => {
   const { data } = useSession();
     const { yachtsType } = useParams();
     const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
-    const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;  
-  
+    const userId = typeof window !== "undefined"
+    ? (localStorage.getItem("userid") || data?.user?.userid || "1")
+    : (data?.user?.userid || "1"); 
 
   const getYachts = async () => {
     try {
@@ -76,7 +77,7 @@ const Featured = () => {
 
   useEffect(() => {
     const loadWishlist = async () => {
-      if (data?.user?.userid) {
+      if (userId) {
         try {
           const wishlistItems = await fetchWishlist(userId);
           const wishlistIds = new Set(wishlistItems.map(item => item.yacht));
@@ -170,7 +171,7 @@ const Featured = () => {
   }
 
   const handleWishlistToggle = async (yachtId) => {
-    if (!data) {
+    if (!userId) {
       toast({
         title: "Error",
         description: "You must Login First",
@@ -180,11 +181,11 @@ const Featured = () => {
     }
     const updatedFavorites = new Set(favorites);
     if (updatedFavorites.has(yachtId)) {
-      await removeFromWishlist(data.user.userid, yachtId, 'yacht');
+      await removeFromWishlist(userId, yachtId, 'yacht');
       updatedFavorites.delete(yachtId);
     } else {
       updatedFavorites.add(yachtId);
-      await addToWishlist(data.user.userid, yachtId, 'yacht');
+      await addToWishlist(userId, yachtId, 'yacht');
     }
     setFavorites(updatedFavorites);
   };

@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import BrandCard from './DiscountCard';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { fetchBrands } from '@/api/yachts';
+import { handleLogoutGlobal } from '@/lib/auth';
 
 
 
@@ -53,6 +54,9 @@ const PartnerDiscount = () => {
             setBrands(data)
         } catch (err) {
             console.error('Yacht fetching error:', err);
+            if(err?.status == 401){
+                handleLogoutGlobal()
+            }
         } finally {
         }
     };
