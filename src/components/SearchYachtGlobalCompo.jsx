@@ -1798,7 +1798,7 @@ const SearchYachtGlobalCompo = () => {
                     </div> */}
                   <EmblaCarouselYacht slides={images} options={OPTIONS} yachtsType={yachtsType} item={item} daysCount={daysCount} handleWishlistToggle={handleWishlistToggle} favorites={favorites} />
                   {/* <EmblaCarousel slides={SLIDES} options={OPTIONS} /> */}
-
+  
                   <Link href={`/dashboard/${yachtsType}/${item?.yacht?.id}`}>
                     <CardContent className="px-4 py-2">
                       <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
