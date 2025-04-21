@@ -22,7 +22,7 @@ import { handleDispatchBookingData } from '@/helper/bookingData';
 import { useParams } from 'next/navigation';
 import { handleDispatchwalletData } from '@/helper/walletData';
 import { getWallet } from '@/api/wallet';
-import { calculateDaysBetween, formatDate, isDateDisabled, removeLeadingZeros } from '@/helper/calculateDays';
+import { calculateDaysBetween, formatDate, formatHumanReadableTime, formatNewYearTime, isDateDisabled, removeLeadingZeros, showSelectedYachtPrice } from '@/helper/calculateDays';
 import { Loading } from '@/components/ui/loading';
 import { GlobalStateContext } from '@/context/GlobalStateContext';
 
@@ -36,6 +36,7 @@ const Selection = ({ onNext }) => {
   const [availableDates, setAvailableDates] = useState([]);
   const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
   const { yachtsType } = useParams();
+  const [newYearCondition,setNewYearCondition] = useState(false)
   const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
   const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
   const appStatWwalletContext =
@@ -87,6 +88,7 @@ const Selection = ({ onNext }) => {
         const data = await response.json();
         if (data.error_code === 'pass') {
           const available = data.availability.filter(item => item.is_available).map(item => item.date);
+          available.push("2025-12-30", "2025-12-31");
           setAvailableDates(available); // Store available dates
           setDateRange(data.date_range); // Store date range
           // console.log('Available Dates:', available,data);
@@ -135,7 +137,7 @@ const Selection = ({ onNext }) => {
       });
 
     } else if (yachtsType == "yachts") {
-      fetchAvailability();
+      // fetchAvailability();
     }
   }, [selectedYacht]);
 
@@ -215,38 +217,7 @@ const Selection = ({ onNext }) => {
     }, 0);
   };
 
-  const calculateTotal = () => {
-    if (!selectedYacht?.yacht) return 0;
 
-    let baseTotal = 0;
-    const basePrice = selectedYacht.yacht.per_hour_price || 0;
-    const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;
-    const perDayPrice = selectedYacht.yacht.per_day_price || 0;
-
-    // Check if it's a date range booking
-    if (bookingData?.endDate && bookingData?.date) {
-      const startDate = new Date(bookingData?.date);
-      const endDate = new Date(bookingData?.endDate);
-      const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-      baseTotal = perDayPrice * days;
-    } else {
-      // Hourly booking
-      const hours = bookingData?.duration || 3;
-      const isNewYearsEve = bookingData?.date &&
-        new Date(bookingData?.date).getMonth() === 11 &&
-        new Date(bookingData?.date).getDate() === 31;
-
-      const hourlyRate = isNewYearsEve ? newYearPrice : basePrice;
-      baseTotal = hourlyRate * hours;
-    }
-
-    // Calculate extras total
-    const extrasTotal = Object.values(extras).reduce((total, category) => {
-      return total + calculateCategoryTotal(category);
-    }, 0);
-
-    return baseTotal + extrasTotal;
-  };
 
   const handleNext = async () => {
     setLoading(true);
@@ -263,14 +234,12 @@ const Selection = ({ onNext }) => {
         // }
 
         // Check if it's New Year's Eve
-        const isNewYearsEve = new Date(bookingData?.date).getMonth() === 11 &&
-          new Date(bookingData?.date).getDate() === 31;
+        const isNewYearsEve = newYearCondition
 
         // Show warning for New Year's Eve bookings
         if (isNewYearsEve) {
-          toast.warning("New Year's Eve rates apply for this booking date", {
-            description: "Special pricing will be calculated accordingly."
-          });
+          toast({ title: 'Warning', description: `New Year's Eve rates apply for this booking date Special pricing will be calculated accordingly. ` });
+
         }
 
         const allExtras = [...extras.food, ...extras.extra, ...extras.sport];
@@ -309,14 +278,13 @@ const Selection = ({ onNext }) => {
         // }
 
         // Check if it's New Year's Eve
-        const isNewYearsEve = new Date(bookingData?.date).getMonth() === 11 &&
-          new Date(bookingData?.date).getDate() === 31;
+        const isNewYearsEve = newYearCondition
 
         // Show warning for New Year's Eve bookings
         if (isNewYearsEve) {
-          toast.warning("New Year's Eve rates apply for this booking date", {
-            description: "Special pricing will be calculated accordingly."
-          });
+             
+      toast({ title: 'Warning', description: `New Year's Eve rates apply for this booking date Special pricing will be calculated accordingly. ` });
+
         }
 
         const allExtras = [...extras.food, ...extras.extra, ...extras.sport];
@@ -441,64 +409,102 @@ const Selection = ({ onNext }) => {
   );
 
   const handleDateSelect = (range) => {
-    // const today = new Date();
-    // const currentYear = today.getFullYear();
-    // const dateYear = date.getFullYear();
-//  console.log(range)
-    // if(dateYear !== currentYear){
-// console.log("working")
-    // }else{
+    // console.log(range)
 
-      if (!range) return;
-
-      // Check if the selected date is available
-      const selectedDate = format(range.from, 'yyyy-MM-dd');
-      if (!availableDates.includes(selectedDate)) {
-        toast({
-          title: "Error",
-          description: "Selected date is not available.",
-          variant: "destructive",
-        });
-        return;
-      }
-  
-      // If clicking the same date again or selecting first date
-      if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
-        updateBookingData({
-          date: range.from,
-          endDate: null,
-          bookingType: 'hourly'
-        });
-        return;
-      }
-  
-      // For date range, validate both dates
-      if (range.to) {
-        const endDate = format(range.to, 'yyyy-MM-dd');
-        if (!availableDates.includes(endDate)) {
-          // toast.error("End date is not available.");
-          return;
-        }
-  
-        updateBookingData({
-          date: range.from,
-          endDate: range.to,
-          bookingType: 'date_range'
-        });
-      }
+    // if (!range) return;
+    // const selectedDate = format(range.from, 'yyyy-MM-dd');
+    // if (!availableDates.includes(selectedDate)) {
+    //   toast({
+    //     title: "Error",
+    //     description: "Selected date is not available.",
+    //     variant: "destructive",
+    //   });
+    //   return;
     // }
+
+    // // If clicking the same date again or selecting first date
+    // if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
+    //   updateBookingData({
+    //     date: range.from,
+    //     endDate: null,
+    //     bookingType: 'hourly'
+    //   });
+    //   return;
+    // }
+
+    // if (range.to) {
+    //   const endDate = format(range.to, 'yyyy-MM-dd');
+    //   if (!availableDates.includes(endDate)) {
+    //     return;
+    //   }
+
+    //   updateBookingData({
+    //     date: range.from,
+    //     endDate: range.to,
+    //     bookingType: 'date_range'
+    //   });
+    // }
+
+
+    if (!range) return;
+
+    // If clicking the same date again or selecting first date
+    if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
+      updateBookingData({
+        date: range.from,
+        endDate: null,
+        bookingType: 'hourly'
+      });
+      return;
+    }
+
+    if (range.to) {
+
+      updateBookingData({
+        date: range.from,
+        endDate: range.to,
+        bookingType: 'date_range'
+      });
+    }
+
 
   };
 
+  useEffect(() => {
+    if((bookingData?.date && new Date(bookingData.date).getMonth() === 11 && new Date(bookingData.date).getDate() === 31) && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time )
+    setNewYearCondition(true)
+    // console.log("bookingData", bookingData)
+  }, [bookingData,selectedYacht])
+
+  useEffect(() => {
+    if (newYearCondition && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time) {
+      const nyStartTimeStr = selectedYacht.yacht.ny_start_time; // "18:00:00"
+      const nyEndTimeStr = selectedYacht.yacht.ny_end_time;     // "22:00:00"
+  
+      const baseDate = bookingData?.date ? new Date(bookingData.date) : new Date(); // fallback to today
+  
+      const [startHours, startMinutes, startSeconds] = nyStartTimeStr.split(':').map(Number);
+      const [endHours, endMinutes, endSeconds] = nyEndTimeStr.split(':').map(Number);
+  
+      const startTime = new Date(baseDate);
+      startTime.setHours(startHours, startMinutes, startSeconds || 0);
+  
+      const endTime = new Date(baseDate);
+      endTime.setHours(endHours, endMinutes, endSeconds || 0);
+  
+      updateBookingData({ startTime, endTime });
+    }
+  }, [newYearCondition, selectedYacht]);
 
   //test
-  // useEffect(()=>{
-  // console.log("bookingData",bookingData)
-  // },[bookingData])
-
-  //   useEffect(()=>{
-  // console.log("selectedYacht",selectedYacht)
-  //   },[selectedYacht])
+  // useEffect(() => {
+  //   console.log("availableDates", availableDates)
+  // }, [availableDates])
+  // useEffect(() => {
+  //   console.log("selectedYacht", selectedYacht)
+  //   console.log(showSelectedYachtPrice(selectedYacht, yachtsType, bookingData))
+  //   console.log("newYearCondition",newYearCondition)
+  // }, [selectedYacht, yachtsType, bookingData,newYearCondition])
 
 
   if (loading || !selectedYacht) {
@@ -621,7 +627,7 @@ const Selection = ({ onNext }) => {
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "w-full max-w-[300px] justify-start text-left font-normal",
+                      "w-full max-w-[350px]] justify-start text-left font-normal",
                       !bookingData?.date && "text-muted-foreground"
                     )}
                   >
@@ -765,37 +771,82 @@ const Selection = ({ onNext }) => {
                 <div className="flex justify-between items-start">
                   {yachtsType == "yachts" ? <>
 
-                    <div className="flex flex-col space-y-2">
-                      <Label className="text-sm font-medium">
-                        Start Time<span className='text-red-500'>*</span>
-                      </Label>
-                      <Select
-                        value={format(bookingData?.startTime, "HH:mm")}
-                        onValueChange={(time) => {
-                          const [hours, minutes] = time.split(':');
-                          const newDate = new Date(bookingData?.date);
-                          newDate.setHours(parseInt(hours), parseInt(minutes));
-                          updateBookingData({ startTime: newDate });
-                        }}
-                      >
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select time">
-                            <div className="flex items-center">
-                              <Clock className="mr-2 h-4 w-4" />
-                              {/* {format(bookingData?.startTime, "h:mm a")} */}
-                              {format(bookingData?.startTime, "HH:mm")}
-                            </div>
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {generateTimeSlots().map((time) => (
-                            <SelectItem key={time} value={time}>
-                              {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
-                              {time}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    <div>
+                      {newYearCondition && <>
+                        <div className='my-2'>
+  New Year Booking Time:
+  <span className="text-lg font-semibold text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-2">
+    {formatHumanReadableTime(selectedYacht?.yacht?.ny_start_time)} to {formatHumanReadableTime(selectedYacht?.yacht?.ny_end_time)}
+  </span>
+</div>
+
+
+                      </>}
+                      <div className="flex flex-col space-y-2">
+                        <Label className="text-sm font-medium">
+                          Start Time<span className='text-red-500'>*</span>
+                        </Label>
+                        <Select
+                          value={format(bookingData?.startTime, "HH:mm")}
+                          onValueChange={(time) => {
+                            const [hours, minutes] = time.split(':');
+                            const newDate = new Date(bookingData?.date);
+                            newDate.setHours(parseInt(hours), parseInt(minutes));
+                            updateBookingData({ startTime: newDate });
+                          }}
+                        >
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select time">
+                              <div className="flex items-center">
+                                <Clock className="mr-2 h-4 w-4" />
+                                {/* {format(bookingData?.startTime, "h:mm a")} */}
+                                {format(bookingData?.startTime, "HH:mm")}
+                              </div>
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {generateTimeSlots().map((time) => (
+                              <SelectItem key={time} value={time}>
+                                {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
+                                {time}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {newYearCondition && <div className="flex flex-col space-y-2 mt-3">
+                        <Label className="text-sm font-medium">
+                          End Time<span className='text-red-500'>*</span>
+                        </Label>
+                        <Select
+                          value={format(bookingData?.endTime, "HH:mm")}
+                          onValueChange={(time) => {
+                            const [hours, minutes] = time.split(':');
+                            const newDate = new Date(bookingData?.date);
+                            newDate.setHours(parseInt(hours), parseInt(minutes));
+                            updateBookingData({ endTime: newDate });
+                          }}
+                        >
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select time">
+                              <div className="flex items-center">
+                                <Clock className="mr-2 h-4 w-4" />
+                                {/* {format(bookingData?.startTime, "h:mm a")} */}
+                                {format(bookingData?.endTime, "HH:mm")}
+                              </div>
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {generateTimeSlots().map((time) => (
+                              <SelectItem key={time} value={time}>
+                                {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
+                                {time}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>}
+
                     </div>
                     <div className="flex flex-col items-end space-y-2">
                       <Label className="text-sm font-medium">Duration (min 3 hrs)<span className='text-red-500'>*</span></Label>
@@ -986,7 +1037,7 @@ const Selection = ({ onNext }) => {
             {yachtsType == "yachts" ? <div className="space-y-2">
               {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
                 {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
-                AED <span className="text-2xl font-bold">{selectedYacht?.yacht?.per_hour_price}/hour</span>
+                AED <span className="text-2xl font-bold">{showSelectedYachtPrice(selectedYacht, yachtsType, bookingData)}/hour</span>
 
 
                 {/* {bookingData?.endDate ? (
@@ -1002,7 +1053,7 @@ const Selection = ({ onNext }) => {
               : yachtsType == "f1yachts" ? <div className="space-y-2">
                 {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
                   {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
-                  AED <span className="text-2xl font-bold">{selectedYacht?.yacht?.per_day_price}{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}</span>
+                  AED <span className="text-2xl font-bold">{showSelectedYachtPrice(selectedYacht, yachtsType, bookingData)}{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}</span>
 
 
                   {/* {bookingData?.endDate ? (

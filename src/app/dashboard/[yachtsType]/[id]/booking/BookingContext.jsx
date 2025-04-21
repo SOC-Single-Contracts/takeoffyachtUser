@@ -13,6 +13,7 @@ export const BookingProvider = ({ children }) => {
     date: new Date(),
     endDate: null,
     startTime: new Date(),
+    endTime: new Date(),
     duration: 3,
     bookingType: 'hourly',
     adults: 0,
