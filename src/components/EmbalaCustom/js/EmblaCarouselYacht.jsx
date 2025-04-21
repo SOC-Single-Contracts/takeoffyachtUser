@@ -68,7 +68,7 @@ const EmblaCarouselYacht = (props) => {
 
             />
           )) : <Image
-          className="object-cover px-4 pt-3 rounded-[1.8rem] w-full h-[240px] ml-1.5"
+          className="object-cover pl-3 pr-3 pt-3 rounded-[1.8rem] w-full h-[240px] ml-4"
             src={`/assets/images/fycht.jpg`}
             alt="loadAlt"
             height={240}
