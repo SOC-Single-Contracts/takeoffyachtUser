@@ -380,17 +380,18 @@ const Featured = () => {
                       quality={100}
                     />
                   </Button>
-                  {yachtsType == "yachts" ?   <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                  <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                     <span className="font-medium text-xs">
                       AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_hour_price}</span>
                       <span className="text-xs font-light ml-1">/Hour</span>
                     </span>
-                  </div> : yachtsType == "f1yachts" ?   <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+                  </div>
+                  {/* {yachtsType == "yachts" ?    : yachtsType == "f1yachts" ?   <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                     <span className="font-medium text-xs">
                       AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_day_price}</span>
                       <span className="text-xs font-light ml-1">/Day</span>
                     </span>
-                  </div> :""}
+                  </div> :""} */}
                 
                 </div>
                 <CardContent className="px-4 py-2">
