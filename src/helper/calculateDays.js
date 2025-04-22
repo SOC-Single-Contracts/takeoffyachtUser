@@ -78,7 +78,7 @@ export function isDateDisabled(date, availableDates, dateRange) {
 
 
 
-export const showSelectedYachtPrice = (selectedYacht, yachtsType, bookingData) => {
+export const showSelectedYachtPrice = (selectedYacht, yachtsType, bookingData,newYearCondition) => {
   let price = 0;
 
   if (!selectedYacht?.yacht) return 0;
@@ -95,11 +95,7 @@ export const showSelectedYachtPrice = (selectedYacht, yachtsType, bookingData) =
 
   if (yachtsType === "yachts") {
     if (bookingData?.bookingType === "hourly") {
-      const isNewYearsEve = (
-        bookingDate &&
-        bookingDate.getMonth() === 11 && // December
-        bookingDate.getDate() === 31      // 31st December
-      );
+      const isNewYearsEve = newYearCondition;
       if (isNewYearsEve) {
         let isWithinNewYearEveTime = false;
         // console.log(bookingData?.startTime, bookingData?.endTime, nyStartTime, nyEndTime)

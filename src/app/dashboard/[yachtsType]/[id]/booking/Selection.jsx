@@ -505,7 +505,7 @@ const Selection = ({ onNext }) => {
   // }, [availableDates])
   // useEffect(() => {
   //   console.log("selectedYacht", selectedYacht)
-  //   console.log(showSelectedYachtPrice(selectedYacht, yachtsType, bookingData))
+  //   console.log(showSelectedYachtPrice(selectedYacht, yachtsType, bookingData,newYearCondition))
   //   console.log("newYearCondition",newYearCondition)
   // }, [selectedYacht, yachtsType, bookingData,newYearCondition])
 
@@ -1040,7 +1040,7 @@ const Selection = ({ onNext }) => {
             {yachtsType == "yachts" ? <div className="space-y-2">
               {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
                 {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
-                AED <span className="text-2xl font-bold">{showSelectedYachtPrice(selectedYacht, yachtsType, bookingData)}/hour</span>
+                AED <span className="text-2xl font-bold">{showSelectedYachtPrice(selectedYacht, yachtsType, bookingData,newYearCondition)}/hour</span>
 
 
                 {/* {bookingData?.endDate ? (
@@ -1056,7 +1056,7 @@ const Selection = ({ onNext }) => {
               : yachtsType == "f1yachts" ? <div className="space-y-2">
                 {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
                   {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
-                  AED <span className="text-2xl font-bold">{showSelectedYachtPrice(selectedYacht, yachtsType, bookingData)}{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}</span>
+                  AED <span className="text-2xl font-bold">{showSelectedYachtPrice(selectedYacht, yachtsType, bookingData,newYearCondition)}{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}</span>
 
 
                   {/* {bookingData?.endDate ? (
