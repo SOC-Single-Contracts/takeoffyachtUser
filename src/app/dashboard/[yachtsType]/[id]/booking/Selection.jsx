@@ -22,7 +22,7 @@ import { handleDispatchBookingData } from '@/helper/bookingData';
 import { useParams } from 'next/navigation';
 import { handleDispatchwalletData } from '@/helper/walletData';
 import { getWallet } from '@/api/wallet';
-import { calculateDaysBetween, formatDate, formatHumanReadableTime, formatNewYearTime, isDateDisabled, removeLeadingZeros, showSelectedYachtPrice } from '@/helper/calculateDays';
+import { calculateDaysBetween, checkNewYearApplied, formatDate, formatHumanReadableTime, formatNewYearTime, isDateDisabled, removeLeadingZeros, showSelectedYachtPrice } from '@/helper/calculateDays';
 import { Loading } from '@/components/ui/loading';
 import { GlobalStateContext } from '@/context/GlobalStateContext';
 
@@ -36,7 +36,9 @@ const Selection = ({ onNext }) => {
   const [availableDates, setAvailableDates] = useState([]);
   const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
   const { yachtsType } = useParams();
-  const [newYearCondition,setNewYearCondition] = useState(false)
+  const [newYearCanApply,setNewYearCanApply] = useState(false)
+  const [newYearApplied,setNewYearApplied] = useState(false)
+
   const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
   const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
   const appStatWwalletContext =
@@ -234,7 +236,7 @@ const Selection = ({ onNext }) => {
         // }
 
         // Check if it's New Year's Eve
-        const isNewYearsEve = newYearCondition
+        const isNewYearsEve = newYearApplied;
 
         // Show warning for New Year's Eve bookings
         if (isNewYearsEve) {
@@ -278,7 +280,7 @@ const Selection = ({ onNext }) => {
         // }
 
         // Check if it's New Year's Eve
-        const isNewYearsEve = newYearCondition
+        const isNewYearsEve = newYearApplied;
 
         // Show warning for New Year's Eve bookings
         if (isNewYearsEve) {
@@ -472,15 +474,15 @@ const Selection = ({ onNext }) => {
 
   useEffect(() => {
     if((bookingData?.date && new Date(bookingData.date).getMonth() === 11 && new Date(bookingData.date).getDate() === 31) && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time ){
-      setNewYearCondition(true)
+      setNewYearCanApply(true)
     }else{
-      setNewYearCondition(false)
+      setNewYearCanApply(false)
     }
     // console.log("bookingData", bookingData)
   }, [bookingData,selectedYacht])
 
   useEffect(() => {
-    if (newYearCondition && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time) {
+    if (newYearCanApply && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time) {
       const nyStartTimeStr = selectedYacht.yacht.ny_start_time; // "18:00:00"
       const nyEndTimeStr = selectedYacht.yacht.ny_end_time;     // "22:00:00"
   
@@ -497,17 +499,27 @@ const Selection = ({ onNext }) => {
   
       updateBookingData({ startTime, endTime });
     }
-  }, [newYearCondition, selectedYacht]);
+  }, [newYearCanApply, selectedYacht]);
+
+  useEffect(() => {
+    let check = checkNewYearApplied(selectedYacht, yachtsType, bookingData,newYearCanApply);
+    setNewYearApplied(check)
+  }, [selectedYacht, yachtsType, bookingData,newYearCanApply])
 
   //test
   // useEffect(() => {
   //   console.log("availableDates", availableDates)
   // }, [availableDates])
   // useEffect(() => {
-  //   console.log("selectedYacht", selectedYacht)
-  //   console.log(showSelectedYachtPrice(selectedYacht, yachtsType, bookingData,newYearCondition))
-  //   console.log("newYearCondition",newYearCondition)
-  // }, [selectedYacht, yachtsType, bookingData,newYearCondition])
+    // console.log("selectedYacht", selectedYacht)
+    // console.log(showSelectedYachtPrice(selectedYacht, yachtsType, bookingData,newYearCanApply))
+  // }, [selectedYacht, yachtsType, bookingData,newYearCanApply])
+
+
+  // useEffect(()=>{
+  //    console.log("newYearApplied",newYearApplied)
+  //    console.log("newYearCanApply",newYearCanApply)
+  // },[newYearApplied,newYearCanApply])
 
 
   if (loading || !selectedYacht) {
@@ -775,7 +787,7 @@ const Selection = ({ onNext }) => {
                   {yachtsType == "yachts" ? <>
 
                     <div>
-                      {newYearCondition && <>
+                      {newYearCanApply && <>
                         <div className='my-2'>
   New Year Booking Time:
   <span className="text-lg font-semibold text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-2">
@@ -817,7 +829,7 @@ const Selection = ({ onNext }) => {
                           </SelectContent>
                         </Select>
                       </div>
-                      {newYearCondition && <div className="flex flex-col space-y-2 mt-3">
+                      {newYearCanApply && <div className="flex flex-col space-y-2 mt-3">
                         <Label className="text-sm font-medium">
                           End Time<span className='text-red-500'>*</span>
                         </Label>
@@ -1040,7 +1052,7 @@ const Selection = ({ onNext }) => {
             {yachtsType == "yachts" ? <div className="space-y-2">
               {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
                 {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
-                AED <span className="text-2xl font-bold">{showSelectedYachtPrice(selectedYacht, yachtsType, bookingData,newYearCondition)}/hour</span>
+                AED <span className="text-2xl font-bold">{newYearApplied ? selectedYacht?.yacht?.new_year_per_hour_price : selectedYacht?.yacht?.per_hour_price}/hour</span>
 
 
                 {/* {bookingData?.endDate ? (
@@ -1056,7 +1068,7 @@ const Selection = ({ onNext }) => {
               : yachtsType == "f1yachts" ? <div className="space-y-2">
                 {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
                   {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
-                  AED <span className="text-2xl font-bold">{showSelectedYachtPrice(selectedYacht, yachtsType, bookingData,newYearCondition)}{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}</span>
+                  AED <span className="text-2xl font-bold">{newYearApplied ? selectedYacht?.yacht?.new_year_per_day_price : selectedYacht?.yacht?.per_day_price}{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}</span>
 
 
                   {/* {bookingData?.endDate ? (
