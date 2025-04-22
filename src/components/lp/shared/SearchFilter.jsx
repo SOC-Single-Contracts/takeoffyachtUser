@@ -747,7 +747,6 @@ const SearchFilter = () => {
                         mode="single"
                         selected={selectedDateRange}
                         onSelect={(range) => {
-                          console.log(range)
                           setSelectedDateRange({ from: range, to: null });
                           if (range) {
                             setActiveSearchTab("who");
