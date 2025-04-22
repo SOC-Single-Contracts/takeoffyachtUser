@@ -471,8 +471,11 @@ const Selection = ({ onNext }) => {
   };
 
   useEffect(() => {
-    if((bookingData?.date && new Date(bookingData.date).getMonth() === 11 && new Date(bookingData.date).getDate() === 31) && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time )
-    setNewYearCondition(true)
+    if((bookingData?.date && new Date(bookingData.date).getMonth() === 11 && new Date(bookingData.date).getDate() === 31) && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time ){
+      setNewYearCondition(true)
+    }else{
+      setNewYearCondition(false)
+    }
     // console.log("bookingData", bookingData)
   }, [bookingData,selectedYacht])
 
