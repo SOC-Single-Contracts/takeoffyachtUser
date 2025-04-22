@@ -238,7 +238,7 @@ const Selection = ({ onNext }) => {
 
         // Show warning for New Year's Eve bookings
         if (isNewYearsEve) {
-          toast({ title: 'Warning', description: `New Year's Eve rates apply for this booking date Special pricing will be calculated accordingly. ` });
+          toast({ title: 'Note', description: `New Year's Eve rates apply for this booking date Special pricing will be calculated accordingly. ` });
 
         }
 
@@ -283,7 +283,7 @@ const Selection = ({ onNext }) => {
         // Show warning for New Year's Eve bookings
         if (isNewYearsEve) {
              
-      toast({ title: 'Warning', description: `New Year's Eve rates apply for this booking date Special pricing will be calculated accordingly. ` });
+      toast({ title: 'Note', description: `New Year's Eve rates apply for this booking date Special pricing will be calculated accordingly. ` });
 
         }
 
