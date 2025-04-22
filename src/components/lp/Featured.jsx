@@ -372,9 +372,9 @@ const Featured = () => {
                       </Button>
                     </CarouselNext>
                   </Carousel>
-                  <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}> 
+                  {/* <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}> 
                     <div className="absolute inset-0"></div>
-                  </Link>
+                  </Link> */}
 
                   <Button
                     variant="secondary"
@@ -412,6 +412,8 @@ const Featured = () => {
                   </div>}
                 
                 </div>
+                <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}> 
+
                 <CardContent className="px-4 py-2">
                   <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
                     <MapPin className="size-3 mr-1" /> {yachtItem.yacht.location || "Location Not Available"}
@@ -440,6 +442,7 @@ const Featured = () => {
                     </div>
                   </div>
                 </CardContent>
+                </Link>
               </Card>
             );
           })}

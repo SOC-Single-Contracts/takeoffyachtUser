@@ -214,9 +214,9 @@ const FormulaOneDashboard = () => {
                     }}
                   />
 
-                  <Link href={`/dashboard/f1yachts/${item?.yacht.id}`}>
+                  {/* <Link href={`/dashboard/f1yachts/${item?.yacht.id}`}>
                     <div className="absolute inset-0"></div>
-                  </Link>
+                  </Link> */}
 
                   {/* <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-900 backdrop-blur-sm p-1.5 rounded-md">
                     <span className="text-xs font-medium">
@@ -224,6 +224,8 @@ const FormulaOneDashboard = () => {
                     </span>
                   </div> */}
                 </div>
+                   <Link href={`/dashboard/f1yachts/${item?.yacht.id}`}>
+
                 <CardContent className="px-4 py-2">
                   <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
                     <MapPin className="size-3 mr-1" /> {item?.yacht.location || "Location Not Available"}
@@ -252,6 +254,7 @@ const FormulaOneDashboard = () => {
                     </div>
                   </div>
                 </CardContent>
+            </Link>
               </Card>
             );
           })}
