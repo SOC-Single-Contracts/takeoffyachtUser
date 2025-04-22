@@ -557,7 +557,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment, bookingDetails, se
 
             {/* Wallet Details */}
             <div>
-              <Label htmlFor="partial-payment" className="text-base font-medium">
+              <Label htmlFor="partial-payment" className="text-base font-medium  text-[#BEA355]">
                 Rewards & Wallet
               </Label>
               <p className="text-sm text-[#BEA355]">
