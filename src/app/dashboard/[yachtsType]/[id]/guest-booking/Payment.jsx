@@ -641,12 +641,9 @@ const Payment = () => {
           )}
               </span>
               <span className='font-medium'>
-                AED {(bookingData.isNewYearBooking ? 
-                  (selectedYacht?.yacht?.new_year_price || 0) : 
-                  (selectedYacht?.yacht?.per_hour_price || 0)) * 
-                  (bookingDetails?.booking_type === 'date_range' ? 
-                    calculateDays(bookingDetails?.selected_date, bookingDetails?.end_date) : 
-                    bookingData.duration)}
+              {yachtsType == "yachts" ? <span className='font-medium'>
+                AED {bookingDetails ? bookingDetails.total_cost : dueAmountAlltime}
+              </span> : yachtsType == "f1yachts" ? "" : ""}
               </span>
             </div>
             {(bookingDetails?.extras_data || bookingData.extras)?.map((item) => (

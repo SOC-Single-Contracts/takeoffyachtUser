@@ -383,7 +383,7 @@ const Summary = ({ onNext, initialBookingId }) => {
   };
 
   const renderPriceSummary = () => {
-    const totalCost = bookingDetails.total_cost || calculateTotal();
+    const totalCost = bookingDetails.total_cost;
     const paidCost = bookingDetails.paid_cost || 0;
     const remainingCost = bookingDetails.remaining_cost || 0;
 
