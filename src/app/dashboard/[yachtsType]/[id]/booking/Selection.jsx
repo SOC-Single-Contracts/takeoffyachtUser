@@ -466,7 +466,7 @@ const Selection = ({ onNext }) => {
         bookingType: 'date_range'
       });
     }
-
+    
 
   };
 
