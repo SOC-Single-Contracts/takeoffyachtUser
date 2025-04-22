@@ -153,12 +153,12 @@ const SearchFilter = () => {
   // console.log("guests",guests)
   //   },[guests])
 
-  const handleGuestChange = (type, action) => { 
+  const handleGuestChange = (type, action) => {
     setMaxGuest("");
-  
+
     setMinimumGuests(prev => {
       const currentValue = prev[type] === "" ? 0 : prev[type]; // if "" treat as 0
-  
+
       return {
         ...prev,
         [type]: action === 'increase'
@@ -167,7 +167,7 @@ const SearchFilter = () => {
       };
     });
   };
-  
+
 
   const handleSearch = async () => {
     setLoading(true);
@@ -175,7 +175,7 @@ const SearchFilter = () => {
       const totalGuests = minimumGuests?.capacity;
       const formattedStartDate = selectedDateRange?.from ? format(selectedDateRange?.from, 'yyyy-MM-dd') : null;
       const formattedEndDate = selectedDateRange?.to ? format(selectedDateRange?.to, 'yyyy-MM-dd') : null;
-  
+
       // Check if at least one criterion is provided
       if (!selectedCity && !formattedStartDate && (totalGuests === 0 || totalGuests == "")) {
         toast({
@@ -352,9 +352,9 @@ const SearchFilter = () => {
   //   console.log("minimumGuests",minimumGuests)
   //   console.log("maxGuest",maxGuest)
   //   console.log("initialRender",initialRender)
-    // return()=>{
-    //   setInitialRender(true)
-    // }
+  // return()=>{
+  //   setInitialRender(true)
+  // }
   // }, [minimumGuests, maxGuest, initialRender])
 
   // useEffect(() => {
@@ -562,7 +562,7 @@ const SearchFilter = () => {
                             <Input
                               type="number"
                               min="0"
-                             value={removeLeadingZeros(minimumGuests[type].toString())}  
+                              value={removeLeadingZeros(minimumGuests[type].toString())}
                               // onChange={(e) => {
                               //   const value = parseInt(e.target.value, 10) || 0;
                               //   setMinimumGuests(prev => ({
@@ -608,7 +608,7 @@ const SearchFilter = () => {
                           </div>
                         </div>
                       ))}
-                      <div className="flex flex-wra pt-4 items-end gap-2 md:gap-0 md:space-y-0 space-y-1.5 overflow-y-auto md:space-x-1 justify-between">
+                      {/* <div className="flex flex-wra pt-4 items-end gap-2 md:gap-0 md:space-y-0 space-y-1.5 overflow-y-auto md:space-x-1 justify-between">
                         <Button
                           variant="outline"
                           type="button" // Change to button to prevent form submission
@@ -645,7 +645,47 @@ const SearchFilter = () => {
                           <Image src="/assets/images/threeuser.svg" className='dark:invert' width={20} height={20} alt="" />
                           50+
                         </Button>
+                      </div> */}
+                      <div className="flex w-full justify-between pt-4 gap-2">
+                        <Button
+                          variant="outline"
+                          type="button"
+                          onClick={() => handleGuestSelection("1 - 10")}
+                          className="flex-1 border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center justify-center text-xs min-w-0"
+                        >
+                          <Image src="/assets/images/oneuser.svg" className="dark:invert" width={20} height={20} alt="" />
+                          1 - 10
+                        </Button>
+                        <Button
+                          variant="outline"
+                          type="button"
+                          onClick={() => handleGuestSelection("10 - 30")}
+                          className="flex-1 border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center justify-center text-xs min-w-0"
+                        >
+                          <Image src="/assets/images/twouser.svg" className="dark:invert" width={20} height={20} alt="" />
+                          10 - 30
+                        </Button>
+                        <Button
+                          variant="outline"
+                          type="button"
+                          onClick={() => handleGuestSelection("30 - 50")}
+                          className="flex-1 border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center justify-center text-xs min-w-0"
+                        >
+                          <Image src="/assets/images/threeuser.svg" className="dark:invert" width={20} height={20} alt="" />
+                          30 - 50
+                        </Button>
+                        <Button
+                          variant="outline"
+                          type="button"
+                          onClick={() => handleGuestSelection("50+")}
+                          className="flex-1 border-2 dark:bg-gray-600 border-[#BEA355] h-[75px] flex flex-col items-center justify-center text-xs min-w-0"
+                        >
+                          <Image src="/assets/images/threeuser.svg" className="dark:invert" width={20} height={20} alt="" />
+                          50+
+                        </Button>
                       </div>
+
+
                     </TabsContent>
                     <TabsContent
                       value="where"
@@ -703,11 +743,13 @@ const SearchFilter = () => {
                   <TabsContent value="when" className="flex justify-center">
                     <div className="bg-white dark:bg-gray-800 rounded-2xl">
                       <Calendar
-                        mode="range"
+                        // mode="range"
+                        mode="single"
                         selected={selectedDateRange}
                         onSelect={(range) => {
-                          setSelectedDateRange(range);
-                          if (range?.to) {
+                          console.log(range)
+                          setSelectedDateRange({ from: range, to: null });
+                          if (range) {
                             setActiveSearchTab("who");
                           }
                         }}

@@ -13,9 +13,12 @@ import BrandCard from './DiscountCard';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { fetchBrands } from '@/api/yachts';
 import { handleLogoutGlobal } from '@/lib/auth';
+import DiscountSliderEmbala from '@/components/DiscountSlider/js/EmblaCarouselDiscount';
 
 
-
+const OPTIONS = { align: 'start' }
+const SLIDE_COUNT = 6
+const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
 
 const PartnerDiscount = () => {
     const router = useRouter();
@@ -54,7 +57,7 @@ const PartnerDiscount = () => {
             setBrands(data)
         } catch (err) {
             console.error('Yacht fetching error:', err);
-            if(err?.status == 401){
+            if (err?.status == 401) {
                 handleLogoutGlobal()
             }
         } finally {
@@ -110,9 +113,9 @@ const PartnerDiscount = () => {
         }
     }, [token])
     //test
-    useEffect(() => {
-        // console.log("branfds", brands)
-    }, [brands])
+    // useEffect(() => {
+    //     // console.log("branfds", brands)
+    // }, [brands])
     // If not logged in, show login prompt
     if (!session) {
         return (
@@ -149,10 +152,20 @@ const PartnerDiscount = () => {
             </div>
 
             <div className='w-full max-w-3xl mx-auto'>
+
+                
                 <form
                     onSubmit={handleSubmit}
-                    className='w-full space-y-6'>
-                    <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6'>
+                    className='w-full space-y-6 '>
+                    <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6 '>
+
+                        
+                     {brands?.length > 0 && <div className="container classForEmbalaCaroselDiscount mx-auto pb-6 px-6">
+                        <h1 className="text-md md:text-lg mb-5 mt-3 mx-3 font-bold">All Brands</h1>
+
+                        <DiscountSliderEmbala slides={brands} />
+               
+            </div>}
 
                         <div className="space-y-2 my-2">
                             <Label htmlFor="promoCode">
@@ -182,11 +195,16 @@ const PartnerDiscount = () => {
                 </form>
             </div>
 
-            {brands?.length > 0 && <div className="container mx-auto pb-6 px-6">
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 place-items-center justify-center w-full">
+            {brands?.length > 0 && <div className="container  mx-auto pb-6 px-6">
+                <h1 className="text-md md:text-lg mb-5 mt-3 mx-3 font-bold">Brands List</h1>
+
+                <div className="grid  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 place-items-center justify-center w-full">
                     {brands?.map((brand) => (
+                        <>
                         <BrandCard key={brand?.id} brand={brand} />
-                    ))}
+
+                        </>
+                    ))}   
                 </div>
             </div>}
 
