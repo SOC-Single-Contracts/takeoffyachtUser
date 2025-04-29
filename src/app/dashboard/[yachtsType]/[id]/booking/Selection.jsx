@@ -146,7 +146,7 @@ const Selection = ({ onNext }) => {
         duration: selectedYacht?.yacht?.duration_hour ? selectedYacht?.yacht?.duration_hour : 3
       });
     }
-  }, [selectedYacht]);
+  }, [selectedYacht,isUserNewYearBooking]);
 
   useEffect(() => {
     const fetchExtras = async () => {
@@ -909,7 +909,7 @@ const Selection = ({ onNext }) => {
                       </div>} */}
 
                     </div>
-                    {!newYearCanApply && <div className="flex flex-col items-end space-y-2">
+                    {!isUserNewYearBooking && <div className="flex flex-col items-end space-y-2">
                       <Label className="text-sm font-medium">{`Duration (min ${selectedYacht?.yacht?.duration_hour ? selectedYacht?.yacht?.duration_hour : 3} hrs)`}<span className='text-red-500'>*</span></Label>
                       <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
                         <Button
