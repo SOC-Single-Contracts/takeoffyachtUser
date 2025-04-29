@@ -844,7 +844,7 @@ const Selection = ({ onNext }) => {
 
 
                       </>}
-                      {!newYearCanApply && <div className="flex flex-col space-y-2">
+                      {!isUserNewYearBooking && <div className="flex flex-col space-y-2">
                         <Label className="text-sm font-medium">
                           Start Time<span className='text-red-500'>*</span>
                         </Label>
