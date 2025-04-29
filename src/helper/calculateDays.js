@@ -1,4 +1,4 @@
-import { format, setHours, setMinutes, isAfter, isBefore, parse, addHours } from 'date-fns';
+import { format, setHours, setMinutes, isAfter, isBefore, parse, addHours,differenceInMinutes, addDays  } from 'date-fns';
 
 
 export const calculateDaysBetween = (fromDate, toDate) => {
@@ -244,3 +244,28 @@ function generateTimeSlotsInRange(startStr, endStr) {
     return [];
   }
 }
+
+
+export const calculateDurationBetweenTimes = (ny_start_time, ny_end_time) => {
+  if (!ny_start_time || !ny_end_time) return null;
+
+  try {
+    const base = new Date();
+
+    let start = parse(ny_start_time, 'HH:mm:ss', base);
+    let end = parse(ny_end_time, 'HH:mm:ss', base);
+
+    if (end <= start) {
+      end = addDays(end, 1);
+    }
+
+    const diffMinutes = differenceInMinutes(end, start);
+    const hours = Math.floor(diffMinutes / 60);
+    const minutes = diffMinutes % 60;
+
+    return { hours, minutes, totalMinutes: diffMinutes };
+  } catch (error) {
+    console.error("Duration calculation failed:", error);
+    return null;
+  }
+};

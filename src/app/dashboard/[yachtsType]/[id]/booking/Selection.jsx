@@ -22,7 +22,7 @@ import { handleDispatchBookingData } from '@/helper/bookingData';
 import { useParams } from 'next/navigation';
 import { handleDispatchwalletData } from '@/helper/walletData';
 import { getWallet } from '@/api/wallet';
-import { calculateDaysBetween, checkNewYearApplied, formatDate, formatHumanReadableTime, formatNewYearTime, generateNewYearEndTimeSlots, generateNewYearStartTimeSlots, isDateDisabled, removeLeadingZeros } from '@/helper/calculateDays';
+import { calculateDaysBetween, calculateDurationBetweenTimes, checkNewYearApplied, formatDate, formatHumanReadableTime, formatNewYearTime, generateNewYearEndTimeSlots, generateNewYearStartTimeSlots, isDateDisabled, removeLeadingZeros } from '@/helper/calculateDays';
 import { Loading } from '@/components/ui/loading';
 import { GlobalStateContext } from '@/context/GlobalStateContext';
 
@@ -54,7 +54,7 @@ const Selection = ({ onNext }) => {
   const [loadingExtras, setLoadingExtras] = useState(true);
   const [timeLeft, setTimeLeft] = useState(44 * 60);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
-  const [isUserNewYearBooking,setIsUserNewYearBooking] = useState(false)
+  const [isUserNewYearBooking, setIsUserNewYearBooking] = useState(false)
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -509,6 +509,7 @@ const Selection = ({ onNext }) => {
     if (newYearCanApply && isUserNewYearBooking && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time) {
       const nyStartTimeStr = selectedYacht.yacht.ny_start_time; // "18:00:00"
       const nyEndTimeStr = selectedYacht.yacht.ny_end_time;     // "22:00:00"
+      const { hours, minutes, totalMinutes } = calculateDurationBetweenTimes(selectedYacht.yacht.ny_start_time, selectedYacht.yacht.ny_end_time)
 
       const baseDate = bookingData?.date ? new Date(bookingData.date) : new Date(); // fallback to today
 
@@ -521,18 +522,18 @@ const Selection = ({ onNext }) => {
       const endTime = new Date(baseDate);
       endTime.setHours(endHours, endMinutes, endSeconds || 0);
 
-      updateBookingData({ startTime, endTime });
+      updateBookingData({ startTime, endTime, duration: hours });
     }
-  }, [newYearCanApply, selectedYacht,isUserNewYearBooking]);
+  }, [newYearCanApply, selectedYacht, isUserNewYearBooking]);
 
   useEffect(() => {
     let check = checkNewYearApplied(selectedYacht, yachtsType, bookingData, newYearCanApply);
-    if(check&&isUserNewYearBooking){
+    if (check && isUserNewYearBooking) {
       setNewYearApplied(check)
-    }else{
+    } else {
       setNewYearApplied(false)
     }
-  }, [selectedYacht, yachtsType, bookingData, newYearCanApply,isUserNewYearBooking])
+  }, [selectedYacht, yachtsType, bookingData, newYearCanApply, isUserNewYearBooking])
 
   //test
   // useEffect(() => {
@@ -541,16 +542,16 @@ const Selection = ({ onNext }) => {
 
 
 
-  useEffect(()=>{
-     console.log("newYearApplied",newYearApplied)
-     console.log("newYearCanApply",newYearCanApply)
-     console.log("isUserNewYearBooking",isUserNewYearBooking)
-  },[newYearApplied,newYearCanApply,isUserNewYearBooking])
+  useEffect(() => {
+    console.log("newYearApplied", newYearApplied)
+    console.log("newYearCanApply", newYearCanApply)
+    console.log("isUserNewYearBooking", isUserNewYearBooking)
+  }, [newYearApplied, newYearCanApply, isUserNewYearBooking])
 
   useEffect(() => {
     console.log("selectedYacht", selectedYacht)
     console.log("yachtsType, bookingData,", yachtsType, bookingData,)
-  }, [selectedYacht, yachtsType, bookingData, newYearCanApply,isUserNewYearBooking])
+  }, [selectedYacht, yachtsType, bookingData, newYearCanApply, isUserNewYearBooking])
 
 
   if (loading || !selectedYacht) {
@@ -815,22 +816,22 @@ const Selection = ({ onNext }) => {
             {/* Show duration and time only for hourly bookings */}
             {(!bookingData?.endDate || bookingData?.bookingType === 'hourly') && (
               <>
-              {newYearCanApply &&   <div className="flex items-center space-x-2">
-                           <Checkbox
-                        id="terms"
-                        className="checked:bg-[#BEA355] checked:border-[#BEA355]"
-                        checked={isUserNewYearBooking}
-                        onCheckedChange={(checked) => setIsUserNewYearBooking(checked)}
-                      />
-                      <h4> Do you want New year booking?</h4>
+                {newYearCanApply && <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="terms"
+                    className="checked:bg-[#BEA355] checked:border-[#BEA355]"
+                    checked={isUserNewYearBooking}
+                    onCheckedChange={(checked) => setIsUserNewYearBooking(checked)}
+                  />
+                  <h4> Do you want New year booking?</h4>
 
-                
-                    </div>}
-                         
+
+                </div>}
+
                 <div className="flex justify-between items-start">
                   {yachtsType == "yachts" ? <>
 
-       
+
 
                     <div>
                       {newYearCanApply && <>
@@ -843,7 +844,7 @@ const Selection = ({ onNext }) => {
 
 
                       </>}
-                      <div className="flex flex-col space-y-2">
+                      {!newYearCanApply && <div className="flex flex-col space-y-2">
                         <Label className="text-sm font-medium">
                           Start Time<span className='text-red-500'>*</span>
                         </Label>
@@ -866,22 +867,17 @@ const Selection = ({ onNext }) => {
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
-                            {isUserNewYearBooking ? generateNewYearStartTimeSlots(selectedYacht?.yacht?.ny_start_time,selectedYacht?.yacht?.ny_end_time).map((time) => (
-                              <SelectItem key={time} value={time}>
-                                {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
-                                {time}
-                              </SelectItem>
-                            )) : generateTimeSlots().map((time) => (
+                            {generateTimeSlots().map((time) => (
                               <SelectItem key={time} value={time}>
                                 {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
                                 {time}
                               </SelectItem>
                             ))}
-                            
+
                           </SelectContent>
                         </Select>
-                      </div>
-                      {newYearCanApply && isUserNewYearBooking && <div className="flex flex-col space-y-2 mt-3">
+                      </div>}
+                      {/* {!newYearCanApply && isUserNewYearBooking && <div className="flex flex-col space-y-2 mt-3">
                         <Label className="text-sm font-medium">
                           End Time<span className='text-red-500'>*</span>
                         </Label>
@@ -898,29 +894,22 @@ const Selection = ({ onNext }) => {
                             <SelectValue placeholder="Select time">
                               <div className="flex items-center">
                                 <Clock className="mr-2 h-4 w-4" />
-                                {/* {format(bookingData?.startTime, "h:mm a")} */}
                                 {format(bookingData?.endTime, "HH:mm")}
                               </div>
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
-                            {isUserNewYearBooking? generateNewYearEndTimeSlots(selectedYacht?.yacht?.ny_start_time,selectedYacht?.yacht?.ny_end_time).map((time) => (
+                            {generateTimeSlots().map((time) => (
                               <SelectItem key={time} value={time}>
-                                {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
-                                {time}
-                              </SelectItem>
-                            )): generateTimeSlots().map((time) => (
-                              <SelectItem key={time} value={time}>
-                                {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
                                 {time}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                      </div>}
+                      </div>} */}
 
                     </div>
-                    <div className="flex flex-col items-end space-y-2">
+                    {!newYearCanApply && <div className="flex flex-col items-end space-y-2">
                       <Label className="text-sm font-medium">{`Duration (min ${selectedYacht?.yacht?.duration_hour ? selectedYacht?.yacht?.duration_hour : 3} hrs)`}<span className='text-red-500'>*</span></Label>
                       <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
                         <Button
@@ -941,7 +930,8 @@ const Selection = ({ onNext }) => {
                           <Plus className="h-4 w-4" />
                         </Button>
                       </div>
-                    </div>
+                    </div>}
+
                   </> : yachtsType == "f1yachts" ? "" : ""}
 
 
@@ -1109,7 +1099,12 @@ const Selection = ({ onNext }) => {
             {yachtsType == "yachts" ? <div className="space-y-2">
               {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
                 {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
-                AED <span className="text-2xl font-bold">{(newYearApplied) ? selectedYacht?.yacht?.new_year_per_hour_price : selectedYacht?.yacht?.per_hour_price}/hour</span>
+                AED
+                <span className="text-2xl font-bold">
+                  {newYearApplied
+                    ? ` ${selectedYacht?.yacht?.new_year_per_hour_price * bookingData?.duration} for ${bookingData?.duration} `
+                    : ` ${selectedYacht?.yacht?.per_hour_price}/hour`}
+                </span>
 
 
                 {/* {bookingData?.endDate ? (
