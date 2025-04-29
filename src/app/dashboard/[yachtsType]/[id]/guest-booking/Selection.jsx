@@ -771,7 +771,7 @@ const Selection = ({ onNext }) => {
                 <div className="flex justify-between items-start">
                   {yachtsType == "yachts" ? <>
 
-                    {!newYearCanApply && <div className="flex flex-col space-y-2">
+                    {!isUserNewYearBooking && <div className="flex flex-col space-y-2">
                       <Label className="text-sm font-medium">
                         Start Time<span className='text-red-500'>*</span>
                       </Label>
@@ -801,38 +801,7 @@ const Selection = ({ onNext }) => {
                           ))}
                         </SelectContent>
                       </Select>
-                      {newYearCanApply && <div className="flex flex-col space-y-2 mt-3">
-                        <Label className="text-sm font-medium">
-                          End Time<span className='text-red-500'>*</span>
-                        </Label>
-                        <Select
-                          value={format(bookingData?.endTime, "HH:mm")}
-                          onValueChange={(time) => {
-                            const [hours, minutes] = time.split(':');
-                            const newDate = new Date(bookingData?.date);
-                            newDate.setHours(parseInt(hours), parseInt(minutes));
-                            updateBookingData({ endTime: newDate });
-                          }}
-                        >
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select time">
-                              <div className="flex items-center">
-                                <Clock className="mr-2 h-4 w-4" />
-                                {/* {format(bookingData?.startTime, "h:mm a")} */}
-                                {format(bookingData?.endTime, "HH:mm")}
-                              </div>
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {generateTimeSlots().map((time) => (
-                              <SelectItem key={time} value={time}>
-                                {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
-                                {time}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>}
+                      
                     </div>}
 
                     {!newYearCanApply && <div className="flex flex-col items-end space-y-2">
