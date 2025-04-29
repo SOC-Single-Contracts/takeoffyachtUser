@@ -1,4 +1,5 @@
-import { format, parse } from "date-fns";
+import { format, setHours, setMinutes, isAfter, isBefore, parse, addHours } from 'date-fns';
+
 
 export const calculateDaysBetween = (fromDate, toDate) => {
   if (!fromDate || !toDate) return 1; // Default to 1 if input is missing
@@ -208,3 +209,38 @@ export const formatHumanReadableTime = (timeString) => {
 };
 
 
+
+export const generateNewYearStartTimeSlots = (ny_start_time, ny_end_time) => {
+  return generateTimeSlotsInRange(ny_start_time, ny_end_time);
+};
+
+export const generateNewYearEndTimeSlots = (ny_start_time, ny_end_time) => {
+  return generateTimeSlotsInRange(ny_start_time, ny_end_time);
+};
+
+function generateTimeSlotsInRange(startStr, endStr) {
+  const slots = [];
+  if (!startStr || !endStr) return slots;
+
+  try {
+    const base = new Date();
+    let start = parse(startStr, 'HH:mm:ss', base);
+    let end = parse(endStr, 'HH:mm:ss', base);
+
+    // Handle overnight range (e.g. 23:00 to 01:00)
+    if (end <= start) {
+      end = addHours(end, 24);
+    }
+
+    let current = new Date(start);
+    while (current <= end) {
+      slots.push(format(current, 'HH:mm'));
+      current = addHours(current, 1);
+    }
+
+    return slots;
+  } catch (err) {
+    console.error("Failed to generate time slots:", err);
+    return [];
+  }
+}

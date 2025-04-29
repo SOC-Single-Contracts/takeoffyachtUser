@@ -671,7 +671,10 @@ const Selection = ({ onNext }) => {
               initialFocus
             /> */}
                     <Calendar
-                      mode="range"
+                      // mode="range"
+                      mode="single"
+
+
                       selected={{
                         from: bookingData?.date || undefined,
                         to: bookingData?.endDate || undefined
