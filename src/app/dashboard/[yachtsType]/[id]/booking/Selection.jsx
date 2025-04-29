@@ -542,16 +542,16 @@ const Selection = ({ onNext }) => {
 
 
 
-  useEffect(() => {
-    console.log("newYearApplied", newYearApplied)
-    console.log("newYearCanApply", newYearCanApply)
-    console.log("isUserNewYearBooking", isUserNewYearBooking)
-  }, [newYearApplied, newYearCanApply, isUserNewYearBooking])
+  // useEffect(() => {
+  //   console.log("newYearApplied", newYearApplied)
+  //   console.log("newYearCanApply", newYearCanApply)
+  //   console.log("isUserNewYearBooking", isUserNewYearBooking)
+  // }, [newYearApplied, newYearCanApply, isUserNewYearBooking])
 
-  useEffect(() => {
-    console.log("selectedYacht", selectedYacht)
-    console.log("yachtsType, bookingData,", yachtsType, bookingData,)
-  }, [selectedYacht, yachtsType, bookingData, newYearCanApply, isUserNewYearBooking])
+  // useEffect(() => {
+  //   console.log("selectedYacht", selectedYacht)
+  //   console.log("yachtsType, bookingData,", yachtsType, bookingData,)
+  // }, [selectedYacht, yachtsType, bookingData, newYearCanApply, isUserNewYearBooking])
 
 
   if (loading || !selectedYacht) {

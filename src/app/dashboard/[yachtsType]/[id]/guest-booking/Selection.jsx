@@ -20,7 +20,7 @@ import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { useParams } from 'next/navigation';
-import { calculateDaysBetween, checkNewYearApplied, formatDate, formatHumanReadableTime, isDateDisabled, removeLeadingZeros, showSelectedYachtPrice } from '@/helper/calculateDays';
+import { calculateDaysBetween, calculateDurationBetweenTimes, checkNewYearApplied, formatDate, formatHumanReadableTime, isDateDisabled, removeLeadingZeros, showSelectedYachtPrice } from '@/helper/calculateDays';
 import { Loading } from '@/components/ui/loading';
 
 const Selection = ({ onNext }) => {
@@ -32,8 +32,8 @@ const Selection = ({ onNext }) => {
   const [availableDates, setAvailableDates] = useState([]);
   const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
   const { yachtsType } = useParams();
-  const [newYearCanApply,setNewYearCanApply] = useState(false)
-  const [newYearApplied,setNewYearApplied] = useState(false)
+  const [newYearCanApply, setNewYearCanApply] = useState(false)
+  const [newYearApplied, setNewYearApplied] = useState(false)
   const [extras, setExtras] = useState({
     food: [],
     extra: [],
@@ -43,6 +43,7 @@ const Selection = ({ onNext }) => {
   const [loadingExtras, setLoadingExtras] = useState(true);
   const [timeLeft, setTimeLeft] = useState(44 * 60);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isUserNewYearBooking, setIsUserNewYearBooking] = useState(false)
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -121,11 +122,16 @@ const Selection = ({ onNext }) => {
       updateBookingData({
         date: selectedYacht?.yacht?.from_date,
         endDate: selectedYacht?.yacht?.to_date,
-        bookingType: 'date_range'
+        bookingType: 'date_range',
+        duration: selectedYacht?.yacht?.duration_hour ? selectedYacht?.yacht?.duration_hour : 3
+
       });
     } else if (yachtsType == "yachts") {
-      // fetchAvailability();     
-    } 
+      // fetchAvailability();    
+      updateBookingData({
+        duration: selectedYacht?.yacht?.duration_hour ? selectedYacht?.yacht?.duration_hour : 3
+      });
+    }
   }, [selectedYacht]);
 
   useEffect(() => {
@@ -148,7 +154,7 @@ const Selection = ({ onNext }) => {
         }
       } catch (error) {
         console.error('Error fetching extras:', error);
-        toast.error('Error fetching extras.'); 
+        toast.error('Error fetching extras.');
       } finally {
         setLoadingExtras(false);
       }
@@ -299,15 +305,15 @@ const Selection = ({ onNext }) => {
     }
   };
 
- const generateTimeSlots = () => {
+  const generateTimeSlots = () => {
     const slots = [];
     for (let hour = 0; hour <= 23; hour++) {
       slots.push(format(new Date().setHours(hour, 0, 0, 0), 'HH:mm'));
     }
     return slots;
   };
-    const daysCount = calculateDaysBetween(selectedYacht?.yacht?.from_date, selectedYacht?.yacht?.to_date);
-  
+  const daysCount = calculateDaysBetween(selectedYacht?.yacht?.from_date, selectedYacht?.yacht?.to_date);
+
 
   const renderExtraItem = (item, category) => (
     <div key={item.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -386,77 +392,92 @@ const Selection = ({ onNext }) => {
     </div>
   );
 
-  const handleDateSelect = (range) => {
-    // if (!range) return;
+  const handleDateSelect = (range, flowType) => {
 
-    // // Check if the selected date is available
-    // const selectedDate = format(range.from, 'yyyy-MM-dd');
-    // if (!availableDates.includes(selectedDate)) {
-    //   toast.error("Selected date is not available.");
-    //   return;
-    // }
+    if (flowType == "range&single") {
+      // if (!range) return;
 
-    // // If clicking the same date again or selecting first date
-    // if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
-    //   updateBookingData({
-    //     date: range.from,
-    //     endDate: null,
-    //     bookingType: 'hourly'
-    //   });
-    //   return;
-    // }
+      // // Check if the selected date is available
+      // const selectedDate = format(range.from, 'yyyy-MM-dd');
+      // if (!availableDates.includes(selectedDate)) {
+      //   toast.error("Selected date is not available.");
+      //   return;
+      // }
 
-    // // For date range, validate both dates
-    // if (range.to) {
-    //   const endDate = format(range.to, 'yyyy-MM-dd');
-    //   if (!availableDates.includes(endDate)) {
-    //     toast.error("End date is not available.");
-    //     return;
-    //   }
+      // // If clicking the same date again or selecting first date
+      // if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
+      //   updateBookingData({
+      //     date: range.from,
+      //     endDate: null,
+      //     bookingType: 'hourly'
+      //   });
+      //   return;
+      // }
 
-    //   updateBookingData({
-    //     date: range.from,
-    //     endDate: range.to,
-    //     bookingType: 'date_range'
-    //   });
-    // }
+      // // For date range, validate both dates
+      // if (range.to) {
+      //   const endDate = format(range.to, 'yyyy-MM-dd');
+      //   if (!availableDates.includes(endDate)) {
+      //     toast.error("End date is not available.");
+      //     return;
+      //   }
 
-    if (!range) return;
+      //   updateBookingData({
+      //     date: range.from,
+      //     endDate: range.to,
+      //     bookingType: 'date_range'
+      //   });
+      // }
 
-    // If clicking the same date again or selecting first date
-    if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
-      updateBookingData({
-        date: range.from,
-        endDate: null,
-        bookingType: 'hourly'
-      });
-      return;
+      if (!range) return;
+
+      // If clicking the same date again or selecting first date
+      if (!range.to || (range.from && range.to && range.from.getTime() === range.to.getTime())) {
+        updateBookingData({
+          date: range.from,
+          endDate: null,
+          bookingType: 'hourly'
+        });
+        return;
+      }
+
+      if (range.to) {
+
+        updateBookingData({
+          date: range.from,
+          endDate: range.to,
+          bookingType: 'date_range'
+        });
+      }
+    } else if (flowType == "single") {
+      if (!range) return;
+      if (range) {
+        updateBookingData({
+          date: range,
+          endDate: null,
+          bookingType: 'hourly'
+        });
+        return;
+      }
     }
 
-    if (range.to) {
-
-      updateBookingData({
-        date: range.from,
-        endDate: range.to,
-        bookingType: 'date_range'
-      });
-    }
 
   };
 
-    useEffect(() => {
-      if((bookingData?.date && new Date(bookingData.date).getMonth() === 11 && new Date(bookingData.date).getDate() === 31) && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time ){
-        setNewYearCanApply(true)
-      }else{
-        setNewYearCanApply(false)
-      }
-      // console.log("bookingData", bookingData)
-    }, [bookingData,selectedYacht])
+  useEffect(() => {
+    if ((bookingData?.date && new Date(bookingData.date).getMonth() === 11 && new Date(bookingData.date).getDate() === 31) && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time) {
+      setNewYearCanApply(true)
+    } else {
+      setNewYearCanApply(false)
+    }
+    // console.log("bookingData", bookingData)
+  }, [bookingData, selectedYacht])
 
   useEffect(() => {
-    if (newYearCanApply && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time) {
+    if (newYearCanApply && isUserNewYearBooking && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time) {
       const nyStartTimeStr = selectedYacht.yacht.ny_start_time; // "18:00:00"
       const nyEndTimeStr = selectedYacht.yacht.ny_end_time;     // "22:00:00"
+      const { hours, minutes, totalMinutes } = calculateDurationBetweenTimes(selectedYacht.yacht.ny_start_time, selectedYacht.yacht.ny_end_time)
 
       const baseDate = bookingData?.date ? new Date(bookingData.date) : new Date(); // fallback to today
 
@@ -469,38 +490,42 @@ const Selection = ({ onNext }) => {
       const endTime = new Date(baseDate);
       endTime.setHours(endHours, endMinutes, endSeconds || 0);
 
-      updateBookingData({ startTime, endTime });
+      updateBookingData({ startTime, endTime, duration: hours });
     }
-  }, [newYearCanApply, selectedYacht]);
+  }, [newYearCanApply, selectedYacht, isUserNewYearBooking]);
 
-  useEffect(() => {
-    let check = checkNewYearApplied(selectedYacht, yachtsType, bookingData,newYearCanApply);
-    setNewYearApplied(check)
-  }, [selectedYacht, yachtsType, bookingData,newYearCanApply])
+    useEffect(() => {
+      let check = checkNewYearApplied(selectedYacht, yachtsType, bookingData, newYearCanApply);
+      if (check && isUserNewYearBooking) {
+        setNewYearApplied(check)
+      } else {
+        setNewYearApplied(false)
+      }
+    }, [selectedYacht, yachtsType, bookingData, newYearCanApply, isUserNewYearBooking])
 
 
   //test
-    //test
+  //test
   // useEffect(() => {
   //   console.log("availableDates", availableDates)
   // }, [availableDates])
   // useEffect(() => {
   //   console.log("selectedYacht", selectedYacht)
-  //   console.log(showSelectedYachtPrice(selectedYacht, yachtsType, bookingData,newYearCanApply))
-  //   console.log("newYearCanApply",newYearCanApply)
-  //   console.log("bookingData",bookingData)
-  // }, [selectedYacht, yachtsType, bookingData,newYearCanApply])
+  //   console.log("bookingData", bookingData)
+  // }, [selectedYacht, yachtsType, bookingData, newYearCanApply])
 
-  //   useEffect(()=>{
-  //    console.log("newYearApplied",newYearApplied)
-  //    console.log("newYearCanApply",newYearCanApply)
-  // },[newYearApplied,newYearCanApply])
+  // useEffect(() => {
+  //   console.log("newYearApplied", newYearApplied)
+  //   console.log("newYearCanApply", newYearCanApply)
+  //   console.log("isUserNewYearBooking", isUserNewYearBooking)
 
-    if (loading || !selectedYacht) {
-      return (
-        <Loading />
-      );
-    }
+  // }, [newYearApplied, newYearCanApply, isUserNewYearBooking])
+
+  if (loading || !selectedYacht) {
+    return (
+      <Loading />
+    );
+  }
 
   return (
     <>
@@ -691,14 +716,15 @@ const Selection = ({ onNext }) => {
                       //     });
                       //   }
                       // }}
-                      onSelect={handleDateSelect}
+                      onSelect={(range) => handleDateSelect(range, "single")}
+
                       // disabled={(date) => 
                       //   !availableDates.includes(format(date, 'yyyy-MM-dd')) || 
                       //   date < new Date() || 
                       //   date < new Date(dateRange.start_date) || 
                       //   date > new Date(dateRange.end_date)
                       // }
-                         disabled={(date) => isDateDisabled(date, availableDates, dateRange)}
+                      disabled={(date) => isDateDisabled(date, availableDates, dateRange)}
                       initialFocus
                     />
                   </PopoverContent>
@@ -715,23 +741,37 @@ const Selection = ({ onNext }) => {
               </div>
             </> : ""}
 
-             {newYearCanApply && <>
-                                    <div className='my-2'>
-              New Year Booking Time:
-              <span className="text-lg font-semibold text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-2">
-                {formatHumanReadableTime(selectedYacht?.yacht?.ny_start_time)} to {formatHumanReadableTime(selectedYacht?.yacht?.ny_end_time)}
-              </span>
-            </div>
-            
-            
-                                  </>}
+            {newYearCanApply && <div className="flex items-center space-x-2">
+              <Checkbox
+                id="terms"
+                className="checked:bg-[#BEA355] checked:border-[#BEA355]"
+                checked={isUserNewYearBooking}
+                onCheckedChange={(checked) => setIsUserNewYearBooking(checked)}
+              />
+              <h4> Do you want New year booking?</h4>
+
+
+            </div>}
+
+            {newYearCanApply && <>
+              <div className='my-2'>
+                New Year Booking Time:
+                <span className="text-lg font-semibold text-gray-600 dark:text-gray-400 flex items-center bg-[#BEA355]/20 dark:bg-[#A68D3F]/20 rounded-md p-2">
+                  {formatHumanReadableTime(selectedYacht?.yacht?.ny_start_time)} to {formatHumanReadableTime(selectedYacht?.yacht?.ny_end_time)}
+                </span>
+              </div>
+
+
+            </>}
 
             {/* Show duration and time only for hourly bookings */}
             {(!bookingData?.endDate || bookingData?.bookingType === 'hourly') && (
               <>
+
                 <div className="flex justify-between items-start">
                   {yachtsType == "yachts" ? <>
-                    <div className="flex flex-col space-y-2">
+
+                    {!newYearCanApply && <div className="flex flex-col space-y-2">
                       <Label className="text-sm font-medium">
                         Start Time<span className='text-red-500'>*</span>
                       </Label>
@@ -761,45 +801,45 @@ const Selection = ({ onNext }) => {
                           ))}
                         </SelectContent>
                       </Select>
-                        {newYearCanApply && <div className="flex flex-col space-y-2 mt-3">
-                                              <Label className="text-sm font-medium">
-                                                End Time<span className='text-red-500'>*</span>
-                                              </Label>
-                                              <Select
-                                                value={format(bookingData?.endTime, "HH:mm")}
-                                                onValueChange={(time) => {
-                                                  const [hours, minutes] = time.split(':');
-                                                  const newDate = new Date(bookingData?.date);
-                                                  newDate.setHours(parseInt(hours), parseInt(minutes));
-                                                  updateBookingData({ endTime: newDate });
-                                                }}
-                                              >
-                                                <SelectTrigger className="w-[180px]">
-                                                  <SelectValue placeholder="Select time">
-                                                    <div className="flex items-center">
-                                                      <Clock className="mr-2 h-4 w-4" />
-                                                      {/* {format(bookingData?.startTime, "h:mm a")} */}
-                                                      {format(bookingData?.endTime, "HH:mm")}
-                                                    </div>
-                                                  </SelectValue>
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                  {generateTimeSlots().map((time) => (
-                                                    <SelectItem key={time} value={time}>
-                                                      {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
-                                                      {time}
-                                                    </SelectItem>
-                                                  ))}
-                                                </SelectContent>
-                                              </Select>
-                                            </div>}
-                    </div>
+                      {newYearCanApply && <div className="flex flex-col space-y-2 mt-3">
+                        <Label className="text-sm font-medium">
+                          End Time<span className='text-red-500'>*</span>
+                        </Label>
+                        <Select
+                          value={format(bookingData?.endTime, "HH:mm")}
+                          onValueChange={(time) => {
+                            const [hours, minutes] = time.split(':');
+                            const newDate = new Date(bookingData?.date);
+                            newDate.setHours(parseInt(hours), parseInt(minutes));
+                            updateBookingData({ endTime: newDate });
+                          }}
+                        >
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select time">
+                              <div className="flex items-center">
+                                <Clock className="mr-2 h-4 w-4" />
+                                {/* {format(bookingData?.startTime, "h:mm a")} */}
+                                {format(bookingData?.endTime, "HH:mm")}
+                              </div>
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {generateTimeSlots().map((time) => (
+                              <SelectItem key={time} value={time}>
+                                {/* {format(new Date().setHours(...time.split(':').map(Number)), "h:mm a")} */}
+                                {time}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>}
+                    </div>}
 
-                    <div className="flex flex-col items-end space-y-2">
-                      <Label className="text-sm font-medium">Duration (min 3 hrs)<span className='text-red-500'>*</span></Label>
+                    {!newYearCanApply && <div className="flex flex-col items-end space-y-2">
+                      <Label className="text-sm font-medium">{`Duration (min ${selectedYacht?.yacht?.duration_hour ? selectedYacht?.yacht?.duration_hour : 3} hrs)`}<span className='text-red-500'>*</span></Label>
                       <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
                         <Button
-                          onClick={() => updateBookingData({ duration: Math.max(3, bookingData?.duration - 1) })}
+                          onClick={() => updateBookingData({ duration: Math.max(selectedYacht?.yacht?.duration_hour ? selectedYacht?.yacht?.duration_hour : 3, bookingData?.duration - 1) })}
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 bg-gray-100 dark:bg-gray-700"
@@ -816,7 +856,7 @@ const Selection = ({ onNext }) => {
                           <Plus className="h-4 w-4" />
                         </Button>
                       </div>
-                    </div>
+                    </div>}
                   </> : yachtsType == "f1yachts" ? "" : ""}
 
                 </div>
@@ -975,10 +1015,15 @@ const Selection = ({ onNext }) => {
         {/* Summary Card */}
         <div className="w-full lg:w-1/2 max-w-[400px]">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6 sticky top-4">
-          {yachtsType == "yachts" ? <div className="space-y-2">
+            {yachtsType == "yachts" ? <div className="space-y-2">
               {selectedYacht?.yacht && <h2 className="text-lg font-semibold">
                 {/* AED <span className="text-2xl font-bold">{calculateTotal()}</span> */}
-                AED <span className="text-2xl font-bold">{newYearApplied ? selectedYacht?.yacht?.new_year_per_hour_price : selectedYacht?.yacht?.per_hour_price}/hour</span>
+                AED
+                <span className="text-2xl font-bold">
+                  {newYearApplied
+                    ? ` ${selectedYacht?.yacht?.new_year_per_hour_price * bookingData?.duration} for ${bookingData?.duration} `
+                    : ` ${selectedYacht?.yacht?.per_hour_price}/hour`}
+                </span>
 
 
                 {/* {bookingData?.endDate ? (
