@@ -505,25 +505,25 @@ const Selection = ({ onNext }) => {
     // console.log("bookingData", bookingData)
   }, [bookingData, selectedYacht])
 
-  // useEffect(() => {
-  //   if (newYearCanApply && isUserNewYearBooking && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time) {
-  //     const nyStartTimeStr = selectedYacht.yacht.ny_start_time; // "18:00:00"
-  //     const nyEndTimeStr = selectedYacht.yacht.ny_end_time;     // "22:00:00"
+  useEffect(() => {
+    if (newYearCanApply && isUserNewYearBooking && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time) {
+      const nyStartTimeStr = selectedYacht.yacht.ny_start_time; // "18:00:00"
+      const nyEndTimeStr = selectedYacht.yacht.ny_end_time;     // "22:00:00"
 
-  //     const baseDate = bookingData?.date ? new Date(bookingData.date) : new Date(); // fallback to today
+      const baseDate = bookingData?.date ? new Date(bookingData.date) : new Date(); // fallback to today
 
-  //     const [startHours, startMinutes, startSeconds] = nyStartTimeStr.split(':').map(Number);
-  //     const [endHours, endMinutes, endSeconds] = nyEndTimeStr.split(':').map(Number);
+      const [startHours, startMinutes, startSeconds] = nyStartTimeStr.split(':').map(Number);
+      const [endHours, endMinutes, endSeconds] = nyEndTimeStr.split(':').map(Number);
 
-  //     const startTime = new Date(baseDate);
-  //     startTime.setHours(startHours, startMinutes, startSeconds || 0);
+      const startTime = new Date(baseDate);
+      startTime.setHours(startHours, startMinutes, startSeconds || 0);
 
-  //     const endTime = new Date(baseDate);
-  //     endTime.setHours(endHours, endMinutes, endSeconds || 0);
+      const endTime = new Date(baseDate);
+      endTime.setHours(endHours, endMinutes, endSeconds || 0);
 
-  //     updateBookingData({ startTime, endTime });
-  //   }
-  // }, [newYearCanApply, selectedYacht,isUserNewYearBooking]);
+      updateBookingData({ startTime, endTime });
+    }
+  }, [newYearCanApply, selectedYacht,isUserNewYearBooking]);
 
   useEffect(() => {
     let check = checkNewYearApplied(selectedYacht, yachtsType, bookingData, newYearCanApply);
@@ -541,16 +541,16 @@ const Selection = ({ onNext }) => {
 
 
 
-  // useEffect(()=>{
-  //    console.log("newYearApplied",newYearApplied)
-  //    console.log("newYearCanApply",newYearCanApply)
-  //    console.log("isUserNewYearBooking",isUserNewYearBooking)
-  // },[newYearApplied,newYearCanApply,isUserNewYearBooking])
+  useEffect(()=>{
+     console.log("newYearApplied",newYearApplied)
+     console.log("newYearCanApply",newYearCanApply)
+     console.log("isUserNewYearBooking",isUserNewYearBooking)
+  },[newYearApplied,newYearCanApply,isUserNewYearBooking])
 
-  // useEffect(() => {
-  //   console.log("selectedYacht", selectedYacht)
-  //   console.log("yachtsType, bookingData,", yachtsType, bookingData,)
-  // }, [selectedYacht, yachtsType, bookingData, newYearCanApply,isUserNewYearBooking])
+  useEffect(() => {
+    console.log("selectedYacht", selectedYacht)
+    console.log("yachtsType, bookingData,", yachtsType, bookingData,)
+  }, [selectedYacht, yachtsType, bookingData, newYearCanApply,isUserNewYearBooking])
 
 
   if (loading || !selectedYacht) {
