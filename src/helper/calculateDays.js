@@ -159,29 +159,29 @@ export const checkNewYearApplied = (selectedYacht, yachtsType, bookingData,newYe
  
   const isNewYearsEve = newYearCanApply;
 
-  let isWithinNewYearEveTime = false;
+  let isWithinNewYearEveTime = true;
   // console.log(bookingData?.startTime, bookingData?.endTime, nyStartTime, nyEndTime)
-  if (isNewYearsEve && bookingData?.startTime && bookingData?.endTime && nyStartTime && nyEndTime) {
-    // console.log("comming")
-    const userStartTime = new Date(bookingData.startTime);
-    const userEndTime = new Date(bookingData.endTime);
+  // if (isNewYearsEve && bookingData?.startTime && bookingData?.endTime && nyStartTime && nyEndTime) {
+  //   // console.log("comming")
+  //   const userStartTime = new Date(bookingData.startTime);
+  //   const userEndTime = new Date(bookingData.endTime);
 
-    // Parse ny_start_time and ny_end_time into Dates based on bookingDate
-    const yachtNewYearStart = new Date(bookingDate);
-    const yachtNewYearEnd = new Date(bookingDate);
+  //   // Parse ny_start_time and ny_end_time into Dates based on bookingDate
+  //   const yachtNewYearStart = new Date(bookingDate);
+  //   const yachtNewYearEnd = new Date(bookingDate);
 
-    const [startHours, startMinutes, startSeconds] = nyStartTime.split(':').map(Number);
-    yachtNewYearStart.setHours(startHours, startMinutes, startSeconds || 0);
+  //   const [startHours, startMinutes, startSeconds] = nyStartTime.split(':').map(Number);
+  //   yachtNewYearStart.setHours(startHours, startMinutes, startSeconds || 0);
 
-    const [endHours, endMinutes, endSeconds] = nyEndTime.split(':').map(Number);
-    yachtNewYearEnd.setHours(endHours, endMinutes, endSeconds || 0);
+  //   const [endHours, endMinutes, endSeconds] = nyEndTime.split(':').map(Number);
+  //   yachtNewYearEnd.setHours(endHours, endMinutes, endSeconds || 0);
 
-    // console.log("User Start:", userStartTime, "Yacht NY Start:", yachtNewYearStart);
-    // console.log(  "User End:", userEndTime,"Yacht NY End:", yachtNewYearEnd);
+  //   // console.log("User Start:", userStartTime, "Yacht NY Start:", yachtNewYearStart);
+  //   // console.log(  "User End:", userEndTime,"Yacht NY End:", yachtNewYearEnd);
 
-    isWithinNewYearEveTime =
-      userStartTime >= yachtNewYearStart && userEndTime <= yachtNewYearEnd;
-  }
+  //   isWithinNewYearEveTime =
+  //     userStartTime >= yachtNewYearStart && userEndTime <= yachtNewYearEnd;
+  // }
 
   // console.log("isNewYearsEve:", isNewYearsEve, "isWithinNewYearEveTime:", isWithinNewYearEveTime);
 
