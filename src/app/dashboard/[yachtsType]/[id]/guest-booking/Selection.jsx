@@ -465,7 +465,7 @@ const Selection = ({ onNext }) => {
   };
 
   useEffect(() => {
-    if ((bookingData?.date && new Date(bookingData.date).getMonth() === 11 && new Date(bookingData.date).getDate() === 31) && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time) {
+    if ((bookingData?.date && new Date(bookingData.date).getMonth() === 11 && new Date(bookingData.date).getDate() === 31) && selectedYacht?.yacht?.ny_start_time && selectedYacht?.yacht?.ny_end_time && selectedYacht?.yacht?.ny_status) {
       setNewYearCanApply(true)
     } else {
       setNewYearCanApply(false)

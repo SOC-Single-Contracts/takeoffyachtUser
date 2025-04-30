@@ -322,6 +322,11 @@ const YachtDetail = () => {
       to_date,
       guest,
       title,
+      ny_end_time,
+      ny_start_time,
+      new_year_per_day_price,
+      new_year_per_hour_price
+
 
     },
     subcategories,
@@ -393,7 +398,7 @@ const YachtDetail = () => {
   // },[selectedYacht])
 
   //test
-  // console.log(selectedYacht)
+  console.log(selectedYacht)
 
   return (
     <>
@@ -460,8 +465,8 @@ const YachtDetail = () => {
 
                     return (
                       <>
-                      {/* <DetailPageGallery images={images} /> */}
-                      <DetailPageGallery2 images={images} />
+                        {/* <DetailPageGallery images={images} /> */}
+                        <DetailPageGallery2 images={images} />
                       </>
                     )
                   })()}
@@ -770,18 +775,18 @@ const YachtDetail = () => {
                 </section>
               )}
 
-              {yachtsType !== "f1yachts" && ny_status && (ny_availability || ny_price || ny_firework) && (
+              {yachtsType !== "f1yachts" && ny_status && ((ny_start_time && ny_end_time) || ny_price || ny_firework) && (
                 <section className="mt-4">
                   <h2 className="text-lg font-medium">
                     New Year's Eve
                   </h2>
-                  {ny_availability && (
+                  {(ny_start_time && ny_end_time) && (
                     <div className="flex justify-between items-center h-10 px-4 py-2 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg mt-2 font-medium">
                       <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
                         Time
                       </p>
                       <p className="text-gray-700 dark:text-gray-400 font-normal text-sm">
-                        {formatTimeTo12Hour(ny_availability.from)} - {formatTimeTo12Hour(ny_availability.to)}
+                        {formatTimeTo12Hour(ny_start_time)} - {formatTimeTo12Hour(ny_end_time)}
                       </p>
                     </div>
                   )}
@@ -844,12 +849,12 @@ const YachtDetail = () => {
                       <div key={index} className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md px-3 py-2 hover:shadow-lg transition-shadow duration-300">
                         <div className="flex-shrink-0">
                           {feature?.image && (
-                            <Image 
-                            src={
-                              (feature?.image != "") ? `${process.env.NEXT_PUBLIC_S3_URL}${feature?.image}`
-                                : '/assets/images/f1.png'
-                            }
-                             alt={feature.name} width={25} height={25} className="mr-2" />
+                            <Image
+                              src={
+                                (feature?.image != "") ? `${process.env.NEXT_PUBLIC_S3_URL}${feature?.image}`
+                                  : '/assets/images/f1.png'
+                              }
+                              alt={feature.name} width={25} height={25} className="mr-2" />
                           )}
                         </div>
                         <div className="flex-grow">
@@ -877,7 +882,7 @@ const YachtDetail = () => {
                           key={sub.id}
                           className="text-gray-700 dark:text-gray-400 font-semibold text-sm flex items-center bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-2"
                         >
-                          {sub?.dark_icon &&     <Image
+                          {sub?.dark_icon && <Image
                             src={
                               sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_S3_URL}/${sub?.dark_icon}`
                                 : '/assets/images/f1.png'
@@ -887,8 +892,8 @@ const YachtDetail = () => {
                             alt={sub.name}
                             className="mr-2 dark:invert"
                             quality={100}
-                          /> }
-                      
+                          />}
+
                           {sub.name}
                         </p>
                       ))
@@ -900,9 +905,9 @@ const YachtDetail = () => {
                 {(longitude || latitude) && (
                   <>
                     <MapSectionWrapper
-                    latitude={parseFloat(latitude)}
-                    longitude={parseFloat(longitude)}
-                  />
+                      latitude={parseFloat(latitude)}
+                      longitude={parseFloat(longitude)}
+                    />
                     {/* <h2 className="text-lg font-medium my-4">Location</h2>
 
                     <MapBoxComponent
@@ -947,10 +952,10 @@ const YachtDetail = () => {
       </section>
       {/* Featured Yachts Section */}
       <section className="">
-        {yachtsType == "f1yachts" ? <FormulaOneDashboard/> :  <Featured />}
-       
-            
-        
+        {yachtsType == "f1yachts" ? <FormulaOneDashboard /> : <Featured />}
+
+
+
         {/* <div className="flex justify-center">
             <Link href="/dashboard/yachts">
               <Button className="rounded-full bg-[#BEA355] text-white flex justify-center mx-auto">
