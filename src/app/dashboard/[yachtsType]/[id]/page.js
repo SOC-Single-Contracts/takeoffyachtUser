@@ -848,14 +848,12 @@ const YachtDetail = () => {
                     selectedYacht.yacht.features.map((feature, index) => (
                       <div key={index} className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md px-3 py-2 hover:shadow-lg transition-shadow duration-300">
                         <div className="flex-shrink-0">
-                          {feature?.image && (
-                            <Image
+                        <Image
                               src={
-                                (feature?.image != "") ? `${process.env.NEXT_PUBLIC_S3_URL}${feature?.image}`
-                                  : '/assets/images/f1.png'
+                                (feature?.image) ? `${process.env.NEXT_PUBLIC_S3_URL}${feature?.image}`
+                                  : '/assets/images/filterSvgs/Icon_Dinghy.svg'
                               }
                               alt={feature.name} width={25} height={25} className="mr-2" />
-                          )}
                         </div>
                         <div className="flex-grow">
                           <h3 className="text-gray-800 dark:text-gray-200 font-medium">{feature.name}</h3>
