@@ -990,7 +990,7 @@ const Selection = ({ onNext }) => {
                 AED
                 <span className="text-2xl font-bold">
                   {newYearApplied
-                    ? ` ${selectedYacht?.yacht?.new_year_per_hour_price * bookingData?.duration} for ${bookingData?.duration} `
+                    ? ` ${selectedYacht?.yacht?.new_year_per_hour_price} for New Year `
                     : ` ${selectedYacht?.yacht?.per_hour_price}/hour`}
                 </span>
 

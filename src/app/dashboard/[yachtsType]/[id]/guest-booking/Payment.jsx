@@ -584,6 +584,10 @@ const Payment = () => {
     fetchBookingDetails();
   }, [bookingData.bookingId]);
 
+//   useEffect(()=>{
+//  console.log("selectedYacht",selectedYacht)
+//   },[selectedYacht])
+
   if (loading) {
     return (
       <div className='mx-auto container flex justify-between md:flex-row flex-col items-start gap-8 px-2'>

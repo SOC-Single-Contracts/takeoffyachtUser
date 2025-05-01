@@ -40,6 +40,8 @@ export const BookingProvider = ({ children }) => {
     paymentError: null,
     paymentProcessing: false,
     yachtId: id,
+    isNewYearBooking:false
+
   });
 
   const resetPaymentState = () => {

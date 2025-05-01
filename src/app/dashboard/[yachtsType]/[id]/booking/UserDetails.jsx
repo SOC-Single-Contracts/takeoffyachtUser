@@ -125,7 +125,8 @@ const UserDetails = ({ onNext, onBack }) => {
           //   price,
           //   name,
           // })) : [],
-          extras: formattedExtras
+          extras: formattedExtras,
+          isNewYearBooking:bookingData?.isNewYearBooking
         };
 
         if (!yachtId) {
