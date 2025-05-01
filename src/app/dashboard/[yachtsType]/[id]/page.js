@@ -389,16 +389,19 @@ const YachtDetail = () => {
   };
 
 
-  // useEffect(()=>{
 
-  //   let arr = [{latitude:latitude,longitude:longitude}]
-
-  //   setMarkers(arr)
-
-  // },[selectedYacht])
 
   //test
-  console.log(selectedYacht)
+    // useEffect(()=>{
+
+    // let arr = [{latitude:latitude,longitude:longitude}]
+
+    // setMarkers(arr)
+
+
+  // },[selectedYacht])
+  // console.log(selectedYacht)
+
 
   return (
     <>
@@ -853,7 +856,11 @@ const YachtDetail = () => {
                                 (feature?.image) ? `${process.env.NEXT_PUBLIC_S3_URL}${feature?.image}`
                                   : '/assets/images/filterSvgs/Icon_Dinghy.svg'
                               }
-                              alt={feature.name} width={25} height={25} className="mr-2" />
+                              alt={feature.name} 
+                              onError={(e) => {
+                                e.target.src = '/assets/images/filterSvgs/Icon_Dinghy.svg';
+                              }}
+                               width={25} height={25} className="mr-2" />
                         </div>
                         <div className="flex-grow">
                           <h3 className="text-gray-800 dark:text-gray-200 font-medium">{feature.name}</h3>
@@ -880,17 +887,20 @@ const YachtDetail = () => {
                           key={sub.id}
                           className="text-gray-700 dark:text-gray-400 font-semibold text-sm flex items-center bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-2"
                         >
-                          {sub?.dark_icon && <Image
+                           <Image
                             src={
-                              sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_S3_URL}/${sub?.dark_icon}`
-                                : '/assets/images/f1.png'
+                              (sub?.dark_icon) ? `${process.env.NEXT_PUBLIC_S3_URL}/${sub?.dark_icon}`
+                                : '/assets/images/filterSvgs/Icon_Dinghy.svg'
                             }
                             width={20}
                             height={20}
+                            onError={(e) => {
+                              e.target.src = '/assets/images/filterSvgs/Icon_Dinghy.svg';
+                            }}
                             alt={sub.name}
                             className="mr-2 dark:invert"
                             quality={100}
-                          />}
+                          />
 
                           {sub.name}
                         </p>

@@ -34,7 +34,8 @@ export const BookingProvider = ({ children }) => {
     expiryYear: '',
     cvc: '',
     paymentError: null,
-    paymentProcessing: false
+    paymentProcessing: false,
+    isNewYearBooking:false
   });
 
   const resetPaymentState = () => {
@@ -54,12 +55,14 @@ export const BookingProvider = ({ children }) => {
     if (!selectedYacht?.yacht) return 0;
     
     let baseTotal = 0;
-    
-    if (bookingData.bookingType === 'hourly') {
+
+    if(bookingData?.isNewYearBooking){
+      const basePrice = selectedYacht.yacht.new_year_per_hour_price || 0;
+      baseTotal = basePrice;
+    }else if (bookingData.bookingType === 'hourly') {
       const basePrice = selectedYacht.yacht.per_hour_price || 0;
-      const newYearPrice = selectedYacht.yacht.new_year_price || basePrice;
       const hours = bookingData.duration || 3;
-      const hourlyRate = bookingData.isNewYearBooking ? newYearPrice : basePrice;
+      const hourlyRate = basePrice;
       baseTotal = hourlyRate * hours;
     } else {
       // Date range booking
