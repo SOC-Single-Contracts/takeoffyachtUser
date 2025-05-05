@@ -61,6 +61,7 @@ const YachtDetail = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const getYachts = async () => {
       if (status === "loading") return; // Wait for session to load
       setLoading(true)
