@@ -9,6 +9,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Loading } from "@/components/ui/loading";
 import { Sailboat } from "lucide-react"; // Import Sailboat icon
+import { isAfter, parseISO, startOfDay } from "date-fns";
+import { classifyBookings } from "@/helper/bookingHelper";
 
 const AllBookings = () => {
   const router = useRouter();
@@ -33,9 +35,9 @@ const AllBookings = () => {
     const fetchBookings = async () => {
       try {
         // Fetch bookings from multiple endpoints
-        const [yachtResponse, eventResponse, experienceResponse] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}`),
-          // fetch(`${process.env.NEXT_PUBLIC_API_URL}/f1_yacht/get_f1_yacht_booking/${userId}`),
+        const [yachtResponse,f1yachtResponse, eventResponse, experienceResponse] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}?BookingType=regular`),
+          // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}/?BookingType=f1yachts`),
           // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_event_booking/${userId}`),
           // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_experience_booking/${userId}`)
         ]);
@@ -45,11 +47,12 @@ const AllBookings = () => {
         //   throw new Error('Failed to fetch bookings');
         // }
         if (!yachtResponse.ok) {
-          throw new Error('Failed to fetch bookings');
+          // throw new Error('Failed to fetch bookings');
         }
 
-        const [yachtData, eventData, experienceData] = await Promise.all([
+        const [yachtData, f1yachtData, eventData, experienceData] = await Promise.all([
           yachtResponse.json(),
+          // f1yachtResponse.json(),
           // eventResponse.json(),
           // experienceResponse.json()
         ]);
@@ -59,12 +62,23 @@ const AllBookings = () => {
         // Process yacht bookings
         const yachtBookings = yachtData.data ? yachtData.data.map(item => ({
           ...item.booking[0],
-          yacht: item.yacht[0],
+          yacht: item?.yacht[0],
           type: 'yacht',
-          name: item.yacht[0]?.name,
-          image: item.yacht[0]?.yacht_image,
-          location: item.yacht[0]?.location
+          name: item?.yacht[0]?.name,
+          image: item?.yacht[0]?.yacht_image,
+          location: item?.yacht[0]?.location
         })) : [];
+
+
+        const f1yachtBookings = f1yachtData?.data ? f1yachtData?.data.map(item => ({
+          ...item.booking[0],
+          yacht: item?.yacht[0],
+          type: 'f1yachts',
+          name: item?.yacht[0]?.name,
+          image: item?.yacht[0]?.yacht_image,
+          location: item?.yacht[0]?.location
+        })) : [];
+        // console.log("f1yachtBookings",f1yachtBookings)
         // console.log("yachtBookings",yachtBookings)
  
         // Process event bookings
@@ -92,7 +106,7 @@ const AllBookings = () => {
         })) : [];
 
         // Combine all bookings
-        const allBookings = [...yachtBookings, ...eventBookings, ...experienceBookings];
+        const allBookings = [...yachtBookings,...f1yachtBookings, ...eventBookings, ...experienceBookings];
 
         // Categorize bookings based on date
         const processedBookings = allBookings?.map(booking => {
@@ -101,7 +115,7 @@ const AllBookings = () => {
           
           return {
             ...booking,
-            cancel: selectedDate < today, // Past bookings
+            // cancel: selectedDate < today, // Past bookings
             daysLeft: Math.ceil((selectedDate - today) / (1000 * 60 * 60 * 24)) // Calculate days left
           };
         });
@@ -119,15 +133,18 @@ const AllBookings = () => {
   }, [userId, status]);
 
   // Memoize filtered bookings
-  const upcomingBookings = useMemo(() => 
-    bookings.filter(booking => booking.cancel), 
-    [bookings]
-  );
+  const { upcoming: upcomingBookings, past: pastBookings, cancel: cancelBookings } = useMemo(() => {
+    return classifyBookings(bookings);
+  }, [bookings]);
+//test
+//   useEffect(()=>{
 
-  const pastBookings = useMemo(() => 
-    bookings.filter(booking => !booking.cancel), 
-    [bookings]
-  );
+// console.log("bookings",bookings)
+// console.log("upcomingBookings",upcomingBookings)
+// console.log("pastBookings",pastBookings)  
+//  console.log("cancelBookings",cancelBookings)
+
+//   },[bookings,upcomingBookings,pastBookings,cancelBookings])
 
   if (status === "loading") {
     return <Loading />;
@@ -182,6 +199,12 @@ const AllBookings = () => {
             >
               Past Bookings
             </TabsTrigger>
+            <TabsTrigger
+              className="text-sm md:text-md font-medium rounded-full w-full h-10"
+              value="cancel"
+            >
+              Cancel Bookings
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="upcoming">
             {upcomingBookings.length === 0 && !loading ? (
@@ -203,6 +226,8 @@ const AllBookings = () => {
                 <BookingCards 
                   bookings={upcomingBookings} 
                   loading={loading} 
+                  bookingType="upcoming"
+
                 />
               </div>
             )}
@@ -227,6 +252,33 @@ const AllBookings = () => {
                 <BookingCards 
                   bookings={pastBookings} 
                   loading={loading} 
+                  bookingType="past"
+
+                />
+              </div>
+            )}
+          </TabsContent>
+          <TabsContent value="cancel">
+            {cancelBookings.length === 0 && !loading ? (
+              <div className="flex flex-col items-center justify-center w-full py-12 text-center">
+                <Sailboat className="w-16 h-16 text-gray-400 mb-4" />
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">No Cancel Bookings Found</h3>
+                <p className="text-gray-500 mb-6">
+                  You haven't made any past yacht bookings yet. Start exploring our amazing yacht experiences!
+                </p>
+                <Button 
+                  onClick={() => router.push('/dashboard')}
+                  className="bg-[#BEA355] hover:bg-[#a68f4b] text-white rounded-full"
+                >
+                  Explore Yachts
+                </Button>
+              </div>
+            ) : (
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                <BookingCards 
+                  bookings={cancelBookings} 
+                  loading={loading} 
+                  bookingType="cancel"
                 />
               </div>
             )}

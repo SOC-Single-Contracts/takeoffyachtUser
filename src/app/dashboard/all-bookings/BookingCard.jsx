@@ -30,7 +30,7 @@ const BookingSkeleton = () => {
   );
 };
 
-const BookingCard = ({ booking }) => {
+const BookingCard = ({ booking,bookingType }) => {
   const getDisplayDate = (booking) => {
     const date = booking.from_date || booking.selected_date;
     if (!date) return 'Date not available';
@@ -99,11 +99,11 @@ const BookingCard = ({ booking }) => {
       key={booking.id}
       className="relative w-full max-w-[400px] mx-auto bg-white dark:!bg-gray-800 shadow-md rounded-2xl overflow-hidden mt-4"
     >
-      {booking.daysLeft > 0 && (
+      {/* {booking.daysLeft > 0 && (
         <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-normal px-2 py-1 rounded-sm">
           {booking.daysLeft} Days Left
         </div>
-      )}
+      )} */}
       <Image
         src={bookingDetails.image}
         alt={bookingDetails.name}
@@ -192,7 +192,7 @@ const BookingCard = ({ booking }) => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <div className="flex items-center text-sm gap-2">
             <span className="text-gray-600 dark:text-gray-400 font-medium">Dates:</span>
             <span className="text-gray-600 dark:text-gray-400">
@@ -201,7 +201,7 @@ const BookingCard = ({ booking }) => {
                 : 'N/A'}
             </span>
           </div>
-        </div>
+        </div> */}
 
         <div className="flex items-center justify-between">
           <div className="flex items-center text-sm gap-2">
@@ -219,7 +219,7 @@ const BookingCard = ({ booking }) => {
       </div>
 
       <Link 
-        href={`/dashboard/${type}/${id}/booking/?bookingId=${booking.id}`}
+        href={`/dashboard/${type}/${id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
         className="mt-4 block"
       >
         <Button
@@ -234,7 +234,7 @@ const BookingCard = ({ booking }) => {
   );
 };
 
-const BookingCards = ({ bookings, loading }) => {
+const BookingCards = ({ bookings, loading,bookingType }) => {
   if (loading) {
     return (
       <div className="flex flex-wrap w-full space-x-4">
@@ -249,7 +249,7 @@ const BookingCards = ({ bookings, loading }) => {
   return (
     <>
       {bookings.map((booking) => (
-        <BookingCard key={booking.id} booking={booking} />
+        <BookingCard key={booking.id} booking={booking} bookingType={bookingType} />
       ))}
     </>
   );
