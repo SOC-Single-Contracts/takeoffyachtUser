@@ -28,6 +28,8 @@ import MapBoxComponent from "@/components/shared/dashboard/mapBox";
 import { checkValidateLatLong } from '@/helper/validateLatlong';
 import EmblaCarouselYacht from './EmbalaCustom/js/EmblaCarouselYacht';
 
+
+
 const PAGE_SIZE = 10;
 
 const OPTIONS = {}
