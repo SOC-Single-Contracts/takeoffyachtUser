@@ -401,7 +401,7 @@ const YachtDetail = () => {
 
 
   // },[selectedYacht])
-  // console.log(selectedYacht)
+  console.log(selectedYacht)
 
 
   return (
@@ -829,7 +829,7 @@ const YachtDetail = () => {
                       >
                         <Image
                           src={
-                            sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_S3_URL}/${sub?.dark_icon}`
+                            sub?.dark_icon != "" ? `${process.env.NEXT_PUBLIC_S3_URL}${sub?.dark_icon}`
                               : '/assets/images/f1.png'
                           }
                           width={20}
@@ -890,7 +890,7 @@ const YachtDetail = () => {
                         >
                            <Image
                             src={
-                              (sub?.dark_icon) ? `${process.env.NEXT_PUBLIC_S3_URL}/${sub?.dark_icon}`
+                              (sub?.dark_icon) ? `${process.env.NEXT_PUBLIC_S3_URL}${sub?.dark_icon}`
                                 : '/assets/images/filterSvgs/Icon_Dinghy.svg'
                             }
                             width={20}
