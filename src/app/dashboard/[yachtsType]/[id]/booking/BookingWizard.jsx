@@ -37,6 +37,8 @@ const BookingWizardContent = ({ initialBookingId }) => {
     : {};
     const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
     const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
+  const bookingType = new URLSearchParams(window.location.search).get('bookingType');
+
   // Authentication check
   // useEffect(() => {
   //   if (status === 'unauthenticated') {
@@ -142,6 +144,7 @@ const BookingWizardContent = ({ initialBookingId }) => {
             <Button
               onClick={handleBack}
               className="bg-[#F8F8F8] hover:bg-[#F8F8F8] shadow-md rounded-full flex items-center justify-center w-10 h-10"
+              disabled={bookingType === "upcoming" || bookingType === "past" || bookingType === "cancel"}
             >
               <ArrowLeft className='w-4 h-4 text-black' />
             </Button>

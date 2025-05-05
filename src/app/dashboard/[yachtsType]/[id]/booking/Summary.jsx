@@ -24,6 +24,7 @@ import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, Ca
 import BookingGallery from "@/components/lp/BookingGallery";
 import { useParams } from "next/navigation";
 import BookingGalleryEmbala from "@/components/lp/BookingGalleryEmbala";
+import { checkBookingCanCancel } from "@/helper/bookingHelper";
 
 const safeFormat = (dateString, formatString, fallback = 'N/A') => {
   try {
@@ -52,6 +53,9 @@ const Summary = ({ onNext, initialBookingId }) => {
   const [isPartialPayment, setIsPartialPayment] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { yachtsType } = useParams();
+  const bookingType = new URLSearchParams(window.location.search).get('bookingType');
+  const [bookingCanCancel, setBookingCanCancel] = useState(false);
+
 
 
   useEffect(() => {
@@ -65,9 +69,9 @@ const Summary = ({ onNext, initialBookingId }) => {
             toast.error('No booking ID found. Please complete the booking process again.');
             return;
           }
-          const url = session?.user?.userid 
-  ? `${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`
-  : `${API_BASE_URL}/yacht/booking/${currentBookingId}/`;
+          const url = session?.user?.userid
+            ? `${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`
+            : `${API_BASE_URL}/yacht/booking/${currentBookingId}/`;
 
           const response = await fetch(url, {
             method: 'GET',
@@ -88,6 +92,7 @@ const Summary = ({ onNext, initialBookingId }) => {
           setBookingDetails(details);
           setEditableExtras(details.extras_data || []);
           setIsPartialPayment(details.is_partial_payment || false);
+          setBookingCanCancel(checkBookingCanCancel(bookingType, details))
 
           // Update booking context with booking details
           updateBookingData({
@@ -106,9 +111,9 @@ const Summary = ({ onNext, initialBookingId }) => {
             toast.error('No booking ID found. Please complete the booking process again.');
             return;
           }
-          const url = session?.user?.userid 
-          ? `${API_BASE_URL}/yacht/f1_details/${currentBookingId}/?user_id=${session?.user?.userid}`
-          : `${API_BASE_URL}/yacht/f1_details/${currentBookingId}/`;
+          const url = session?.user?.userid
+            ? `${API_BASE_URL}/yacht/f1_details/${currentBookingId}/?user_id=${session?.user?.userid}`
+            : `${API_BASE_URL}/yacht/f1_details/${currentBookingId}/`;
           const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -128,6 +133,9 @@ const Summary = ({ onNext, initialBookingId }) => {
           setBookingDetails(details);
           setEditableExtras(details.extras_data || []);
           setIsPartialPayment(details.is_partial_payment || false);
+          setBookingCanCancel(checkBookingCanCancel(bookingType, details))
+
+
 
           // Update booking context with booking details
           updateBookingData({
@@ -153,7 +161,7 @@ const Summary = ({ onNext, initialBookingId }) => {
     };
 
     fetchBookingDetails();
-  }, [initialBookingId, bookingData.bookingId]);
+  }, [initialBookingId, bookingData.bookingId, bookingType]);
 
   const handleNext = () => {
     updateBookingData({
@@ -165,6 +173,57 @@ const Summary = ({ onNext, initialBookingId }) => {
     });
     onNext();
   };
+
+  const handleCancelBooking = async () => {
+
+    try {
+
+      const currentBookingId = initialBookingId || bookingData.bookingId;
+
+      const payload = {
+        user_id: session?.user?.userid,
+        booking_id: currentBookingId,
+         booking_type:  yachtsType == "yachts" ? "regular" : yachtsType == "f1yachts" ? "" :""
+
+      };
+      const url = session?.user?.userid
+        ? `${API_BASE_URL}/yacht/cancel_booking/`
+        : `${API_BASE_URL}/yacht/cancel_booking/`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to Cancel booking ');
+      }
+
+      const result = await response.json();
+
+      if (result.data) {
+
+
+        toast({
+          title: "Booking Cancelled",
+          description: "Your booking has been successfully cancelled.",
+          variant: "destructive"
+        });
+        router.push('/dashboard/all-bookings');
+
+      }
+    } catch (error) {
+      console.error('Error updating booking details:', error);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+
+  }
 
   const calculateUpdatedTotalCost = () => {
     const baseHourlyRate = bookingDetails?.is_new_year_booking
@@ -217,9 +276,9 @@ const Summary = ({ onNext, initialBookingId }) => {
         total_cost: totalCost,
         remaining_cost: totalCost - (bookingDetails?.paid_cost || 0)
       };
-      const url = session?.user?.userid 
-      ? `${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`
-      : `${API_BASE_URL}/yacht/booking/${currentBookingId}/`;
+      const url = session?.user?.userid
+        ? `${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`
+        : `${API_BASE_URL}/yacht/booking/${currentBookingId}/`;
       const response = await fetch(url, {
         method: 'PATCH',
         headers: {
@@ -281,9 +340,9 @@ const Summary = ({ onNext, initialBookingId }) => {
         remaining_cost: isPartialPayment ? totalCost * 0.75 : 0,
         extras: editableExtras,
       };
-      const url = session?.user?.userid 
-      ? `${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`
-      : `${API_BASE_URL}/yacht/booking/${currentBookingId}/`;
+      const url = session?.user?.userid
+        ? `${API_BASE_URL}/yacht/bookings/${currentBookingId}/?user_id=${session?.user?.userid}`
+        : `${API_BASE_URL}/yacht/booking/${currentBookingId}/`;
       const response = await fetch(url, {
         method: 'PATCH',
         headers: {
@@ -410,9 +469,14 @@ const Summary = ({ onNext, initialBookingId }) => {
 
   //test
 
-  // useEffect(()=>{
-  //  console.log("bookingDetails",bookingDetails)
-  // },[bookingDetails])
+  // useEffect(() => {
+  //   console.log("bookingDetails", bookingDetails)
+  //   console.log("bookingData", bookingData)
+
+  // }, [bookingDetails, bookingData])
+  // useEffect(() => {
+  //   console.log("bookingType", bookingType)
+  // }, [bookingType])
 
   const renderPriceSummary = () => {
     const totalCost = bookingDetails?.total_cost;
@@ -446,7 +510,7 @@ const Summary = ({ onNext, initialBookingId }) => {
               }
             </TableCell>
           </TableRow> */}
-  {/* {        console.log("bookingDetails?.extras_data",bookingDetails?.extras_data)} */}
+          {/* {        console.log("bookingDetails?.extras_data",bookingDetails?.extras_data)} */}
           {bookingDetails?.extras_data &&
             Array.isArray(bookingDetails?.extras_data) &&
             bookingDetails?.extras_data
@@ -734,12 +798,12 @@ const Summary = ({ onNext, initialBookingId }) => {
 
             return (
               <>
-              {/* <BookingGallery images={images} /> */}
+                {/* <BookingGallery images={images} /> */}
 
-              <BookingGalleryEmbala images={images} />
+                <BookingGalleryEmbala images={images} />
               </>
 
-            ) 
+            )
           })()}
         </div>
 
@@ -819,11 +883,11 @@ const Summary = ({ onNext, initialBookingId }) => {
                 {yachtsType == "yachts" ? bookingDetails?.end_date
                   ? `${Math.ceil((new Date(bookingDetails?.end_date) - new Date(bookingDetails?.selected_date)) / (1000 * 60 * 60 * 24) + 1)} days`
                   : `${safeFormat(bookingDetails?.starting_time, 'hh:mm a')} (${bookingDetails?.duration_hour} hours)`
-                 :yachtsType == "f1yachts" ? bookingDetails?.end_date
-                 ? `${Math.ceil((new Date(bookingDetails?.end_date) - new Date(bookingDetails?.start_date)) / (1000 * 60 * 60 * 24) + 1)} days`
-                 : `notprovided`
-               :""}
-                
+                  : yachtsType == "f1yachts" ? bookingDetails?.end_date
+                    ? `${Math.ceil((new Date(bookingDetails?.end_date) - new Date(bookingDetails?.start_date)) / (1000 * 60 * 60 * 24) + 1)} days`
+                    : `notprovided`
+                    : ""}
+
               </TableCell>
             </TableRow>
             {/* <TableRow>
@@ -939,7 +1003,21 @@ const Summary = ({ onNext, initialBookingId }) => {
               Update Extras
             </Button> */}
 
-              <div className="hidden md:block">
+              {/* {bookingCanCancel && <div className="hidden md:block">
+                <Button
+                  onClick={handleCancelBooking}
+                  className="bg-red-600 text-white text-sm sm:text-base lg:text-lg 
+    px-4 sm:px-6 lg:px-10 py-2 sm:py-3 lg:py-3.5 
+    rounded-full 
+    min-w-[140px] sm:min-w-[180px] lg:min-w-[220px] 
+    transition-all w-full sm:w-auto"
+                >
+                  Cancel Booking
+                </Button>
+              </div>} */}
+
+
+              {bookingType !== "cancel" && bookingType !== "past" && <div className="hidden md:block">
                 <Button
                   onClick={handleNext}
                   className="bg-[#BEA355]  text-white text-sm sm:text-base lg:text-lg 
@@ -950,15 +1028,27 @@ const Summary = ({ onNext, initialBookingId }) => {
                 >
                   Proceed to Payment
                 </Button>
-              </div>
+              </div>}
 
 
 
             </div>
 
+            {/* {bookingCanCancel && <div className="fixed md:hidden bottom-16 left-0 w-full shadow-md z-50 p-4">
+              <div className="relative  flex justify-center">
+                <Button
+                  onClick={handleCancelBooking}
+
+                  className="rounded-full bg-red-600 w-full min-w-[210px]} mx-auto text-white h-12"
+                >
+                  Cancel Booking
+                </Button>
+              </div>
+            </div>} */}
 
 
-            <div className="fixed md:hidden bottom-0 left-0 w-full shadow-md z-50 p-4">
+
+            {bookingType !== "cancel" && bookingType !== "past" && <div className="fixed md:hidden bottom-0 left-0 w-full shadow-md z-50 p-4">
               <div className="relative  flex justify-center">
                 <Button
                   onClick={handleNext}
@@ -968,7 +1058,7 @@ const Summary = ({ onNext, initialBookingId }) => {
                   Proceed to Payment
                 </Button>
               </div>
-            </div>
+            </div>}
           </>
 
 

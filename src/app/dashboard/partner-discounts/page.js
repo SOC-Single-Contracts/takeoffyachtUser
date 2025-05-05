@@ -49,12 +49,15 @@ const PartnerDiscount = () => {
         // }
     ]);
 
+    const [allBrandsList,setAllBrandsList] = useState([])
+    
+
     const getAllBrands = async () => {
         try {
             const data = await fetchBrands(token)
             // console.log(data)
             // const multipliedBrands = [...data, ...data,...data,...data,...data];
-            setBrands(data)
+            setAllBrandsList(data)
         } catch (err) {
             console.error('Yacht fetching error:', err);
             if (err?.status == 401) {
@@ -160,10 +163,10 @@ const PartnerDiscount = () => {
                     <div className='bg-white dark:bg-[#24262F] rounded-xl shadow-md p-6 '>
 
                         
-                     {brands?.length > 0 && <div className="container classForEmbalaCaroselDiscount mx-auto pb-6 px-6">
+                     {allBrandsList?.length > 0 && <div className="container classForEmbalaCaroselDiscount mx-auto pb-6 px-6">
                         <h1 className="text-md md:text-lg mb-5 mt-3 mx-3 font-bold">All Brands</h1>
 
-                        <DiscountSliderEmbala slides={brands} />
+                        <DiscountSliderEmbala slides={allBrandsList} />
                
             </div>}
 
