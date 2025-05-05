@@ -802,7 +802,7 @@ const Summary = ({ onNext, initialBookingId }) => {
                   >
                     {isCopied ? <Check className="h-5 w-5" /> : <Clipboard className="h-5 w-5" />}
                   </span>
-                  <span className="ml-2 text-gray-500">{isCopied ? "Copied!" : "(Click to copy)"}</span>
+                  <span onClick={handleCopyLink} className="ml-2 text-gray-500 cursor-pointer">{isCopied ? "Copied!" : "(Click to copy)"}</span>
                 </div>
               </TableCell>
             </TableRow>
