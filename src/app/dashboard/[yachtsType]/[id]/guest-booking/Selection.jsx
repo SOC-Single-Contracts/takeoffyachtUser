@@ -37,7 +37,8 @@ const Selection = ({ onNext }) => {
   const [extras, setExtras] = useState({
     food: [],
     extra: [],
-    sport: []
+    sport: [],
+    misc: [],
   });
   const [quantities, setQuantities] = useState({});
   const [loadingExtras, setLoadingExtras] = useState(true);
@@ -132,7 +133,7 @@ const Selection = ({ onNext }) => {
         duration: selectedYacht?.yacht?.duration_hour ? selectedYacht?.yacht?.duration_hour : 3
       });
     }
-  }, [selectedYacht,isUserNewYearBooking]);
+  }, [selectedYacht, isUserNewYearBooking]);
 
   useEffect(() => {
     const fetchExtras = async () => {
@@ -141,11 +142,16 @@ const Selection = ({ onNext }) => {
         const data = await response.json();
         if (data.error_code === 'pass') {
           // Organize items by category directly from the response
+          const selectedyachtFoodNames = selectedYacht?.food.map(item => item.name) || [];
+
           const organizedExtras = {
-            food: data.food.filter(item => item.price !== null && item.menucategory !== null),
-            extra: data.extra.filter(item => item.price !== null && item.menucategory !== null),
-            sport: data.sport.filter(item => item.price !== null && item.menucategory !== null)
+            food: data.food.filter(item => item.price !== null && item.menucategory !== null && selectedyachtFoodNames.includes(item.name)),
+            extra: data.extra.filter(item => item.price !== null && item.menucategory !== null && selectedyachtFoodNames.includes(item.name)),
+            sport: data.sport.filter(item => item.price !== null && item.menucategory !== null && selectedyachtFoodNames.includes(item.name)),
+            misc: data.misc.filter(item => item.price !== null && item.menucategory !== null && selectedyachtFoodNames.includes(item.name))
+
           };
+
 
           setExtras(organizedExtras);
           updateBookingData({ extras: organizedExtras });
@@ -238,7 +244,7 @@ const Selection = ({ onNext }) => {
           toast({ title: 'Note', description: `New Year's Eve rates apply for this booking date Special pricing will be calculated accordingly. ` });
         }
 
-        const allExtras = [...extras.food, ...extras.extra, ...extras.sport];
+        const allExtras = [...extras.food, ...extras.extra, ...extras.sport, ...extras.misc];
 
         // Update booking data with quantities and pricing info
         updateBookingData({
@@ -276,7 +282,7 @@ const Selection = ({ onNext }) => {
           toast({ title: 'Note', description: `New Year's Eve rates apply for this booking date Special pricing will be calculated accordingly. ` });
         }
 
-        const allExtras = [...extras.food, ...extras.extra, ...extras.sport];
+        const allExtras = [...extras.food, ...extras.extra, ...extras.sport, ...extras.misc];
 
         // Update booking data with quantities and pricing info
         updateBookingData({
@@ -494,14 +500,14 @@ const Selection = ({ onNext }) => {
     }
   }, [newYearCanApply, selectedYacht, isUserNewYearBooking]);
 
-    useEffect(() => {
-      let check = checkNewYearApplied(selectedYacht, yachtsType, bookingData, newYearCanApply);
-      if (check && isUserNewYearBooking) {
-        setNewYearApplied(check)
-      } else {
-        setNewYearApplied(false)
-      }
-    }, [selectedYacht, yachtsType, bookingData, newYearCanApply, isUserNewYearBooking])
+  useEffect(() => {
+    let check = checkNewYearApplied(selectedYacht, yachtsType, bookingData, newYearCanApply);
+    if (check && isUserNewYearBooking) {
+      setNewYearApplied(check)
+    } else {
+      setNewYearApplied(false)
+    }
+  }, [selectedYacht, yachtsType, bookingData, newYearCanApply, isUserNewYearBooking])
 
 
   //test
@@ -801,7 +807,7 @@ const Selection = ({ onNext }) => {
                           ))}
                         </SelectContent>
                       </Select>
-                      
+
                     </div>}
 
                     {!isUserNewYearBooking && <div className="flex flex-col items-end space-y-2">
@@ -932,9 +938,9 @@ const Selection = ({ onNext }) => {
             <Label className="text-sm font-medium mb-4 block">
               Optional Extras
             </Label>
-            <Accordion type="multiple" className="space-y-4">
+            {extras?.food?.length === 0 && extras?.sport?.length === 0 && extras?.extra?.length === 0 && extras?.misc?.length === 0 ? "No Optional Extras Found" : <Accordion type="multiple" className="space-y-4">
 
-              <AccordionItem value="food">
+              {extras?.food?.length > 0 ? <AccordionItem value="food">
                 <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
                   <div className="flex justify-between w-full items-center">
                     <span className="font-semibold">Food & Beverages</span>
@@ -945,11 +951,11 @@ const Selection = ({ onNext }) => {
                 </AccordionTrigger>
                 <AccordionContent className="pt-4 space-y-4">
                   {loadingExtras ? renderLoadingSkeleton() :
-                    extras.food.map(item => renderExtraItem(item, 'food'))}
+                    extras?.food?.map(item => renderExtraItem(item, 'food'))}
                 </AccordionContent>
-              </AccordionItem>
+              </AccordionItem> : ""}
 
-              <AccordionItem value="sport">
+              {extras?.sport?.length > 0 ? <AccordionItem value="sport">
                 <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
                   <div className="flex justify-between w-full items-center">
                     <span className="font-semibold">Water Sports</span>
@@ -960,14 +966,14 @@ const Selection = ({ onNext }) => {
                 </AccordionTrigger>
                 <AccordionContent className="pt-4 space-y-4">
                   {loadingExtras ? renderLoadingSkeleton() :
-                    extras.sport.map(item => renderExtraItem(item, 'sport'))}
+                    extras?.sport?.map(item => renderExtraItem(item, 'sport'))}
                 </AccordionContent>
-              </AccordionItem>
+              </AccordionItem> : ""}
 
-              <AccordionItem value="extra">
+              {extras?.extra?.length > 0 ? <AccordionItem value="extra">
                 <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
                   <div className="flex justify-between w-full items-center">
-                    <span className="font-semibold">Miscellaneous</span>
+                    <span className="font-semibold">Extra</span>
                     <p className="text-black dark:text-gray-400 font-semibold">
                       AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.extra)}</span>
                     </p>
@@ -977,8 +983,23 @@ const Selection = ({ onNext }) => {
                   {loadingExtras ? renderLoadingSkeleton() :
                     extras.extra.map(item => renderExtraItem(item, 'extra'))}
                 </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+              </AccordionItem> : ""}
+              {extras?.misc?.length > 0 ? <AccordionItem value="misc">
+                <AccordionTrigger className="hover:no-underline bg-[#F1F1F1] dark:bg-gray-700 p-4 mb-2 rounded-lg">
+                  <div className="flex justify-between w-full items-center">
+                    <span className="font-semibold">Miscellaneous</span>
+                    <p className="text-black dark:text-gray-400 font-semibold">
+                      AED <span className="font-medium text-lg">{calculateCategoryTotal(extras.misc)}</span>
+                    </p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4 space-y-4">
+                  {loadingExtras ? renderLoadingSkeleton() :
+                    extras.misc.map(item => renderExtraItem(item, 'misc'))}
+                </AccordionContent>
+              </AccordionItem> : ""}
+            </Accordion>}
+
           </div>
         </div>
         {/* Summary Card */}
