@@ -205,10 +205,10 @@ const FormulaOneDashboard = () => {
                   <Image
                         src={images?.length >0  ? `${process.env.NEXT_PUBLIC_S3_URL}${images[0]}` : '/assets/images/fycht.jpg'}
 
-                    alt={item.name || 'Event Image'}
-                    width={400}
+                    alt={item.name || 'f1 Image'}
+                    width={100}
                     height={250}
-                    className="object-cover px-2 ml-0.5 md:ml-0 pt-3 rounded-3xl md:h-[170px] h-[230px]"
+                    className="object-cover w-full px-2 pt-3 rounded-3xl md:h-[170px] h-[230px]"
                     onError={(e) => {
                       e.target.src = '/assets/images/fycht.jpg'
                     }}
