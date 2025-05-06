@@ -159,9 +159,9 @@ const Events = ({ limit = 4 }) => {
                       : '/assets/images/dubai.png'
                   }
                     alt={event?.name || 'Event Image'}
-                    width={400}
+                    width={100}
                     height={250}
-                    className="object-cover px-3 pt-3 rounded-3xl md:h-[170px] h-[220px]"
+                    className="object-cover w-full px-3 pt-3 rounded-3xl md:h-[170px] h-[220px]"
                     onError={(e) => {
                         e.target.src = '/assets/images/dubai.png'
                     }}

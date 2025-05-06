@@ -1683,9 +1683,9 @@ const SearchEventGlobalCompo = () => {
                                 }
 
                                 alt={event.name || 'Event Image'}
-                                width={400}
+                                width={100}
                                 height={250}
-                                className="object-cover px-1 xs:ml-1 pt-2 rounded-2xl md:h-[170px] h-[220px]"
+                                className="object-cover w-full px-3 pt-3 rounded-2xl md:h-[170px] h-[220px]"
                                 onError={(e) => {
                                   e.target.src = '/assets/images/dubai.png'
                               }}
