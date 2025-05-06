@@ -32,32 +32,47 @@ const BookingGalleryEmbala = ({ images }) => {
     }, [emblaApi, onSelect]);
 
     return (
-        <section id ="BookingEmblaCarosuel" className="px-2 sm:px-4">
-              <section className="embla">
-                         <div className="embla__viewport" ref={emblaRef}>
-                             <div className="embla__container">
-                                 {IMAGES?.map((src, index) => (
-                                     <div className="embla__slide" key={index}>
-                                         <div className="relative cursor-pointer h-[300px] sm:h-[300px] md:h-[400px] w-full">
-                                             <Image
-                                                 src={src}
-                                                 fill
-                                                 alt={`Gallery Image ${index + 1}`}
-                                                 className="object-cover rounded-xl md:rounded-3xl"
-                                                 priority
-                                                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, (max-width: 1024px) 70vw, 60vw"
-                                                 draggable={false}
-                                             />
-                                         </div>
-                                     </div>
-                                 ))}
-                             </div>
-                         </div>
-         
-         
-                     </section>
+        <section id="BookingEmblaCarosuel" className="px-2 sm:px-4">
+            <section className="embla">
+                <div className="embla__viewport" ref={emblaRef}>
+                    <div className="embla__container">
+                        {IMAGES?.map((src, index) => (
+                            <div className="embla__slide" key={index}>
+                                <div className="relative cursor-pointer h-[300px] sm:h-[300px] md:h-[400px] w-full">
+                                    <Image
+                                        src={src}
+                                        fill
+                                        alt={`Gallery Image ${index + 1}`}
+                                        className="object-cover rounded-xl md:rounded-3xl"
+                                        priority
+                                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, (max-width: 1024px) 70vw, 60vw"
+                                        draggable={false}
+                                    />
+                                    {IMAGES?.length > 1 && <div  className="embla__dots absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-50">
+                                        {IMAGES.map((_, index) => (
+                                            <DotButton
+                                                key={index}
+                                                onClick={() => scrollTo(index)}
+                                                className={'embla__dotstop h-1.5 w-1.5 rounded-full transition-all '.concat(
+                                                    index === selectedIndex ? ' embla__dotstop--selected bg-white' : 'bg-white/50 hover:bg-white/75'
+                                                )}
+                                            />
+                                        ))}
+                                    </div>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
 
-            {/* {IMAGES?.length > 1 && (
+
+
+
+
+
+            </section>
+
+            {IMAGES?.length > 1 && (
                 <div className="embla-thumbs" ref={thumbsRef}>
                     <div className="embla-thumbs__container">
                         {IMAGES?.map((src, index) => (
@@ -70,7 +85,7 @@ const BookingGalleryEmbala = ({ images }) => {
                         ))}
                     </div>
                 </div>
-            )} */}
+            )}
         </section>
     );
 };
@@ -80,10 +95,21 @@ const Thumb = ({ src, onClick, selected }) => (
         onClick={onClick}
         className={`embla-thumbs__slide ${selected ? "embla-thumbs__slide--selected" : ""}`}
     >
-      <Image src={src} width={80} height={80} alt="Thumbnail" className={`rounded-lg object-cover  relative w-[80px] h-[80px] sm:w-[80px] md:w-[120px]  overflow-hidden transition-all duration-300 rounded-lg 
+        <Image src={src} width={80} height={80} alt="Thumbnail" className={`rounded-lg object-cover  relative w-[80px] h-[80px] sm:w-[80px] md:w-[120px]  overflow-hidden transition-all duration-300 rounded-lg 
                                           hover:opacity-100 
                                          cursor-pointer ${selected ? "opacity-100" : "opacity-70"}`} />
     </button>
 );
 
 export default BookingGalleryEmbala;
+
+
+export const DotButton = (props) => {
+    const { children, ...restProps } = props
+
+    return (
+        <button type="button" {...restProps}>
+            {children}
+        </button>
+    )
+}
