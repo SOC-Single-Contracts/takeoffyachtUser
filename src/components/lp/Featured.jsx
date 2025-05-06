@@ -50,22 +50,22 @@ const EmptyYachtState = ({ onRetry }) => {
 const Featured = () => {
   const [yachts, setYachts] = useState([]);
   const [loading, setLoading] = useState(true);
-    const { toast } = useToast();
+  const { toast } = useToast();
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const { data } = useSession();
-    const { yachtsType } = useParams();
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
-    const userId = typeof window !== "undefined"
+  const { yachtsType } = useParams();
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
+  const userId = typeof window !== "undefined"
     ? (localStorage.getItem("userid") || data?.user?.userid || "1")
-    : (data?.user?.userid || "1"); 
+    : (data?.user?.userid || "1");
 
   const getYachts = async () => {
     try {
       setLoading(true);
       setError(null);
       // Using hardcoded user ID 1 for public access
-      const newData = await fetchYachts(1,yachtsType == "f1yachts" ? "f1yachts" :"regular");
+      const newData = await fetchYachts(1, yachtsType == "f1yachts" ? "f1yachts" : "regular");
       setYachts(newData);
     } catch (err) {
       console.error('Yacht fetching error:', err);
@@ -380,21 +380,21 @@ const Featured = () => {
                     variant="secondary"
                     size="icon"
                     className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
-                      onClick={() => handleWishlistToggle(yachtItem.yacht.id)}
+                    onClick={() => handleWishlistToggle(yachtItem.yacht.id)}
                   >
-                    <Image 
-                      src={favorites.has(yachtItem.yacht.id) 
-                        ? "/assets/images/wishlist.svg" 
+                    <Image
+                      src={favorites.has(yachtItem.yacht.id)
+                        ? "/assets/images/wishlist.svg"
                         : "/assets/images/unwishlist.svg"
-                      } 
-                      alt="wishlist" 
-                      width={20} 
+                      }
+                      alt="wishlist"
+                      width={20}
                       height={20}
                       quality={100}
                     />
                   </Button>
-                  
-                  {yachtsType == "yachts" ? <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
+
+                  {/* {yachtsType == "yachts" ? <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                     <span className="font-medium text-xs">
                       AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_hour_price}</span>
                       <span className="text-xs font-light ml-1">/Hour</span>
@@ -409,39 +409,54 @@ const Featured = () => {
                       AED <span className="font-bold text-lg text-primary">{yachtItem.yacht.per_hour_price}</span>
                       <span className="text-xs font-light ml-1">/Hour</span>
                     </span>
-                  </div>}
-                
-                </div>
-                <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}> 
+                  </div>} */}
 
-                <CardContent className="px-4 py-2">
-                  <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
-                    <MapPin className="size-3 mr-1" /> {yachtItem.yacht.location || "Location Not Available"}
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{yachtItem.yacht.name}</h3>
-                    <span className="font-medium text-xs">
-                      AED <span className="font-bold text-sm text-primary">{yachtItem.yacht.per_day_price}</span>
-                      <span className="text-xs font-light ml-1">/Day</span>
-                    </span>
+                  <div className="absolute  bottom-4 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
+
+                    {yachtsType == "yachts" ? <span className="font-medium text-xs">
+                      AED <span className="font-bold font-medium text-primary">{yachtItem?.yacht?.per_hour_price}</span>
+                      <span className="text-xs font-light ml-1">/Hour</span>
+                    </span> : yachtsType == "f1yachts" ? <span className="font-medium text-xs">
+                      AED <span className="font-bold font-medium text-primary">{yachtItem?.yacht?.per_day_price}</span>
+                      <span className="text-xs font-light ml-1">{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}                          </span>
+                    </span> : <span className="font-medium text-xs">
+                      AED <span className="font-bold font-medium text-primary">{yachtItem?.yacht?.per_hour_price}</span>
+                      <span className="text-xs font-light ml-1">/Hour</span>
+                    </span>}
+
                   </div>
-                  <div className="flex justify-start items-center gap-1">
-                    <Image src="/assets/images/transfer.svg" alt="length" quality={100} width={9} height={9} className="" />
-                    <p className="font-semibold text-xs">{yachtItem.yacht.length || 0} ft</p>
-                    <Dot />
-                    <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                      <Image src="/assets/images/person.svg" alt="length" quality={100} width={8} height={8} className="dark:invert" />
-                      <p>Guests</p>
-                      <p>{yachtItem.yacht.guest || 0}</p>
+
+                </div>
+                <Link href={`/dashboard/yachts/${yachtItem.yacht.id}`}>
+
+                  <CardContent className="px-4 py-2">
+                    <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
+                      <MapPin className="size-3 mr-1" /> {yachtItem.yacht.location || "Location Not Available"}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{yachtItem.yacht.name}</h3>
+                      <span className="font-medium text-xs">
+                        AED <span className="font-bold text-sm text-primary">{yachtItem.yacht.per_day_price}</span>
+                        <span className="text-xs font-light ml-1">/Day</span>
+                      </span>
                     </div>
-                    <Dot />
-                    <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                      <Image src="/assets/images/cabin.svg" alt="length" quality={100} width={8} height={8} className="dark:invert" />
-                      <p>Cabins</p>
-                      <p>{yachtItem.yacht.number_of_cabin || 0}</p>
+                    <div className="flex justify-start items-center gap-1">
+                      <Image src="/assets/images/transfer.svg" alt="length" quality={100} width={9} height={9} className="" />
+                      <p className="font-semibold text-xs">{yachtItem.yacht.length || 0} ft</p>
+                      <Dot />
+                      <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                        <Image src="/assets/images/person.svg" alt="length" quality={100} width={8} height={8} className="dark:invert" />
+                        <p>Guests</p>
+                        <p>{yachtItem.yacht.guest || 0}</p>
+                      </div>
+                      <Dot />
+                      <div className="text-center font-semibold flex items-center text-xs space-x-2">
+                        <Image src="/assets/images/cabin.svg" alt="length" quality={100} width={8} height={8} className="dark:invert" />
+                        <p>Cabins</p>
+                        <p>{yachtItem.yacht.number_of_cabin || 0}</p>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
+                  </CardContent>
                 </Link>
               </Card>
             );
