@@ -11,7 +11,7 @@ import {
   CarouselItem, 
   CarouselPrevious, 
   CarouselNext 
-} from "@/components/ui/carousel"
+} from "@/components/ui/journalCarousel"
 
 const Journal = () => {
   const [blogs, setBlogs] = useState([]);
@@ -66,7 +66,7 @@ const Journal = () => {
           }}
           className="w-full"
         >
-          <CarouselContent className="pl-4 md:pl-2 gap-2">
+          <CarouselContent className="pll-4 md:pll-2 gap-2">
             {loading ? (
               <>
                 {[1, 2, 3].map((_, index) => (

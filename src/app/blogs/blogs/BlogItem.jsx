@@ -15,7 +15,7 @@ const sanitizeHTML = (html) => {
 
 const BlogItem = ({ blog }) => {
   return (
-    <Card className="overflow-hidden bg-transparent shadow-none border-none w-full max-w-[350px] h-full max-h-[465px]">
+    <Card className="overflow-hidden bg-transparent shadow-none border-none w-full max-w-[350px]] h-full max-h-[465px]">
       <div className="relative overflow-hidden rounded-2xl group">
         <Image 
           src={blog?.thumbnail_image || "/assets/images/blog-hero.png"}
@@ -28,7 +28,7 @@ const BlogItem = ({ blog }) => {
           }}
         />
       </div>
-      <CardContent className="px-2 py-2">
+      <CardContent className="px-6 md:px-3 py-2">
         <p className="font-light text-[12px] py-1.5 text-gray-700 dark:text-gray-400">
           {new Date(blog?.created_at).toLocaleDateString()}
         </p>
