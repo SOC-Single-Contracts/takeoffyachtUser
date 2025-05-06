@@ -9,6 +9,7 @@ import { Heart } from 'lucide-react';
 import { useWalletContext, WalletProvider } from "./WalletContext";
 import { freezeWallet, getWallet } from "@/api/wallet";
 import { useToast } from "@/hooks/use-toast";
+import { handleLogoutGlobal } from "@/lib/auth";
 
 const SkeletonLoader = () => (
   <div className="animate-pulse flex flex-col space-y-4 p-4 border rounded-lg shadow">
@@ -26,7 +27,7 @@ const WalletWizardContent = () => {
   const router = useRouter();
   const { walletDetails, setwalletDetails } = useWalletContext();
   const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
-  const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;  
+  const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -72,7 +73,7 @@ const WalletWizardContent = () => {
 
   const handleFreeze = async () => {
     if (!userId && !token) return;
-    if (walletDetails?.transactions.length<=0) {
+    if (walletDetails?.transactions.length <= 0) {
       toast({
         title: "Error",
         description: "kindly Add some Amount to freeze your wallet",
@@ -82,7 +83,7 @@ const WalletWizardContent = () => {
     }
 
     try {
-      const data = await freezeWallet(token,!walletDetails?.freezeWallet);
+      const data = await freezeWallet(token, !walletDetails?.freezeWallet);
       // console.log("data=>",data)
       setwalletDetails((prev) => {
         const updatedDetails = {
@@ -109,7 +110,7 @@ const WalletWizardContent = () => {
       if (!userId || !token) return;
       try {
         const data = await getWallet(token);
-  
+
         setwalletDetails((prev) => {
           const updatedDetails = {
             ...prev,
@@ -117,22 +118,26 @@ const WalletWizardContent = () => {
             freezeWallet: data?.freeze ?? prev.freezeWallet,
             transactions: data?.transactions ?? prev.transactions,
           };
-  
+
           // Persist to local storage
           // localStorage.setItem("walletContext", JSON.stringify(updatedDetails));
-  
+
           return updatedDetails;
         });
       } catch (err) {
         setError(err?.response?.data?.detail || "Unexpected Error");
+        console.error('error wallet:', err);
+        if (err?.status == 401 || err?.status == 403) {
+          handleLogoutGlobal()
+        }
       } finally {
         setLoading(false);
       }
     };
-  
+
     getWalletResponse();
   }, [userId, token]); // Dependency array ensures this runs when userId or token changes
-  
+
   // Listen to `walletDetails` and update localStorage whenever it changes
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -140,19 +145,10 @@ const WalletWizardContent = () => {
         localStorage.setItem("walletContext", JSON.stringify(walletDetails));
       }
     }
- 
-  }, [walletDetails]);
-  
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (walletDetails) {
-   
-        localStorage.setItem("walletContext", JSON.stringify(walletDetails));
-      }
-    }
-   
   }, [walletDetails]);
+
+
 
 
   // If not logged in, show login prompt
@@ -229,35 +225,35 @@ const WalletWizardContent = () => {
 
           <div className="grid grid-cols-3  gap-4 my-3">
             {/* {walletOptions()} */}
-          {  detailsMap?.map(({ type, text }, index) => (
-    <div
-      key={index}
-      className="flex flex-col justify-center items-center w-full h-20 "
-    >
-      {/* <Image src={type} quality={100} alt={text} width={20} height={20} className="dark:invert" /> */}
-      <Button
-        variant="default"
-        size="icon"
-        className="rounded-full h-12 w-12 ml-2 bg-[#BEA355]"
-        onClick={() => handleWallet(type)}
-      >
+            {detailsMap?.map(({ type, text }, index) => (
+              <div
+                key={index}
+                className="flex flex-col justify-center items-center w-full h-20 "
+              >
+                {/* <Image src={type} quality={100} alt={text} width={20} height={20} className="dark:invert" /> */}
+                <Button
+                  variant="default"
+                  size="icon"
+                  className="rounded-full h-12 w-12 ml-2 bg-[#BEA355]"
+                  onClick={() => handleWallet(type)}
+                >
 
-        {type == 'add-money' ? <Plus className="h-8 w-8 dark:invert" />
-          : type == "freeze" ? <Snowflake className="h-8 w-8 dark:invert" />
-            : type == "reveal" ? walletDetails?.hideAmount ?  <Eye className="h-8 w-8 dark:invert" />: <EyeOff className="h-8 w-8 dark:invert" />
+                  {type == 'add-money' ? <Plus className="h-8 w-8 dark:invert" />
+                    : type == "freeze" ? <Snowflake className="h-8 w-8 dark:invert" />
+                      : type == "reveal" ? walletDetails?.hideAmount ? <Eye className="h-8 w-8 dark:invert" /> : <EyeOff className="h-8 w-8 dark:invert" />
 
-              : ""}
-
-
+                        : ""}
 
 
-      </Button>
 
-      <p className="text-gray-700 text-center text-sm dark:text-gray-300 mt-2">{text}</p>
-    </div>
-  ))}
 
-{/* <h2 className="text-sm md:text-lg font-bold"> {walletDetails?.freezeWallet ? "(wallet Freeze)" :""} </h2> */}
+                </Button>
+
+                <p className="text-gray-700 text-center text-sm dark:text-gray-300 mt-2">{text}</p>
+              </div>
+            ))}
+
+            {/* <h2 className="text-sm md:text-lg font-bold"> {walletDetails?.freezeWallet ? "(wallet Freeze)" :""} </h2> */}
 
           </div>
 
