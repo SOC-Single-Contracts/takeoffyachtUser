@@ -37,7 +37,7 @@ const BookingWizardContent = ({ initialBookingId }) => {
     : {};
     const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
     const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
-  const bookingType = new URLSearchParams(window.location.search).get('bookingType');
+  const bookingType = typeof window !== "undefined" ?  new URLSearchParams(window.location.search).get('bookingType') : null;
 
   // Authentication check
   // useEffect(() => {
