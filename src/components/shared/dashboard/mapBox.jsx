@@ -63,8 +63,8 @@ const MapBoxComponent = ({ markers = [], movingObjects = [] }) => {
           
             const yachtName = yacht?.name || "Yacht Name";
             const yachtImage = yacht?.yacht_image ? `${process.env.NEXT_PUBLIC_S3_URL}${yacht.yacht_image}` : "/assets/images/fycht.jpg";
-            const pricePerHour = yacht?.per_hour_price || "N/A";
-            const pricePerDay = yacht?.per_day_price || "N/A";
+            const pricePerHour = yacht?.per_hour_price || "0";
+            const pricePerDay = yacht?.per_day_price || "0";
             const yachtLength = yacht?.length || "0";
             const yachtGuests = yacht?.guest || "0";
             const yachtCabins = yacht?.number_of_cabin || "0";
@@ -101,8 +101,8 @@ const MapBoxComponent = ({ markers = [], movingObjects = [] }) => {
             <p>${yachtCabins}</p>
 
                <span class="font-medium text-xs">
-            AED <span class="font-bold text-sm text-primary">${pricePerDay}</span>
-            <span class="text-xs font-light ml-1">/Day</span>
+            AED <span class="font-bold text-sm text-primary">${yachtsType == "f1yachts" ? pricePerDay : pricePerHour}</span>
+            <span class="text-xs font-light ml-1">/${yachtsType == "f1yachts" ? "Day" : "hour"}</span>
           </span>
           </div>
         </div>
