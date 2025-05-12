@@ -4,7 +4,6 @@ import { CreditCard } from 'lucide-react';
 import { CheckCircle } from 'lucide-react';
 import { useBookingContext } from './BookingContext';
 import { useSession } from 'next-auth/react';
-import { toast } from 'sonner';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useRouter } from 'next/navigation';
@@ -13,6 +12,8 @@ import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { API_BASE_URL } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
@@ -20,6 +21,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 const PaymentForm = ({eventData}) => {
   const stripe = useStripe();
   const elements = useElements();
+  const { toast } = useToast();
   const router = useRouter();
   const { bookingData, calculateTotal,updateBookingData } = useBookingContext();
   const { data: session } = useSession();
@@ -39,19 +41,20 @@ const PaymentForm = ({eventData}) => {
       setError('Please complete card details');
       return false;
     }
-    if (!bookingData.selectedPackage) {
+    if (!bookingData?.selectedPackage) {
       setError('Please select a package first');
       return false;
     }
-    // if (!bookingData.date || !bookingData.startTime) {
+    // if (!bookingData?.date || !bookingData?.startTime) {
     //   setError('Please select date and time');
     //   return false;
     // }
-    if (bookingData.tickets) {
+
+    if (!bookingData?.tickets) {
       setError('Please add at least one tickets');
       return false;
     }
-    if (!bookingData.phone || !bookingData.country) {
+    if (!bookingData?.phone || !bookingData?.country) {
       setError('Please provide contact information');
       return false;
     }
@@ -60,86 +63,183 @@ const PaymentForm = ({eventData}) => {
 
   const calculatePaymentAmount = () => {
     const total = calculateTotal();
-    return bookingData.isPartialPayment ? total / 2 : total;
+    return bookingData?.isPartialPayment ? total / 2 : total;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!stripe || !elements) return;
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!stripe || !elements) return;
 
-    if (!validateForm()) {
-      return;
-    }
+  //   if (!validateForm()) {
+  //     return;
+  //   }
 
-    setIsProcessing(true);
-    setError(null);
+  //   setIsProcessing(true);
+  //   setError(null);
 
-    try {
-      const paymentAmount = calculatePaymentAmount();
+  //   try {
+  //     const paymentAmount = calculatePaymentAmount();
       
-      // Create source from card details
-      const { error: sourceError, source } = await stripe.createSource(
-        elements.getElement(CardElement),
-        {
+  //     // Create source from card details
+  //     // const { error: sourceError, source } = await stripe.createSource(
+  //     //   elements.getElement(CardElement),
+  //     //   {
+  //     //     type: 'card',
+  //     //     amount: Math.round(paymentAmount * 100), // Convert to cents and ensure it's a whole number
+  //     //     currency: 'aed',
+  //     //     owner: {
+  //     //       name: bookingData?.fullName,
+  //     //       email: session.user.email,
+  //     //       phone: bookingData?.phone,
+  //     //     },
+  //     //   }
+  //     // );
+
+  //     // if (sourceError) {
+  //     //   throw new Error(sourceError.message);
+  //     // }
+
+  //       const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
+  //               type: 'card',
+  //               card: elements.getElement(CardElement),
+  //               billing_details: {
+  //                 name: bookingData.fullName,
+  //                 email: bookingData.email,
+  //                 phone: bookingData.phone,
+  //               },
+  //             });
+      
+  //             if (paymentMethodError) throw new Error(paymentMethodError.message);
+
+  //     // Send booking details with source ID as payment token
+  //     const response = await fetch(`${API_BASE_URL}/yacht/event_bookings/`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': `Bearer ${session?.accessToken}`
+  //       },
+  //       body: JSON.stringify({
+  //         payment_intent_id: paymentMethod?.id,
+  //         booking_type: "event",
+  //         amount: paymentAmount,
+  //         user_id: session.user.userid,
+  //         email: session.user.email,
+  //         package_id: bookingData?.selectedPackage.id,
+  //         phone_number: bookingData?.phone,
+  //         message: bookingData?.notes,
+  //         duration_hour: bookingData?.selectedPackage.duration_hour || 3,
+  //         selected_date: format(new Date(bookingData?.date), 'yyyy-MM-dd'),
+  //         total_cost: calculateTotal(),
+  //         booking_time: format(new Date(bookingData?.startTime), 'HH:mm:ss'),
+  //         adults: bookingData?.adults,
+  //         kid_teen: bookingData?.kids,
+  //         is_partial_payment: bookingData?.isPartialPayment
+  //       })
+  //     });
+
+  //     const bookingResult = await response.json();
+      
+  //     if (bookingResult.error) {
+  //       throw new Error(bookingResult.error);
+  //     }
+
+  //     // Payment successful
+  //     toast.success('Payment successful! Redirecting to success page...');
+  //     router.push('/dashboard/success');
+
+  //   } catch (error) {
+  //     console.error('Payment error:', error);
+  //     setError(error.message);
+  //     toast.error(error.message || 'Payment processing failed');
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
+
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (!stripe || !elements || !validateForm()) return;
+  
+      if (!bookingData?.termsAccepted) {
+        toast({
+          title: "Error",
+          description: "You must accept the terms and conditions before proceeding.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+
+
+      setIsProcessing(true);
+      setError(null);
+
+      try {
+     
+        const paymentAmount = calculatePaymentAmount();
+
+        const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
           type: 'card',
-          amount: Math.round(paymentAmount * 100), // Convert to cents and ensure it's a whole number
-          currency: 'aed',
-          owner: {
+          card: elements.getElement(CardElement),
+          billing_details: {
             name: bookingData.fullName,
-            email: session.user.email,
+            email: bookingData.email,
             phone: bookingData.phone,
           },
-        }
-      );
+        });
 
-      if (sourceError) {
-        throw new Error(sourceError.message);
+        if (paymentMethodError) throw new Error(paymentMethodError.message);
+
+        // Use paymentType to determine endpoint
+        let endpoint;
+        endpoint = `${API_BASE_URL}/yacht/event_bookings/`;
+   
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            payment_method_id: paymentMethod.id,
+            // payment_method_id: "pm_card_visaaaa",
+            event: bookingData?.eventId,
+            package: bookingData?.selectedPackage.id,
+            name: bookingData?.fullName,
+            email: bookingData?.email,
+            phone_number: bookingData?.phone,
+            tickets_quantity: bookingData?.tickets,
+          }),
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Payment processing failed');
+
+        const successMessage = `Payment successful! Redirecting to success page...`;
+
+        toast({
+          title: "Success! 🎉",
+          description: successMessage,
+          variant: "default",
+          className: "bg-green-500 text-white border-none",
+        });
+        router.push('/dashboard/success');
+
+
+      } catch (error) {
+        console.error('Payment error:', error);
+        setError(error.message);
+        toast({
+          title: "Error",
+          description: error.message || "Payment processing failed",
+          variant: "destructive",
+        });
+      } finally {
+        setIsProcessing(false);
       }
-
-      // Send booking details with source ID as payment token
-      const response = await fetch('https://api.takeoffyachts.com/yacht/process-payment/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.accessToken}`
-        },
-        body: JSON.stringify({
-          payment_intent_id: source.id,
-          booking_type: "event",
-          amount: paymentAmount,
-          user_id: session.user.userid,
-          email: session.user.email,
-          package_id: bookingData.selectedPackage.id,
-          phone_number: bookingData.phone,
-          message: bookingData.notes,
-          duration_hour: bookingData.selectedPackage.duration_hour || 3,
-          selected_date: format(new Date(bookingData.date), 'yyyy-MM-dd'),
-          total_cost: calculateTotal(),
-          booking_time: format(new Date(bookingData.startTime), 'HH:mm:ss'),
-          adults: bookingData.adults,
-          kid_teen: bookingData.kids,
-          is_partial_payment: bookingData.isPartialPayment
-        })
-      });
-
-      const bookingResult = await response.json();
+    
       
-      if (bookingResult.error) {
-        throw new Error(bookingResult.error);
-      }
-
-      // Payment successful
-      toast.success('Payment successful! Redirecting to success page...');
-      router.push('/dashboard/success');
-
-    } catch (error) {
-      console.error('Payment error:', error);
-      setError(error.message);
-      toast.error(error.message || 'Payment processing failed');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+  
+    };
 
   return (
     <form onSubmit={handleSubmit} className='w-full space-y-6'>
@@ -209,7 +309,7 @@ const PaymentForm = ({eventData}) => {
                     <Checkbox
                       id="terms"
                       className="checked:bg-[#BEA355] checked:border-[#BEA355]"
-                      checked={bookingData.termsAccepted}
+                      checked={bookingData?.termsAccepted}
                       onCheckedChange={(checked) => updateBookingData({ termsAccepted: checked })}
                     />
                     <Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
@@ -267,7 +367,7 @@ const PaymentForm = ({eventData}) => {
         disabled={isProcessing || !stripe || !cardComplete}
         className='w-full bg-[#BEA355] text-white rounded-full hover:bg-[#A89245] disabled:opacity-50 disabled:cursor-not-allowed h-10'
       >
-        {isProcessing ? 'Processing...' : `Pay ${bookingData.isPartialPayment ? '50%' : 'Full'} Amount (AED ${calculatePaymentAmount()})`}
+        {isProcessing ? 'Processing...' : `Pay ${bookingData?.isPartialPayment ? '50%' : 'Full'} Amount (AED ${calculatePaymentAmount()})`}
       </Button>
     </form>
   );
@@ -285,12 +385,12 @@ const Payment = () => {
           
           <div className='space-y-3'>
             <div className='flex justify-between text-sm'>
-              <span>Package ({bookingData.selectedPackage?.package_type})</span>
+              <span>Package ({bookingData?.selectedPackage?.package_type})</span>
               <span className='font-medium'>
-                AED {bookingData.selectedPackage?.price || 0}
+                AED {bookingData?.selectedPackage?.price || 0}
               </span>
             </div>
-            {bookingData.selectedPackage?.features?.map((feature) => (
+            {bookingData?.selectedPackage?.features?.map((feature) => (
               <div key={feature.id} className='flex justify-between text-sm'>
                 <span>{feature.name}</span>
                 <span className='font-medium'>AED {feature.price || 0}</span>
@@ -301,7 +401,7 @@ const Payment = () => {
                 <span>Total Amount</span>
                 <span>AED {calculateTotal()}</span>
               </div>
-              {bookingData.isPartialPayment && (
+              {bookingData?.isPartialPayment && (
                 <div className='flex justify-between text-blue-600 font-semibold mt-2'>
                   <span>Amount Due Now (50%)</span>
                   <span>AED {calculateTotal() / 2}</span>

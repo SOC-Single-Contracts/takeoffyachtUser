@@ -71,7 +71,7 @@ const Selection = ({ onNext,eventData }) => {
     }
 
     if (bookingData.tickets + bookingData.kids === 0) {
-      toast.error('Please add at least one guest');
+      toast.error('Please add at least one tickets');
       return;
     }
 
@@ -84,7 +84,8 @@ const Selection = ({ onNext,eventData }) => {
       updateBookingData({ 
         selectedPackage: selectedPackage,
       duration: eventData?.duration_hour || 3,
-        tickets:tickets
+        tickets:tickets,
+        eventId:eventData?.id
       });
     }
   }, [eventData,packageId,tickets])
@@ -100,7 +101,7 @@ const Selection = ({ onNext,eventData }) => {
               ? `${process.env.NEXT_PUBLIC_S3_URL}${eventData?.event_image}`
               : '/assets/images/dubai.png'
           }
-            alt={eventData?.event?.name}
+            alt={eventData?.name}
             fill
             className="object-cover rounded-lg"
             onError={(e) => {
@@ -108,10 +109,10 @@ const Selection = ({ onNext,eventData }) => {
           }}
           />
         </div>
-        <h2 className="text-xl font-semibold mb-2">{eventData?.event?.name}</h2>
+        <h2 className="text-xl font-semibold mb-2">{eventData?.name}</h2>
         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-2">
           <MapPin className="w-4 h-4" />
-          <span>{eventData?.event?.location || 'Location not specified'}</span>
+          <span>{eventData?.location || 'Location not specified'}</span>
         </div>
       </Card>
 
@@ -262,7 +263,7 @@ const Selection = ({ onNext,eventData }) => {
           <div className="bg-[#F4F0E4] dark:bg-gray-800 p-4 rounded-lg">
             <div className="flex justify-between items-center">
               <span className="font-medium">Total Price:</span>
-              <span className="font-bold">${calculateTotal()}</span>
+              <span className="font-bold">AED {calculateTotal()}</span>
             </div>
           </div>
 

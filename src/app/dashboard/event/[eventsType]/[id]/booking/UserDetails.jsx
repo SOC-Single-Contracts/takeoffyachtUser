@@ -134,7 +134,11 @@ const UserDetails = ({ onNext }) => {
           placeholder="Enter any International Number"
           required
           value={bookingData.phone}
-          onChange={(e) => updateBookingData({ phone: e.target.value })}
+          onChange={(e) => {
+            const value = e.target.value;
+            const sanitizedValue = value.replace(/[^0-9+]/g, "");
+            updateBookingData({ phone: sanitizedValue });
+          }}
           className="mt-1 block w-full"
         />
       </div>

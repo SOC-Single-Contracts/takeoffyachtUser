@@ -20,7 +20,8 @@ export const BookingProvider = ({ children, initialEventData }) => {
     isPartialPayment: false,
     termsAccepted: false,
     selectedPackage: null,
-    tickets:0
+    tickets:0,
+    eventId:null
   });
 
   const updateBookingData = (newData) => {
@@ -38,9 +39,9 @@ export const BookingProvider = ({ children, initialEventData }) => {
     return (packagePrice + featuresPrices) * totalTickets;
   };
 
-  useEffect(()=>{
-    console.log("bookingData",bookingData)
-      },[bookingData])
+  // useEffect(()=>{
+  //   console.log("bookingData",bookingData)
+  //     },[bookingData])
 
   return (
     <BookingContext.Provider value={{
