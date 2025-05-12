@@ -1,0 +1,219 @@
+.classForEmbalaCaroselEvent .embla {
+  max-width: 70rem;
+  margin: auto;
+  --slide-height: 19rem;
+  --slide-spacing: 1rem;
+  --slide-size: 100%;
+  --slide-spacing-sm: 1.6rem;
+  --slide-spacing-1024: 2rem;
+  --slide-size-sm: 50%;
+  --slide-size-1024: 70%;
+  --slide-spacing-lg: 2rem;
+  --slide-size-lg: calc(100% / 3);
+}
+
+.classForEmbalaCaroselEvent .embla .priceContainer {
+  position: absolute;
+  bottom: 9px !important;
+  /* z-index: 9999 !important; */
+}
+
+.classForEmbalaCaroselEvent .embla__viewport {
+  overflow: hidden;
+}
+
+.classForEmbalaCaroselEvent .embla__container {
+  backface-visibility: hidden;
+  display: flex;
+  touch-action: pan-y pinch-zoom;
+  margin-left: calc(var(--slide-spacing) * -1);
+}
+@media (min-width: 750px) {
+  .classForEmbalaCaroselEvent .embla__container {
+    margin-left: calc(var(--slide-spacing-sm) * -1);
+  }
+}
+@media (min-width: 1200px) {
+  .classForEmbalaCaroselEvent .embla__container {
+    margin-left: calc(var(--slide-spacing-lg) * -1);
+  }
+}
+
+.classForEmbalaCaroselEvent .embla__slide {
+  flex: 0 0 var(--slide-size-1024);
+  padding-left: var(--slide-spacing-1024);
+}
+/* @media (min-width: 750px) {
+  .classForEmbalaCaroselEvent .embla__slide {
+    flex: 0 0 var(--slide-size-sm);
+    padding-left: var(--slide-spacing-sm);
+  }
+} */
+/* @media (min-width: 1024px) {
+  .classForEmbalaCaroselEvent .embla__slide {
+    flex: 0 0 var(--slide-size-1024);
+    padding-left: var(--slide-spacing-1024);
+  }
+} */
+/* @media (min-width: 1200px) {
+  .classForEmbalaCaroselEvent .embla__slide {
+    flex: 0 0 var(--slide-size);
+    padding-left: var(--slide-spacing-lg);
+  }
+} */
+
+.classForEmbalaCaroselEvent .embla__slide__number {
+  box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
+  border-radius: 1.8rem;
+  font-size: 4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--slide-height);
+  user-select: none;
+}
+
+.classForEmbalaCaroselEvent .embla__slide__img {
+  border-radius: 1.8rem;
+  display: block;
+  /* height: var(--slide-height); */
+  width: 100%;
+  object-fit: cover;
+}
+
+.classForEmbalaCaroselEvent .embla__controls {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  justify-content: space-between;
+  /* gap: 1.2rem;
+  margin-top: 1.8rem; */
+}
+
+.classForEmbalaCaroselEvent .embla__buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.classForEmbalaCaroselEvent .embla__button {
+  -webkit-tap-highlight-color: rgba(var(--text-high-contrast-rgb-value), 0.5);
+  -webkit-appearance: none;
+  appearance: none;
+  /* background-color: transparent; */
+  touch-action: manipulation;
+  display: inline-flex;
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  margin: 0 20px;
+  box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
+  /* width: 3.6rem;
+  height: 3.6rem; */
+  z-index: 1;
+  border-radius: 50%;
+  color: var(--text-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.classForEmbalaCaroselEvent .embla__button:disabled {
+  color: var(--detail-high-contrast);
+}
+
+.classForEmbalaCaroselEvent .embla__button__svg {
+  width: 35%;
+  height: 35%;
+}
+
+.classForEmbalaCaroselEvent .embla__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  position: absolute;
+  bottom: 15px !important;
+  width: 100% !important;
+}
+
+/* .classForEmbalaCaroselEvent .embla__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ccc;
+  transition: background-color 0.3s;
+} */
+
+/* .classForEmbalaCaroselEvent .embla__dot:after {
+  box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
+  width: 1.4rem !important;
+  height: 1.4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  content: '';
+} */
+
+/* .classForEmbalaCaroselEvent .embla__dot--selected:after {
+  box-shadow: inset 0 0 0 0.2rem var(--text-body);
+} */
+
+.classForEmbalaCaroselEvent .embla__lazy-load {
+  position: relative;
+  /* height: 100%; */
+}
+
+.classForEmbalaCaroselEvent .embla__lazy-load__spinner {
+  border: 0.4rem solid rgba(128, 128, 128, 0.2); /* Light gray border */
+  border-left: 0.4rem solid #808080; /* Solid gray for the animated part */
+  font-size: 1rem;
+  display: inline-flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  text-indent: -9999em;
+  animation: loading 1.1s infinite linear;
+  border-radius: 50%;
+  width: 5rem;
+  height: 5rem;
+}
+
+.classForEmbalaCaroselEvent .embla__lazy-load__spinner:after {
+  border-radius: inherit;
+  width: 5rem;
+  height: 5rem;
+}
+
+.classForEmbalaCaroselEvent .embla__lazy-load__img {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.classForEmbalaCaroselEvent .embla__lazy-load--has-loaded .embla__lazy-load__img {
+  opacity: 1;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0.5rem;
+  height: 240px;
+  width: 100% !important;
+}
+
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

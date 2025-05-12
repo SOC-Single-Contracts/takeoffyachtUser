@@ -64,6 +64,11 @@ export default function BookingPage() {
     }
   }, [status, toast, router]);
 
+
+  // useEffect(() => {
+  // console.log("eventData", eventData);
+  // }, [eventData]);
+
   // Handle different loading and session states
   if (loading || status === 'loading') {
     return <Loading />;

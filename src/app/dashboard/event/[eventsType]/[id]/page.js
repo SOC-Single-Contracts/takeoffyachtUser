@@ -30,6 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import Events from "@/components/lp/Events";
 import { fetchAllEventsList, findEventById } from "@/api/events";
 import DetailPageGallery2 from "@/components/lp/DetailPageGallery2";
+import EventSliderEmbala from "@/components/EventsSlider/js/EmblaCarouselEvent";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -49,7 +50,7 @@ const EventDetail = () => {
       try {
         // const data = await fetchEvents(session?.user?.userid || 1);
         const event = await findEventById(id)
-        console.log(event)
+        // console.log(event)
 
 
         // const event = data.find(
@@ -81,6 +82,7 @@ const EventDetail = () => {
         : Math.max(0, (prev[packageId] || 0) - 1)
     }));
   };
+
 
   if (error) {
     return (
@@ -151,10 +153,9 @@ const EventDetail = () => {
 
   const uniqueEventImages = [...new Set([selectedEvent?.event_image, ...eventImages])].filter(Boolean);
 
+//test
+// console.log("selectedEvent",selectedEvent)
 
-  //   useEffect(()=>{
-  //  console.log("selectedEvent",selectedEvent)
-  //   },[selectedEvent])
 
   return (
     <>
@@ -340,7 +341,7 @@ const EventDetail = () => {
               {/* Packages Section */}
               <div className='my-5'>
                 <h2 className="text-2xl font-semibold mb-4">Available Packages</h2>
-                <Carousel>
+                {/* <Carousel>
                   <CarouselContent>
                     {packages_system?.map((pkg, index) => (
                       <CarouselItem key={index} className="ml-4 p-2">
@@ -353,12 +354,10 @@ const EventDetail = () => {
                           </div>
                           <div className='flex flex-col justify-start space-y-4'>
                             <p className='font-semibold text-3xl text-[#BEA355] flex items-center dark:text-white mt-6'>
-                              {/* <DollarSign className='size-4 text-gray-700 dark:text-white' /> */}
                               <span className="text-sm mx-2">AED</span>     {pkg?.price}
                               <span className='text-sm text-gray-700 mt-2 dark:text-white'>.00/per ticket</span>
                             </p>
 
-                            {/* Ticket Counter */}
                             <div className="flex items-center justify-between dark:bg-gray-900 p-2 rounded-lg">
                               <span className="text-sm font-medium">Tickets</span>
                               <div className="flex items-center space-x-3">
@@ -384,7 +383,6 @@ const EventDetail = () => {
                               </div>
                             </div>
 
-                            {/* Total Amount */}
                             <div className="text-sm font-medium flex justify-between items-center">
                               <span>Total Amount:</span>
                               <span className="text-[#BEA355]">
@@ -392,12 +390,10 @@ const EventDetail = () => {
                               </span>
                             </div>
 
-                            {/* Book Now Button */}
                             <Link
                               className="w-full"
                               href={`/dashboard/event/events/${id}/booking?tickets=${ticketCounts[pkg?.id] || 0}&package=${pkg?.id}`}
                               onClick={(e) => {
-                                // Check if no tickets are selected
                                 if (!ticketCounts[pkg?.id]) {
                                   e.preventDefault();
                                   toast({
@@ -408,7 +404,6 @@ const EventDetail = () => {
                                   return;
                                 }
 
-                                // Check if user is not logged in
                                 if (!session) {
                                   e.preventDefault();
                                   toast({
@@ -427,15 +422,19 @@ const EventDetail = () => {
                                 Book Now
                               </Button>
                             </Link>
-                            {/* <Link className="w-full" href={`/dashboard/event/events/${id}/booking`}>
-                            <Button className='bg-[#BEA355] text-white rounded-full px-4 h-10 w-full'>Book Now</Button>
-                          </Link> */}
+                    
                           </div>
                         </div>
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                </Carousel>
+                </Carousel> */}
+
+                   {packages_system?.length > 0 && <div className="container classForEmbalaCaroselEvent mx-auto pb-6 px-2">
+                
+                                        <EventSliderEmbala slides={packages_system} handleTicketChange={handleTicketChange} ticketCounts={ticketCounts} />
+                               
+                            </div>}
               </div>
               {/* Book Now Button */}
               {/* <div className="my-4">

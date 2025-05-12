@@ -247,7 +247,7 @@ const Summary = ({ onNext,eventData }) => {
           <TableRow>
             <TableCell className="font-semibold">Package Price</TableCell>
             <TableCell className="font-medium">
-              ${bookingData.selectedPackage?.price || 0}/ticket
+              AED {bookingData.selectedPackage?.price || 0}/ticket
             </TableCell>
           </TableRow>
           <TableRow>
@@ -279,7 +279,7 @@ const Summary = ({ onNext,eventData }) => {
           )}
           <TableRow>
             <TableCell className="font-semibold">Total Amount</TableCell>
-            <TableCell className="font-medium">${calculateTotal()}</TableCell>
+            <TableCell className="font-medium">AED {calculateTotal()}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

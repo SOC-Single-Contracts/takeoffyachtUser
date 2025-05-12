@@ -17,7 +17,7 @@ const MapBoxComponent = ({ markers = [], movingObjects = [] }) => {
         const map = new mapboxgl.Map({
             container: mapContainerRef.current,
             style: "mapbox://styles/mapbox/streets-v11",
-            center: markers.length ? [markers[0].longitude, markers[0].latitude] : [-74.006, 40.7128],
+            center: [55.269734, 25.200249],
             zoom: 10,
         });
 
