@@ -24,19 +24,27 @@ export default function BookingPage() {
     const fetchEventData = async () => {
       try {
         // Only fetch if session is fully loaded and user is authenticated
-        if (session?.user?.userid) {
-          // const events = await fetchEvents(session.user.userid);
-          // const event = events.find(item => item.event.id.toString() === id);
-                  const event = await findEventById(id)
-                  // console.log("event",event)
-          
-          
-          if (!event) {
-            throw new Error('Event not found');
-          }
-          
-          setEventData(event);
+        // if (session?.user?.userid) {
+        //   // const events = await fetchEvents(session.user.userid);
+        //   // const event = events.find(item => item.event.id.toString() === id);
+        //           const event = await findEventById(id)
+        //           // console.log("event",event)
+
+
+        //   if (!event) {
+        //     throw new Error('Event not found');
+        //   }
+
+        //   setEventData(event);
+        // }
+        const event = await findEventById(id)
+        // console.log("event",event)
+
+
+        if (!event) {
+          throw new Error('Event not found');
         }
+        setEventData(event);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -45,28 +53,30 @@ export default function BookingPage() {
     };
 
     // Immediately stop loading if no session or session is loading
-    if (session === null) {
-      setLoading(false);
-    } else {
-      fetchEventData();
-    }
+    // if (session === null) {
+    //   setLoading(false);
+    // } else {
+    //   fetchEventData();
+    // } 
+    fetchEventData();
+
   }, [id, session]);
 
   // Separate effect for handling unauthenticated state
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      toast({
-        title: "Login Required",
-        description: "You need to be logged in to book an event",
-        variant: "destructive"
-      });
-      router.push('/login');
-    }
-  }, [status, toast, router]);
-
-
   // useEffect(() => {
-  // console.log("eventData", eventData);
+  //   if (status === 'unauthenticated') {
+  //     toast({
+  //       title: "Login Required",
+  //       description: "You need to be logged in to book an event",
+  //       variant: "destructive"
+  //     });
+  //     router.push('/login');
+  //   }
+  // }, [status, toast, router]);
+
+  //test
+  // useEffect(() => {
+  //   console.log("eventData", eventData);
   // }, [eventData]);
 
   // Handle different loading and session states

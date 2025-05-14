@@ -489,7 +489,7 @@ const SearchFilter = () => {
                         <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{selectedCity || "Add Destination"}</span>
                       </div>
                     </TabsTrigger>
-                    <TabsTrigger
+                    {activeMainTab != "events" &&   <TabsTrigger
                       value="when"
                       // disabled={!selectedCity}
                       className="py-2 sm:py-3 text-xs sm:text-sm rounded-full text-[#BEA355] dark:text-[#BEA355] flex flex-col items-start px-2 sm:px-4"
@@ -508,8 +508,9 @@ const SearchFilter = () => {
                         </span>
 
                       </div>
-                    </TabsTrigger>
-                    <TabsTrigger
+                    </TabsTrigger>}
+                  
+                    {activeMainTab != "events" &&  <TabsTrigger
                       value="who"
                       // disabled={!selectedDate}
                       className="py-1 md:py-3.5 w-[130px] md:w-[150px] text-xs md:text-sm rounded-full bg-transparent hover:bg-transparent text-[#BEA355] dark:text-[#BEA355] data-[state=active]:bg-white data-[state=active]:drop-shadow-2xl flex flex-col items-start"
@@ -518,7 +519,8 @@ const SearchFilter = () => {
                         <span className="font-semibold text-xs">Who</span>
                         <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{minimumGuests.capacity > 0 ? `${minimumGuests.capacity} Guests` : "Add Guests"}</span>
                       </div>
-                    </TabsTrigger>
+                    </TabsTrigger>}
+                   
                     <div>
 
                     </div>
@@ -539,7 +541,7 @@ const SearchFilter = () => {
                         </>
                       )}
                     </TabsTrigger>
-                    <TabsContent
+                    {activeMainTab != "events" &&     <TabsContent
                       value="who"
                       className="absolute right-0 top-full mt-2 z-10 w-full sm:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl h-[230px] overflow-y-auto shadow-lg border border-gray-200 dark:border-gray-700"
                     >
@@ -686,7 +688,8 @@ const SearchFilter = () => {
                       </div>
 
 
-                    </TabsContent>
+                    </TabsContent>}
+                
                     <TabsContent
                       value="where"
                       className="absolute left-0 top-full mt-2 z-10 md:w-[400px] mx-2 p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
@@ -738,8 +741,8 @@ const SearchFilter = () => {
                       )}
                     </TabsContent>
                   </TabsList>
-
-                  {/* When Tab Content */}
+ {/* When Tab Content */}
+                  {activeMainTab != "events" &&            
                   <TabsContent value="when" className="flex justify-center">
                     <div className="bg-white dark:bg-gray-800 rounded-2xl">
                       <Calendar
@@ -757,7 +760,9 @@ const SearchFilter = () => {
                         className="rounded-md"
                       />
                     </div>
-                  </TabsContent>
+                  </TabsContent> }
+
+      
 
                   <TabsContent value="searchbyName" className="flex justify-start">
                     <div className="bg-white dark:bg-gray-800 rounded-2xl">

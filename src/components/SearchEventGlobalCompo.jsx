@@ -155,6 +155,8 @@ const SearchEventGlobalCompo = () => {
 
   const categories = ['Catamarans',"motor boat", "motor", 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
   const locations = ['Dubai', 'Abu Dhabi', 'Sharjah'];
+  const packageTypes = ['basic', 'f1', 'Sharjah'];
+
   const outdoorEquipment = [
     { name: 'Bath Towels', icon: '/assets/images/bathtowels.svg' },
     { name: 'Bathing Ladder', icon: '/assets/images/bathingladder.svg' },
@@ -244,26 +246,27 @@ const SearchEventGlobalCompo = () => {
 
   const updateActiveFilters = () => {
     const newFilters = [];
-    if (filters.min_price !== "" || filters.max_price !== "") {
-      newFilters.push(`Price: ${filters.min_price}-${filters.max_price} AED`);
-    }
-    if (filters.min_guest || filters.max_guest) newFilters.push(`Guests: ${filters.min_guest}-${filters.max_guest}`);
+    // if (filters.min_price !== "" || filters.max_price !== "") {
+    //   newFilters.push(`Price: ${filters.min_price}-${filters.max_price} AED`);
+    // }
+    // if (filters.min_guest || filters.max_guest) newFilters.push(`Guests: ${filters.min_guest}-${filters.max_guest}`);
     if (filters.location) newFilters.push(`Location: ${filters.location}`);
-    if (filters.category_name.length) newFilters.push(`Categories: ${filters.category_name.length}`);
-    if (filters.boat_category.length) newFilters.push(`Boat Categories: ${filters.boat_category.length}`);
-    if (filters.engine_type) newFilters.push(`Type: ${filters.engine_type}`);
-    if (filters.min_length) newFilters.push(`Length: ${filters.min_length}-${filters.max_length}ft`);
-    if (filters.number_of_cabin) newFilters.push(`Min No. of Cabins: ${filters.number_of_cabin}`);
-    if (filters.sleep_capacity) newFilters.push(`Min Sleeping Capacity: ${filters.sleep_capacity}`);
-    if (filters.amenities.length) newFilters.push(`Amenities: ${filters.amenities.length}`); // Added amenities filter
-    if (filters.outdoor_equipment.length) newFilters.push(`Outdoor Equipment: ${filters.outdoor_equipment.length}`); // Added outdoor equipment filter
-    if (filters.kitchen.length) newFilters.push(`Kitchen: ${filters.kitchen.length}`); // Added kitchen filter
-    if (filters.energy.length) newFilters.push(`Onboard Energy: ${filters.energy.length}`); // Added energy filter
-    if (filters.leisure.length) newFilters.push(`Leisure Activities: ${filters.leisure.length}`); // Added leisure activities filter
-    if (filters.navigation.length) newFilters.push(`Navigation Equipment: ${filters.navigation.length}`); // Added navigation equipment filter
-    if (filters.extra_comforts.length) newFilters.push(`Extra Comforts: ${filters.extra_comforts.length}`); // Added extra comforts filter
-    if (filters.indoor.length) newFilters.push(`Indoor Equipment: ${filters.indoor.length}`); // Added indoor equipment filter
     if (filters.name) newFilters.push(`name: ${filters.name}`);
+
+    // if (filters.category_name.length) newFilters.push(`Categories: ${filters.category_name.length}`);
+    // if (filters.boat_category.length) newFilters.push(`Boat Categories: ${filters.boat_category.length}`);
+    // if (filters.engine_type) newFilters.push(`Type: ${filters.engine_type}`);
+    // if (filters.min_length) newFilters.push(`Length: ${filters.min_length}-${filters.max_length}ft`);
+    // if (filters.number_of_cabin) newFilters.push(`Min No. of Cabins: ${filters.number_of_cabin}`);
+    // if (filters.sleep_capacity) newFilters.push(`Min Sleeping Capacity: ${filters.sleep_capacity}`);
+    // if (filters.amenities.length) newFilters.push(`Amenities: ${filters.amenities.length}`); // Added amenities filter
+    // if (filters.outdoor_equipment.length) newFilters.push(`Outdoor Equipment: ${filters.outdoor_equipment.length}`); // Added outdoor equipment filter
+    // if (filters.kitchen.length) newFilters.push(`Kitchen: ${filters.kitchen.length}`); // Added kitchen filter
+    // if (filters.energy.length) newFilters.push(`Onboard Energy: ${filters.energy.length}`); // Added energy filter
+    // if (filters.leisure.length) newFilters.push(`Leisure Activities: ${filters.leisure.length}`); // Added leisure activities filter
+    // if (filters.navigation.length) newFilters.push(`Navigation Equipment: ${filters.navigation.length}`); // Added navigation equipment filter
+    // if (filters.extra_comforts.length) newFilters.push(`Extra Comforts: ${filters.extra_comforts.length}`); // Added extra comforts filter
+    // if (filters.indoor.length) newFilters.push(`Indoor Equipment: ${filters.indoor.length}`); // Added indoor equipment filter
 
     setActiveFilters(newFilters);
   };
@@ -273,40 +276,41 @@ const SearchEventGlobalCompo = () => {
     /// for this compo
     let obj = {
       location: searchParams.get('location') || "",
-      max_guest: searchParams.get('max_guest') ? parseInt(searchParams.get('max_guest')) : "",
-      min_guest: searchParams.get('min_guest') ? parseInt(searchParams.get('min_guest')) : "",
-      min_price: searchParams.get('min_price') ? parseInt(searchParams.get('min_price')) : "",
-      max_price: searchParams.get('max_price') ? parseInt(searchParams.get('max_price')) : "",
-      sortBy: searchParams.get('sortBy') ? searchParams.get('sortBy') : "default",
-      min_length: searchParams.get('min_length') ? parseInt(searchParams.get('min_length')) : "",
-      max_length: searchParams.get('max_length') ? parseInt(searchParams.get('max_length')) : "",
-      sleep_capacity: searchParams.get('sleep_capacity') ? parseInt(searchParams.get('sleep_capacity')) : "",
-      number_of_cabin: searchParams.get('number_of_cabin') ? parseInt(searchParams.get('number_of_cabin')) : "",
-      category_name: searchParams.get('category_name')
-        ? JSON.parse(searchParams.get('category_name'))
-        : [],
-      outdoor_equipment: searchParams.get('outdoor_equipment')
-        ? JSON.parse(searchParams.get('outdoor_equipment'))
-        : [],
-      navigation: searchParams.get('navigation')
-        ? JSON.parse(searchParams.get('navigation'))
-        : [],
-      leisure: searchParams.get('leisure')
-        ? JSON.parse(searchParams.get('leisure'))
-        : [],
-      kitchen: searchParams.get('kitchen')
-        ? JSON.parse(searchParams.get('kitchen'))
-        : [],
-      indoor: searchParams.get('indoor')
-        ? JSON.parse(searchParams.get('indoor'))
-        : [],
-      extra_comforts: searchParams.get('extra_comforts')
-        ? JSON.parse(searchParams.get('extra_comforts'))
-        : [],
-      energy: searchParams.get('energy')
-        ? JSON.parse(searchParams.get('energy'))
-        : [],
       name: searchParams.get('name') || "",
+
+      // max_guest: searchParams.get('max_guest') ? parseInt(searchParams.get('max_guest')) : "",
+      // min_guest: searchParams.get('min_guest') ? parseInt(searchParams.get('min_guest')) : "",
+      // min_price: searchParams.get('min_price') ? parseInt(searchParams.get('min_price')) : "",
+      // max_price: searchParams.get('max_price') ? parseInt(searchParams.get('max_price')) : "",
+      // sortBy: searchParams.get('sortBy') ? searchParams.get('sortBy') : "default",
+      // min_length: searchParams.get('min_length') ? parseInt(searchParams.get('min_length')) : "",
+      // max_length: searchParams.get('max_length') ? parseInt(searchParams.get('max_length')) : "",
+      // sleep_capacity: searchParams.get('sleep_capacity') ? parseInt(searchParams.get('sleep_capacity')) : "",
+      // number_of_cabin: searchParams.get('number_of_cabin') ? parseInt(searchParams.get('number_of_cabin')) : "",
+      // category_name: searchParams.get('category_name')
+      //   ? JSON.parse(searchParams.get('category_name'))
+      //   : [],
+      // outdoor_equipment: searchParams.get('outdoor_equipment')
+      //   ? JSON.parse(searchParams.get('outdoor_equipment'))
+      //   : [],
+      // navigation: searchParams.get('navigation')
+      //   ? JSON.parse(searchParams.get('navigation'))
+      //   : [],
+      // leisure: searchParams.get('leisure')
+      //   ? JSON.parse(searchParams.get('leisure'))
+      //   : [],
+      // kitchen: searchParams.get('kitchen')
+      //   ? JSON.parse(searchParams.get('kitchen'))
+      //   : [],
+      // indoor: searchParams.get('indoor')
+      //   ? JSON.parse(searchParams.get('indoor'))
+      //   : [],
+      // extra_comforts: searchParams.get('extra_comforts')
+      //   ? JSON.parse(searchParams.get('extra_comforts'))
+      //   : [],
+      // energy: searchParams.get('energy')
+      //   ? JSON.parse(searchParams.get('energy'))
+      //   : [],
 
 
 
@@ -349,40 +353,40 @@ const SearchEventGlobalCompo = () => {
     if (!hasMore) return;
 
     let payload = {
-      max_guest: parseInt(searchParams.get('max_guest')) || "",
+      // max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
       name: searchParams.get('name') || "",
-      created_on: searchParams.get('date') || "",
-      ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
-        ? { min_guest: parseInt(searchParams.get('min_guest')) }
-        : {}),
-      ...(eventsType === "events"
-        ? {
-          min_per_hour: parseInt(searchParams.get('min_price')) || "",
-          max_per_hour: parseInt(searchParams.get('max_price')) || "",
-        }
-        : eventsType === "f1events"
-          ? {
-            min_per_day: parseInt(searchParams.get('min_price')) || "",
-            max_per_day: parseInt(searchParams.get('max_price')) || "",
-          }
-          : {}),
-      min_length: parseInt(searchParams.get('min_length')) || "",
-      max_length: parseInt(searchParams.get('max_length')) || "",
-      sleep_capacity: parseInt(searchParams.get('sleep_capacity')) || "",
-      number_of_cabin: parseInt(searchParams.get('number_of_cabin')) || "",
-      category_names: searchParams.get('category_name')
-        ? JSON.parse(searchParams.get('category_name'))
-        : [],
-      features: [
-        ...(JSON.parse(searchParams.get('outdoor_equipment') || "[]")),
-        ...(JSON.parse(searchParams.get('navigation') || "[]")),
-        ...(JSON.parse(searchParams.get('leisure') || "[]")),
-        ...(JSON.parse(searchParams.get('kitchen') || "[]")),
-        ...(JSON.parse(searchParams.get('indoor') || "[]")),
-        ...(JSON.parse(searchParams.get('extra_comforts') || "[]")),
-        ...(JSON.parse(searchParams.get('energy') || "[]"))
-      ]
+      // created_on: searchParams.get('date') || "",
+      // ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
+      //   ? { min_guest: parseInt(searchParams.get('min_guest')) }
+      //   : {}),
+      // ...(eventsType === "events"
+      //   ? {
+      //     min_per_hour: parseInt(searchParams.get('min_price')) || "",
+      //     max_per_hour: parseInt(searchParams.get('max_price')) || "",
+      //   }
+      //   : eventsType === "f1events"
+      //     ? {
+      //       min_per_day: parseInt(searchParams.get('min_price')) || "",
+      //       max_per_day: parseInt(searchParams.get('max_price')) || "",
+      //     }
+      //     : {}),
+      // min_length: parseInt(searchParams.get('min_length')) || "",
+      // max_length: parseInt(searchParams.get('max_length')) || "",
+      // sleep_capacity: parseInt(searchParams.get('sleep_capacity')) || "",
+      // number_of_cabin: parseInt(searchParams.get('number_of_cabin')) || "",
+      // category_names: searchParams.get('category_name')
+      //   ? JSON.parse(searchParams.get('category_name'))
+      //   : [],
+      // features: [
+      //   ...(JSON.parse(searchParams.get('outdoor_equipment') || "[]")),
+      //   ...(JSON.parse(searchParams.get('navigation') || "[]")),
+      //   ...(JSON.parse(searchParams.get('leisure') || "[]")),
+      //   ...(JSON.parse(searchParams.get('kitchen') || "[]")),
+      //   ...(JSON.parse(searchParams.get('indoor') || "[]")),
+      //   ...(JSON.parse(searchParams.get('extra_comforts') || "[]")),
+      //   ...(JSON.parse(searchParams.get('energy') || "[]"))
+      // ]
 
 
 
@@ -393,6 +397,7 @@ const SearchEventGlobalCompo = () => {
       reqType: "handlePagination",
       EventType: eventsType == "f1events" ? "f1events" : "regular",
       user_id: userId,
+      page:page
     };
     try {
       setLoading(true);
@@ -434,8 +439,10 @@ const SearchEventGlobalCompo = () => {
         }
         setOriginalEvents((prev) => [...prev, ...sortedYachts]);
         if (sortedYachts?.length < PAGE_SIZE) {
+          console.log("no more data")
           setHasMore(false)
         }else{
+          console.log("more data")
           setHasMore(true)
         }
       } else {
@@ -459,6 +466,7 @@ const SearchEventGlobalCompo = () => {
       reqType: "handleResetAll",
       EventType: eventsType == "f1events" ? "f1events" : "regular",
       user_id: userId,
+      page: 1,
     };
     try {
       setLoading(true);
@@ -515,23 +523,23 @@ const SearchEventGlobalCompo = () => {
 
     }
     router.push(`${searchPath}?${new URLSearchParams({
-      max_guest: "",
-      min_guest: "",
-      min_price: "",
-      max_price: "",
+      // max_guest: "",
+      // min_guest: "",
+      // min_price: "",
+      // max_price: "",
       location: "",
-      min_length: "",
-      max_length: "",
-      sleep_capacity: "",
-      number_of_cabin: "",
-      category_name: "[]",
-      outdoor_equipment: "[]",
-      navigation: "[]",
-      leisure: "[]",
-      kitchen: "[]",
-      indoor: "[]",
-      extra_comforts: "[]",
-      energy: "[]",
+      // min_length: "",
+      // max_length: "",
+      // sleep_capacity: "",
+      // number_of_cabin: "",
+      // category_name: "[]",
+      // outdoor_equipment: "[]",
+      // navigation: "[]",
+      // leisure: "[]",
+      // kitchen: "[]",
+      // indoor: "[]",
+      // extra_comforts: "[]",
+      // energy: "[]",
       name: "",
 
     }).toString()}`);
@@ -545,85 +553,85 @@ const SearchEventGlobalCompo = () => {
     if (!userId) return;
 
     let payload = {
-      max_guest: parseInt(searchParams.get('max_guest')) || "",
+      // max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
       name: searchParams.get('name') || "",
-      created_on: searchParams.get('date') || "",
-      ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
-        ? { min_guest: parseInt(searchParams.get('min_guest')) }
-        : {}),
-      ...(eventsType === "events"
-        ? {
-          min_per_hour: parseInt(searchParams.get('min_price')) || "",
-          max_per_hour: parseInt(searchParams.get('max_price')) || "",
-        }
-        : eventsType === "f1events"
-          ? {
-            min_per_day: parseInt(searchParams.get('min_price')) || "",
-            max_per_day: parseInt(searchParams.get('max_price')) || "",
-          }
-          : {}),
-      min_length: parseInt(searchParams.get('min_length')) || "",
-      max_length: parseInt(searchParams.get('max_length')) || "",
-      sleep_capacity: parseInt(searchParams.get('sleep_capacity')) || "",
-      number_of_cabin: parseInt(searchParams.get('number_of_cabin')) || "",
-      category_names: searchParams.get('category_name')
-        ? JSON.parse(searchParams.get('category_name'))
-        : [],
-      features: [
-        ...(JSON.parse(searchParams.get('outdoor_equipment') || "[]")),
-        ...(JSON.parse(searchParams.get('navigation') || "[]")),
-        ...(JSON.parse(searchParams.get('leisure') || "[]")),
-        ...(JSON.parse(searchParams.get('kitchen') || "[]")),
-        ...(JSON.parse(searchParams.get('indoor') || "[]")),
-        ...(JSON.parse(searchParams.get('extra_comforts') || "[]")),
-        ...(JSON.parse(searchParams.get('energy') || "[]"))
-      ]
+      // created_on: searchParams.get('date') || "",
+      // ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
+      //   ? { min_guest: parseInt(searchParams.get('min_guest')) }
+      //   : {}),
+      // ...(eventsType === "events"
+      //   ? {
+      //     min_per_hour: parseInt(searchParams.get('min_price')) || "",
+      //     max_per_hour: parseInt(searchParams.get('max_price')) || "",
+      //   }
+      //   : eventsType === "f1events"
+      //     ? {
+      //       min_per_day: parseInt(searchParams.get('min_price')) || "",
+      //       max_per_day: parseInt(searchParams.get('max_price')) || "",
+      //     }
+      //     : {}),
+      // min_length: parseInt(searchParams.get('min_length')) || "",
+      // max_length: parseInt(searchParams.get('max_length')) || "",
+      // sleep_capacity: parseInt(searchParams.get('sleep_capacity')) || "",
+      // number_of_cabin: parseInt(searchParams.get('number_of_cabin')) || "",
+      // category_names: searchParams.get('category_name')
+      //   ? JSON.parse(searchParams.get('category_name'))
+      //   : [],
+      // features: [
+      //   ...(JSON.parse(searchParams.get('outdoor_equipment') || "[]")),
+      //   ...(JSON.parse(searchParams.get('navigation') || "[]")),
+      //   ...(JSON.parse(searchParams.get('leisure') || "[]")),
+      //   ...(JSON.parse(searchParams.get('kitchen') || "[]")),
+      //   ...(JSON.parse(searchParams.get('indoor') || "[]")),
+      //   ...(JSON.parse(searchParams.get('extra_comforts') || "[]")),
+      //   ...(JSON.parse(searchParams.get('energy') || "[]"))
+      // ]
 
 
 
     };
     payload = {
       ...payload,
+      page:1,
       source: componentType == "searchEvent" ? "searchEvent" : componentType == "simpleEvent" ? "simpleEvent" : "",
       reqType: "handleFilterChange",
       EventType: eventsType == "f1events" ? "f1events" : "regular",
       user_id: userId,
-      ...(eventsType === "events"
-        ? {
-          min_per_hour: filters?.min_price?.toString() || "",
-          max_per_hour: filters?.max_price?.toString() || "",
-        }
-        : eventsType === "f1events"
-          ? {
-            min_per_day: filters?.min_price?.toString() || "",
-            max_per_day: filters?.max_price?.toString() || "",
-          }
-          : {}),
-      // guest: filters?.max_guest || "",
-      min_guest: filters?.min_guest || "",
-      max_guest: filters?.max_guest || "",
-      sleep_capacity: filters?.sleep_capacity || "",
-      number_of_cabin: filters?.number_of_cabin || "",
-      category_names: filters?.category_name || [],
-      features: [
-        ...(filters?.amenities || []),
-        ...(filters?.outdoor_equipment || []),
-        ...(filters?.kitchen || []),
-        ...(filters?.energy || []),
-        ...(filters?.leisure || []),
-        ...(filters?.navigation || []),
-        ...(filters?.extra_comforts || []),
-        ...(filters?.indoor || [])
-      ],
-      price_asc: filters?.price_asc || false,
-      price_des: filters?.price_des || false,
-      cabin_asc: filters?.cabin_asc || false,
-      cabin_des: filters?.cabin_des || false,
-      created_on: filters?.created_on || "",
+      // ...(eventsType === "events"
+      //   ? {
+      //     min_per_hour: filters?.min_price?.toString() || "",
+      //     max_per_hour: filters?.max_price?.toString() || "",
+      //   }
+      //   : eventsType === "f1events"
+      //     ? {
+      //       min_per_day: filters?.min_price?.toString() || "",
+      //       max_per_day: filters?.max_price?.toString() || "",
+      //     }
+      //     : {}),
+      // min_guest: filters?.min_guest || "",
+      // max_guest: filters?.max_guest || "",
+      // sleep_capacity: filters?.sleep_capacity || "",
+      // number_of_cabin: filters?.number_of_cabin || "",
+      // category_names: filters?.category_name || [],
+      // features: [
+      //   ...(filters?.amenities || []),
+      //   ...(filters?.outdoor_equipment || []),
+      //   ...(filters?.kitchen || []),
+      //   ...(filters?.energy || []),
+      //   ...(filters?.leisure || []),
+      //   ...(filters?.navigation || []),
+      //   ...(filters?.extra_comforts || []),
+      //   ...(filters?.indoor || [])
+      // ],
+      // price_asc: filters?.price_asc || false,
+      // price_des: filters?.price_des || false,
+      // cabin_asc: filters?.cabin_asc || false,
+      // cabin_des: filters?.cabin_des || false,
+      // created_on: filters?.created_on || "",
       location: filters?.location || "",
-      min_length: filters?.min_length || "",
-      max_length: filters?.max_length || "",
+      // min_length: filters?.min_length || "",
+      // max_length: filters?.max_length || "",
       name: filters?.name || "",
 
     };
@@ -689,40 +697,40 @@ const SearchEventGlobalCompo = () => {
 
     router.push(`${searchPath}?${new URLSearchParams({
 
-      max_guest: filters?.max_guest,
-      min_guest: filters?.min_guest,
-      min_price: filters?.min_price,
-      max_price: filters?.max_price,
+      // max_guest: filters?.max_guest,
+      // min_guest: filters?.min_guest,
+      // min_price: filters?.min_price,
+      // max_price: filters?.max_price,
       location: filters?.location,
-      min_length: filters?.min_length,
-      max_length: filters?.max_length,
-      sleep_capacity: filters?.sleep_capacity,
-      number_of_cabin: filters?.number_of_cabin,
-      category_name: filters?.category_name?.length
-        ? `["${filters.category_name.join('","')}"]`
-        : "[]",
-      outdoor_equipment: filters?.outdoor_equipment?.length
-        ? `["${filters.outdoor_equipment.join('","')}"]`
-        : "[]",
-      navigation: filters?.navigation?.length
-        ? `["${filters.navigation.join('","')}"]`
-        : "[]",
-      leisure: filters?.leisure?.length
-        ? `["${filters.leisure.join('","')}"]`
-        : "[]",
-      kitchen: filters?.kitchen?.length
-        ? `["${filters.kitchen.join('","')}"]`
-        : "[]",
-      indoor: filters?.indoor?.length
-        ? `["${filters.indoor.join('","')}"]`
-        : "[]",
-      extra_comforts: filters?.extra_comforts?.length
-        ? `["${filters.extra_comforts.join('","')}"]`
-        : "[]",
-      energy: filters?.energy?.length
-        ? `["${filters.energy.join('","')}"]`
-        : "[]",
       name: filters?.name
+      // min_length: filters?.min_length,
+      // max_length: filters?.max_length,
+      // sleep_capacity: filters?.sleep_capacity,
+      // number_of_cabin: filters?.number_of_cabin,
+      // category_name: filters?.category_name?.length
+      //   ? `["${filters.category_name.join('","')}"]`
+      //   : "[]",
+      // outdoor_equipment: filters?.outdoor_equipment?.length
+      //   ? `["${filters.outdoor_equipment.join('","')}"]`
+      //   : "[]",
+      // navigation: filters?.navigation?.length
+      //   ? `["${filters.navigation.join('","')}"]`
+      //   : "[]",
+      // leisure: filters?.leisure?.length
+      //   ? `["${filters.leisure.join('","')}"]`
+      //   : "[]",
+      // kitchen: filters?.kitchen?.length
+      //   ? `["${filters.kitchen.join('","')}"]`
+      //   : "[]",
+      // indoor: filters?.indoor?.length
+      //   ? `["${filters.indoor.join('","')}"]`
+      //   : "[]",
+      // extra_comforts: filters?.extra_comforts?.length
+      //   ? `["${filters.extra_comforts.join('","')}"]`
+      //   : "[]",
+      // energy: filters?.energy?.length
+      //   ? `["${filters.energy.join('","')}"]`
+      //   : "[]",
 
 
 
@@ -945,13 +953,13 @@ const SearchEventGlobalCompo = () => {
 
 
   //test
+//   useEffect(()=>{
+//  console.log("events",events)
+//  console.log("Page",page)
+//  console.log("hasMore",hasMore)
+//  console.log("allowFetching",allowFetching)
+  // },[events,page,hasMore,allowFetching])
 
-
-  useEffect(()=>{
- console.log("events",events)
-  },[events])
-
-  // console.log("Page",page)
     // useEffect(() => {
     //   console.log("componentType", componentType, searchPath)
   
@@ -1064,7 +1072,7 @@ const SearchEventGlobalCompo = () => {
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <div className="flex justify-between w-full">
                   <SheetTrigger asChild>
-                    <Button disabled variant="outline" className="gap-2">
+                    <Button  variant="outline" className="gap-2">
                       <SlidersHorizontal className="h-4 w-4" />
                       Filters
                     </Button>
@@ -1103,195 +1111,30 @@ const SearchEventGlobalCompo = () => {
                     <SheetTitle>Filters</SheetTitle>
                   </SheetHeader>
                   <ScrollArea className="h-[calc(100vh-80px)] px-2">
-                    <Button
-                      className="w-full bg-[#BEA355] mt-6 rounded-full"
-                      onClick={() => {
-                        handleFilterChange();
-                      }}
-                    >
-                      Show Results
-                    </Button>
+               
                     <div className="space-y-6 py-6 px-1">
-                      {/* Price Range */}
-                      <div className="space-y-2">
-                        <Label className="text-sm"> {eventsType == "events" ? "Price Per Hour (AED) " : eventsType == "f1events" ? "Price (AED) " : ""}</Label>
-                        <div className="flex gap-4">
-                          <div className="flex-1">
-                            <Input
-                              type="number"
-                              min="0"
-                              placeholder="Min"
-                              value={filters.min_price}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
-                                  setFilters((prev) => ({ ...prev, min_price: value }));
-                                }
-                              }}
-                              className="w-full"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <Input
-                              type="number"
-                              min="0"
-                              placeholder="Max"
-                              value={filters.max_price}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
-                                  setFilters((prev) => ({ ...prev, max_price: value }));
-                                }
-                              }}
-                              className="w-full"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Guest Capacity */}
-                      <div className="space-y-2">
-                        <Label className="text-sm">Guest Capacity</Label>
-                        <div className="flex gap-4">
-                          <div className="flex-1">
-                            <Input
-                              type="number"
-                              min="0"
-                              placeholder="Min"
-                              value={filters.min_guest}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
-                                  setFilters((prev) => ({ ...prev, min_guest: value }));
-                                }
-                              }}
-                              className="w-full"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <Input
-                              type="number"
-                              min="0"
-                              placeholder="Max"
-                              value={filters.max_guest}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
-                                  setFilters((prev) => ({ ...prev, max_guest: value }));
-                                }
-                              }}
-                              className="w-full"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Boat Length */}
-                      <div className="space-y-2">
-                        <Label className="text-sm">Boat Length (ft)</Label>
-                        <div className="flex gap-4">
-                          <div className="flex-1">
-                            <Input
-                              type="number"
-                              min="0"
-                              placeholder="Min ft"
-                              value={filters.min_length}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
-                                  setFilters((prev) => ({ ...prev, min_length: value }));
-                                }
-                              }}
-                              className="w-full"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <Input
-                              type="number"
-                              min="0"
-                              placeholder="Max ft"
-                              value={filters.max_length}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
-                                  setFilters((prev) => ({ ...prev, max_length: value }));
-                                }
-                              }}
-                              className="w-full"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Min Sleeping Capacity */}
-                      <div className="space-y-2 flex justify-between items-center">
-                        <Label className="text-sm">Min. Sleeping Capacity</Label>
-                        <div className="flex items-center gap-4">
-                          <Button
-                            onClick={() => setFilters(prev => ({ ...prev, sleep_capacity: Math.max(0, (prev.sleep_capacity || 0) - 1) }))}
-                            className="bg-gray-400 rounded-md px-2"
-                          >
-                            -
-                          </Button>
-                          <Input
-                            type="number"
-                            min="0"
-                            // value={filters.sleep_capacity || 0}
-                            // onChange={(e) => setFilters(prev => ({ ...prev, sleep_capacity: Math.max(0, parseInt(e.target.value) || 0) }))}
-                            value={filters.sleep_capacity === undefined ? "" : filters.sleep_capacity}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              setFilters(prev => ({
-                                ...prev,
-                                sleep_capacity: value === "" ? undefined : Math.max(0, parseInt(value)) // Allow empty input and set to undefined
-                              }));
-                            }}
-                            className="w-16 text-center"
-                          />
-                          <Button
-                            onClick={() => setFilters(prev => ({ ...prev, sleep_capacity: (prev.sleep_capacity || 0) + 1 }))}
-                            className="bg-gray-400 rounded-md px-2"
-                          >
-                            +
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Min No. of Cabins */}
-                      <div className="space-y-2 flex justify-between items-center">
-                        <Label className="text-sm">Min. No. of Cabins</Label>
-                        <div className="flex items-center gap-4">
-                          <Button
-                            onClick={() => setFilters(prev => ({ ...prev, number_of_cabin: Math.max(0, (prev.number_of_cabin || 0) - 1) }))}
-                            className="bg-gray-400 rounded-md px-2"
-                          >
-                            -
-                          </Button>
-                          <Input
-                            type="number"
-                            min="0"
-                            // value={filters.number_of_cabin || 0}
-                            // onChange={(e) => setFilters(prev => ({ ...prev, number_of_cabin: Math.max(0, parseInt(e.target.value) || 0) }))}
-                            value={filters.number_of_cabin === undefined ? "" : filters.number_of_cabin}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              setFilters(prev => ({
-                                ...prev,
-                                number_of_cabin: value === "" ? undefined : Math.max(0, parseInt(value)) // Allow empty input and set to undefined
-                              }));
-                            }}
-                            className="w-16 text-center"
-                          />
-                          <Button
-                            onClick={() => setFilters(prev => ({ ...prev, number_of_cabin: (prev.number_of_cabin || 0) + 1 }))}
-                            className="bg-gray-400 rounded-md px-2"
-                          >
-                            +
-                          </Button>
-                        </div>
-                      </div>
+              
+                     
 
                       {/* Location */}
+                      {/* <div className="space-y-2">
+                        <Label className="text-base">Package Types</Label>
+                        <Select
+                          value={filters.location}
+                          onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Package Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {locations.map((location) => (
+                              <SelectItem key={location} value={location}>
+                                {location}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div> */}
                       <div className="space-y-2">
                         <Label className="text-base">Location</Label>
                         <Select
@@ -1311,255 +1154,28 @@ const SearchEventGlobalCompo = () => {
                         </Select>
                       </div>
 
-                      {/* Boat Categories */}
-                      <Accordion collapsible type="multiple">
-                        <AccordionItem value="item-1">
-                          <AccordionTrigger className="text-base">Boat Categories</AccordionTrigger>
-                          <AccordionContent>
-                            <div className="grid grid-cols-2 gap-4">
-                              {categories.map((category) => (
-                                <div key={category} className="flex items-center space-x-2">
-                                  <Checkbox
-                                    id={category}
-                                    checked={filters.category_name.includes(category)}
-                                    onCheckedChange={(checked) => {
-                                      setFilters(prev => ({
-                                        ...prev,
-                                        category_name: checked
-                                          ? [...prev.category_name, category]
-                                          : prev.category_name.filter(c => c !== category)
-                                      }));
-                                    }}
-                                  />
-                                  <label htmlFor={category} className="text-sm">{category}</label>
-                                </div>
-                              ))}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
+                          {/* <div className="space-y-2">
+                                              <Label className="text-sm"> {eventsType == "events" ? "Min Available Packages " : eventsType == "f1events" ? "Min Available Packages" : ""}</Label>
+                                              <div className="flex gap-4">
+                                                <div className="flex-1">
+                                                  <Input
+                                                    type="number"
+                                                    min="0"
+                                                    placeholder="Min"
+                                                    value={filters?.min_price}
+                                                    onChange={(e) => {
+                                                      const value = e.target.value;
+                                                      if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
+                                                        setFilters((prev) => ({ ...prev, min_price: value }));
+                                                      }
+                                                    }}
+                                                    className="w-full"
+                                                  />
+                                                </div>
+                                            
+                                              </div>
+                                            </div> */}
 
-                      <Accordion collapsible type="multiple">
-                        <AccordionItem value="item-2">
-                          <AccordionTrigger className="text-base">Amenities & Features</AccordionTrigger>
-                          <AccordionContent>
-                            <Accordion collapsible type="multiple">
-                              <AccordionItem value="outdoor-equipment">
-                                <AccordionTrigger className="">Outdoor Equipment</AccordionTrigger>
-                                <AccordionContent>
-                                  <div className="space-y-3">
-                                    <div className="space-y-3">
-                                      {outdoorEquipment.map(({ name, icon }) => (
-                                        <div key={name} className="flex items-center justify-between space-x-2">
-                                          <div className="flex items-center space-x-2">
-                                            <Image src={icon} alt={`${name} icon`} width={25} height={25}
-                                            //  className="w-5 h-5"
-                                            />
-                                            <label htmlFor={name} className="text-sm">{name}</label>
-                                          </div>
-                                          <Checkbox
-                                            id={name}
-                                            checked={filters.outdoor_equipment.includes(name)}
-                                            onCheckedChange={(checked) => {
-                                              setFilters(prev => ({
-                                                ...prev,
-                                                outdoor_equipment: checked
-                                                  ? [...prev.outdoor_equipment, name]
-                                                  : prev.outdoor_equipment.filter(e => e !== name)
-                                              }));
-                                            }}
-                                          />
-
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                </AccordionContent>
-                              </AccordionItem>
-
-                              <AccordionItem value="kitchen">
-                                <AccordionTrigger>Kitchen</AccordionTrigger>
-                                <AccordionContent>
-                                  <div className="space-y-3">
-                                    {kitchenOptions.map((option) => (
-                                      <div key={option.name} className="flex items-center justify-between space-x-2">
-                                        <div className="flex items-center space-x-2">
-                                          <Image src={option.icon} alt={`${option.name} icon`} width={25} height={25}
-                                          //  className="w-5 h-5"
-                                          />
-                                          <label htmlFor={option.name} className="text-sm">{option.name}</label>
-                                        </div>
-                                        <Checkbox
-                                          id={option.name}
-                                          checked={filters.kitchen.includes(option.name)}
-                                          onCheckedChange={(checked) => {
-                                            setFilters(prev => ({
-                                              ...prev,
-                                              kitchen: checked
-                                                ? [...prev.kitchen, option.name]
-                                                : prev.kitchen.filter(k => k !== option.name)
-                                            }));
-                                          }}
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
-                                </AccordionContent>
-                              </AccordionItem>
-
-                              <AccordionItem value="onboard-energy">
-                                <AccordionTrigger>Onboard Energy</AccordionTrigger>
-                                <AccordionContent>
-                                  <div className="space-y-3">
-                                    {energyOptions.map((option) => (
-                                      <div key={option.name} className="flex items-center justify-between space-x-2">
-                                        <div className="flex items-center space-x-2">
-                                          <Image src={option.icon} alt={`${option.name} icon`} width={25} height={25}
-                                          //  className="w-5 h-5"
-                                          />
-                                          <label htmlFor={option.name} className="text-sm">{option.name}</label>
-                                        </div>
-                                        <Checkbox
-                                          id={option.name}
-                                          checked={filters.energy.includes(option.name)}
-                                          onCheckedChange={(checked) => {
-                                            setFilters(prev => ({
-                                              ...prev,
-                                              energy: checked
-                                                ? [...prev.energy, option.name]
-                                                : prev.energy.filter(e => e !== option.name)
-                                            }));
-                                          }}
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
-                                </AccordionContent>
-                              </AccordionItem>
-
-                              <AccordionItem value="leisure-activities">
-                                <AccordionTrigger>Leisure Activities</AccordionTrigger>
-                                <AccordionContent>
-                                  <div className="space-y-3">
-                                    {leisureActivities.map((activity) => (
-                                      <div key={activity.name} className="flex items-center justify-between space-x-2">
-                                        <div className="flex items-center space-x-2">
-                                          <Image src={activity.icon} alt={`${activity.name} icon`} width={25} height={25}
-                                          // className="w-5 h-5"
-                                          />
-                                          <label htmlFor={activity.name} className="text-sm">{activity.name}</label>
-                                        </div>
-                                        <Checkbox
-                                          id={activity.name}
-                                          checked={filters.leisure.includes(activity.name)}
-                                          onCheckedChange={(checked) => {
-                                            setFilters(prev => ({
-                                              ...prev,
-                                              leisure: checked
-                                                ? [...prev.leisure, activity.name]
-                                                : prev.leisure.filter(a => a !== activity.name)
-                                            }));
-                                          }}
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
-                                </AccordionContent>
-                              </AccordionItem>
-
-                              <AccordionItem value="navigation-equipment">
-                                <AccordionTrigger>Navigation Equipment</AccordionTrigger>
-                                <AccordionContent>
-                                  <div className="space-y-3">
-                                    {navigationEquipment.map((equipment) => (
-                                      <div key={equipment.name} className="flex items-center justify-between space-x-2">
-                                        <div className="flex items-center space-x-2">
-                                          <Image src={equipment.icon} alt={`${equipment.name} icon`} width={25} height={25}
-                                          //  className="w-5 h-5"
-                                          />
-                                          <label htmlFor={equipment.name} className="text-sm">{equipment.name}</label>
-                                        </div>
-                                        <Checkbox
-                                          id={equipment.name}
-                                          checked={filters.navigation.includes(equipment.name)}
-                                          onCheckedChange={(checked) => {
-                                            setFilters(prev => ({
-                                              ...prev,
-                                              navigation: checked
-                                                ? [...prev.navigation, equipment.name]
-                                                : prev.navigation.filter(e => e !== equipment.name)
-                                            }));
-                                          }}
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
-                                </AccordionContent>
-                              </AccordionItem>
-
-                              <AccordionItem value="extra-comforts">
-                                <AccordionTrigger>Extra Comforts</AccordionTrigger>
-                                <AccordionContent>
-                                  <div className="space-y-3">
-                                    {extraComforts.map((comfort) => (
-                                      <div key={comfort.name} className="flex items-center justify-between space-x-2">
-                                        <div className="flex items-center space-x-2">
-                                          <Image src={comfort.icon} alt={`${comfort.name} icon`} width={25} height={25}
-                                          //  className="w-5 h-5"
-                                          />
-                                          <label htmlFor={comfort.name} className="text-sm">{comfort.name}</label>
-                                        </div>
-                                        <Checkbox
-                                          id={comfort.name}
-                                          checked={filters.extra_comforts.includes(comfort.name)}
-                                          onCheckedChange={(checked) => {
-                                            setFilters(prev => ({
-                                              ...prev,
-                                              extra_comforts: checked
-                                                ? [...prev.extra_comforts, comfort.name]
-                                                : prev.extra_comforts.filter(c => c !== comfort.name)
-                                            }));
-                                          }}
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
-                                </AccordionContent>
-                              </AccordionItem>
-
-                              <AccordionItem value="indoor-equipment">
-                                <AccordionTrigger>Indoor Equipment</AccordionTrigger>
-                                <AccordionContent>
-                                  <div className="space-y-3">
-                                    {indoorEquipment.map((equipment) => (
-                                      <div key={equipment.name} className="flex items-center justify-between space-x-2">
-                                        <div className="flex items-center space-x-2">
-                                          <Image src={equipment.icon} alt={`${equipment.name} icon`} width={25} height={25}
-                                          //  className="w-5 h-5"
-                                          />
-                                          <label htmlFor={equipment.name} className="text-sm">{equipment.name}</label>
-                                        </div>
-                                        <Checkbox
-                                          id={equipment.name}
-                                          checked={filters.indoor.includes(equipment.name)}
-                                          onCheckedChange={(checked) => {
-                                            setFilters(prev => ({
-                                              ...prev,
-                                              indoor: checked
-                                                ? [...prev.indoor, equipment.name]
-                                                : prev.indoor.filter(e => e !== equipment.name)
-                                            }));
-                                          }}
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
-                                </AccordionContent>
-                              </AccordionItem>
-                            </Accordion>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
 
                       <Button
                         className="w-full bg-[#BEA355] mt-6 rounded-full"
@@ -1567,7 +1183,7 @@ const SearchEventGlobalCompo = () => {
                           handleFilterChange();
                         }}
                       >
-                        Show Results
+                        Apply Filters
                       </Button>
                     </div>
                   </ScrollArea>
@@ -1665,15 +1281,18 @@ const SearchEventGlobalCompo = () => {
         {/* Cards Grid */}
         {!mapBox ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center">
           { events.length > 0 ? (
-              events.map((event) => {
+              events.map((event,ind) => {
                 if (!event) {
                     return null;
                 }
                 // console.log(`https://api.takeoffyachts.com${event.event_image}`)
                 return (
                     <Card
-                        key={event.id}
+                    key={`event-${event?.id}-${ind}`}
+                    id={`event-${event?.id}-${ind}`}
                         className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[250px] h-full md:min-h-[260px] min-h-[240px]"
+                  ref={ind === events.length - 1 ? lastYachtRef : null}
+
                     >
                         <div className="relative">
                             <Image
