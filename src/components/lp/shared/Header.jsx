@@ -114,7 +114,7 @@ const Header = () => {
           yachts: yachtData.data,
           another: anotherData.data
         });
-      } else if (currentRoute.startsWith('/dashboard/events')) {
+      } else if (currentRoute.startsWith('/dashboard/event/events')) {
         const response = await fetch('https://api.takeoffyachts.com/yacht/check_event/', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -300,7 +300,7 @@ const Header = () => {
                     <MenubarItem>
                       <Link
                       onClick={()=>setIsSheetOpen(false)}
-                       className="flex items-center space-x-2" href="/dashboard/events">
+                       className="flex items-center space-x-2" href="/dashboard/event/events">
                         <CalendarClock className="w-4 h-4 mr-2" />
                         Events
                       </Link>
@@ -472,7 +472,7 @@ const Header = () => {
                     <Link
                       onClick={()=>setIsSheetOpen(false)}
 
-                      href="/dashboard/events"
+                      href="/dashboard/event/events"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <CalendarClock className="w-4 h-4" /> <span>Events</span>
