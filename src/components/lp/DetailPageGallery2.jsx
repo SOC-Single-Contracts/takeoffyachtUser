@@ -5,7 +5,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const DetailPageGallery2 = ({ images }) => {
+const DetailPageGallery2 = ({ images,showThumb=true }) => {
     const IMAGES = images?.length > 0 ? [...images] : ["/assets/images/fycht.jpg"];
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [emblaRef, emblaApi] = useEmblaCarousel({});
@@ -57,7 +57,7 @@ const DetailPageGallery2 = ({ images }) => {
 
             </section>
 
-            {IMAGES?.length >= 1 && (
+            {(IMAGES?.length >= 1 && showThumb) && (
                 <div className="embla-thumbs" ref={thumbsRef}>
                     <div className="embla-thumbs__container">
                         {IMAGES?.map((src, index) => (

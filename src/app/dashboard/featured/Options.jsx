@@ -58,6 +58,9 @@ const Options = () => {
       const formData = new FormData();
       formData.append('user_id', userId);
       formData.append('created_on', date);
+      // formData.append('created_on', "2025-04-10");
+
+      
 
       const response = await fetch('https://api.takeoffyachts.com/yacht/check_experience/', {
         method: 'POST',

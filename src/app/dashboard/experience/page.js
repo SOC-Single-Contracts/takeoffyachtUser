@@ -37,6 +37,7 @@ const Experiences = () => {
 
   const handleFilterChange = async () => {
     if (!userId) return;
+
     
     try {
       setLoading(true);
@@ -103,6 +104,8 @@ const Experiences = () => {
   useEffect(() => {
     const loadData = async () => {
       if (!userId) return;
+    // console.log("Filters applied:");
+
       try {
         const [experiencesData, wishlistData] = await Promise.all([
           fetchAllExperiences(userId),

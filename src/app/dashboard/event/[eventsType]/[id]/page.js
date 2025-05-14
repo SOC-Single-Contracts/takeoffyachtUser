@@ -174,7 +174,7 @@ const EventDetail = () => {
                 return (
                   <>
                     {/* <DetailPageGallery images={images} /> */}
-                    <DetailPageGallery2 images={images} />
+                    <DetailPageGallery2 images={images} showThumb={false} />
                   </>
                 )
               })()}

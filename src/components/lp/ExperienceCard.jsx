@@ -22,12 +22,19 @@ const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle }) => {
                 <div className="relative overflow-hidden group">
                     <div className="overflow-hidden">
                         <Image 
-                            src={`https://api.takeoffyachts.com/${experience?.experience_image}`} 
+                            src={experience?.experience_image
+                                ? `${process.env.NEXT_PUBLIC_S3_URL}${experience?.experience_image}`
+                                : '/assets/images/dubai.png'
+                            }
+
                             alt="featured yachts"
                             quality={100}
                             width={262} 
                             height={220}
                             className='w-full md:h-[220px] h-[240px] object-cover rounded-3xl px-2 pt-2' 
+                            onError={(e) => {
+                                e.target.src = '/assets/images/dubai.png'
+                            }}
                         />
                     </div>
                     
