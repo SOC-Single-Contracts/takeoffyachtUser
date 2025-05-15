@@ -822,7 +822,7 @@ const Summary = ({ onNext, initialBookingId }) => {
 
         <div className="flex justify-end flex-wrap gap-2">
           <div className="flex justify-end flex-wrap gap-2">
-            {(bookingDetails?.remaining_cost > 0 || !bookingDetails?.paid_cost) && (
+            {!(bookingDetails && bookingDetails.total_cost === bookingDetails.paid_cost) && (
               <>
                 {/* <Button
                   variant="secondary"
