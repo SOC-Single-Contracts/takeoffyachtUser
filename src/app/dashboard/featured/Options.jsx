@@ -59,6 +59,7 @@ const Options = () => {
       formData.append('user_id', userId);
       formData.append('created_on', date);
       // formData.append('created_on', "2025-04-10");
+      formData.append("reqType","date_wise")
 
       
 

@@ -121,7 +121,7 @@ const SearchFilter = () => {
       }
     };
 
-    fetchLocations();
+    // fetchLocations();
 
   }, [activeMainTab]);
 
@@ -247,40 +247,113 @@ const SearchFilter = () => {
           break;
       }
       setFilter({ max_guest: totalGuests, location: selectedCity })
-      if (searchResults?.error_code === 'pass') {
-        // router.push(`${searchPath}?${new URLSearchParams({
-        //   location: selectedCity || '',
-        //   date: formattedStartDate || '',
-        //   guests: totalGuests > 1 ? totalGuests : '',
-        //   name: searchByName || "",
-        //   min_guest: maxGuest > 0 ? parseInt(maxGuest) : 1
-        //   // ...(maxGuest ? { min_guest: parseInt(maxGuest) } :1 )
-        // }).toString()}`);
-        // if (typeof window !== "undefined") {
-        //   window.location.reload();
-        // }
-        const queryParams = new URLSearchParams({
-          location: selectedCity || "",
-          min_guest: totalGuests > 0 ? totalGuests : "",
-          name: searchByName || "",
-          max_guest: maxGuest > 0 ? parseInt(maxGuest) : "",
-          start_date: formattedStartDate || "",
-          end_date: formattedEndDate || ""
-
-        }).toString();
-
-        const newPath = `${searchPath}?${queryParams}`;
-
-        // Navigate and reload
-        if (typeof window !== "undefined") {
-          window.location.assign(newPath);
+      if(activeMainTab == "experiences"){
+        if (searchResults?.success == true) {
+          // router.push(`${searchPath}?${new URLSearchParams({
+          //   location: selectedCity || '',
+          //   date: formattedStartDate || '',
+          //   guests: totalGuests > 1 ? totalGuests : '',
+          //   name: searchByName || "",
+          //   min_guest: maxGuest > 0 ? parseInt(maxGuest) : 1
+          //   // ...(maxGuest ? { min_guest: parseInt(maxGuest) } :1 )
+          // }).toString()}`);
+          // if (typeof window !== "undefined") {
+          //   window.location.reload();
+          // }
+          const queryParams = new URLSearchParams({
+            location: selectedCity || "",
+            min_guest: totalGuests > 0 ? totalGuests : "",
+            name: searchByName || "",
+            max_guest: maxGuest > 0 ? parseInt(maxGuest) : "",
+            start_date: formattedStartDate || "",
+            end_date: formattedEndDate || ""
+  
+          }).toString();
+  
+          const newPath = `${searchPath}?${queryParams}`;
+  
+          // Navigate and reload
+          if (typeof window !== "undefined") {
+            window.location.assign(newPath);
+          }
+  
+  
+          setIsDialogOpen(false);
+        } else {
+          // toast.error('No results found. Please try different search criteria.');
         }
-
-
-        setIsDialogOpen(false);
-      } else {
-        // toast.error('No results found. Please try different search criteria.');
+      }else if(activeMainTab == "yachts"){
+        if (searchResults?.error_code === 'pass') {
+          // router.push(`${searchPath}?${new URLSearchParams({
+          //   location: selectedCity || '',
+          //   date: formattedStartDate || '',
+          //   guests: totalGuests > 1 ? totalGuests : '',
+          //   name: searchByName || "",
+          //   min_guest: maxGuest > 0 ? parseInt(maxGuest) : 1
+          //   // ...(maxGuest ? { min_guest: parseInt(maxGuest) } :1 )
+          // }).toString()}`);
+          // if (typeof window !== "undefined") {
+          //   window.location.reload();
+          // }
+          const queryParams = new URLSearchParams({
+            location: selectedCity || "",
+            min_guest: totalGuests > 0 ? totalGuests : "",
+            name: searchByName || "",
+            max_guest: maxGuest > 0 ? parseInt(maxGuest) : "",
+            start_date: formattedStartDate || "",
+            end_date: formattedEndDate || ""
+  
+          }).toString();
+  
+          const newPath = `${searchPath}?${queryParams}`;
+  
+          // Navigate and reload
+          if (typeof window !== "undefined") {
+            window.location.assign(newPath);
+          }
+  
+  
+          setIsDialogOpen(false);
+        } else {
+          // toast.error('No results found. Please try different search criteria.');
+        }
+      }else if(activeMainTab == "events"){
+        if (searchResults?.error_code === 'pass') {
+          // router.push(`${searchPath}?${new URLSearchParams({
+          //   location: selectedCity || '',
+          //   date: formattedStartDate || '',
+          //   guests: totalGuests > 1 ? totalGuests : '',
+          //   name: searchByName || "",
+          //   min_guest: maxGuest > 0 ? parseInt(maxGuest) : 1
+          //   // ...(maxGuest ? { min_guest: parseInt(maxGuest) } :1 )
+          // }).toString()}`);
+          // if (typeof window !== "undefined") {
+          //   window.location.reload();
+          // }
+          const queryParams = new URLSearchParams({
+            location: selectedCity || "",
+            min_guest: totalGuests > 0 ? totalGuests : "",
+            name: searchByName || "",
+            max_guest: maxGuest > 0 ? parseInt(maxGuest) : "",
+            start_date: formattedStartDate || "",
+            end_date: formattedEndDate || ""
+  
+          }).toString();
+  
+          const newPath = `${searchPath}?${queryParams}`;
+  
+          // Navigate and reload
+          if (typeof window !== "undefined") {
+            window.location.assign(newPath);
+          }
+  
+  
+          setIsDialogOpen(false);
+        } else {
+          // toast.error('No results found. Please try different search criteria.');
+        }
       }
+    
     } catch (error) {
       console.error('Search error:', error);
       toast.error('Failed to perform search. Please try again.');
