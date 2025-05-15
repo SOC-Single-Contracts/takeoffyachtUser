@@ -66,7 +66,7 @@ const PaymentForm = ({ isPartialPayment, setIsPartialPayment }) => {
         try {
           if (!bookingData.bookingId) return;
   
-          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}`);
+          const response = await fetch(`${API_BASE_URL}/yacht/f1_details/${bookingData.bookingId}/`);
           if (!response.ok) throw new Error('Failed to fetch booking details');
           
           const data = await response.json();
@@ -584,10 +584,23 @@ const Payment = () => {
     fetchBookingDetails();
   }, [bookingData.bookingId]);
 
+
+  //test
 //   useEffect(()=>{
 //  console.log("selectedYacht",selectedYacht)
 //   },[selectedYacht])
 
+// useEffect(()=>{
+// console.log("bookingDetails",bookingDetails)
+// },[bookingDetails])
+
+// useEffect(()=>{
+// console.log("calculateTotal",calculateTotal())
+// },[calculateTotal()])
+
+// useEffect(()=>{
+//   console.log("bookingData",bookingData)
+//   },[bookingData])
   if (loading) {
     return (
       <div className='mx-auto container flex justify-between md:flex-row flex-col items-start gap-8 px-2'>
