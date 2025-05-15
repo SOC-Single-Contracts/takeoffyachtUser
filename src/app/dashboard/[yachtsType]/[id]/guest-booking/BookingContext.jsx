@@ -76,7 +76,8 @@ export const BookingProvider = ({ children }) => {
       return total + (item.price * item.quantity);
     }, 0);
 
-    return baseTotal + extrasTotal;
+    // return baseTotal + extrasTotal;
+    return bookingData?.totalCost
   };
 
   return (
