@@ -67,16 +67,20 @@ const EmblaCarouselYacht = (props) => {
               slidesInView={slidesInView}
 
             />
-          )) : <Image
+          )) : 
+          
+          <Image
           className="object-cover pl-3 pr-3 pt-3 rounded-[1.8rem] w-full h-[240px] ml-4"
-            src={`/assets/images/fycht.jpg`}
+            src={`/assets/images/Imagenotavailable.png`}
             alt="loadAlt"
             height={240}
             width={100}
             onError={(e) => {
-              e.target.src = '/assets/images/fycht.jpg';
+              e.target.src = '/assets/images/Imagenotavailable.png';
             }}
           />
+          // <span className="embla__lazy-load__spinner" />
+          // "FOR1"
           }
         </div>
       </div>
