@@ -292,9 +292,17 @@ const Header = () => {
                     <MenubarItem>
                       <Link
                       onClick={()=>setIsSheetOpen(false)}
-                       className="flex items-center space-x-2" href="/dashboard/experience">
+                       className="flex items-center space-x-2" href="/dashboard/experience/regular-exp">
                         <SquareArrowOutUpRight className="w-4 h-4 mr-2" />
-                        Experiences
+                        Regular Experiences
+                      </Link>
+                    </MenubarItem>
+                    <MenubarItem>
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/experience/f1-exp">
+                        <SquareArrowOutUpRight className="w-4 h-4 mr-2" />
+                      F1  Experiences
                       </Link>
                     </MenubarItem>
                     <MenubarItem>
@@ -464,10 +472,18 @@ const Header = () => {
                     <Link
                       onClick={()=>setIsSheetOpen(false)}
 
-                      href="/dashboard/experience"
+                      href="/dashboard/experience/regular-exp"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
-                      <SquareArrowOutUpRight className="w-4 h-4" /> <span>Experiences</span>
+                      <SquareArrowOutUpRight className="w-4 h-4" /> <span>Regular Experiences</span>
+                    </Link>
+                    <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
+                      href="/dashboard/experience/f1-exp"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
+                    >
+                      <SquareArrowOutUpRight className="w-4 h-4" /> <span>F1 Experiences</span>
                     </Link>
                     <Link
                       onClick={()=>setIsSheetOpen(false)}

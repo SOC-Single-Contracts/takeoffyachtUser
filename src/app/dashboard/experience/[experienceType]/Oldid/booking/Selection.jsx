@@ -16,6 +16,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Fancybox } from '@fancyapps/ui';
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { Input } from '@/components/ui/input';
+import { useSearchParams } from 'next/navigation';
+import { formatDate } from '@/helper/calculateDays';
 
 const Selection = ({ onNext }) => {
   const { selectedExperience, bookingDetails, updateBookingDetails } = useBookingContext();
@@ -27,6 +29,9 @@ const Selection = ({ onNext }) => {
   });
   const [quantities, setQuantities] = useState({});
   const [loadingExtras, setLoadingExtras] = useState(true);
+    const queryString = typeof window !== "undefined" ? window.location.search : "";
+    const searchParams = useSearchParams(queryString);
+    let experienceType = searchParams.get('experienceType');
 
   useEffect(() => {
     const fetchExtras = async () => {
@@ -90,14 +95,27 @@ const Selection = ({ onNext }) => {
   };
 
   const calculateTotal = () => {
-    if (!selectedExperience?.experience) return 0;
-    
-    const basePrice = selectedExperience.experience.min_price || 0;
-    const totalExtras = Object.values(extras).reduce((total, category) => {
-      return total + calculateCategoryTotal(category);
-    }, 0);
 
-    return (basePrice * (bookingDetails.seats || 1)) + totalExtras;
+    if(experienceType == "f1exp"){
+      if (!selectedExperience?.experience) return 0;
+    
+      const basePrice = selectedExperience.experience.min_price || 0;
+      const totalExtras = Object.values(extras).reduce((total, category) => {
+        return total + calculateCategoryTotal(category);
+      }, 0);
+  
+      return (basePrice * (bookingDetails.seats || 1)) + totalExtras;
+    }else if(experienceType == "regular"){
+      if (!selectedExperience?.experience) return 0;
+    
+      const basePrice = selectedExperience.experience.min_price || 0;
+      const totalExtras = Object.values(extras).reduce((total, category) => {
+        return total + calculateCategoryTotal(category);
+      }, 0);
+  
+      return (basePrice * (bookingDetails.seats || 1)) + totalExtras;
+    }
+
   };
 
   const handleNext = async () => {
@@ -207,6 +225,11 @@ const Selection = ({ onNext }) => {
       </div>
     );
   }
+
+
+  //test
+
+
 
   return (
     <>
@@ -352,7 +375,11 @@ const Selection = ({ onNext }) => {
     <div className="flex flex-col lg:flex-row justify-center lg:justify-between gap-6">
       <div className="flex flex-col w-full lg:w-2/3 gap-6">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm space-y-6">
-          <div className="flex flex-col space-y-4">
+          {experienceType ==  "f1exp" ?  <div className="flex flex-col space-y-4">
+            <h2 className="text-xl font-semibold">F1  Experince Booking Slot:</h2>
+    
+                  <span className='mt-4'> {formatDate(selectedExperience?.experience?.from_date)} - {formatDate(selectedExperience?.experience?.to_date)}</span>
+          </div> : experienceType == "regular" ?  <div className="flex flex-col space-y-4">
             <h2 className="text-xl font-semibold">Select Date & Time</h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <Popover>
@@ -413,7 +440,8 @@ const Selection = ({ onNext }) => {
                 </PopoverContent>
               </Popover>
             </div>
-          </div>
+          </div> :""}
+         
 
           <div className="flex flex-col space-y-4">
             <h2 className="text-xl font-semibold">Number of Guests</h2>
@@ -561,7 +589,9 @@ const Selection = ({ onNext }) => {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span>Experience Price</span>
-              <span>AED {(selectedExperience?.experience?.min_price || 0) * (bookingDetails.seats || 1)}</span>
+              {experienceType == "f1exp" ?   <span>AED {(selectedExperience?.experience?.min_price || 0) * (bookingDetails.seats || 1)}</span> : experienceType == "regular" ? 
+                <span>AED {(selectedExperience?.experience?.min_price || 0) * (bookingDetails.seats || 1)}</span> :""}
+            
             </div>
             {Object.entries(extras).map(([category, items]) => {
               const categoryTotal = calculateCategoryTotal(items);

@@ -43,7 +43,7 @@ const SearchFilter = () => {
     from: null,
     to: null
   });
-  const { yachtsType, eventsType } = useParams();
+  const { yachtsType, eventsType,experienceType } = useParams();
 
   const [minimumGuests, setMinimumGuests] = useState({
     // adults: 1,
@@ -231,7 +231,8 @@ const SearchFilter = () => {
 
           };
           searchResults = await yachtApi.checkExperiences(experienceParams);
-          searchPath = '/dashboard/experience/search';
+          searchPath = `/dashboard/experience/${experienceType == "f1-exp" ? "f1-exp" : "regular-exp"}/search`;
+
           break;
 
         case 'events':
