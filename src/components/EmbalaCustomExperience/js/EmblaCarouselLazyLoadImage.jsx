@@ -47,7 +47,7 @@ export const LazyLoadImage = (props) => {
           src={inView ? imgSrc : PLACEHOLDER_SRC}
           alt="loadAlt"
           height={240}
-          width={100}
+          width={100} 
           data-src={imgSrc}
           onError={(e) => {
             e.target.src = '/assets/images/Imagenotavailable.png';
