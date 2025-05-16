@@ -95,7 +95,7 @@ const Experience = () => {
       ]);
 
       if (Array.isArray(experiencesData)) {
-        setExperiences(experiencesData.slice(0, 4));
+        setExperiences(experiencesData.slice(0, 8));
       } else {
         throw new Error('Invalid data format received');
       }
@@ -242,15 +242,59 @@ const Experience = () => {
           
           <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:place-items-center my-8">
             {experiences.map((experienceData) => (
+                       experienceData?.experience?.experience_type == "regular" &&
               <ExperienceCard
                 key={experienceData.experience.id} 
                 experienceData={experienceData}
                 isFavorite={favorites.has(experienceData.experience.id)}
                 onWishlistToggle={handleWishlistToggle}
+                experienceType="regular-exp"
               />
             ))}
           </div>
-          <Link href="/dashboard/experience">
+          {/* {experiences?.some((item)=>item?.experience_type == "regular") &&   } */}
+          <Link href="/dashboard/experience/regular-exp">
+          <Button variant="outline" className="text-black hover:underline font-semibold uppercase md:text-[16px] hover:shadow-2xl transition duration-500 ease-in-out dark:text-white text-[12px] rounded-full flex items-center group">
+            See All
+            <svg
+              className="w-4 ml-1 transition-transform duration-300 ease-in-out group-hover:translate-x-1"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </Button>
+          </Link> 
+        
+        </div>
+
+
+        <div className="max-w-5xl px-2 mx-auto mt-6">
+          <div className="flex justify-between items-center">
+            <h2 className="md:text-[40px] text-[32px] font-semibold tracking-tight sm:text-4xl">
+              Top F1 Experiences
+            </h2>
+          </div>
+          
+          <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:place-items-center my-8">
+            {experiences.map((experienceData) => (
+              experienceData?.experience?.experience_type == "f1" &&
+              <ExperienceCard
+                key={experienceData.experience.id} 
+                experienceData={experienceData}
+                isFavorite={favorites.has(experienceData.experience.id)}
+                onWishlistToggle={handleWishlistToggle}
+                experienceType="f1-exp"
+              />
+            ))}
+          </div>
+          {/* {!experiences?.some((item)=>item?.experience_type == "f1") &&   } */}
+          <Link href={`/dashboard/experience/f1-exp`}>
           <Button variant="outline" className="text-black hover:underline font-semibold uppercase md:text-[16px] hover:shadow-2xl transition duration-500 ease-in-out dark:text-white text-[12px] rounded-full flex items-center group">
             See All
             <svg
@@ -267,7 +311,11 @@ const Experience = () => {
             </svg>
           </Button>
           </Link>
+         
         </div>
+
+
+        
       </section>
       <section className="py-10">
         <div className="max-w-5xl px-2 mx-auto">

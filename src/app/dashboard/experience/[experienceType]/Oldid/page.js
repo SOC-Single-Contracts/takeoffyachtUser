@@ -15,9 +15,9 @@ import { Heart, MapPin, Clock, Users, Languages, Ship, Power, Info, Check, Star 
 import { featuredyachts } from '../../../../../public/assets/images';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {Skeleton} from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { addDays } from "date-fns";
@@ -28,6 +28,7 @@ import TestimonialsCarousel from "../../testimonials/TestimonialsCarousel";
 import Featured from "@/components/lp/Featured";
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
+import DetailPageGallery2 from '@/components/lp/DetailPageGallery2';
 
 const ExperienceDetails = () => {
   const { id } = useParams();
@@ -41,6 +42,9 @@ const ExperienceDetails = () => {
   const [selectedMainImage, setSelectedMainImage] = useState(null);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [selectedGalleryImage, setSelectedGalleryImage] = useState(null);
+  const queryString = typeof window !== "undefined" ? window.location.search : "";
+  const searchParams = useSearchParams(queryString);
+  let experienceType = searchParams.get('experienceType');
   const [date, setDate] = useState({
     from: new Date(2024, 0, 20),
     to: addDays(new Date(2024, 0, 20), 20),
@@ -49,16 +53,16 @@ const ExperienceDetails = () => {
   const handleMainImageSelect = (image) => {
     setSelectedMainImage(image);
   };
-  
+
   const openGalleryView = () => {
     setIsGalleryOpen(true);
   };
-  
+
   const closeGalleryView = () => {
     setIsGalleryOpen(false);
     setSelectedGalleryImage(null);
   };
-  
+
   const handleGalleryImageSelect = (image) => {
     setSelectedGalleryImage(image);
   };
@@ -66,14 +70,14 @@ const ExperienceDetails = () => {
   useEffect(() => {
     const fetchExperience = async () => {
       if (!id) return;
-      
+
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}/yacht/get_experience/1`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
-          
+
         });
 
         if (!response.ok) {
@@ -95,7 +99,7 @@ const ExperienceDetails = () => {
         setLoading(false);
       }
     };
-   
+
     fetchExperience();
   }, [id]);
 
@@ -146,7 +150,7 @@ const ExperienceDetails = () => {
   }
 
   const { experience: exp, food, categories, subcategories, inclusion } = experience;
-  const baseImageUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com';
+  const baseImageUrl = process.env.NEXT_PUBLIC_S3_URL || 'https://images-yacht.s3.us-east-1.amazonaws.com';
   const images = [
     exp.image1,
     exp.image2,
@@ -178,7 +182,7 @@ const ExperienceDetails = () => {
         <div className="max-w-5xl mx-auto px-4 py-8">
           <div className="flex flex-col lg:flex-row -mx-4">
             <div className="w-full lg:w-1/2 px-2 mb-8 lg:mb-0">
-              <div className="flex flex-col gap-6">
+              {/* <div className="flex flex-col gap-6">
                 <Carousel className="w-full">
                   <CarouselContent>
                     {uniqueExperienceImages.map((image, index) => (
@@ -199,7 +203,6 @@ const ExperienceDetails = () => {
                   <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
                 </Carousel>
 
-                {/* Thumbnail Gallery */}
                 <div className="grid grid-cols-5 gap-2">
                   {images.map((image, index) => (
                     <div
@@ -219,7 +222,6 @@ const ExperienceDetails = () => {
                   ))}
                 </div>
 
-                {/* Gallery Overlay */}
                 {isGalleryOpen && (
                   <Fancybox
                     options={{
@@ -237,7 +239,6 @@ const ExperienceDetails = () => {
                         className="bg-white dark:bg-gray-900  p-4 rounded-lg max-w-5xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {/* Selected Image Display */}
                         <div className="md:col-span-2 mb-4">
                           <a
                             href={`${baseImageUrl}${selectedGalleryImage || images[0]}`}
@@ -254,7 +255,6 @@ const ExperienceDetails = () => {
                           </a>
                         </div>
 
-                        {/* Gallery Grid */}
                         {images.map((image, index) => (
                           <a
                             key={index}
@@ -282,7 +282,7 @@ const ExperienceDetails = () => {
                     </div>
                   </Fancybox>
                 )}
-              </div>
+              </div> */}
               {/* <div className="my-4">
                 <Calendar
                   initialFocus
@@ -299,7 +299,26 @@ const ExperienceDetails = () => {
                   </Button>
                 </Link>
               </div> */}
+
+
+              <div className="w-full mt-8">
+                {!exp || !exp ? null : (() => {
+                  const images = uniqueExperienceImages
+                    .filter((image) => typeof image === "string" && image.trim() !== "")
+                    .map((image) => `${process.env.NEXT_PUBLIC_S3_URL}${image}`)
+                  // NEXT_PUBLIC_API_URL
+                  // NEXT_PUBLIC_S3_URL
+                  return (
+                    <>
+                      {/* <DetailPageGallery images={images} /> */}
+                      <DetailPageGallery2 images={images} />
+                    </>
+                  )
+                })()}
+              </div>
             </div>
+
+
 
             {/* Details Column */}
             <div className="w-full md:w-2/2 lg:w-2/4 px-2">
@@ -337,28 +356,28 @@ const ExperienceDetails = () => {
 
               <div className="flex justify-between flex-wrap items-center gap-2 my-4">
                 <div className="flex items-center gap-2">
-                <Image src="/assets/images/profile.png" quality={100} width={40} height={40} alt="" />
-                <div className="flex flex-col justify-start">
-                  <p className="text-gray-700 dark:text-gray-400 font-light text-sm">
-                    Hosted by{" "}
-                    <span className="text-black dark:text-white font-medium underline">
-                      {exp.crew_member || "Unknown"}
-                    </span>
-                  </p>
-                  <div className="flex justify-start gap-1 items-center text-orange-300">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`size-3 fill-current`}
-                        aria-hidden="true"
-                      />
-                    ))}
-                    <p className="text-gray-700 font-semibold dark:text-gray-400 text-xs">5.0</p>
+                  <Image src="/assets/images/profile.png" quality={100} width={40} height={40} alt="" />
+                  <div className="flex flex-col justify-start">
+                    <p className="text-gray-700 dark:text-gray-400 font-light text-sm">
+                      Hosted by{" "}
+                      <span className="text-black dark:text-white font-medium underline">
+                        {exp.crew_member || "Unknown"}
+                      </span>
+                    </p>
+                    <div className="flex justify-start gap-1 items-center text-orange-300">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`size-3 fill-current`}
+                          aria-hidden="true"
+                        />
+                      ))}
+                      <p className="text-gray-700 font-semibold dark:text-gray-400 text-xs">5.0</p>
+                    </div>
                   </div>
                 </div>
-                </div>
-                <Link href={`/dashboard/experience/${id}/booking`}>
-                  <Button 
+                <Link href={`/dashboard/experience/${id}/booking?experienceType=${experienceType}`}>
+                  <Button
                     onClick={(e) => {
                       if (!session) {
                         e.preventDefault();
@@ -377,8 +396,8 @@ const ExperienceDetails = () => {
                 </Link>
               </div>
 
-               {/* Description */}
-               <h6 className="text-lg font-medium mb-2">Description</h6>
+              {/* Description */}
+              <h6 className="text-lg font-medium mb-2">Description</h6>
               <Accordion className="space-y-4" type="multiple" collapsible>
                 <AccordionItem className="" value="item-1">
                   <AccordionTrigger className="w-full flex justify-center font-medium items-center h-8 text-xs rounded-lg border-2 border-black dark:border-gray-400">
@@ -446,13 +465,15 @@ const ExperienceDetails = () => {
                     {food.map((item) => (
                       <div key={item.id} className="flex justify-between items-center p-4 bg-[#F1F1F1] dark:bg-gray-800 rounded-lg">
                         <div className="flex items-center gap-3">
-                          <Image
+                          {/* <Image
                             src="/assets/images/food.svg"
                             width={24}
                             height={24}
                             alt={item.name}
                             className="dark:invert"
-                          />
+                          /> */}
+                          <Check className="h-4 w-4 text-[#BEA355]" />
+
                           <div>
                             <p className="text-sm font-medium">{item.name}</p>
                             <p className="text-xs text-gray-500">{item.menucategory}</p>
@@ -476,12 +497,19 @@ const ExperienceDetails = () => {
                         className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
                       >
                         <Image
-                          src={item.light_icon ? `${baseImageUrl}${item.light_icon}` : "/assets/images/check.svg"}
+                          // src={item.light_icon ? `${baseImageUrl}${item.light_icon}` : "/assets/images/check.svg"}
+                          src={
+                            (item.light_icon) ? `${process.env.NEXT_PUBLIC_S3_URL}${item.light_icon}`
+                              : '/assets/images/filterSvgs/Icon_Dinghy.svg'
+                          }
                           width={24}
                           height={24}
                           alt={item.name}
                           className="dark:invert"
                         />
+                        
+                        {/* <Check className="h-4 w-4 text-[#BEA355]" /> */}
+
                         <span className="text-sm font-medium">{item.name}</span>
                       </div>
                     ))}
@@ -524,8 +552,8 @@ const ExperienceDetails = () => {
                 </section>
               )}
 
-                 {/* Map Section */}
-                 {exp.longitude && exp.latitude && (
+              {/* Map Section */}
+              {exp.longitude && exp.latitude && (
                 <section className="mt-8">
                   <MapSectionWrapper
                     longitude={exp.longitude}
@@ -538,10 +566,10 @@ const ExperienceDetails = () => {
           </div>
         </div>
       </section>
-       {/* Featured Experiences */}
-       <section className="mt-8">
-          <Featured />
-        </section>
+      {/* Featured Experiences */}
+      <section className="mt-8">
+        <Featured />
+      </section>
     </>
   );
 };

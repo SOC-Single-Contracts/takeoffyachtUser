@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle }) => {
+const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle,experienceType }) => {
     if (!experienceData || !experienceData.experience) {
         console.error('Invalid experience data:', experienceData);
         return null;
@@ -16,8 +16,9 @@ const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle }) => {
         onWishlistToggle(experience.id);
     };
 
+
     return (
-        <Link href={`/dashboard/experience/${experience.id}`} className="group">
+        <Link href={`/dashboard/experience/${experienceType}/${experience.id}`} className="group">
             <Card className="overflow-hidden bg-white dark:bg-gray-800 w-full md:max-w-[240px] h-full md:min-h-[270px] min-h-[290px] rounded-3xl cursor-pointer shadow-lg hover:shadow-xl transition-shadow">
                 <div className="relative overflow-hidden group">
                     <div className="overflow-hidden">
@@ -57,12 +58,18 @@ const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle }) => {
                         />
                     </Button>
                     
-                    <div className="absolute bottom-4 right-5 bg-white dark:bg-gray-900 p-1.5 rounded-md">
+                    {experienceType == "f1-exp" ?   <div className="absolute bottom-4 right-5 bg-white dark:bg-gray-900 p-1.5 rounded-md">
+                        <span className="text-[14px] font-semibold">
+                            AED {experience.per_day_price}
+                            <span className='text-[12px] font-normal'>/per day</span>
+                        </span>
+                    </div> : experienceType == "regular-exp" ?   <div className="absolute bottom-4 right-5 bg-white dark:bg-gray-900 p-1.5 rounded-md">
                         <span className="text-[14px] font-semibold">
                             AED {experience.per_hour_price}
                             <span className='text-[12px] font-normal'>/per hour</span>
                         </span>
-                    </div>
+                    </div> :""}
+                  
                 </div>
                 
                 <div className="pl-4 py-1.5">

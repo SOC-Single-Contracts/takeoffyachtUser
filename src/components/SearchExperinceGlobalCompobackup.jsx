@@ -27,7 +27,8 @@ import { calculateDaysBetween } from '@/helper/calculateDays';
 import MapBoxComponent from "@/components/shared/dashboard/mapBox";
 import { checkValidateLatLong } from '@/helper/validateLatlong';
 import EmblaCarouselYacht from './EmbalaCustom/js/EmblaCarouselYacht';
-import EmblaCarouselExperience from './EmbalaCustomExperience/js/EmbalaCustomExperience';
+import Options from '@/app/dashboard/featured/Options';
+import { featuredyachts } from '../../public/assets/images';
 
 
 
@@ -51,7 +52,7 @@ const SearchExperinceGlobalCompo = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [allowFetching, setAllowFetching] = useState(true); // Prevent API spam
-  const { experienceType } = useParams();
+  const yachtsType  = "experience";
   const [showSkeleton, setShowSkeleton] = useState(false);
   const { state, setFilter } = useGlobalState();
   const queryString = typeof window !== "undefined" ? window.location.search : "";
@@ -60,8 +61,8 @@ const SearchExperinceGlobalCompo = () => {
   const [totalYachts, settotalYachts] = useState(0);
   const [paginateYachts, setpaginateYachts] = useState(0);
   const [componentType, setcomponentType] = useState("simpleYacht")
-  const [searchPath, setSearchPath] = useState(`/dashboard/experience/${experienceType == "f1-exp" ? "f1-exp" : "regular-exp"}`)
-  const targetPath = `/dashboard/experience/${experienceType == "f1-exp" ? "f1-exp" : "regular-exp"}/search`;
+  const [searchPath, setSearchPath] = useState(`/dashboard/${yachtsType == "f1experience" ? "f1experience" : "experience"}`)
+  const targetPath = `/dashboard/${yachtsType == "f1experience" ? "f1experience" : "experience"}/search`;
 
   const [mapBox, setMapBox] = useState(false)
   const [validMarkers, setValidMarkers] = useState([])
@@ -134,7 +135,7 @@ const SearchExperinceGlobalCompo = () => {
 
 
 
-  const [sortByOptions, setSortByOptions] = useState([
+  const [sortByOptions,setSortByOptions] = useState( [
     { value: "default", label: "Default" },
     { value: "Price-High-Low", label: "Price: High to Low" },
     { value: "Price-Low-High", label: "Price: Low to High" },
@@ -144,7 +145,7 @@ const SearchExperinceGlobalCompo = () => {
 
   const [selectedSortBy, setSelectedSortBy] = useState(searchParams.get('sortBy') || "Price-High-Low");
   const [startSort, setStartSort] = useState(false);
-
+  
 
   const handleChange = (value) => {
     setStartSort(true);
@@ -349,7 +350,7 @@ const SearchExperinceGlobalCompo = () => {
       if (userId) {
         try {
           const wishlistItems = await fetchWishlist(userId);
-          const wishlistIds = new Set(wishlistItems.map(item => item?.experience));
+          const wishlistIds = new Set(wishlistItems.map(item => item?.yacht));
           setFavorites(wishlistIds);
         } catch (err) {
           console.error('Wishlist loading error:', err);
@@ -374,12 +375,12 @@ const SearchExperinceGlobalCompo = () => {
       ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
         ? { min_guest: parseInt(searchParams.get('min_guest')) }
         : {}),
-      ...(experienceType === "regular-exp"
+      ...(yachtsType === "experience"
         ? {
           min_per_hour: parseInt(searchParams.get('min_price')) || "",
           max_per_hour: parseInt(searchParams.get('max_price')) || "",
         }
-        : experienceType === "f1-exp"
+        : yachtsType === "f1experience"
           ? {
             min_per_day: parseInt(searchParams.get('min_price')) || "",
             max_per_day: parseInt(searchParams.get('max_price')) || "",
@@ -410,10 +411,10 @@ const SearchExperinceGlobalCompo = () => {
       source: componentType == "searchYacht" ? "searchYacht" : componentType == "simpleYacht" ? "simpleYacht" : "",
       reqType: "handlePagination",
       sort_by: selectedSortBy,
-      experience_type: experienceType == "f1-exp" ? "f1" : "regular",
+      YachtType: yachtsType == "f1experience" ? "f1experience" : "regular",
       user_id: userId,
-      page: page,
-
+      page:page,
+      
     };
     try {
       setLoading(true);
@@ -430,7 +431,7 @@ const SearchExperinceGlobalCompo = () => {
 
 
       const responseData = await response.json();
-      if (responseData?.success == true) {
+      if (responseData.success === true) {
 
         const filteredYachts = responseData?.experience;
         settotalYachts(responseData?.total_experience)
@@ -463,10 +464,10 @@ const SearchExperinceGlobalCompo = () => {
       source: componentType == "searchYacht" ? "searchYacht" : componentType == "simpleYacht" ? "simpleYacht" : "",
       reqType: "handleResetAll",
       sort_by: selectedSortBy,
-      experience_type: experienceType == "f1-exp" ? "f1" : "regular",
+      YachtType: yachtsType == "f1experience" ? "f1experience" : "regular",
       user_id: userId,
-      page: 1,
-
+      page:page,
+      
     };
     try {
       setLoading(true);
@@ -482,8 +483,9 @@ const SearchExperinceGlobalCompo = () => {
       });
 
 
+
       const responseData = await response.json();
-      if (responseData?.success == true) {
+      if (responseData.success === true) {
 
 
         const filteredYachts = responseData?.experience;
@@ -524,8 +526,8 @@ const SearchExperinceGlobalCompo = () => {
       extra_comforts: "[]",
       energy: "[]",
       name: "",
-      start_date: "",
-      end_date: "",
+      start_date:  "",
+      end_date:  "",
 
     }).toString()}`);
 
@@ -546,12 +548,12 @@ const SearchExperinceGlobalCompo = () => {
       ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
         ? { min_guest: parseInt(searchParams.get('min_guest')) }
         : {}),
-      ...(experienceType === "regular-exp"
+      ...(yachtsType === "experience"
         ? {
           min_per_hour: parseInt(searchParams.get('min_price')) || "",
           max_per_hour: parseInt(searchParams.get('max_price')) || "",
         }
-        : experienceType === "f1-exp"
+        : yachtsType === "f1experience"
           ? {
             min_per_day: parseInt(searchParams.get('min_price')) || "",
             max_per_day: parseInt(searchParams.get('max_price')) || "",
@@ -582,16 +584,16 @@ const SearchExperinceGlobalCompo = () => {
       source: componentType == "searchYacht" ? "searchYacht" : componentType == "simpleYacht" ? "simpleYacht" : "",
       reqType: "handleFilterChange",
       sort_by: selectedSortBy,
-      experience_type: experienceType == "f1-exp" ? "f1" : "regular",
+      YachtType: yachtsType == "f1experience" ? "f1experience" : "regular",
       user_id: userId,
-      page: 1,
-
-      ...(experienceType === "regular-exp"
+      page:page,
+      
+      ...(yachtsType === "experience"
         ? {
           min_per_hour: filters?.min_price?.toString() || "",
           max_per_hour: filters?.max_price?.toString() || "",
         }
-        : experienceType === "f1-exp"
+        : yachtsType === "f1experience"
           ? {
             min_per_day: filters?.min_price?.toString() || "",
             max_per_day: filters?.max_price?.toString() || "",
@@ -641,9 +643,9 @@ const SearchExperinceGlobalCompo = () => {
 
 
       const responseData = await response.json();
-      if (responseData?.success == true) {
+      if (responseData.success === true) {
 
-
+  
         const filteredYachts = responseData?.experience;
         settotalYachts(responseData?.total_experience)
         setpaginateYachts(responseData?.paginated_count)
@@ -707,7 +709,7 @@ const SearchExperinceGlobalCompo = () => {
       name: filters?.name,
       start_date: filters?.start_date,
       end_date: filters?.end_date,
-      sortBy: selectedSortBy
+      sortBy:selectedSortBy
 
 
 
@@ -719,7 +721,7 @@ const SearchExperinceGlobalCompo = () => {
 
   // "hitApiCall" on first render and when scroll page
   useEffect(() => {
-
+ 
     if (page > 1) {
       handlePagination();
     }
@@ -745,11 +747,11 @@ const SearchExperinceGlobalCompo = () => {
   }, [filters, onCancelEachFilter]);
 
   // hit Api When sort change
-  useEffect(() => {
-    if (startSort) {
+  useEffect(()=>{
+    if(startSort){
       handleFilterChange()
     }
-  }, [selectedSortBy, startSort])
+  },[selectedSortBy,startSort])
 
   const handleWishlistToggle = async (yachtId) => {
     if (!userId) {
@@ -764,10 +766,10 @@ const SearchExperinceGlobalCompo = () => {
     const updatedFavorites = new Set(favorites);
     try {
       if (updatedFavorites.has(yachtId)) {
-        await removeFromWishlist(userId, yachtId, 'experience');
+        await removeFromWishlist(userId, yachtId, 'yacht');
         updatedFavorites.delete(yachtId);
       } else {
-        await addToWishlist(userId, yachtId, 'experience');
+        await addToWishlist(userId, yachtId, 'yacht');
         updatedFavorites.add(yachtId);
       }
 
@@ -835,34 +837,34 @@ const SearchExperinceGlobalCompo = () => {
   useEffect(() => {
     // console.log(currentPath,"=>",targetPath)
     if (currentPath === targetPath) {
-      let value = `/dashboard/experience/${experienceType == "f1-exp" ? "f1-exp" : "regular-exp"}/search`;
+      let value = `/dashboard/${yachtsType == "f1experience" ? "f1experience" : "experience"}/search`;
       setSearchPath(value)
       setcomponentType("searchYacht")
     } else {
-      let value = `/dashboard/experience/${experienceType == "f1-exp" ? "f1-exp" : "regular-exp"}`;
+      let value = `/dashboard/${yachtsType == "f1experience" ? "f1experience" : "experience"}`;
       setSearchPath(value)
       setcomponentType("simpleYacht")
 
     }
-  }, [currentPath, targetPath, experienceType])
+  }, [currentPath, targetPath, yachtsType])
 
 
   useEffect(() => {
     let validArr = checkValidateLatLong(yachts);
     let structureArr = validArr?.map(item => ({
-      latitude: item?.experience?.latitude,
-      longitude: item?.experience?.longitude,
+      latitude: item?.yacht?.latitude,
+      longitude: item?.yacht?.longitude,
       yacht: item.yacht,
-      experienceType: experienceType,  // Ensure experienceType is included in dependencies if used
+      yachtsType: yachtsType,  // Ensure yachtsType is included in dependencies if used
     }));
     setValidMarkers(structureArr);
-  }, [yachts, experienceType]);  // Added experienceType as a dependency
+  }, [yachts, yachtsType]);  // Added yachtsType as a dependency
 
   useEffect(() => {
     let structuredMovingObject = validMarkers?.map(item => ({
-      id: item?.experience?.id,
-      name: item?.experience?.name, // Corrected access
-      coordinates: [item?.experience?.longitude, item?.experience?.latitude], // Corrected access
+      id: item?.yacht?.id,
+      name: item?.yacht?.name, // Corrected access
+      coordinates: [item?.yacht?.longitude, item?.yacht?.latitude], // Corrected access
     }));
     setValidMovingObject(structuredMovingObject);
   }, [validMarkers]);
@@ -872,11 +874,16 @@ const SearchExperinceGlobalCompo = () => {
 
   //test
 
-  //   useEffect(()=>{
-  //  console.log("selectedSortBy",selectedSortBy)
-  //   },[selectedSortBy])
 
+  useEffect(()=>{
+console.log("yachts",yachts)
+  },[yachts])
 
+//   useEffect(()=>{
+//  console.log("selectedSortBy",selectedSortBy)
+//   },[selectedSortBy])
+
+  
 
   // console.log("Page",page)
   // useEffect(() => {
@@ -970,15 +977,16 @@ const SearchExperinceGlobalCompo = () => {
 
   return (
     <section className="py-4 px-2">
+            {/* <Options /> */}
+      
       <div className="max-w-5xl mx-auto">
-
         {activeFilters.length > 0 ? <h1 className="text-2xl font-semibold mb-6">
-          Search Results ({paginateYachts ? paginateYachts : 0}) {experienceType === "f1-exp" ? "f1 Experience" : experienceType === "regular-exp" ? "Regular Experience" : ""}
+          Search Results ({paginateYachts ? paginateYachts : 0}) {yachtsType === "f1experience" ? "f1 Experience" : yachtsType === "experience" ? "Experience" : ""}
         </h1> : <h1 className="text-2xl font-semibold mb-6">
-          Listing ({totalYachts}) {experienceType === "f1-exp" ? "f1 Experience" : experienceType === "regular-exp" ? "Regular Experience" : ""}
+          Listing ({totalYachts}) {yachtsType === "f1experience" ? "f1 Experience" : yachtsType === "experience" ? "Experience" : ""}
         </h1>}
 
-        <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Fleet</h1>
+        <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Experiences</h1>
 
         <div className="flex flex-col space-y-4 mb-8">
           <div className="flex items-center justify-between">
@@ -986,15 +994,15 @@ const SearchExperinceGlobalCompo = () => {
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <div className="flex justify-between w-full">
                   <SheetTrigger asChild>
-                    <Button variant="outline" className="gap-2">
+                    <Button disabled variant="outline" className="gap-2">
                       <SlidersHorizontal className="h-4 w-4" />
                       Filters
                     </Button>
                   </SheetTrigger>
 
                   <span>
-
-                    {/* <div className="space-y-2">
+{/* 
+                    <div className="space-y-2">
                       <Select value={selectedSortBy} onValueChange={handleChange}>
                         <SelectTriggerSort className="w-full">
                           <SelectValue placeholder="Sort By" />
@@ -1008,14 +1016,14 @@ const SearchExperinceGlobalCompo = () => {
                         </SelectContent>
                       </Select>
                     </div> */}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={resetFilters}
-                      className="text-sm"
-                    >
-                      Reset All
-                    </Button>
+                       <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={resetFilters}
+                                        className="text-sm"
+                                      >
+                                        Reset All
+                                      </Button>
 
                   </span>
                 </div>
@@ -1036,7 +1044,7 @@ const SearchExperinceGlobalCompo = () => {
                     <div className="space-y-6 py-6 px-1">
                       {/* Price Range */}
                       <div className="space-y-2">
-                        <Label className="text-sm"> {experienceType == "regular-exp" ? "Price Per Hour (AED) " : experienceType == "f1-exp" ? "Price (AED) " : ""}</Label>
+                        <Label className="text-sm"> {yachtsType == "experience" ? "Price Per Hour (AED) " : yachtsType == "f1experience" ? "Price (AED) " : ""}</Label>
                         <div className="flex gap-4">
                           <div className="flex-1">
                             <Input
@@ -1563,12 +1571,12 @@ const SearchExperinceGlobalCompo = () => {
                           case 'name':
                             setFilters(prev => ({ ...prev, name: "" }));
                             break;
-                          case 'start date':
-                            setFilters(prev => ({ ...prev, start_date: "" }));
-                            break;
-                          case 'end date':
-                            setFilters(prev => ({ ...prev, end_date: "" }));
-                            break;
+                            case 'start date':
+                              setFilters(prev => ({ ...prev, start_date: "" }));
+                              break;
+                              case 'end date':
+                                setFilters(prev => ({ ...prev, end_date: "" }));
+                                break;
                         }
                         setonCancelEachFilter(true);
                       }}
@@ -1591,163 +1599,77 @@ const SearchExperinceGlobalCompo = () => {
         </div>
 
         {/* Cards Grid */}
-        {!mapBox ? <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
+        {!mapBox ? <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 md:place-items-start place-items-center">
           {yachts.length > 0 ? (
-            yachts.map((item, ind) => {
-              if (!item || !item?.experience) return null;
-              const images = [
-                item?.experience?.experience_image,
-                item?.experience?.image1,
-                item?.experience?.image2,
-                item?.experience?.image3,
-                item?.experience?.image4,
-                item?.experience?.image5,
-                item?.experience?.image6,
-                item?.experience?.image7,
-                item?.experience?.image8,
-                item?.experience?.image9,
-                item?.experience?.image10,
-                item?.experience?.image11,
-                item?.experience?.image12,
-                item?.experience?.image13,
-                item?.experience?.image14,
-                item?.experience?.image15,
-                item?.experience?.image16,
-                item?.experience?.image17,
-                item?.experience?.image18,
-                item?.experience?.image19,
-                item?.experience?.image20,
-              ].filter((image) => typeof image === "string" && image.trim() !== "");
-              const daysCount = calculateDaysBetween(item?.experience?.from_date, item?.experience?.to_date);
-
-              return (
-                <Card
-                  // key={item?.experience?.id}
-                  key={`yacht-${item?.experience?.id}-${ind}`}
-                  id={`yacht-${item?.experience?.id}-${ind}`}
-                  className="overflow-hidden classForEmbalaCaroselYacht bg-white dark:bg-gray-800 w-full md:max-w-[350px] rounded-2xl h-fulll md:min-h-[280px]] min-h-[300px]] shadow-lg hover:shadow-2xl transition duration-500 ease-in-out"
-                  ref={ind === yachts.length - 1 ? lastYachtRef : null}
-                >
-                  {/* <div className="relative">
-                      <Carousel className="">
-                        <CarouselContent>
-                          {images.length > 0 ? (
-                            images.map((image, index) => (
-                              <CarouselItem key={`${image}-${index}`}>
-                                <Image
-                                  src={`${process.env.NEXT_PUBLIC_S3_URL}${image}`}
-                                  alt="not found"
-                                  loading='lazy'
-                                  width={326}
-                                  height={300}
-                                  className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
-                                  onError={(e) => {
-                                    e.target.src = '/assets/images/fycht.jpg';
-                                  }}
-                                />
-                              </CarouselItem>
-                            ))
-                          ) : (
-                            <CarouselItem>
+       yachts.map((item) => {
+                      const { experience, categories } = item;
+                      const mainImage = experience.experience_image;
+                      return (
+                        <Card
+                          key={experience.id}
+                          className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[250px] h-full md:min-h-[260px] min-h-[290px]"
+                        >
+                          <div className="relative">
+                            <Image
+                          src={experience?.experince_image
+                            ? `${process.env.NEXT_PUBLIC_S3_URL}${experience?.experince_image}`
+                            : '/assets/images/dubai.png'
+                        }
+                              alt={experience.name || 'Experience Image'}
+                              width={400}
+                              height={250}
+                              className="w-full object-cover px-3 pt-3 rounded-3xl md:h-[170px] h-[220px]"
+                              onError={(e) => {
+                                e.target.src = '/assets/images/dubai.png'
+                            }}
+                            />
+      
+                            <Link href={`/dashboard/experience/${experience.id}?experienceType=${experience?.experience_type == "f1" ? "f1exp" :"regular"}`}>
+                              <p className="absolute inset-0 z-10"></p>
+                            </Link>
+      
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                              className="absolute top-5 right-5 rounded-full bg-white hover:bg-white/80 dark:hover:bg-gray-700 z-10"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleWishlistToggle(experience.id);
+                              }}
+                            >
                               <Image
-                                src="/assets/images/fycht.jpg"
-                                alt="fallback image"
-
-                                width={326}
-                                height={300}
-                                className="object-cover px-4 pt-3 rounded-3xl w-full md:h-[221px] h-[240px] ml-1.5"
+                                src={favorites.has(experience.id) ? '/assets/images/wishlist.svg' : '/assets/images/unwishlist.svg'}
+                                width={20}
+                                height={20}
+                                alt="Wishlist"
+                                className={`h-5 w-5 ${favorites.has(experience.id) ? 'text-red-500 fill-red-500' : ''}`}
                               />
-                            </CarouselItem>
-
-                          )}
-                        </CarouselContent>
-                        <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
-                          <Button variant="icon" onClick={(e) => e.stopPropagation()}>
-                            <ChevronLeft />
-                          </Button>
-                        </CarouselPrevious>
-                        <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
-                          <Button variant="icon" onClick={(e) => e.stopPropagation()}>
-                            <ChevronRight />
-                          </Button>
-                        </CarouselNext>
-                        <CarouselDots />
-                      </Carousel>
-
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
-                        onClick={() => handleWishlistToggle(item?.experience?.id)}
-                      >
-                        <Image
-                          src={favorites.has(item?.experience?.id)
-                            ? "/assets/images/wishlist.svg"
-                            : "/assets/images/unwishlist.svg"
-                          }
-                          alt="wishlist"
-                          width={20}
-                          height={20}
-                        />
-                      </Button>
-
-                      <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
-
-                        {experienceType == "regular-exp" ? <span className="font-medium text-xs">
-                          AED <span className="font-bold font-medium text-primary">{item?.experience?.per_hour_price}</span>
-                          <span className="text-xs font-light ml-1">/Hour</span>
-                        </span> : experienceType == "f1-exp" ? <span className="font-medium text-xs">
-                          AED <span className="font-bold font-medium text-primary">{item?.experience?.per_day_price}</span>
-                          <span className="text-xs font-light ml-1">{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}                          </span>
-                        </span> : ""}
-
-                      </div>
-                    </div> */}
-                  <EmblaCarouselExperience slides={images} options={OPTIONS} experienceType={experienceType} item={item} daysCount={daysCount} handleWishlistToggle={handleWishlistToggle} favorites={favorites} />
-                  {/* <EmblaCarousel slides={SLIDES} options={OPTIONS} /> */}
-
-                  <Link href={`/dashboard/experience/${experienceType}/${item?.experience?.id}`}>
-                    <CardContent className="px-4 py-2">
-                      <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
-                        <MapPin className="size-3 mr-1" /> {item?.experience?.location || "Location Not Available"}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item?.experience?.name}</h3>
-                        {experienceType == "regular-exp" ? <span className="font-medium text-xs">
-                          AED <span className="font-bold text-sm text-primary">{item?.experience?.per_day_price}</span>
-                          <span className="text-xs font-light ml-1">/Day</span>
-                        </span> : experienceType == "f1-exp" ? <span className="font-medium text-xs">
-                          AED <span className="font-bold text-sm text-primary">{item?.experience?.per_day_price}</span>
-                          <span className="text-xs font-light ml-1">{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}  </span>
-                        </span> : ""}
-
-                      </div>
-                      <div className="flex justify-start items-center gap-1 flex-wrap">
-                        <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
-                        <p className="font-semibold text-xs">{item?.experience?.length?.toFixed(2) || 0} ft</p>
-                        <Dot />
-                        <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                          <Image src="/assets/images/person.svg" alt="length" width={8} height={8} className="dark:invert" />
-                          <p>Guests</p>
-                          <p>{item?.experience?.guest || 0}</p>
-                        </div>
-                        <Dot />
-                        <div className="text-center font-semibold flex items-center text-xs space-x-2">
-                          <Image src="/assets/images/cabin.svg" alt="length" width={8} height={8} className="dark:invert" />
-                          <p>Cabins</p>
-                          <p>{item?.experience?.number_of_cabin || 0}</p>
-                        </div>
-                      </div>
-
-                    </CardContent>
-                  </Link>
-
-                </Card>
-              );
-            })
+                            </Button>
+      
+                            <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 px-1.5 py-1 rounded-md">
+                              <span className="text-xs font-medium dark:text-gray-300">
+                                AED <strong>{experience.min_price?.toLocaleString()}</strong>
+                              </span>
+                            </div>
+                          </div>
+                          <CardContent className="px-4 py-2">
+                            <h3 className="text-md font-semibold mb-1 dark:text-gray-200">{experience.name || 'Unnamed Experience'}</h3>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-sm text-gray-600 dark:text-gray-400">
+                                {experience.guest !== undefined ? `${experience.guest} Guests` : 'Capacity N/A'}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                              {(experience.description || '').substring(0, 24)}...
+                            </p>
+                          </CardContent>
+                        </Card>
+                      );
+                    })
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-12">
-              <p className="text-gray-500 text-lg mb-4">No yachts found</p>
+              <p className="text-gray-500 text-lg mb-4">No Experience found</p>
               <Button
                 variant="outline"
                 onClick={resetFilters}
@@ -1790,12 +1712,12 @@ const SearchExperinceGlobalCompo = () => {
             movingObjects={validmovingObjects}
 
           // markers={[
-          //   { latitude: 25.127476, longitude: 55.342584, yacht: selectedYacht?.yacht, experienceType },
-          //   { latitude: 25.128476, longitude: 55.343584, yacht: selectedYacht?.yacht, experienceType },
-          //   { latitude: 25.129476, longitude: 55.344584, yacht: selectedYacht?.yacht, experienceType },
-          //   { latitude: 25.130476, longitude: 55.345584, yacht: selectedYacht?.yacht, experienceType },
-          //   { latitude: 25.131476, longitude: 55.346584, yacht: selectedYacht?.yacht, experienceType },
-          //   { latitude: 25.132476, longitude: 55.347584, yacht: selectedYacht?.yacht, experienceType },
+          //   { latitude: 25.127476, longitude: 55.342584, yacht: selectedYacht?.yacht, yachtsType },
+          //   { latitude: 25.128476, longitude: 55.343584, yacht: selectedYacht?.yacht, yachtsType },
+          //   { latitude: 25.129476, longitude: 55.344584, yacht: selectedYacht?.yacht, yachtsType },
+          //   { latitude: 25.130476, longitude: 55.345584, yacht: selectedYacht?.yacht, yachtsType },
+          //   { latitude: 25.131476, longitude: 55.346584, yacht: selectedYacht?.yacht, yachtsType },
+          //   { latitude: 25.132476, longitude: 55.347584, yacht: selectedYacht?.yacht, yachtsType },
           // ]}
           // validmovingObjects={[
           //   { id: 'obj1', name: 'Object 1', coordinates: [55.343584, 25.128476] },
@@ -1810,7 +1732,7 @@ const SearchExperinceGlobalCompo = () => {
 
 
 
-        <div className="fixed md:hidde bottom-0 left-0 w-full  shadow-md z-50 p-4">
+        {/* <div className="fixed md:hidde bottom-0 left-0 w-full  shadow-md z-50 p-4">
           <div className="relative  flex justify-center">
             <Button
               onClick={() => setMapBox(!mapBox)}
@@ -1830,7 +1752,7 @@ const SearchExperinceGlobalCompo = () => {
             </Button>
 
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );
