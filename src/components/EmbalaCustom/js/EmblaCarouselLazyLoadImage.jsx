@@ -37,7 +37,7 @@ export const LazyLoadImage = (props) => {
 
       {/* <span className="embla__lazy-load__spinner" /> */}
 
-      <div
+{inView && <div
         className={'embla__lazy-load'.concat(
           hasLoaded ? ' embla__lazy-load--has-loaded' : ''
         )}
@@ -55,7 +55,8 @@ export const LazyLoadImage = (props) => {
           }}
         />
   
-      </div>
+      </div> }
+      
     </div>
   )
 }
