@@ -25,7 +25,7 @@ const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle,experienc
                         <Image 
                             src={experience?.experience_image
                                 ? `${process.env.NEXT_PUBLIC_S3_URL}${experience?.experience_image}`
-                                : '/assets/images/dubai.png'
+                                : '/assets/images/Imagenotavailable.png'
                             }
 
                             alt="featured yachts"
@@ -34,7 +34,7 @@ const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle,experienc
                             height={220}
                             className='w-full md:h-[220px] h-[240px] object-cover rounded-3xl px-2 pt-2' 
                             onError={(e) => {
-                                e.target.src = '/assets/images/dubai.png'
+                                e.target.src = '/assets/images/Imagenotavailable.png'
                             }}
                         />
                     </div>

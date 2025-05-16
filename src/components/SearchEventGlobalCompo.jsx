@@ -1298,7 +1298,7 @@ const SearchEventGlobalCompo = () => {
                             <Image
                                 src={event.event_image
                                     ? `${process.env.NEXT_PUBLIC_S3_URL}${event.event_image}`
-                                    : '/assets/images/dubai.png'
+                                    : '/assets/images/Imagenotavailable.png'
                                 }
 
                                 alt={event.name || 'Event Image'}
@@ -1306,7 +1306,7 @@ const SearchEventGlobalCompo = () => {
                                 height={250}
                                 className="object-cover w-full px-3 pt-3 rounded-2xl md:h-[170px] h-[220px]"
                                 onError={(e) => {
-                                  e.target.src = '/assets/images/dubai.png'
+                                  e.target.src = '/assets/images/Imagenotavailable.png'
                               }}
                             />
 

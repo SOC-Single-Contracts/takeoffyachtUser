@@ -277,7 +277,7 @@ const Experience = () => {
         <div className="max-w-5xl px-2 mx-auto mt-6">
           <div className="flex justify-between items-center">
             <h2 className="md:text-[40px] text-[32px] font-semibold tracking-tight sm:text-4xl">
-              Top F1 Experiences
+              Top Formula One Experiences
             </h2>
           </div>
           
