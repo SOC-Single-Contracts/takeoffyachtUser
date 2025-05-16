@@ -99,13 +99,13 @@ const Selection = ({ onNext,eventData }) => {
           <Image
             src={eventData?.event_image
               ? `${process.env.NEXT_PUBLIC_S3_URL}${eventData?.event_image}`
-              : '/assets/images/dubai.png'
+              : '/assets/images/Imagenotavailable.png'
           }
             alt={eventData?.name}
             fill
             className="object-cover rounded-lg"
             onError={(e) => {
-              e.target.src = '/assets/images/dubai.png'
+              e.target.src = '/assets/images/Imagenotavailable.png'
           }}
           />
         </div>

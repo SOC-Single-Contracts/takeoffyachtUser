@@ -203,14 +203,14 @@ const FormulaOneDashboard = () => {
                 <div className="relative">
                   <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" />
                   <Image
-                        src={images?.length >0  ? `${process.env.NEXT_PUBLIC_S3_URL}${images[0]}` : '/assets/images/fycht.jpg'}
+                        src={images?.length >0  ? `${process.env.NEXT_PUBLIC_S3_URL}${images[0]}` : '/assets/images/Imagenotavailable.png'}
 
                     alt={item.name || 'f1 Image'}
                     width={100}
                     height={250}
                     className="object-cover w-full px-2 pt-3 rounded-3xl md:h-[170px] h-[230px]"
                     onError={(e) => {
-                      e.target.src = '/assets/images/fycht.jpg'
+                      e.target.src = '/assets/images/Imagenotavailable.png'
                     }}
                   />
 

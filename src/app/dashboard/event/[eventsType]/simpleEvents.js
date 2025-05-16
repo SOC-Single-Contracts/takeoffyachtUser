@@ -298,7 +298,7 @@ const Events = ({ limit }) => {
                     <Image
                       src={event.event_image 
                         ? `https://api.takeoffyachts.com${event.event_image}`
-                        : '/assets/images/dubai.png'
+                        : '/assets/images/Imagenotavailable.png'
                       }
                       alt={event.name || 'Event Image'}
                       width={400}
