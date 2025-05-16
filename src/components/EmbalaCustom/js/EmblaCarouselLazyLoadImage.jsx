@@ -45,7 +45,7 @@ export const LazyLoadImage = (props) => {
         <Image
           className="embla__slide__img embla__lazy-load__img"
           onLoad={setLoaded}
-          src={inView ? imgSrc : PLACEHOLDER_SRC}
+          src={inView ? imgSrc : PLACEHOLDER_SRC} 
           alt="loadAlt"
           height={240}
           width={100}
