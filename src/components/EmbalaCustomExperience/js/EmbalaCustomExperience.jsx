@@ -69,12 +69,12 @@ const EmblaCarouselExperience = (props) => {
             />
           )) : <Image
           className="object-cover pl-3 pr-3 pt-3 rounded-[1.8rem] w-full h-[240px] ml-4"
-            src={`/assets/images/dubai.png`}
+            src={`/assets/images/Imagenotavailable.png`}
             alt="loadAlt"
             height={240}
             width={100}
             onError={(e) => {
-              e.target.src = '/assets/images/dubai.png';
+              e.target.src = '/assets/images/Imagenotavailable.png';
             }}
           />
           }

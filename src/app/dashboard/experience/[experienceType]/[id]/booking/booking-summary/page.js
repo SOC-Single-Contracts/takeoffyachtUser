@@ -16,7 +16,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import MapSectionWrapper from "@/components/shared/dashboard/MapSectionWrapper";
-import { dubai, summaryimg } from "../../../../../../../public/assets/images";
+import { dubai, summaryimg } from "../../../../../../../../public/assets/images";
 import Image from "next/image";
 import jsPDF from "jspdf";
 import QRCode from "qrcode";

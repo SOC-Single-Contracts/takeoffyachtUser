@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const DetailPageGallery2 = ({ images,showThumb=true }) => {
-    const IMAGES = images?.length > 0 ? [...images] : ["/assets/images/fycht.jpg"];
+    const IMAGES = images?.length > 0 ? [...images] : ["/assets/images/Imagenotavailable.png"];
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [emblaRef, emblaApi] = useEmblaCarousel({});
     const [thumbsRef, thumbsApi] = useEmblaCarousel({ containScroll: "keepSnaps", dragFree: true });
@@ -47,6 +47,9 @@ const DetailPageGallery2 = ({ images,showThumb=true }) => {
                                         priority
                                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, (max-width: 1024px) 70vw, 60vw"
                                         draggable={false}
+                                        onError={(e) => {
+                                            e.target.src = '/assets/images/Imagenotavailable.png';
+                                          }}
                                     />
                                 </div>
                             </div>
@@ -82,7 +85,11 @@ const Thumb = ({ src, onClick, selected }) => (
     >
         <Image src={src} width={80} height={80} alt="Thumbnail" className={`rounded-lg object-cover  relative w-[80px] h-[80px] sm:w-[80px] md:w-[120px]  overflow-hidden transition-all duration-300 rounded-lg 
                                      hover:opacity-100 
-                                    cursor-pointer ${selected ? "opacity-100" : "opacity-70"}`} />
+                                    cursor-pointer ${selected ? "opacity-100" : "opacity-70"}`}
+                                    onError={(e) => {
+                                        e.target.src = '/assets/images/Imagenotavailable.png';
+                                      }}
+                                     />
     </button>
 );
 
