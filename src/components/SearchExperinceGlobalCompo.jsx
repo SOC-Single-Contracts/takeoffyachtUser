@@ -1561,7 +1561,7 @@ const SearchExperinceGlobalCompo = () => {
                             setFilters(prev => ({ ...prev, indoor: [] }));
                             break;
                           case 'name':
-                            setFilters(prev => ({ ...prev, name: "" }));
+                            setFilters(prev => ({ ...prev, experience_name: "" }));
                             break;
                           case 'start date':
                             setFilters(prev => ({ ...prev, start_date: "" }));
