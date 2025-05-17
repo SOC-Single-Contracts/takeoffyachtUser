@@ -1025,17 +1025,17 @@ const SearchExperinceGlobalCompo = () => {
                     <SheetTitle>Filters</SheetTitle>
                   </SheetHeader>
                   <ScrollArea className="h-[calc(100vh-80px)] px-2">
-                    <Button
+                    {/* <Button
                       className="w-full bg-[#BEA355] mt-6 rounded-full"
                       onClick={() => {
                         handleFilterChange();
                       }}
                     >
                       Show Results
-                    </Button>
+                    </Button> */}
                     <div className="space-y-6 py-6 px-1">
                       {/* Price Range */}
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <Label className="text-sm"> {experienceType == "regular-exp" ? "Price Per Hour (AED) " : experienceType == "f1-exp" ? "Price (AED) " : ""}</Label>
                         <div className="flex gap-4">
                           <div className="flex-1">
@@ -1069,7 +1069,7 @@ const SearchExperinceGlobalCompo = () => {
                             />
                           </div>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Guest Capacity */}
                       <div className="space-y-2">
@@ -1146,7 +1146,7 @@ const SearchExperinceGlobalCompo = () => {
                       </div> */}
 
                       {/* Min Sleeping Capacity */}
-                      <div className="space-y-2 flex justify-between items-center">
+                      {/* <div className="space-y-2 flex justify-between items-center">
                         <Label className="text-sm">Min. Sleeping Capacity</Label>
                         <div className="flex items-center gap-4">
                           <Button
@@ -1177,10 +1177,10 @@ const SearchExperinceGlobalCompo = () => {
                             +
                           </Button>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Min No. of Cabins */}
-                      <div className="space-y-2 flex justify-between items-center">
+                      {/* <div className="space-y-2 flex justify-between items-center">
                         <Label className="text-sm">Min. No. of Cabins</Label>
                         <div className="flex items-center gap-4">
                           <Button
@@ -1211,7 +1211,7 @@ const SearchExperinceGlobalCompo = () => {
                             +
                           </Button>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Location */}
                       <div className="space-y-2">
