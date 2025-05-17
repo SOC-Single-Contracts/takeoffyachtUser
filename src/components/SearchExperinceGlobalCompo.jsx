@@ -368,7 +368,7 @@ const SearchExperinceGlobalCompo = () => {
     let payload = {
       max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
-      name: searchParams.get('name') || "",
+      experience_name: searchParams.get('name') || "",
       start_date: searchParams.get('start_date') || "",
       end_date: searchParams.get('end_date') || "",
       ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
@@ -540,7 +540,7 @@ const SearchExperinceGlobalCompo = () => {
     let payload = {
       max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
-      name: searchParams.get('name') || "",
+      experience_name: searchParams.get('name') || "",
       start_date: searchParams.get('start_date') || "",
       end_date: searchParams.get('end_date') || "",
       ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
