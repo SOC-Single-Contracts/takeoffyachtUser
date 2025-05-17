@@ -12,9 +12,9 @@ export const BookingProvider = ({ children }) => {
   const [bookingData, setBookingData] = useState({
     date: new Date(),
     endDate: null,
-    startTime: new Date(),
-    endTime: new Date(),
-    duration: 3,
+    startTime: new Date(new Date().setHours(7, 0, 0, 0)),
+    endTime: new Date(new Date().setHours(17, 0, 0, 0)), 
+    duration: 0.5,
     bookingType: 'hourly',
     adults: 0,
     kids: 0,
@@ -118,9 +118,9 @@ export const BookingProvider = ({ children }) => {
 
 
   //test
-  useEffect(() => {
-    console.log("bookingData", bookingData)
-  }, [bookingData])
+  // useEffect(() => {
+  //   console.log("bookingData", bookingData)
+  // }, [bookingData])
 
   return (
     <BookingContext.Provider value={{

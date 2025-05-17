@@ -26,7 +26,7 @@ import { Loading } from '@/components/ui/loading';
 const Selection = ({ onNext }) => {
   const { toast } = useToast();
   const { bookingData, updateBookingData, selectedYacht } = useBookingContext();
-  const capacity = selectedYacht?.yacht?.capacity || 0;
+  const capacity = selectedYacht?.yacht?.guest || 0;
 
   const [loading, setLoading] = useState(false);
   const [availableDates, setAvailableDates] = useState([]);
@@ -1086,7 +1086,7 @@ const Selection = ({ onNext }) => {
                     <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
                       {bookingData?.adults + bookingData?.kids}
                       <span className="text-xs ml-1">
-                        (max {selectedYacht?.yacht?.capacity || 0})
+                        (max {selectedYacht?.yacht?.guest || 0})
                       </span>
                     </span>
                   </TableCell>
