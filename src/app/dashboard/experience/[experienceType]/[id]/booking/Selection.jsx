@@ -38,6 +38,7 @@ const Selection = ({ onNext }) => {
   const { experienceType } = useParams();
   const [newYearCanApply, setNewYearCanApply] = useState(false)
   const [newYearApplied, setNewYearApplied] = useState(false)
+  // const [startEndtimeDiffrence, setstartEndtimeDiffrence] = useState(0)
 
   const token = typeof window !== "undefined" ? localStorage.getItem("token") || null : null;
   const userId = typeof window !== "undefined" ? localStorage.getItem("userid") || null : null;
@@ -56,7 +57,23 @@ const Selection = ({ onNext }) => {
   const [timeLeft, setTimeLeft] = useState(44 * 60);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isUserNewYearBooking, setIsUserNewYearBooking] = useState(false)
-
+  const [durationMinutesList,setDurationMinutesList] = useState([{
+    name:"30 Mins",
+    value:0.5
+  }  ,
+  {
+    name:"60 Mins",
+    value:1
+  },
+  {
+    name:"90 Mins",
+    value:1.5
+  },
+  {
+    name:"120 Mins",
+    value:2
+  }
+])
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -144,7 +161,8 @@ const Selection = ({ onNext }) => {
     } else if (experienceType == "regular-exp") {
       // fetchAvailability();
       updateBookingData({
-        duration: selectedYacht?.experience?.duration_hour ? selectedYacht?.experience?.duration_hour : 3
+        // duration: selectedYacht?.experience?.duration_hour ? selectedYacht?.experience?.duration_hour : 3
+        duration:0.5
       });
     }
   }, [selectedYacht, isUserNewYearBooking]);
@@ -336,12 +354,95 @@ const Selection = ({ onNext }) => {
 
   const generateTimeSlots = () => {
     const slots = [];
-    for (let hour = 0; hour <= 23; hour++) {
+    for (let hour = 7; hour <= 17; hour++) {
       slots.push(format(new Date().setHours(hour, 0, 0, 0), 'HH:mm'));
     }
     return slots;
 
   };
+
+  const handleDurationMinutes = (value) => {
+    const start = bookingData?.startTime;
+  
+    if (start instanceof Date) {
+      const startHour = start.getHours(); // e.g., 16
+      const startMinutes = start.getMinutes(); // e.g., 0
+      const startTimeInHours = startHour + startMinutes / 60;
+  
+      const endTime = startTimeInHours + value;
+  
+      if (endTime > 17.5) {
+           toast({
+          title: "Error",
+          description: "Please select booking that ends before or at 5:30 PM",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+  
+    updateBookingData({ duration: value });
+  };
+
+  const handleStartTime = (time) => {
+    const [hours, minutes] = time.split(':');
+    const newDate = new Date(bookingData?.date);
+    newDate.setHours(parseInt(hours), parseInt(minutes));
+  
+    const startHour = newDate.getHours();
+    const startMinutes = newDate.getMinutes();
+    const startTimeInHours = startHour + startMinutes / 60;
+  
+    const duration = bookingData?.duration || 0; // fallback if not set yet
+    const endTime = startTimeInHours + duration;
+  
+    if (endTime > 17.5) {
+      toast({
+        title: "Error",
+        description: "Selected time with current duration exceeds 5:30 PM. Please choose a different time or reduce the duration.",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    updateBookingData({ startTime: newDate });
+  };
+  // useEffect(() => {
+
+  //   const start = new Date(bookingData.startTime);
+  //   const end = new Date(bookingData.endTime);
+
+  //   // Difference in milliseconds
+  //   const diffMs = end - start;
+
+  //   // Convert to hours
+  //   const diffHours = diffMs / (1000 * 60 * 60);
+
+  //   setstartEndtimeDiffrence(diffHours)
+
+  // }, [bookingData])
+
+  
+
+  
+  useEffect(() => {
+    const startTime = new Date(bookingData.startTime);
+    const durationMin = bookingData?.duration; // duration in hours (e.g. 0.5 = 30 minutes)
+  
+    if (durationMin) {
+      // Calculate duration in milliseconds
+      const durationMs = durationMin * 60 * 60 * 1000;
+  
+      // Create new endTime
+      const newEndTime = new Date(startTime.getTime() + durationMs);
+  
+      updateBookingData({
+        endTime: newEndTime,
+      });
+    }
+  }, [bookingData.startTime, bookingData.duration]);
+  
+ 
   const daysCount = calculateDaysBetween(selectedYacht?.experience?.from_date, selectedYacht?.experience?.to_date);
 
 
@@ -423,7 +524,7 @@ const Selection = ({ onNext }) => {
   );
 
   const handleDateSelect = (range, flowType) => {
-    console.log(range, flowType)
+    // console.log(range, flowType)
 
 
     if (flowType == "range&single") {
@@ -546,6 +647,10 @@ const Selection = ({ onNext }) => {
   //   console.log("availableDates", availableDates)
   // }, [availableDates])
 
+  // useEffect(()=>{
+  //   console.log("startEndtimeDiffrence",startEndtimeDiffrence)
+  //     },[startEndtimeDiffrence])
+
 
 
   // useEffect(() => {
@@ -554,11 +659,11 @@ const Selection = ({ onNext }) => {
   //   console.log("isUserNewYearBooking", isUserNewYearBooking)
   // }, [newYearApplied, newYearCanApply, isUserNewYearBooking])
 
-  useEffect(() => {
-    console.log("selectedYacht", selectedYacht)
-    console.log("extras", extras)
+  // useEffect(() => {
+  //   console.log("selectedYacht", selectedYacht)
+  //   console.log("extras", extras)
     // console.log("experienceType, bookingData,", experienceType, bookingData,)
-  }, [selectedYacht, experienceType, bookingData, newYearCanApply, isUserNewYearBooking,extras])
+  // }, [selectedYacht, experienceType, bookingData, newYearCanApply, isUserNewYearBooking, extras])
 
 
   if (loading || !selectedYacht) {
@@ -857,12 +962,7 @@ const Selection = ({ onNext }) => {
                         </Label>
                         <Select
                           value={format(bookingData?.startTime, "HH:mm")}
-                          onValueChange={(time) => {
-                            const [hours, minutes] = time.split(':');
-                            const newDate = new Date(bookingData?.date);
-                            newDate.setHours(parseInt(hours), parseInt(minutes));
-                            updateBookingData({ startTime: newDate });
-                          }}
+                          onValueChange={(time) => handleStartTime(time)}
                         >
                           <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Select time">
@@ -884,7 +984,7 @@ const Selection = ({ onNext }) => {
                           </SelectContent>
                         </Select>
                       </div>}
-                      {/* {!newYearCanApply && isUserNewYearBooking && <div className="flex flex-col space-y-2 mt-3">
+                      {/* {!isUserNewYearBooking && <div className="flex flex-col space-y-2 mt-3">
                         <Label className="text-sm font-medium">
                           End Time<span className='text-red-500'>*</span>
                         </Label>
@@ -916,7 +1016,7 @@ const Selection = ({ onNext }) => {
                       </div>} */}
 
                     </div>
-                    {!isUserNewYearBooking && <div className="flex flex-col items-end space-y-2">
+                    {/* {!isUserNewYearBooking && <div className="flex flex-col items-end space-y-2">
                       <Label className="text-sm font-medium">{`Duration (min ${selectedYacht?.experience?.duration_hour ? selectedYacht?.experience?.duration_hour : 3} hrs)`}<span className='text-red-500'>*</span></Label>
                       <div className="flex items-center space-x-4 dark:bg-gray-700 rounded-lg p-2">
                         <Button
@@ -937,8 +1037,26 @@ const Selection = ({ onNext }) => {
                           <Plus className="h-4 w-4" />
                         </Button>
                       </div>
-                    </div>}
+                    </div>} */}
 
+{!isUserNewYearBooking &&  <div className="space-y-2">
+                        <Label className="text-base">Duration Minutes</Label>
+                        <Select
+                          value={bookingData?.duration}
+                          onValueChange={(value) => handleDurationMinutes(value)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Duration Minutes" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {durationMinutesList.map((durationMin) => (
+                              <SelectItem key={durationMin?.value} value={durationMin?.value}>
+                                {durationMin?.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>}
                   </> : experienceType == "f1-exp" ? "" : ""}
 
 

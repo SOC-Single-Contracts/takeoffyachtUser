@@ -88,6 +88,8 @@ const UserDetails = ({ onNext, onBack }) => {
         const formattedDate = format(bookingData.date, "yyyy-MM-dd");
         const formattedEndDate = bookingData.endDate ? format(bookingData.endDate, "yyyy-MM-dd") : null;
         const formattedTime = format(bookingData.startTime, 'HH:mm');
+        const formattedEndTime = format(bookingData.endTime, 'HH:mm');
+        
 
         const formattedExtras = bookingData.extras.map(extra => ({
           ...extra,
@@ -114,6 +116,7 @@ const UserDetails = ({ onNext, onBack }) => {
           booking_type: bookingData.bookingType || 'hourly',
           // starting_time: format(bookingData.startTime, 'HH:mm'),
           starting_time: formattedTime,
+          ending_time:formattedEndTime,
           per_day_price: bookingData.bookingType === 'date_range' ? selectedYacht?.yacht?.per_day_price || 0 : 0,
           food: 0,
           waterSports: 0,
@@ -200,6 +203,8 @@ const UserDetails = ({ onNext, onBack }) => {
         const formattedDate = format(bookingData.date, "yyyy-MM-dd");
         const formattedEndDate = bookingData.endDate ? format(bookingData.endDate, "yyyy-MM-dd") : null;
         const formattedTime = format(bookingData.startTime, 'HH:mm');
+        const formattedEndTime = format(bookingData.endTime, 'HH:mm');
+        
 
         const formattedExtras = bookingData.extras.map(extra => ({
           ...extra,
@@ -226,6 +231,7 @@ const UserDetails = ({ onNext, onBack }) => {
           booking_type: bookingData.bookingType || 'hourly',
           // starting_time: format(bookingData.startTime, 'HH:mm'),
           starting_time: formattedTime,
+          ending_time:formattedEndTime,
           per_day_price:  selectedYacht?.yacht?.per_day_price ,
           food: 0,
           waterSports: 0,

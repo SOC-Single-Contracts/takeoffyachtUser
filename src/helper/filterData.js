@@ -37,3 +37,8 @@
 
 
   }
+
+  export const getMonthName = (val,months) => {
+    const monthObj = months.find(m => m.value == val || m.value === val.padStart(2, '0'));
+    return monthObj ? monthObj.name : val;
+  };

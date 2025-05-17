@@ -442,7 +442,7 @@ const SearchYachtGlobalCompo = () => {
         }
       } else {
         setHasMore(false);
-        setError(responseData.error || 'Failed to apply filters');
+        // setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
       }
     } catch (err) {
@@ -489,7 +489,7 @@ const SearchYachtGlobalCompo = () => {
         setHasMore(true)
       } else {
         setHasMore(true)
-        setError(responseData.error || 'Failed to apply filters');
+        // setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
       }
     } catch (err) {
@@ -650,7 +650,7 @@ const SearchYachtGlobalCompo = () => {
         }
       } else {
         setHasMore(false);
-        setError(responseData.error || 'Failed to apply filters');
+        // setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
       }
     } catch (err) {

@@ -3,7 +3,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Dot, FilterIcon, List, Map, MapPin, SortAscIcon } from 'lucide-react';
+import { CalendarIcon, Dot, FilterIcon, List, Map, MapPin, SortAscIcon } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,9 @@ import { Loading } from '@/components/ui/loading';
 import { calculateDaysBetween } from '@/helper/calculateDays';
 import MapBoxComponent from "@/components/shared/dashboard/mapBox";
 import { checkValidateLatLong } from '@/helper/validateLatlong';
+import { cn } from '@/lib/utils';
+import { Calendar } from './ui/calendar';
+import { getMonthName } from '@/helper/filterData';
 
 const PAGE_SIZE = 10;
 
@@ -66,6 +70,9 @@ const SearchEventGlobalCompo = () => {
     sleep_capacity: "",
     capacity: "",
     location: "",
+    eventType: "",
+    eventOrder: "",
+    eventMonth: "",
     category_name: [],
     subcategory_name: [],
     boat_category: [],
@@ -97,6 +104,9 @@ const SearchEventGlobalCompo = () => {
     sleep_capacity: "",
     capacity: "",
     location: "",
+    eventType: "",
+    eventOrder: "",
+    eventMonth: "",
     category_name: [],
     subcategory_name: [],
     boat_category: [],
@@ -153,8 +163,26 @@ const SearchEventGlobalCompo = () => {
 
   const userId = session?.user?.userid || 1;
 
-  const categories = ['Catamarans',"motor boat", "motor", 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
+  const categories = ['Catamarans', "motor boat", "motor", 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
   const locations = ['Dubai', 'Abu Dhabi', 'Sharjah'];
+  const eventTypes = ['YEAR', 'NORMAL', 'F1'];
+  const eventOrders = ['upcoming', 'past',];
+  const months = [
+    { name: 'January', value: '1' },
+    { name: 'February', value: '2' },
+    { name: 'March', value: '3' },
+    { name: 'April', value: '4' },
+    { name: 'May', value: '5' },
+    { name: 'June', value: '6' },
+    { name: 'July', value: '7' },
+    { name: 'August', value: '8' },
+    { name: 'September', value: '9' },
+    { name: 'October', value: '10' },
+    { name: 'November', value: '11' },
+    { name: 'December', value: '12' }
+  ];
+
+
   const packageTypes = ['basic', 'f1', 'Sharjah'];
 
   const outdoorEquipment = [
@@ -251,6 +279,10 @@ const SearchEventGlobalCompo = () => {
     // }
     // if (filters.min_guest || filters.max_guest) newFilters.push(`Guests: ${filters.min_guest}-${filters.max_guest}`);
     if (filters.location) newFilters.push(`Location: ${filters.location}`);
+    if (filters.eventType) newFilters.push(`Type: ${filters.eventType}`);
+    if (filters.eventOrder) newFilters.push(`Order: ${filters.eventOrder}`);
+    if (filters.eventMonth) newFilters.push(`Month: ${filters.eventMonth}`);
+
     if (filters.name) newFilters.push(`name: ${filters.name}`);
 
     // if (filters.category_name.length) newFilters.push(`Categories: ${filters.category_name.length}`);
@@ -277,6 +309,9 @@ const SearchEventGlobalCompo = () => {
     let obj = {
       location: searchParams.get('location') || "",
       name: searchParams.get('name') || "",
+      eventType: searchParams.get('eventType') || "",
+      eventOrder: searchParams.get('eventOrder') || "",
+      eventMonth: searchParams.get('eventMonth') || "",
 
       // max_guest: searchParams.get('max_guest') ? parseInt(searchParams.get('max_guest')) : "",
       // min_guest: searchParams.get('min_guest') ? parseInt(searchParams.get('min_guest')) : "",
@@ -355,7 +390,10 @@ const SearchEventGlobalCompo = () => {
     let payload = {
       // max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
-      name: searchParams.get('name') || "",
+      event_type: searchParams.get('eventType'),
+      date_filter: searchParams.get('eventOrder'),
+      month: searchParams.get('eventMonth'),
+      search: searchParams.get('name') || "",
       // created_on: searchParams.get('date') || "",
       // ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
       //   ? { min_guest: parseInt(searchParams.get('min_guest')) }
@@ -397,7 +435,7 @@ const SearchEventGlobalCompo = () => {
       reqType: "handlePagination",
       EventType: eventsType == "f1events" ? "f1events" : "regular",
       user_id: userId,
-      page:page
+      page: page
     };
     try {
       setLoading(true);
@@ -426,28 +464,18 @@ const SearchEventGlobalCompo = () => {
         setpaginateEvents(responseData?.paginated_count)
 
 
-        // Sort the filtered events if needed
-        let sortedYachts=[];
-        if (eventsType == "events"){
-           sortedYachts = filteredYachts?.sort((a, b) => {
-            return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
-          });
-        } else if (eventsType == "f1events"){
-          sortedYachts = filteredYachts?.sort((a, b) => {
-            return a.yacht?.per_day_price - b.yacht?.per_day_price;
-          });
-        }
-        setOriginalEvents((prev) => [...prev, ...sortedYachts]);
-        if (sortedYachts?.length < PAGE_SIZE) {
+
+        setOriginalEvents((prev) => [...prev, ...filteredYachts]);
+        if (filteredYachts?.length < PAGE_SIZE) {
           console.log("no more data")
           setHasMore(false)
-        }else{
+        } else {
           console.log("more data")
           setHasMore(true)
         }
       } else {
         setHasMore(false);
-        setError(responseData.error || 'Failed to apply filters');
+        // setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
       }
     } catch (err) {
@@ -495,23 +523,11 @@ const SearchEventGlobalCompo = () => {
         setpaginateEvents(responseData?.paginated_count)
 
 
-
-        // Sort the filtered events if needed
-        let sortedYachts=[];
-        if (eventsType == "events"){
-           sortedYachts = filteredYachts?.sort((a, b) => {
-            return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
-          });
-        } else if (eventsType == "f1events"){
-          sortedYachts = filteredYachts?.sort((a, b) => {
-            return a.yacht?.per_day_price - b.yacht?.per_day_price;
-          });
-        }
-        setOriginalEvents([...sortedYachts]);
+        setOriginalEvents([...filteredYachts]);
         setHasMore(true)
       } else {
         setHasMore(true)
-        setError(responseData.error || 'Failed to apply filters');
+        // setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
       }
     } catch (err) {
@@ -528,6 +544,9 @@ const SearchEventGlobalCompo = () => {
       // min_price: "",
       // max_price: "",
       location: "",
+      eventType: "",
+      eventOrder: "",
+      eventMonth: "",
       // min_length: "",
       // max_length: "",
       // sleep_capacity: "",
@@ -555,7 +574,10 @@ const SearchEventGlobalCompo = () => {
     let payload = {
       // max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
-      name: searchParams.get('name') || "",
+      event_type: searchParams.get('eventType'),
+      date_filter: searchParams.get('eventOrder'),
+      month: searchParams.get('eventMonth'),
+      search: searchParams.get('name') || "",
       // created_on: searchParams.get('date') || "",
       // ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
       //   ? { min_guest: parseInt(searchParams.get('min_guest')) }
@@ -593,7 +615,7 @@ const SearchEventGlobalCompo = () => {
     };
     payload = {
       ...payload,
-      page:1,
+      page: 1,
       source: componentType == "searchEvent" ? "searchEvent" : componentType == "simpleEvent" ? "simpleEvent" : "",
       reqType: "handleFilterChange",
       EventType: eventsType == "f1events" ? "f1events" : "regular",
@@ -630,9 +652,12 @@ const SearchEventGlobalCompo = () => {
       // cabin_des: filters?.cabin_des || false,
       // created_on: filters?.created_on || "",
       location: filters?.location || "",
+      event_type: filters?.eventType,
+      date_filter: filters?.eventOrder,
+      month: filters?.eventMonth,
       // min_length: filters?.min_length || "",
       // max_length: filters?.max_length || "",
-      name: filters?.name || "",
+      search: filters?.name || "",
 
     };
 
@@ -663,27 +688,17 @@ const SearchEventGlobalCompo = () => {
         setpaginateEvents(responseData?.paginated_count)
 
 
-        // Sort the filtered events if needed
-        let sortedYachts=[];
-        if (eventsType == "events"){
-           sortedYachts = filteredYachts?.sort((a, b) => {
-            return a.yacht?.per_hour_price - b.yacht?.per_hour_price;
-          });
-        } else if (eventsType == "f1events"){
-          sortedYachts = filteredYachts?.sort((a, b) => {
-            return a.yacht?.per_day_price - b.yacht?.per_day_price;
-          });
-        }
-        setOriginalEvents([...sortedYachts]);
-        if (sortedYachts?.length < PAGE_SIZE){
+
+        setOriginalEvents([...filteredYachts]);
+        if (filteredYachts?.length < PAGE_SIZE) {
           setHasMore(false);
-        } else{
+        } else {
           setHasMore(true);
 
         }
       } else {
         setHasMore(false);
-        setError(responseData.error || 'Failed to apply filters');
+        // setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
       }
     } catch (err) {
@@ -702,6 +717,9 @@ const SearchEventGlobalCompo = () => {
       // min_price: filters?.min_price,
       // max_price: filters?.max_price,
       location: filters?.location,
+      eventType: filters?.eventType,
+      eventOrder: filters?.eventOrder,
+      eventMonth: filters?.eventMonth,
       name: filters?.name
       // min_length: filters?.min_length,
       // max_length: filters?.max_length,
@@ -778,9 +796,9 @@ const SearchEventGlobalCompo = () => {
   useEffect(() => {
     // if (apiCall == "firstRender") {
     //   console.log("this is working")
- 
+
     // }
-    if(page>1){
+    if (page > 1) {
       handlePagination();
     }
   }, [page]);
@@ -804,23 +822,23 @@ const SearchEventGlobalCompo = () => {
     }
   }, [filters, onCancelEachFilter]);
 
-     const handleWishlistToggle = async (eventId) => {
-         if (!session?.user?.userid) return;
- 
-         const updatedFavorites = new Set(favorites);
-         try {
-             if (updatedFavorites.has(eventId)) {
-                 await removeFromWishlist(session.user.userid, eventId, 'event');
-                 updatedFavorites.delete(eventId);
-             } else {
-                 await addToWishlist(session.user.userid, eventId, 'event');
-                 updatedFavorites.add(eventId);
-             }
-             setFavorites(updatedFavorites);
-         } catch (error) {
-             console.error('Error toggling wishlist:', error);
-         }
-     };
+  const handleWishlistToggle = async (eventId) => {
+    if (!session?.user?.userid) return;
+
+    const updatedFavorites = new Set(favorites);
+    try {
+      if (updatedFavorites.has(eventId)) {
+        await removeFromWishlist(session.user.userid, eventId, 'event');
+        updatedFavorites.delete(eventId);
+      } else {
+        await addToWishlist(session.user.userid, eventId, 'event');
+        updatedFavorites.add(eventId);
+      }
+      setFavorites(updatedFavorites);
+    } catch (error) {
+      console.error('Error toggling wishlist:', error);
+    }
+  };
   ///sorting
   useEffect(() => {
 
@@ -953,17 +971,17 @@ const SearchEventGlobalCompo = () => {
 
 
   //test
-//   useEffect(()=>{
-//  console.log("events",events)
-//  console.log("Page",page)
-//  console.log("hasMore",hasMore)
-//  console.log("allowFetching",allowFetching)
+  //   useEffect(()=>{
+  //  console.log("events",events)
+  //  console.log("Page",page)
+  //  console.log("hasMore",hasMore)
+  //  console.log("allowFetching",allowFetching)
   // },[events,page,hasMore,allowFetching])
 
-    // useEffect(() => {
-    //   console.log("componentType", componentType, searchPath)
-  
-    // }, [componentType, searchPath])
+  // useEffect(() => {
+  //   console.log("componentType", componentType, searchPath)
+
+  // }, [componentType, searchPath])
   // useEffect(() => {
   //   console.log("filters", filters);
   // }, [filters]);
@@ -1058,9 +1076,9 @@ const SearchEventGlobalCompo = () => {
           Listing ({totalEvents}) {eventsType === "f1events" ? "f1 events" : eventsType === "events" ? "Events" : ""}
         </h1> : ""} */}
 
-        {activeFilters.length>0 ? <h1 className="text-2xl font-semibold mb-6">
-          Search Results ({paginateEvents ? paginateEvents :0 }) {eventsType === "f1events" ? "f1 events" : eventsType === "events" ? "Events" : ""}
-        </h1> :<h1 className="text-2xl font-semibold mb-6">
+        {activeFilters.length > 0 ? <h1 className="text-2xl font-semibold mb-6">
+          Search Results ({paginateEvents ? paginateEvents : 0}) {eventsType === "f1events" ? "f1 events" : eventsType === "events" ? "Events" : ""}
+        </h1> : <h1 className="text-2xl font-semibold mb-6">
           Listing ({totalEvents}) {eventsType === "f1events" ? "f1 events" : eventsType === "events" ? "Events" : ""}
         </h1>}
 
@@ -1072,7 +1090,7 @@ const SearchEventGlobalCompo = () => {
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <div className="flex justify-between w-full">
                   <SheetTrigger asChild>
-                    <Button  variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2">
                       <SlidersHorizontal className="h-4 w-4" />
                       Filters
                     </Button>
@@ -1094,13 +1112,13 @@ const SearchEventGlobalCompo = () => {
                         </SelectContent>
                       </Select> */}
                       <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={resetFilters}
-                    className="text-sm"
-                  >
-                    Reset All
-                  </Button>
+                        variant="outline"
+                        size="sm"
+                        onClick={resetFilters}
+                        className="text-sm"
+                      >
+                        Reset All
+                      </Button>
                     </div>
 
                   </span>
@@ -1111,10 +1129,10 @@ const SearchEventGlobalCompo = () => {
                     <SheetTitle>Filters</SheetTitle>
                   </SheetHeader>
                   <ScrollArea className="h-[calc(100vh-80px)] px-2">
-               
+
                     <div className="space-y-6 py-6 px-1">
-              
-                     
+
+
 
                       {/* Location */}
                       {/* <div className="space-y-2">
@@ -1153,8 +1171,65 @@ const SearchEventGlobalCompo = () => {
                           </SelectContent>
                         </Select>
                       </div>
+                      <div className="space-y-2">
+                        <Label className="text-base">Event Type</Label>
+                        <Select
+                          value={filters.eventType}
+                          onValueChange={(value) => setFilters(prev => ({ ...prev, eventType: value }))}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Event Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {eventTypes.map((eventType) => (
+                              <SelectItem key={eventType} value={eventType}>
+                                {eventType}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                          {/* <div className="space-y-2">
+                      <div className="space-y-2">
+                        <Label className="text-base">Event Order</Label>
+                        <Select
+                          value={filters.eventOrder}
+                          onValueChange={(value) => setFilters(prev => ({ ...prev, eventOrder: value }))}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Event Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {eventOrders.map((eventOrder) => (
+                              <SelectItem key={eventOrder} value={eventOrder}>
+                                {eventOrder}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-base">Event Month</Label>
+                        <Select
+                          value={filters.eventMonth}
+                          onValueChange={(value) => setFilters(prev => ({ ...prev, eventMonth: value }))}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Event Month" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {months.map((month) => (
+                              <SelectItem key={month?.value} value={month?.value}>
+                                {month?.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+
+
+                      {/* <div className="space-y-2">
                                               <Label className="text-sm"> {eventsType == "events" ? "Min Available Packages " : eventsType == "f1events" ? "Min Available Packages" : ""}</Label>
                                               <div className="flex gap-4">
                                                 <div className="flex-1">
@@ -1191,78 +1266,91 @@ const SearchEventGlobalCompo = () => {
               </Sheet>
 
               <div className="flex flex-wrap gap-2">
-                {activeFilters.map((filter, index) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                    className="px-3 py-1 flex items-center gap-1"
-                  >
-                    {filter}
-                    <X
-                      className="h-3 w-3 cursor-pointer"
-                      onClick={() => {
-                        const [type] = filter.split(':');
-                        switch (type) {
-                          case 'Price':
-                            setFilters(prev => ({ ...prev, min_price: "", max_price: "" }));
-                            break;
-                          case 'Guests':
-                            setFilters(prev => ({ ...prev, min_guest: '', max_guest: '' }));
-                            break;
-                          case 'Location':
-                            setFilters(prev => ({ ...prev, location: '' }));
-                            break;
-                          case 'Categories':
-                            setFilters(prev => ({ ...prev, category_name: [] }));
-                            break;
-                          case 'Boat Categories':
-                            setFilters(prev => ({ ...prev, boat_category: [] }));
-                            break;
-                          case 'Type':
-                            setFilters(prev => ({ ...prev, engine_type: '' }));
-                            break;
-                          case 'Length':
-                            setFilters(prev => ({ ...prev, min_length: '', max_length: '' }));
-                            break;
-                          case 'Min No. of Cabins':
-                            setFilters(prev => ({ ...prev, number_of_cabin: '' }));
-                            break;
-                          case 'Min Sleeping Capacity':
-                            setFilters(prev => ({ ...prev, sleep_capacity: '' }));
-                            break;
-                          case 'Amenities':
-                            setFilters(prev => ({ ...prev, amenities: [] }));
-                            break;
-                          case 'Outdoor Equipment':
-                            setFilters(prev => ({ ...prev, outdoor_equipment: [] }));
-                            break;
-                          case 'Kitchen':
-                            setFilters(prev => ({ ...prev, kitchen: [] }));
-                            break;
-                          case 'Onboard Energy':
-                            setFilters(prev => ({ ...prev, energy: [] }));
-                            break;
-                          case 'Leisure Activities':
-                            setFilters(prev => ({ ...prev, leisure: [] }));
-                            break;
-                          case 'Navigation Equipment':
-                            setFilters(prev => ({ ...prev, navigation: [] }));
-                            break;
-                          case 'Extra Comforts':
-                            setFilters(prev => ({ ...prev, extra_comforts: [] }));
-                            break;
-                          case 'Indoor Equipment':
-                            setFilters(prev => ({ ...prev, indoor: [] }));
-                            break;
-                          case 'name':
-                            setFilters(prev => ({ ...prev, name: "" }));
-                            break;
-                        }
-                        setonCancelEachFilter(true);
-                      }}
-                    />
-                  </Badge>
-                ))}
+                {activeFilters.map((filter, index) => {
+                  const [filterName, filterValue] = filter.split(':');
+                  return (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="px-3 py-1 flex items-center gap-1"
+                    >
+                      {filterName === "Month" ? `${filterName}: ${getMonthName(filterValue?.trim(),months)}` : filter}
+                      <X
+                        className="h-3 w-3 cursor-pointer"
+                        onClick={() => {
+                          const [type] = filter.split(':');
+                          switch (type) {
+                            case 'Price':
+                              setFilters(prev => ({ ...prev, min_price: "", max_price: "" }));
+                              break;
+                            case 'Guests':
+                              setFilters(prev => ({ ...prev, min_guest: '', max_guest: '' }));
+                              break;
+                            case 'Location':
+                              setFilters(prev => ({ ...prev, location: '' }));
+                              break;
+                            case 'Type':
+                              setFilters(prev => ({ ...prev, eventType: '' }));
+                              break; case 'Order':
+                              setFilters(prev => ({ ...prev, eventOrder: '' }));
+                              break; case 'Month':
+                              setFilters(prev => ({ ...prev, eventMonth: '' }));
+                              break;
+                            case 'Categories':
+                              setFilters(prev => ({ ...prev, category_name: [] }));
+                              break;
+                            case 'Boat Categories':
+                              setFilters(prev => ({ ...prev, boat_category: [] }));
+                              break;
+                            case 'Type':
+                              setFilters(prev => ({ ...prev, engine_type: '' }));
+                              break;
+                            case 'Length':
+                              setFilters(prev => ({ ...prev, min_length: '', max_length: '' }));
+                              break;
+                            case 'Min No. of Cabins':
+                              setFilters(prev => ({ ...prev, number_of_cabin: '' }));
+                              break;
+                            case 'Min Sleeping Capacity':
+                              setFilters(prev => ({ ...prev, sleep_capacity: '' }));
+                              break;
+                            case 'Amenities':
+                              setFilters(prev => ({ ...prev, amenities: [] }));
+                              break;
+                            case 'Outdoor Equipment':
+                              setFilters(prev => ({ ...prev, outdoor_equipment: [] }));
+                              break;
+                            case 'Kitchen':
+                              setFilters(prev => ({ ...prev, kitchen: [] }));
+                              break;
+                            case 'Onboard Energy':
+                              setFilters(prev => ({ ...prev, energy: [] }));
+                              break;
+                            case 'Leisure Activities':
+                              setFilters(prev => ({ ...prev, leisure: [] }));
+                              break;
+                            case 'Navigation Equipment':
+                              setFilters(prev => ({ ...prev, navigation: [] }));
+                              break;
+                            case 'Extra Comforts':
+                              setFilters(prev => ({ ...prev, extra_comforts: [] }));
+                              break;
+                            case 'Indoor Equipment':
+                              setFilters(prev => ({ ...prev, indoor: [] }));
+                              break;
+                            case 'name':
+                              setFilters(prev => ({ ...prev, name: "" }));
+                              break;
+                          }
+                          setonCancelEachFilter(true);
+                        }}
+                      />
+                    </Badge>
+
+                  )
+
+
+                })}
                 {activeFilters.length > 0 && (
                   <Button
                     variant="outline"
@@ -1280,92 +1368,92 @@ const SearchEventGlobalCompo = () => {
 
         {/* Cards Grid */}
         {!mapBox ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center">
-          { events.length > 0 ? (
-              events.map((event,ind) => {
-                if (!event) {
-                    return null;
-                }
-                // console.log(`https://api.takeoffyachts.com${event.event_image}`)
-                return (
-                    <Card
-                    key={`event-${event?.id}-${ind}`}
-                    id={`event-${event?.id}-${ind}`}
-                        className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[250px] h-full md:min-h-[260px] min-h-[240px]"
+          {events.length > 0 ? (
+            events.map((event, ind) => {
+              if (!event) {
+                return null;
+              }
+              // console.log(`https://api.takeoffyachts.com${event.event_image}`)
+              return (
+                <Card
+                  key={`event-${event?.id}-${ind}`}
+                  id={`event-${event?.id}-${ind}`}
+                  className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[250px] h-full md:min-h-[260px] min-h-[240px]"
                   ref={ind === events.length - 1 ? lastYachtRef : null}
 
-                    >
-                        <div className="relative">
-                            <Image
-                                src={event.event_image
-                                    ? `${process.env.NEXT_PUBLIC_S3_URL}${event.event_image}`
-                                    : '/assets/images/Imagenotavailable.png'
-                                }
-
-                                alt={event.name || 'Event Image'}
-                                width={100}
-                                height={250}
-                                className="object-cover w-full px-3 pt-3 rounded-2xl md:h-[170px] h-[220px]"
-                                onError={(e) => {
-                                  e.target.src = '/assets/images/Imagenotavailable.png'
-                              }}
-                            />
-
-                            <Link href={`/dashboard/event/events/${event.id}`}>
-                                <p className="absolute inset-0 z-10"></p>
-                            </Link>
-
-                            <Button
-                                variant="secondary"
-                                size="icon"
-                                className="absolute top-5 right-5 rounded-full bg-white hover:bg-white/80 z-10"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleWishlistToggle(event.id);
-                                }}
-                            >
-                                <Image
-                                    src={favorites.has(event.id) ? '/assets/images/wishlist.svg' : '/assets/images/unwishlist.svg'}
-                                    width={20}
-                                    height={20}
-                                    alt="Wishlist"
-                                    className="text-red-500"
-                                />
-                            </Button>
-                            <div className="absolute bottom-4 right-6 bg-white/80 dark:bg-gray-900 backdrop-blur-sm p-1.5 rounded-md">
-                                <span className="text-xs font-medium">
-                                    {event?.packages_system?.length} Packages Available
-                                </span>
-                            </div>
-                        </div>
-                        <CardContent className="px-4 py-2">
-                            <h3 className="text-md font-semibold mb-1">{event.name || 'Unnamed Event'}</h3>
-                            <div className="flex items-center space-x-2">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
-                                    {event.location || 'Location N/A'}
-                                </span>
-                            </div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                {(event.description || '').substring(0, 24)}...
-                            </p>
-                        </CardContent>
-                    </Card>
-                );
-            })
-            ) : (
-              <div className="col-span-full flex flex-col items-center justify-center py-12">
-                <p className="text-gray-500 text-lg mb-4">No Events found</p>
-                <Button
-                  variant="outline"
-                  onClick={resetFilters}
-                  className="gap-2"
                 >
-                  <X className="h-4 w-4" />
-                  Reset Filters
-                </Button>
+                  <div className="relative">
+                    <Image
+                      src={event.event_image
+                        ? `${process.env.NEXT_PUBLIC_S3_URL}${event.event_image}`
+                        : '/assets/images/Imagenotavailable.png'
+                      }
 
-              </div>
-            )}
+                      alt={event.name || 'Event Image'}
+                      width={100}
+                      height={250}
+                      className="object-cover w-full px-3 pt-3 rounded-2xl md:h-[170px] h-[220px]"
+                      onError={(e) => {
+                        e.target.src = '/assets/images/Imagenotavailable.png'
+                      }}
+                    />
+
+                    <Link href={`/dashboard/event/events/${event.id}`}>
+                      <p className="absolute inset-0 z-10"></p>
+                    </Link>
+
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="absolute top-5 right-5 rounded-full bg-white hover:bg-white/80 z-10"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleWishlistToggle(event.id);
+                      }}
+                    >
+                      <Image
+                        src={favorites.has(event.id) ? '/assets/images/wishlist.svg' : '/assets/images/unwishlist.svg'}
+                        width={20}
+                        height={20}
+                        alt="Wishlist"
+                        className="text-red-500"
+                      />
+                    </Button>
+                    <div className="absolute bottom-4 right-6 bg-white/80 dark:bg-gray-900 backdrop-blur-sm p-1.5 rounded-md">
+                      <span className="text-xs font-medium">
+                        {event?.packages_system?.length} Packages Available
+                      </span>
+                    </div>
+                  </div>
+                  <CardContent className="px-4 py-2">
+                    <h3 className="text-md font-semibold mb-1">{event.name || 'Unnamed Event'}</h3>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {event.location || 'Location N/A'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                      {(event.description || '').substring(0, 24)}...
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-12">
+              <p className="text-gray-500 text-lg mb-4">No Events found</p>
+              <Button
+                variant="outline"
+                onClick={resetFilters}
+                className="gap-2"
+              >
+                <X className="h-4 w-4" />
+                Reset Filters
+              </Button>
+
+            </div>
+          )}
 
           {loading && (
             // Render skeleton UI

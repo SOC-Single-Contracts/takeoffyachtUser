@@ -138,8 +138,8 @@ const SearchExperinceGlobalCompo = () => {
     { value: "default", label: "Default" },
     { value: "Price-High-Low", label: "Price: High to Low" },
     { value: "Price-Low-High", label: "Price: Low to High" },
-    { value: "Capacity-High-Low", label: "Capacity: High to Low" },
-    { value: "Capacity-Low-High", label: "Capacity: Low to High" }
+    // { value: "Capacity-High-Low", label: "Capacity: High to Low" },
+    // { value: "Capacity-Low-High", label: "Capacity: Low to High" }
   ]);
 
   const [selectedSortBy, setSelectedSortBy] = useState(searchParams.get('sortBy') || "Price-High-Low");
@@ -445,7 +445,7 @@ const SearchExperinceGlobalCompo = () => {
         }
       } else {
         setHasMore(false);
-        setError(responseData.error || 'Failed to apply filters');
+        // setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
       }
     } catch (err) {
@@ -494,7 +494,7 @@ const SearchExperinceGlobalCompo = () => {
         setHasMore(true)
       } else {
         setHasMore(true)
-        setError(responseData.error || 'Failed to apply filters');
+        // setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
       }
     } catch (err) {
@@ -657,7 +657,7 @@ const SearchExperinceGlobalCompo = () => {
         }
       } else {
         setHasMore(false);
-        setError(responseData.error || 'Failed to apply filters');
+        // setError(responseData.error || 'Failed to apply filters');
         console.error('API Error:', responseData.error);
       }
     } catch (err) {
@@ -994,7 +994,7 @@ const SearchExperinceGlobalCompo = () => {
 
                   <span>
 
-                    {/* <div className="space-y-2">
+                    <div className="space-y-2">
                       <Select value={selectedSortBy} onValueChange={handleChange}>
                         <SelectTriggerSort className="w-full">
                           <SelectValue placeholder="Sort By" />
@@ -1007,15 +1007,15 @@ const SearchExperinceGlobalCompo = () => {
                           ))}
                         </SelectContent>
                       </Select>
-                    </div> */}
-                    <Button
+                    </div>
+                    {/* <Button
                       variant="outline"
                       size="sm"
                       onClick={resetFilters}
                       className="text-sm"
                     >
                       Reset All
-                    </Button>
+                    </Button> */}
 
                   </span>
                 </div>
@@ -1109,7 +1109,7 @@ const SearchExperinceGlobalCompo = () => {
                       </div>
 
                       {/* Boat Length */}
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <Label className="text-sm">Boat Length (ft)</Label>
                         <div className="flex gap-4">
                           <div className="flex-1">
@@ -1143,7 +1143,7 @@ const SearchExperinceGlobalCompo = () => {
                             />
                           </div>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Min Sleeping Capacity */}
                       <div className="space-y-2 flex justify-between items-center">
@@ -1234,7 +1234,7 @@ const SearchExperinceGlobalCompo = () => {
                       </div>
 
                       {/* Boat Categories */}
-                      <Accordion collapsible type="multiple">
+                      {/* <Accordion collapsible type="multiple">
                         <AccordionItem value="item-1">
                           <AccordionTrigger className="text-base">Boat Categories</AccordionTrigger>
                           <AccordionContent>
@@ -1259,9 +1259,9 @@ const SearchExperinceGlobalCompo = () => {
                             </div>
                           </AccordionContent>
                         </AccordionItem>
-                      </Accordion>
+                      </Accordion> */}
 
-                      <Accordion collapsible type="multiple">
+                      {/* <Accordion collapsible type="multiple">
                         <AccordionItem value="item-2">
                           <AccordionTrigger className="text-base">Amenities & Features</AccordionTrigger>
                           <AccordionContent>
@@ -1481,7 +1481,7 @@ const SearchExperinceGlobalCompo = () => {
                             </Accordion>
                           </AccordionContent>
                         </AccordionItem>
-                      </Accordion>
+                      </Accordion> */}
 
                       <Button
                         className="w-full bg-[#BEA355] mt-6 rounded-full"

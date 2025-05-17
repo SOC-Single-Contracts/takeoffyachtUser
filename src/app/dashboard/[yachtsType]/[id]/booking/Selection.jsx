@@ -31,7 +31,7 @@ const Selection = ({ onNext }) => {
   const { bookingData, updateBookingData, selectedYacht, setBookingData, appStatBookingContext } = useBookingContext();
   const { globalState: appState, dispatch: appDispatch } = useContext(GlobalStateContext)
   // console.log("appState", appState)
-  const capacity = selectedYacht?.yacht?.capacity || 0;
+  const capacity = selectedYacht?.yacht?.guest || 0;
   const [loading, setLoading] = useState(false);
   const [availableDates, setAvailableDates] = useState([]);
   const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
@@ -1199,7 +1199,7 @@ const Selection = ({ onNext }) => {
                     <span className="font-medium text-xs text-gray-600 dark:text-gray-400">
                       {(bookingData?.adults || 0) + (bookingData?.kids || 0)}
                       <span className="text-xs ml-1">
-                        (max {selectedYacht?.yacht?.capacity || 0})
+                        (max {selectedYacht?.yacht?.guest || 0})
                       </span>
                     </span>
                   </TableCell>
