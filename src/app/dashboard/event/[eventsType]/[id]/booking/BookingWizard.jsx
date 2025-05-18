@@ -112,7 +112,7 @@ const steps = [
 ];
 
 const BookingWizardContent = ({ eventData }) => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(2);
 
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, steps.length));
@@ -128,7 +128,7 @@ const BookingWizardContent = ({ eventData }) => {
     <section className="py-10">
       <div className="max-w-5xl mx-auto px-4">
         <div className="flex items-center space-x-4 mb-8">
-          {currentStep > 1 && (
+          {currentStep > 2 && (
             <Button
               onClick={handleBack}
               className="bg-[#F8F8F8] hover:bg-[#F8F8F8] shadow-md rounded-full flex items-center justify-center w-10 h-10"

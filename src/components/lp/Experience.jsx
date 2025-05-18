@@ -239,8 +239,9 @@ const Experience = () => {
               Top Experiences
             </h2>
           </div>
+          {/* grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:place-items-center my-8 */}
           
-          <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:place-items-center my-8">
+          <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
             {experiences.map((experienceData) => (
                        experienceData?.experience?.experience_type == "regular" &&
               <ExperienceCard
@@ -274,7 +275,7 @@ const Experience = () => {
         </div>
 
 
-        <div className="max-w-5xl px-2 mx-auto mt-6">
+        {/* <div className="max-w-5xl px-2 mx-auto mt-6">
           <div className="flex justify-between items-center">
             <h2 className="md:text-[40px] text-[32px] font-semibold tracking-tight sm:text-4xl">
               Top Formula One Experiences
@@ -293,7 +294,6 @@ const Experience = () => {
               />
             ))}
           </div>
-          {/* {!experiences?.some((item)=>item?.experience_type == "f1") &&   } */}
           <Link href={`/dashboard/experience/f1-exp`}>
           <Button variant="outline" className="text-black hover:underline font-semibold uppercase md:text-[16px] hover:shadow-2xl transition duration-500 ease-in-out dark:text-white text-[12px] rounded-full flex items-center group">
             See All
@@ -312,7 +312,7 @@ const Experience = () => {
           </Button>
           </Link>
          
-        </div>
+        </div> */}
 
 
         

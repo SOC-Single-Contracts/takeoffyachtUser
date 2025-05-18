@@ -656,20 +656,20 @@ const Summary = ({ onNext, initialBookingId }) => {
         {/* Yacht Images */}
         {/* <div className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {selectedYacht?.experience?.yacht_image && (
+            {selectedYacht?.experience?.experience_image && (
               <div
                 className="relative h-48 rounded-lg overflow-hidden cursor-pointer"
                 onClick={() => {
                   Fancybox.show([
                     {
-                      src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.yacht_image}`,
+                      src: `${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.experience_image}`,
                       type: "image",
                     }
                   ]);
                 }}
               >
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.yacht_image}`}
+                  src={`${process.env.NEXT_PUBLIC_API_URL || 'https://api.takeoffyachts.com'}${selectedYacht.yacht.experience_image}`}
                   alt={selectedYacht.yacht.name}
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-300"
@@ -706,9 +706,9 @@ const Summary = ({ onNext, initialBookingId }) => {
           </div>
         </div> */}
         {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-center place-items-center my-8 max-w-screen-xl mx-auto px-4">
-              {!selectedYacht || !selectedYacht?.yacht ? null : (() => {
+              {!selectedYacht || !selectedYacht?.experience ? null : (() => {
                 const images = [
-                  selectedYacht?.experience?.yacht_image,
+                  selectedYacht?.experience?.experience_image,
                   selectedYacht?.experience?.image1,
                   selectedYacht?.experience?.image2,
                   selectedYacht?.experience?.image3,
@@ -773,9 +773,9 @@ const Summary = ({ onNext, initialBookingId }) => {
               })()}
             </div> */}
         <div className="w-full overflow-hidden">
-          {!selectedYacht || !selectedYacht?.yacht ? null : (() => {
+          {!selectedYacht || !selectedYacht?.experience ? null : (() => {
             const images = [
-              selectedYacht?.experience?.yacht_image,
+              selectedYacht?.experience?.experience_image,
               selectedYacht?.experience?.image1,
               selectedYacht?.experience?.image2,
               selectedYacht?.experience?.image3,

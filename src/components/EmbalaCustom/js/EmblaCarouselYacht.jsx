@@ -123,7 +123,7 @@ const EmblaCarouselYacht = (props) => {
           <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
         </div>
 
-        <div className="embla__dots absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-50">
+        {/* <div className="embla__dots absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-50">
           {scrollSnaps.map((_, index) => (
             <DotButton
               key={index}
@@ -133,7 +133,7 @@ const EmblaCarouselYacht = (props) => {
               )}
             />
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   )

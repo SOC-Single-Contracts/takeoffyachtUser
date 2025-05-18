@@ -77,7 +77,7 @@ const Selection = ({ onNext,eventData }) => {
 
     onNext();
   };
-  ///test
+
   useEffect(() => {
     const selectedPackage = eventData?.packages_system?.find((v) => v?.id == packageId);  
     if (selectedPackage) {
@@ -90,6 +90,7 @@ const Selection = ({ onNext,eventData }) => {
     }
   }, [eventData,packageId,tickets])
 
+///test
 
   return (
     <div className="space-y-8">
@@ -175,7 +176,7 @@ const Selection = ({ onNext,eventData }) => {
       <div className="grid grid-cols-2 gap-8">
         <div className="space-y-6">
 
-            {eventsType == "events" ? <div className="flex flex-col space-y-2">
+            {eventsType == "normal-events" ? <div className="flex flex-col space-y-2">
                         <Label className="text-sm font-medium">
                           <span className='text-red-5'> Event Booking Slot:</span>
                         </Label>

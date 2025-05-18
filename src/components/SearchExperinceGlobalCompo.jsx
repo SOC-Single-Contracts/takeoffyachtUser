@@ -135,7 +135,7 @@ const SearchExperinceGlobalCompo = () => {
 
 
   const [sortByOptions, setSortByOptions] = useState([
-    { value: "default", label: "Default" },
+    // { value: "default", label: "Default" },
     { value: "Price-High-Low", label: "Price: High to Low" },
     { value: "Price-Low-High", label: "Price: Low to High" },
     // { value: "Capacity-High-Low", label: "Capacity: High to Low" },
@@ -622,7 +622,7 @@ const SearchExperinceGlobalCompo = () => {
       location: filters?.location || "",
       min_length: filters?.min_length || "",
       max_length: filters?.max_length || "",
-      name: filters?.name || "",
+      experience_name: filters?.name || "",
 
     };
 
@@ -883,9 +883,9 @@ const SearchExperinceGlobalCompo = () => {
   //   console.log("componentType", componentType, searchPath)
 
   // }, [componentType, searchPath])
-  // useEffect(() => {
-  //   console.log("filters", filters);
-  // }, [filters]);
+  useEffect(() => {
+    console.log("filters", filters);
+  }, [filters]);
 
   // useEffect(() => {
   //   console.log("activeFilters", activeFilters);
@@ -984,13 +984,13 @@ const SearchExperinceGlobalCompo = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center w-full gap-2 flex-wrap">
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <div className="flex justify-between w-full">
-                  <SheetTrigger asChild>
+                <div className="flex justify-end w-full">
+                  {/* <SheetTrigger asChild>
                     <Button variant="outline" className="gap-2">
                       <SlidersHorizontal className="h-4 w-4" />
                       Filters
                     </Button>
-                  </SheetTrigger>
+                  </SheetTrigger> */}
 
                   <span>
 
@@ -1561,7 +1561,7 @@ const SearchExperinceGlobalCompo = () => {
                             setFilters(prev => ({ ...prev, indoor: [] }));
                             break;
                           case 'name':
-                            setFilters(prev => ({ ...prev, experience_name: "" }));
+                            setFilters(prev => ({ ...prev, name: "" }));
                             break;
                           case 'start date':
                             setFilters(prev => ({ ...prev, start_date: "" }));
@@ -1788,6 +1788,7 @@ const SearchExperinceGlobalCompo = () => {
           <MapBoxComponent
             markers={validMarkers}
             movingObjects={validmovingObjects}
+            callingFrom="experience"
 
           // markers={[
           //   { latitude: 25.127476, longitude: 55.342584, yacht: selectedYacht?.yacht, experienceType },
