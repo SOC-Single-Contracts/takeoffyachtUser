@@ -134,7 +134,7 @@ const SearchYachtGlobalCompo = () => {
 
 
   const [sortByOptions,setSortByOptions] = useState( [
-    { value: "default", label: "Default" },
+    // { value: "default", label: "Default" },
     { value: "Price-High-Low", label: "Price: High to Low" },
     { value: "Price-Low-High", label: "Price: Low to High" },
     { value: "Capacity-High-Low", label: "Capacity: High to Low" },

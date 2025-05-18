@@ -55,8 +55,8 @@ const SearchEventGlobalCompo = () => {
   const [totalEvents, settotalEvents] = useState(0);
   const [paginateEvents, setpaginateEvents] = useState(0);
   const [componentType, setcomponentType] = useState("simpleEvent")
-  const [searchPath, setSearchPath] = useState(`/dashboard/event/${eventsType == "f1events" ? "f1events" : "events"}`)
-  const targetPath = `/dashboard/event/${eventsType == "f1events" ? "f1events" : "events"}/search`;
+  const [searchPath, setSearchPath] = useState(`/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}`)
+  const targetPath = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}/search`;
 
   const [mapBox, setMapBox] = useState(false)
   const [validMarkers, setValidMarkers] = useState([])
@@ -390,7 +390,6 @@ const SearchEventGlobalCompo = () => {
     let payload = {
       // max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
-      event_type: searchParams.get('eventType'),
       date_filter: searchParams.get('eventOrder'),
       month: searchParams.get('eventMonth'),
       search: searchParams.get('name') || "",
@@ -398,12 +397,12 @@ const SearchEventGlobalCompo = () => {
       // ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
       //   ? { min_guest: parseInt(searchParams.get('min_guest')) }
       //   : {}),
-      // ...(eventsType === "events"
+      // ...(eventsType === "normal-events"
       //   ? {
       //     min_per_hour: parseInt(searchParams.get('min_price')) || "",
       //     max_per_hour: parseInt(searchParams.get('max_price')) || "",
       //   }
-      //   : eventsType === "f1events"
+      //   : eventsType == "year-events" ? "year-events" : eventsType === "f1-events"
       //     ? {
       //       min_per_day: parseInt(searchParams.get('min_price')) || "",
       //       max_per_day: parseInt(searchParams.get('max_price')) || "",
@@ -433,7 +432,7 @@ const SearchEventGlobalCompo = () => {
       ...payload,
       source: componentType == "searchEvent" ? "searchEvent" : componentType == "simpleEvent" ? "simpleEvent" : "",
       reqType: "handlePagination",
-      EventType: eventsType == "f1events" ? "f1events" : "regular",
+      event_type: eventsType == "year-events" ? "YEAR" : eventsType == "f1-events" ? "F1" : "NORMAL",
       user_id: userId,
       page: page
     };
@@ -492,7 +491,7 @@ const SearchEventGlobalCompo = () => {
     let payloadHardReset = {
       source: componentType == "searchEvent" ? "searchEvent" : componentType == "simpleEvent" ? "simpleEvent" : "",
       reqType: "handleResetAll",
-      EventType: eventsType == "f1events" ? "f1events" : "regular",
+      event_type: eventsType == "year-events" ? "YEAR" : eventsType == "f1-events" ? "F1" : "NORMAL",
       user_id: userId,
       page: 1,
     };
@@ -574,7 +573,6 @@ const SearchEventGlobalCompo = () => {
     let payload = {
       // max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
-      event_type: searchParams.get('eventType'),
       date_filter: searchParams.get('eventOrder'),
       month: searchParams.get('eventMonth'),
       search: searchParams.get('name') || "",
@@ -582,12 +580,12 @@ const SearchEventGlobalCompo = () => {
       // ...((searchParams.get('min_guest') && !isNaN(parseInt(searchParams.get('min_guest'))))
       //   ? { min_guest: parseInt(searchParams.get('min_guest')) }
       //   : {}),
-      // ...(eventsType === "events"
+      // ...(eventsType === "normal-events"
       //   ? {
       //     min_per_hour: parseInt(searchParams.get('min_price')) || "",
       //     max_per_hour: parseInt(searchParams.get('max_price')) || "",
       //   }
-      //   : eventsType === "f1events"
+      //   : eventsType == "year-events" ? "year-events" : eventsType === "f1-events"
       //     ? {
       //       min_per_day: parseInt(searchParams.get('min_price')) || "",
       //       max_per_day: parseInt(searchParams.get('max_price')) || "",
@@ -618,14 +616,14 @@ const SearchEventGlobalCompo = () => {
       page: 1,
       source: componentType == "searchEvent" ? "searchEvent" : componentType == "simpleEvent" ? "simpleEvent" : "",
       reqType: "handleFilterChange",
-      EventType: eventsType == "f1events" ? "f1events" : "regular",
+      event_type: eventsType == "year-events" ? "YEAR" : eventsType == "f1-events" ? "F1" : "NORMAL",
       user_id: userId,
-      // ...(eventsType === "events"
+      // ...(eventsType === "normal-events"
       //   ? {
       //     min_per_hour: filters?.min_price?.toString() || "",
       //     max_per_hour: filters?.max_price?.toString() || "",
       //   }
-      //   : eventsType === "f1events"
+      //   : eventsType == "year-events" ? "year-events" : eventsType === "f1-events"
       //     ? {
       //       min_per_day: filters?.min_price?.toString() || "",
       //       max_per_day: filters?.max_price?.toString() || "",
@@ -652,7 +650,6 @@ const SearchEventGlobalCompo = () => {
       // cabin_des: filters?.cabin_des || false,
       // created_on: filters?.created_on || "",
       location: filters?.location || "",
-      event_type: filters?.eventType,
       date_filter: filters?.eventOrder,
       month: filters?.eventMonth,
       // min_length: filters?.min_length || "",
@@ -839,44 +836,7 @@ const SearchEventGlobalCompo = () => {
       console.error('Error toggling wishlist:', error);
     }
   };
-  ///sorting
-  useEffect(() => {
-
-    // if (!startSort) {
-    //   return;
-    // }
-    if (events.length <= 0 || originalEvents.length <= 0) {
-      return;
-    }
-
-    let data = [...events];
-    if (selectedOption?.value === "default") {
-      data = [...originalEvents];
-    }
-    else if (selectedOption?.value === "Price-High-Low") {
-      if (eventsType === "events") {
-        data.sort((a, b) => (b.yacht?.per_hour_price) - (a.yacht?.per_hour_price));
-      } else if (eventsType === "f1events") {
-        data.sort((a, b) => (b.yacht?.per_day_price) - (a.yacht?.per_day_price));
-      }
-    }
-    else if (selectedOption?.value === "Price-Low-High") {
-      if (eventsType === "events") {
-        data.sort((a, b) => (a.yacht?.per_hour_price) - (b.yacht?.per_hour_price));
-      } else if (eventsType === "f1events") {
-        data.sort((a, b) => (a.yacht?.per_day_price) - (b.yacht?.per_day_price));
-      }
-    }
-    else if (selectedOption?.value === "Capacity-High-Low") {
-      data.sort((a, b) => b.yacht?.guest - a.yacht?.guest);
-    } else if (selectedOption?.value === "Capacity-Low-High") {
-      data.sort((a, b) => a.yacht?.guest - b.yacht?.guest);
-    }
-
-    if (JSON.stringify(data) !== JSON.stringify(events)) {
-      setEvents(data);
-    }
-  }, [selectedOption]);
+  
   /// set orignial events to events
   useEffect(() => {
     let data = [...originalEvents]
@@ -935,11 +895,11 @@ const SearchEventGlobalCompo = () => {
   useEffect(() => {
     // console.log(currentPath,"=>",targetPath)
     if (currentPath === targetPath) {
-      let value = `/dashboard/event/${eventsType == "f1events" ? "f1events" : "events"}/search`;
+      let value = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}/search`;
       setSearchPath(value)
       setcomponentType("searchEvent")
     } else {
-      let value = `/dashboard/event/${eventsType == "f1events" ? "f1events" : "events"}`;
+      let value = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}`;
       setSearchPath(value)
       setcomponentType("simpleEvent")
 
@@ -972,7 +932,7 @@ const SearchEventGlobalCompo = () => {
 
   //test
   //   useEffect(()=>{
-  //  console.log("events",events)
+  //  console.log("normal-events",events)
   //  console.log("Page",page)
   //  console.log("hasMore",hasMore)
   //  console.log("allowFetching",allowFetching)
@@ -1071,15 +1031,15 @@ const SearchEventGlobalCompo = () => {
     <section className="py-4 px-2">
       <div className="max-w-5xl mx-auto">
         {/* {componentType == "searchEvent" ? <h1 className="text-2xl font-semibold mb-6">
-          Listing ({events.length}) {eventsType === "f1events" ? "f1 events" : eventsType === "events" ? "Events" : ""}
+          Listing ({events.length}) {eventsType == "year-events" ? "year-events" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal-Events" : ""}
         </h1> : componentType == "simpleEvent" ? <h1 className="text-2xl font-semibold mb-6">
-          Listing ({totalEvents}) {eventsType === "f1events" ? "f1 events" : eventsType === "events" ? "Events" : ""}
+          Listing ({totalEvents}) {eventsType == "year-events" ? "year-events" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal-Events" : ""}
         </h1> : ""} */}
 
         {activeFilters.length > 0 ? <h1 className="text-2xl font-semibold mb-6">
-          Search Results ({paginateEvents ? paginateEvents : 0}) {eventsType === "f1events" ? "f1 events" : eventsType === "events" ? "Events" : ""}
+          Search Results ({paginateEvents ? paginateEvents : 0}) {eventsType == "year-events" ? "year events" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal Events" : ""}
         </h1> : <h1 className="text-2xl font-semibold mb-6">
-          Listing ({totalEvents}) {eventsType === "f1events" ? "f1 events" : eventsType === "events" ? "Events" : ""}
+          Listing ({totalEvents}) {eventsType == "year-events" ? "year events" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal Events" : ""}
         </h1>}
 
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Events</h1>
@@ -1171,7 +1131,7 @@ const SearchEventGlobalCompo = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <Label className="text-base">Event Type</Label>
                         <Select
                           value={filters.eventType}
@@ -1188,7 +1148,7 @@ const SearchEventGlobalCompo = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                      </div>
+                      </div> */}
 
                       <div className="space-y-2">
                         <Label className="text-base">Event Order</Label>
@@ -1197,7 +1157,7 @@ const SearchEventGlobalCompo = () => {
                           onValueChange={(value) => setFilters(prev => ({ ...prev, eventOrder: value }))}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Event Type" />
+                            <SelectValue placeholder="Select Event Order" />
                           </SelectTrigger>
                           <SelectContent>
                             {eventOrders.map((eventOrder) => (
@@ -1230,7 +1190,7 @@ const SearchEventGlobalCompo = () => {
 
 
                       {/* <div className="space-y-2">
-                                              <Label className="text-sm"> {eventsType == "events" ? "Min Available Packages " : eventsType == "f1events" ? "Min Available Packages" : ""}</Label>
+                                              <Label className="text-sm"> {eventsType == "normal-events" ? "Min Available Packages " : eventsType == "year-events" ? "year-events" : "f1-events" ? "Min Available Packages" : ""}</Label>
                                               <div className="flex gap-4">
                                                 <div className="flex-1">
                                                   <Input
@@ -1365,9 +1325,9 @@ const SearchEventGlobalCompo = () => {
             </div>
           </div>
         </div>
-
+        {/* grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center */}
         {/* Cards Grid */}
-        {!mapBox ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center">
+        {!mapBox ? <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {events.length > 0 ? (
             events.map((event, ind) => {
               if (!event) {
@@ -1378,7 +1338,7 @@ const SearchEventGlobalCompo = () => {
                 <Card
                   key={`event-${event?.id}-${ind}`}
                   id={`event-${event?.id}-${ind}`}
-                  className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[250px] h-full md:min-h-[260px] min-h-[240px]"
+                  className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[250px]]  h-full md:min-h-[270px] min-h-[290px]"
                   ref={ind === events.length - 1 ? lastYachtRef : null}
 
                 >
@@ -1392,13 +1352,13 @@ const SearchEventGlobalCompo = () => {
                       alt={event.name || 'Event Image'}
                       width={100}
                       height={250}
-                      className="object-cover w-full px-3 pt-3 rounded-2xl md:h-[170px] h-[220px]"
+                      className="object-cover w-full px-3 pt-3 rounded-2xl  md:h-[220px] h-[240px]"
                       onError={(e) => {
                         e.target.src = '/assets/images/Imagenotavailable.png'
                       }}
                     />
 
-                    <Link href={`/dashboard/event/events/${event.id}`}>
+                    <Link href={`/dashboard/event/${eventsType}/${event.id}`}>
                       <p className="absolute inset-0 z-10"></p>
                     </Link>
 

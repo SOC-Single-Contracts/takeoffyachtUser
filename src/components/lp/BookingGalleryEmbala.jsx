@@ -4,6 +4,7 @@ import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
 
 const BookingGalleryEmbala = ({ images }) => {
     const IMAGES = images?.length > 0 ? [...images] : ["/assets/images/fycht.jpg"];
@@ -33,7 +34,7 @@ const BookingGalleryEmbala = ({ images }) => {
 
     return (
         <section id="BookingEmblaCarosuel" className="px-2 sm:px-4">
-            <section className="embla">
+            {/* <section className="embla">
                 <div className="embla__viewport" ref={emblaRef}>
                     <div className="embla__container">
                         {IMAGES?.map((src, index) => (
@@ -70,9 +71,43 @@ const BookingGalleryEmbala = ({ images }) => {
 
 
 
-            </section>
+            </section> */}
 
-            {IMAGES?.length > 1 && (
+               <Carousel className="px-1 h-[300px] sm:h-[300px] md:h-[400px] w-full">
+                                <CarouselContent>
+                                  {IMAGES.map((image, index) => (
+                                    <CarouselItem key={index}>
+                                      <Image
+                                        src={image ? `${image}` : '/assets/images/fycht.jpg'}
+                                        alt="Yacht Image"
+                                        width={326}
+                                        height={400}
+                                        quality={100}
+                                        className="ml-2 object-cover px-3 pt-2.5 rounded-3xl  h-[300px] sm:h-[300px] md:h-[400px] w-full"
+                                        onError={(e) => {
+                                          e.target.src = '/assets/images/fycht.jpg';
+                                        }}
+                                      />
+                                    </CarouselItem>
+                                  ))}
+                                </CarouselContent>
+                                <CarouselPrevious className="absolute left-5 top-1/2 transform -translate-y-1/2 z-10">
+                                  <Button variant="icon" onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}>
+                                    <ChevronLeft />
+                                  </Button>
+                                </CarouselPrevious>
+                                <CarouselNext className="absolute right-5 top-1/2 transform -translate-y-1/2 z-10">
+                                  <Button variant="icon" onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}>
+                                    <ChevronRight />
+                                  </Button>
+                                </CarouselNext>
+                              </Carousel>
+
+            {/* {IMAGES?.length > 1 && (
                 <div className="embla-thumbs" ref={thumbsRef}>
                     <div className="embla-thumbs__container">
                         {IMAGES?.map((src, index) => (
@@ -85,7 +120,7 @@ const BookingGalleryEmbala = ({ images }) => {
                         ))}
                     </div>
                 </div>
-            )}
+            )} */}
         </section>
     );
 };

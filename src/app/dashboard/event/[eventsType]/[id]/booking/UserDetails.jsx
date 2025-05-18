@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,10 +13,15 @@ import {
 import { useBookingContext } from "./BookingContext";
 import { toast } from "sonner";
 import { countries } from 'countries-list';
+import { useSearchParams } from "next/navigation";
 
-const UserDetails = ({ onNext }) => {
+const UserDetails = ({ onNext,eventData }) => {
   const { bookingData, updateBookingData } = useBookingContext();
   const [loading, setLoading] = useState(false);
+        const queryString = typeof window !== "undefined" ? window.location.search : "";
+        const searchParams = useSearchParams(queryString);
+        let tickets = Number(searchParams.get('tickets'))
+        let packageId = searchParams.get('package')
 
   // Convert countries object to sorted array
   const countriesList = useMemo(() => {
@@ -70,6 +75,18 @@ const UserDetails = ({ onNext }) => {
       setLoading(false);
     }
   };
+
+    useEffect(() => {
+      const selectedPackage = eventData?.packages_system?.find((v) => v?.id == packageId);  
+      if (selectedPackage) {
+        updateBookingData({ 
+          selectedPackage: selectedPackage,
+        duration: eventData?.duration_hour || 3,
+          tickets:tickets,
+          eventId:eventData?.id
+        });
+      }
+    }, [eventData,packageId,tickets])
 
   return (
     <form onSubmit={handleSubmit} className="mt-8 md:grid grid-cols-2 gap-4 md:space-y-0 space-y-4 container mx-auto bg-white dark:bg-gray-900 p-4 rounded-lg">

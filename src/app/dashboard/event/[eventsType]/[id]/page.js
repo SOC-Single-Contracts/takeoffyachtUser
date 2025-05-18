@@ -33,7 +33,7 @@ import DetailPageGallery2 from "@/components/lp/DetailPageGallery2";
 import EventSliderEmbala from "@/components/EventsSlider/js/EmblaCarouselEvent";
 
 const EventDetail = () => {
-  const { id } = useParams();
+  const { id, eventsType } = useParams();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -74,14 +74,56 @@ const EventDetail = () => {
     }
   }, [id, session?.user?.userid || 1]);
 
-  const handleTicketChange = (packageId, action) => {
-    setTicketCounts(prev => ({
-      ...prev,
-      [packageId]: action === 'increase'
-        ? (prev[packageId] || 0) + 1
-        : Math.max(0, (prev[packageId] || 0) - 1)
-    }));
-  };
+   // setTicketCounts(prev => ({
+    //   ...prev,
+    //   [packageId]: action === 'increase'
+    //     ? (prev[packageId] || 0) + 1
+    //     : Math.max(0, (prev[packageId] || 0) - 1)
+    // }));
+    const handleTicketChange = (packageId, action, pkg) => {
+      const now = new Date();
+    
+      // Convert from/to date strings to Date objects
+      const eventStart = new Date(selectedEvent.from_date);
+      const eventEnd = new Date(selectedEvent.to_date);
+    
+      // If the event has ended, block ticket changes
+      if (now > eventEnd) {
+        toast({
+          title: "Error",
+          description: "Cannot book tickets for past events.",
+          variant: "destructive",
+        });
+        return;
+      }
+    
+      setTicketCounts(prev => {
+        const currentCount = prev[packageId] || 0;
+        const remaining = pkg.remaining_quantity;
+    
+        if (action === 'increase') {
+          if (currentCount < remaining) {
+            return {
+              ...prev,
+              [packageId]: currentCount + 1
+            };
+          } else {
+            toast({
+              title: 'Error',
+              description: `You have reached the maximum allowed tickets (${remaining}) for this package.`,
+              variant: "destructive",
+            });
+            return prev;
+          }
+        } else {
+          return {
+            ...prev,
+            [packageId]: Math.max(0, currentCount - 1)
+          };
+        }
+      });
+    };
+    
 
 
   if (error) {
@@ -122,7 +164,7 @@ const EventDetail = () => {
       return;
     }
 
-    router.push(`/dashboard/event/events/${id}/booking`);
+    router.push(`/dashboard/event/${eventsType}/${id}/booking`);
   };
 
   const handleMainImageSelect = (image) => {
@@ -153,8 +195,10 @@ const EventDetail = () => {
 
   const uniqueEventImages = [...new Set([selectedEvent?.event_image, ...eventImages])].filter(Boolean);
 
-//test
-// console.log("selectedEvent",selectedEvent)
+  //test
+  // console.log("selectedEvent", selectedEvent)
+  // console.log("ticketCounts", ticketCounts)
+
 
 
   return (
@@ -168,7 +212,7 @@ const EventDetail = () => {
                 const images = eventImages
                   .filter((image) => typeof image === "string" && image.trim() !== "")
                   .map((image) => `${process.env.NEXT_PUBLIC_S3_URL}${image}`)
-                  // .map((image) => `https://api.takeoffyachts.com${image}`)
+                // .map((image) => `https://api.takeoffyachts.com${image}`)
 
 
                 return (
@@ -314,7 +358,7 @@ const EventDetail = () => {
               </div>
 
               {/* Event Details Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-4 my-3">
+              <div className="grid grid-cols-3 md:grid-cols-3 gap-4 my-3">
                 <div className="flex flex-col justify-center items-center w-full h-20 space-y-2 font-semibold text-sm py-4 border border-gray-300 rounded-lg shadow-sm">
                   <Calendar className="size-5" />
                   <p className="text-gray-700 dark:text-gray-400">{new Date(from_date).toLocaleDateString()}</p>
@@ -327,10 +371,10 @@ const EventDetail = () => {
                   <Ticket className="size-5" />
                   <p className="text-gray-700 dark:text-gray-400">{total_tickets} Tickets</p>
                 </div>
-                <div className="flex flex-col justify-center items-center w-full h-20 space-y-2 font-semibold text-sm py-4 border border-gray-300 rounded-lg shadow-sm">
+                {/* <div className="flex flex-col justify-center items-center w-full h-20 space-y-2 font-semibold text-sm py-4 border border-gray-300 rounded-lg shadow-sm">
                   <UserRound className="size-5" />
                   <p className="text-gray-700 dark:text-gray-400">Cancellation: {cancel_time_in_hours}h</p>
-                </div>
+                </div> */}
               </div>
 
               <h6 className="text-lg font-medium mt-4">Description</h6>
@@ -392,7 +436,7 @@ const EventDetail = () => {
 
                             <Link
                               className="w-full"
-                              href={`/dashboard/event/events/${id}/booking?tickets=${ticketCounts[pkg?.id] || 0}&package=${pkg?.id}`}
+                              href={`/dashboard/event/${eventsType}/${id}/booking?tickets=${ticketCounts[pkg?.id] || 0}&package=${pkg?.id}`}
                               onClick={(e) => {
                                 if (!ticketCounts[pkg?.id]) {
                                   e.preventDefault();
@@ -430,11 +474,11 @@ const EventDetail = () => {
                   </CarouselContent>
                 </Carousel> */}
 
-                   {packages_system?.length > 0 && <div className="container classForEmbalaCaroselEvent mx-auto pb-6 px-2">
-                
-                                        <EventSliderEmbala slides={packages_system} handleTicketChange={handleTicketChange} ticketCounts={ticketCounts} />
-                               
-                            </div>}
+                {packages_system?.length > 0 && <div className="container classForEmbalaCaroselEvent mx-auto pb-6 px-2">
+
+                  <EventSliderEmbala slides={packages_system} handleTicketChange={handleTicketChange} ticketCounts={ticketCounts} />
+
+                </div>}
               </div>
               {/* Book Now Button */}
               {/* <div className="my-4">
@@ -472,7 +516,7 @@ const EventDetail = () => {
       <section className="px-2 pb-10">
         <Events />
         <div className="flex justify-center">
-          <Link href="/dashboard/event/events">
+          <Link href="/dashboard/event/normal-events">
             <Button className="rounded-full bg-[#BEA355] text-white flex justify-center mx-auto">
               View All Events
             </Button>

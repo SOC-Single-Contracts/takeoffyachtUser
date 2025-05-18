@@ -161,18 +161,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Copy, Mail, Phone, User, CheckCircle } from "lucide-react";
+import { Copy, Mail, Phone, User, CheckCircle, MapPin, Check, Clipboard } from "lucide-react";
 import { useBookingContext } from "./BookingContext";
 import { useSession } from "next-auth/react";
 import yachtApi from "@/services/api";
 import { useState } from "react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { formatDate } from "@/helper/calculateDays";
+import { Card } from "@/components/ui/card";
+import Image from "next/image";
+import BookingGalleryEmbala from "@/components/lp/BookingGalleryEmbala";
 
 const Summary = ({ onNext,eventData }) => {
   const { bookingData } = useBookingContext();
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
+    const [eventDetails, setEventDetails] = useState(null);
+  
 
   const calculateTotal = () => {
     if (!bookingData.selectedPackage) return 0;
@@ -185,6 +191,29 @@ const Summary = ({ onNext,eventData }) => {
     return (packagePrice + featuresPrices) * totalGuests;
   };
   
+  
+  const handleCopyLink = () => {
+    const bookingId = eventDetails?.id;
+    const yachtId =  bookingData.yachtId;
+    const bookingLink = `${window.location.origin}/dashboard/${yachtsType}/${yachtId}/booking/?bookingId=${bookingId}`;
+
+    navigator.clipboard.writeText(bookingLink).then(() => {
+      setIsCopied(true); // Set copied state to true
+      toast({
+        title: "Link Copied",
+        description: "The booking link has been copied to your clipboard.",
+        variant: "success",
+      });
+      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+      toast({
+        title: "Error",
+        description: "Failed to copy the booking link.",
+        variant: "destructive",
+      });
+    });
+  };
 
   const handleConfirm = async () => {
     if (!bookingData.selectedPackage) {
@@ -226,9 +255,34 @@ const Summary = ({ onNext,eventData }) => {
     // }
   };
 
+
   return (
     <div className="mx-auto max-w-5xl px-2 space-y-6">
       {/* Package Summary */}
+
+          <Card className="p-4">
+              <div className="relative w-full h-48 mb-4">
+                <Image
+                  src={eventData?.event_image
+                    ? `${process.env.NEXT_PUBLIC_S3_URL}${eventData?.event_image}`
+                    : '/assets/images/Imagenotavailable.png'
+                }
+                  alt={eventData?.name}
+                  fill
+                  className="object-cover rounded-lg"
+                  onError={(e) => {
+                    e.target.src = '/assets/images/Imagenotavailable.png'
+                }}
+                />
+              </div>
+              <h2 className="text-xl font-semibold mb-2">{eventData?.name}</h2>
+              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-2">
+                <MapPin className="w-4 h-4" />
+                <span>{eventData?.location || 'Location not specified'}</span>
+              </div>
+            </Card>
+
+       
       <Table className="bg-[#F4F0E4] dark:bg-gray-800 w-full rounded-lg">
         <TableHeader>
           <TableRow>
@@ -238,10 +292,18 @@ const Summary = ({ onNext,eventData }) => {
           </TableRow>
         </TableHeader>
         <TableBody className="bg-white dark:bg-gray-800 text-xs">
+        <TableRow>
+            <TableCell className="font-semibold">Booking Slot</TableCell>
+            <TableCell className="font-medium">
+           {formatDate(eventData?.from_date)} - {formatDate(eventData?.to_date)}
+
+            </TableCell>
+          </TableRow>
           <TableRow>
             <TableCell className="font-semibold">Selected Package</TableCell>
             <TableCell className="font-medium">
-              {bookingData.selectedPackage?.package_type || 'No package selected'}
+           {bookingData.selectedPackage?.package_type || 'No package selected'}
+
             </TableCell>
           </TableRow>
           <TableRow>
@@ -309,6 +371,20 @@ const Summary = ({ onNext,eventData }) => {
               <Mail className="w-4 h-4" /> {bookingData?.email}
             </TableCell>
           </TableRow>
+          {/* <TableRow>
+              <TableCell className="font-semibold">Your Booking Link:</TableCell>
+              <TableCell className="font-medium">
+                <div className="flex items-center">
+                  <span
+                    className="text-blue-500 cursor-pointer"
+                    onClick={handleCopyLink}
+                  >
+                    {isCopied ? <Check className="h-5 w-5" /> : <Clipboard className="h-5 w-5" />}
+                  </span>
+                  <span  onClick={handleCopyLink} className="ml-2 text-gray-500 cursor-pointer">{isCopied ? "Copied!" : "(Click to copy)"}</span>
+                </div>
+              </TableCell>
+            </TableRow> */}
         </TableBody>
       </Table>
 
@@ -325,13 +401,28 @@ const Summary = ({ onNext,eventData }) => {
         </Button>
       </div> */}
 
-      <Button 
+{/* {eventDetails && eventDetails?.total_cost === eventDetails?.paid_cost && (
+          <div className="flex items-center justify-between bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md mb-4">
+            <div className="flex items-center">
+              <CheckCheck className="w-6 h-6 mr-2" />
+              <div>
+                <strong className="font-bold">Thank You!</strong>
+                <span className="block sm:inline"> Your payment has been successfully received. We appreciate your business!</span>
+              </div>
+            </div>
+
+          </div>
+        )}
+{!(eventDetails && eventDetails?.total_cost === eventDetails?.paid_cost) &&      } */}
+
+<Button 
         onClick={handleConfirm}
         disabled={loading || !bookingData.selectedPackage}
         className="rounded-full bg-[#BEA355] w-full text-white"
       >
         {loading ? 'Processing...' : 'Continue to Payment'}
       </Button>
+
     </div>
   );
 };

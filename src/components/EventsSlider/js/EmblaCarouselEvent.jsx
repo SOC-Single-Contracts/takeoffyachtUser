@@ -19,7 +19,8 @@ import { useParams } from 'next/navigation'
 const EventSliderEmbala = (props) => {
   const { slides, options,handleTicketChange,ticketCounts } = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
-  const { id } = useParams();
+  const { id,eventsType } = useParams();
+  
 
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
     useDotButton(emblaApi)
@@ -58,7 +59,7 @@ const EventSliderEmbala = (props) => {
                                 <Button
                                   variant="outline"
                                   size="icon"
-                                  onClick={() => handleTicketChange(pkg?.id, 'decrease')}
+                                  onClick={() => handleTicketChange(pkg?.id, 'decrease',pkg)}
                                   className="h-8 w-8 rounded-xl bg-[#F4F4F4] dark:bg-gray-800"
                                 >
                                   -
@@ -69,7 +70,7 @@ const EventSliderEmbala = (props) => {
                                 <Button
                                   variant="outline"
                                   size="icon"
-                                  onClick={() => handleTicketChange(pkg?.id, 'increase')}
+                                  onClick={() => handleTicketChange(pkg?.id, 'increase',pkg)}
                                   className="h-8 w-8 rounded-xl bg-[#F4F4F4] dark:bg-gray-800"
                                 >
                                   +
@@ -88,7 +89,7 @@ const EventSliderEmbala = (props) => {
                             {/* Book Now Button */}
                             <Link
                               className="w-full"
-                              href={`/dashboard/event/events/${id}/booking?tickets=${ticketCounts[pkg?.id] || 0}&package=${pkg?.id}`}
+                              href={`/dashboard/event/${eventsType}/${id}/booking?tickets=${ticketCounts[pkg?.id] || 0}&package=${pkg?.id}`}
                               onClick={(e) => {
                                 // Check if no tickets are selected
                                 if (!ticketCounts[pkg?.id]) {
@@ -120,7 +121,7 @@ const EventSliderEmbala = (props) => {
                                 Book Now
                               </Button>
                             </Link>
-                            {/* <Link className="w-full" href={`/dashboard/event/events/${id}/booking`}>
+                            {/* <Link className="w-full" href={`/dashboard/event/${eventsType}/${id}/booking`}>
                             <Button className='bg-[#BEA355] text-white rounded-full px-4 h-10 w-full'>Book Now</Button>
                           </Link> */}
                           </div>

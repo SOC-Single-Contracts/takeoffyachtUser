@@ -41,7 +41,7 @@ const EmptyEventState = ({ onRetry }) => {
             <RefreshCw className="mr-2 w-4 h-4" />
             Retry Loading
           </Button>
-          <Link href="/dashboard/event/events">
+          <Link href="/dashboard/event/normal-events">
             <Button 
               variant="outline" 
               className="rounded-full border-[#BEA355] text-[#BEA355] hover:bg-[#BEA355]/10"
@@ -138,8 +138,10 @@ const Events = ({ limit = 4 }) => {
   return (
     <section className="py-8 px-2">
       <div className="max-w-5xl mx-auto">
-        <h1 className="md:text-4xl text-[32px] font-semibold text-start">Our Events</h1>
-        <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[0.6rem]  place-items-center my-8">
+        <h1 className="md:text-4xl text-[32px] font-semibold text-start"> Normal Events</h1>
+        {/* grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[0.6rem]  place-items-center my-8 */}
+        
+        <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {eventsToDisplay.map((item) => {
             if (!item) {
               return null;
@@ -149,7 +151,7 @@ const Events = ({ limit = 4 }) => {
             return (
               <Card
                 key={event?.id}
-                className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[298px] h-full md:max-h-[260px] max-h-[310px]"
+                className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[298px]] h-full h-full md:min-h-[270px] min-h-[290px]"
               >
                 <div className="relative">
                 {/* <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" /> */}
@@ -161,13 +163,14 @@ const Events = ({ limit = 4 }) => {
                     alt={event?.name || 'Event Image'}
                     width={100}
                     height={250}
-                    className="object-cover w-full px-3 pt-3 rounded-3xl md:h-[170px] h-[220px]"
+                   
+                    className="object-cover w-full px-3 pt-3 rounded-3xl w-full md:h-[220px] h-[240px]"
                     onError={(e) => {
                         e.target.src = '/assets/images/Imagenotavailable.png'
                     }}
                     />
 
-                  <Link href={`/dashboard/event/events/${event?.id}`}>
+                  <Link href={`/dashboard/event/normal-events/${event?.id}`}>
                     <p className="absolute inset-0 z-10"></p>
                   </Link>
 
@@ -192,7 +195,161 @@ const Events = ({ limit = 4 }) => {
             );
           })}
         </div>
-        {!id &&     <Link href="/dashboard/event/events">
+        {!id &&     <Link href="/dashboard/event/normal-events">
+        <Button variant="outline" className="text-black hover:underline font-semibold uppercase md:text-[16px] hover:shadow-2xl transition duration-500 ease-in-out dark:text-white text-[12px] rounded-full flex items-center group">
+            See All
+            <svg
+              className="w-4 ml-1 transition-transform duration-300 ease-in-out group-hover:translate-x-1"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </Button>
+        </Link>}
+    
+      </div>
+      <div className="max-w-5xl mx-auto mt-7">
+        <h1 className="md:text-4xl text-[32px] font-semibold text-start">Formula One Events</h1>
+        {/* grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[0.6rem]  place-items-center my-8 */}
+        
+        <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
+          {eventsToDisplay.map((item) => {
+            if (!item) {
+              return null;
+            }
+
+            const  event  = item;
+            return (
+              <Card
+                key={event?.id}
+                className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[298px]] h-full h-full md:min-h-[270px] min-h-[290px]"
+              >
+                <div className="relative">
+                {/* <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" /> */}
+                <Image
+                     src={event.event_image
+                      ? `${process.env.NEXT_PUBLIC_S3_URL}${event.event_image}`
+                      : '/assets/images/Imagenotavailable.png'
+                  }
+                    alt={event?.name || 'Event Image'}
+                    width={100}
+                    height={250}
+                   
+                    className="object-cover w-full px-3 pt-3 rounded-3xl w-full md:h-[220px] h-[240px]"
+                    onError={(e) => {
+                        e.target.src = '/assets/images/Imagenotavailable.png'
+                    }}
+                    />
+
+                  <Link href={`/dashboard/event/f1-events/${event?.id}`}>
+                    <p className="absolute inset-0 z-10"></p>
+                  </Link>
+
+                  <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-900 backdrop-blur-sm p-1.5 rounded-md">
+                    <span className="text-xs font-medium">
+                      {item?.packages_system?.length} Package Available
+                    </span>
+                  </div>
+                </div>
+                <CardContent className="px-4 py-2">
+                  <h3 className="text-md font-semibold mb-1">{event?.name || 'Unnamed Event'}</h3>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-black dark:text-gray-400">
+                      {event?.location || 'Location N/A'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-black mb-4 dark:text-gray-400">
+                    {(event?.description || '').substring(0, 24)}...
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+        {!id &&     <Link href="/dashboard/event/f1-events">
+        <Button variant="outline" className="text-black hover:underline font-semibold uppercase md:text-[16px] hover:shadow-2xl transition duration-500 ease-in-out dark:text-white text-[12px] rounded-full flex items-center group">
+            See All
+            <svg
+              className="w-4 ml-1 transition-transform duration-300 ease-in-out group-hover:translate-x-1"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </Button>
+        </Link>}
+    
+      </div>
+      <div className="max-w-5xl mx-auto mt-7">
+        <h1 className="md:text-4xl text-[32px] font-semibold text-start"> Year Events</h1>
+        {/* grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[0.6rem]  place-items-center my-8 */}
+        
+        <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
+          {eventsToDisplay.map((item) => {
+            if (!item) {
+              return null;
+            }
+
+            const  event  = item;
+            return (
+              <Card
+                key={event?.id}
+                className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[298px]] h-full h-full md:min-h-[270px] min-h-[290px]"
+              >
+                <div className="relative">
+                {/* <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" /> */}
+                <Image
+                     src={event.event_image
+                      ? `${process.env.NEXT_PUBLIC_S3_URL}${event.event_image}`
+                      : '/assets/images/Imagenotavailable.png'
+                  }
+                    alt={event?.name || 'Event Image'}
+                    width={100}
+                    height={250}
+                   
+                    className="object-cover w-full px-3 pt-3 rounded-3xl w-full md:h-[220px] h-[240px]"
+                    onError={(e) => {
+                        e.target.src = '/assets/images/Imagenotavailable.png'
+                    }}
+                    />
+
+                  <Link href={`/dashboard/event/year-events/${event?.id}`}>
+                    <p className="absolute inset-0 z-10"></p>
+                  </Link>
+
+                  <div className="absolute bottom-2 right-5 bg-white dark:bg-gray-900 backdrop-blur-sm p-1.5 rounded-md">
+                    <span className="text-xs font-medium">
+                      {item?.packages_system?.length} Package Available
+                    </span>
+                  </div>
+                </div>
+                <CardContent className="px-4 py-2">
+                  <h3 className="text-md font-semibold mb-1">{event?.name || 'Unnamed Event'}</h3>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-black dark:text-gray-400">
+                      {event?.location || 'Location N/A'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-black mb-4 dark:text-gray-400">
+                    {(event?.description || '').substring(0, 24)}...
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+        {!id &&     <Link href="/dashboard/event/year-events">
         <Button variant="outline" className="text-black hover:underline font-semibold uppercase md:text-[16px] hover:shadow-2xl transition duration-500 ease-in-out dark:text-white text-[12px] rounded-full flex items-center group">
             See All
             <svg

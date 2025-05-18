@@ -114,7 +114,7 @@ const Header = () => {
           yachts: yachtData.data,
           another: anotherData.data
         });
-      } else if (currentRoute.startsWith('/dashboard/event/events')) {
+      } else if (currentRoute.startsWith('/dashboard/event/normal-events')) {
         const response = await fetch('https://api.takeoffyachts.com/yacht/check_event/', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -294,23 +294,39 @@ const Header = () => {
                       onClick={()=>setIsSheetOpen(false)}
                        className="flex items-center space-x-2" href="/dashboard/experience/regular-exp">
                         <SquareArrowOutUpRight className="w-4 h-4 mr-2" />
-                        Regular Experiences
+                         Experiences
                       </Link>
                     </MenubarItem>
-                    <MenubarItem>
+                    {/* <MenubarItem>
                       <Link
                       onClick={()=>setIsSheetOpen(false)}
                        className="flex items-center space-x-2" href="/dashboard/experience/f1-exp">
                         <SquareArrowOutUpRight className="w-4 h-4 mr-2" />
                       F1  Experiences
                       </Link>
+                    </MenubarItem> */}
+                    <MenubarItem>
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/event/normal-events">
+                        <CalendarClock className="w-4 h-4 mr-2" />
+                       Normal Events
+                      </Link>
                     </MenubarItem>
                     <MenubarItem>
                       <Link
                       onClick={()=>setIsSheetOpen(false)}
-                       className="flex items-center space-x-2" href="/dashboard/event/events">
+                       className="flex items-center space-x-2" href="/dashboard/event/year-events">
                         <CalendarClock className="w-4 h-4 mr-2" />
-                        Events
+                       Year Events
+                      </Link>
+                    </MenubarItem>
+                    <MenubarItem>
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/event/f1-events">
+                        <CalendarClock className="w-4 h-4 mr-2" />
+                       F1 Events
                       </Link>
                     </MenubarItem>
                     <Separator />
@@ -475,23 +491,39 @@ const Header = () => {
                       href="/dashboard/experience/regular-exp"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
-                      <SquareArrowOutUpRight className="w-4 h-4" /> <span>Regular Experiences</span>
+                      <SquareArrowOutUpRight className="w-4 h-4" /> <span>Experiences</span>
                     </Link>
-                    <Link
+                    {/* <Link
                       onClick={()=>setIsSheetOpen(false)}
 
                       href="/dashboard/experience/f1-exp"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <SquareArrowOutUpRight className="w-4 h-4" /> <span>F1 Experiences</span>
+                    </Link> */}
+                    <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
+                      href="/dashboard/event/normal-events"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
+                    >
+                      <CalendarClock className="w-4 h-4" /> <span>Normal Events</span>
                     </Link>
                     <Link
                       onClick={()=>setIsSheetOpen(false)}
 
-                      href="/dashboard/event/events"
+                      href="/dashboard/event/year-events"
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
-                      <CalendarClock className="w-4 h-4" /> <span>Events</span>
+                      <CalendarClock className="w-4 h-4" /> <span>Year Events</span>
+                    </Link>
+                    <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
+                      href="/dashboard/event/f1-events"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
+                    >
+                      <CalendarClock className="w-4 h-4" /> <span>F1 Events</span>
                     </Link>
                     <Separator />
                     <Link
