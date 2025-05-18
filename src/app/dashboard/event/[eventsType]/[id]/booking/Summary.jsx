@@ -280,7 +280,7 @@ const Summary = ({ onNext,eventData }) => {
                 <MapPin className="w-4 h-4" />
                 <span>{eventData?.location || 'Location not specified'}</span>
               </div>
-            </Card>
+            </Card> 
 
        
       <Table className="bg-[#F4F0E4] dark:bg-gray-800 w-full rounded-lg">
