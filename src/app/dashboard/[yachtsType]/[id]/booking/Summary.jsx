@@ -53,7 +53,7 @@ const Summary = ({ onNext, initialBookingId }) => {
   const [isPartialPayment, setIsPartialPayment] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { yachtsType } = useParams();
-  const bookingType = new URLSearchParams(window.location.search).get('bookingType');
+  const bookingType = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get('bookingType') : null;
   const [bookingCanCancel, setBookingCanCancel] = useState(false);
 
 

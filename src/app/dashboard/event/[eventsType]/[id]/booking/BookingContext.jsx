@@ -21,7 +21,8 @@ export const BookingProvider = ({ children, initialEventData }) => {
     termsAccepted: false,
     selectedPackage: null,
     tickets:0,
-    eventId:null
+    eventId:null,
+    bookingId:null
   });
 
   const updateBookingData = (newData) => {
@@ -35,8 +36,10 @@ export const BookingProvider = ({ children, initialEventData }) => {
     const totalTickets = bookingData.tickets;
     const featuresPrices = bookingData.selectedPackage.features?.reduce((total, feature) => 
       total + (feature.price || 0), 0) || 0;
+    const totalDaysPrice = Number(bookingData?.totalDaysPrice) || 0;
+
     
-    return (packagePrice + featuresPrices) * totalTickets;
+    return (packagePrice + featuresPrices) * totalTickets + totalDaysPrice;
   };
 
   // useEffect(()=>{

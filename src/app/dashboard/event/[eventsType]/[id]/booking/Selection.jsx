@@ -85,7 +85,9 @@ const Selection = ({ onNext,eventData }) => {
         selectedPackage: selectedPackage,
       duration: eventData?.duration_hour || 3,
         tickets:tickets,
-        eventId:eventData?.id
+        eventId:eventData?.id,
+        totalDaysPrice:eventData?.total_days_price
+
       });
     }
   }, [eventData,packageId,tickets])

@@ -13,6 +13,7 @@ import { findEventById } from '@/api/events';
 
 export default function BookingPage() {
   const { id } = useParams();
+  const bookingId = new URLSearchParams(window.location.search).get('bookingId');
   const router = useRouter();
   const { data: session, status } = useSession();
   const [eventData, setEventData] = useState(null);
@@ -88,5 +89,5 @@ export default function BookingPage() {
     return <div className="text-center text-red-500 p-4">{error}</div>;
   }
 
-  return <BookingWizard initialEventData={eventData} />;
+  return <BookingWizard initialEventData={eventData} initialBookingId={bookingId}  />;
 }
