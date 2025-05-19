@@ -37,17 +37,17 @@
 //     try {
 //       // Create initial booking
 //       const bookingPayload = {
-//         guest: bookingData.adults + bookingData.kids,
+//         guest: bookingData?.adults + bookingData?.kids,
 //         yacht: selectedYacht.yacht.id,
 //         user_id: session.user.userid,
-//         duration_hour: bookingData.duration,
-//         booking_date: bookingData.date,
-//         booking_time: bookingData.startTime,
-//         phone_number: bookingData.phone,
-//         country: bookingData.country,
-//         message: bookingData.notes,
-//         adults: bookingData.adults,
-//         kid_teen: bookingData.kids,
+//         duration_hour: bookingData?.duration,
+//         booking_date: bookingData?.date,
+//         booking_time: bookingData?.startTime,
+//         phone_number: bookingData?.phone,
+//         country: bookingData?.country,
+//         message: bookingData?.notes,
+//         adults: bookingData?.adults,
+//         kid_teen: bookingData?.kids,
 //       };
 
 //       const response = await yachtApi.createEventBooking(bookingPayload);
@@ -161,41 +161,47 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Copy, Mail, Phone, User, CheckCircle, MapPin, Check, Clipboard } from "lucide-react";
+import { Copy, Mail, Phone, User, CheckCircle, MapPin, Check, Clipboard, CheckCheck } from "lucide-react";
 import { useBookingContext } from "./BookingContext";
 import { useSession } from "next-auth/react";
 import yachtApi from "@/services/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { formatDate } from "@/helper/calculateDays";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import BookingGalleryEmbala from "@/components/lp/BookingGalleryEmbala";
+import { useParams } from "next/navigation";
+import { API_BASE_URL } from "@/lib/api";
 
-const Summary = ({ onNext,eventData }) => {
+const Summary = ({ onNext, eventData, initialBookingId }) => {
   const { bookingData } = useBookingContext();
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
-    const [eventDetails, setEventDetails] = useState(null);
-  
+  const [eventDetails, setEventDetails] = useState(null);
+  const bookingType = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get('bookingType') : null;
+  const [bookingCanCancel, setBookingCanCancel] = useState(false);
+  const { eventsType } = useParams();
+
 
   const calculateTotal = () => {
-    if (!bookingData.selectedPackage) return 0;
-    
-    const packagePrice = bookingData.selectedPackage.price || 0;
+    if (!bookingData?.selectedPackage) return 0;
+
+    const packagePrice = bookingData?.selectedPackage.price || 0;
     const totalGuests = bookingData?.tickets;
-    const featuresPrices = bookingData.selectedPackage.features?.reduce((total, feature) => 
+    const featuresPrices = bookingData?.selectedPackage.features?.reduce((total, feature) =>
       total + (feature.price || 0), 0) || 0;
+    const totalDaysPrice = Number(bookingData?.totalDaysPrice) || 0;
     
-    return (packagePrice + featuresPrices) * totalGuests;
+    return (packagePrice + featuresPrices) * totalGuests + totalDaysPrice;
   };
-  
-  
+
+
   const handleCopyLink = () => {
     const bookingId = eventDetails?.id;
-    const yachtId =  bookingData.yachtId;
-    const bookingLink = `${window.location.origin}/dashboard/${yachtsType}/${yachtId}/booking/?bookingId=${bookingId}`;
+    const yachtId = bookingData?.yachtId;
+    const bookingLink = `${window.location.origin}/dashboard/${eventsType}/${yachtId}/booking/?bookingId=${bookingId}`;
 
     navigator.clipboard.writeText(bookingLink).then(() => {
       setIsCopied(true); // Set copied state to true
@@ -216,7 +222,7 @@ const Summary = ({ onNext,eventData }) => {
   };
 
   const handleConfirm = async () => {
-    if (!bookingData.selectedPackage) {
+    if (!bookingData?.selectedPackage) {
       toast.error('Please select a package first');
       return;
     }
@@ -225,18 +231,18 @@ const Summary = ({ onNext,eventData }) => {
     // setLoading(true);
     // try {
     //   const bookingPayload = {
-    //     guest: bookingData.adults + bookingData.kids,
+    //     guest: bookingData?.adults + bookingData?.kids,
     //     event: eventData?.id,
-    //     package: bookingData.selectedPackage.id,
+    //     package: bookingData?.selectedPackage.id,
     //     user_id: session.user.userid,
-    //     duration_hour: bookingData.selectedPackage.duration_hour || 3,
-    //     booking_date: format(new Date(bookingData.date), 'yyyy-MM-dd'),
-    //     booking_time: format(new Date(bookingData.startTime), 'HH:mm:ss'),
-    //     phone_number: bookingData.phone,
-    //     country: bookingData.country,
-    //     message: bookingData.notes,
-    //     adults: bookingData.adults,
-    //     kid_teen: bookingData.kids,
+    //     duration_hour: bookingData?.selectedPackage.duration_hour || 3,
+    //     booking_date: format(new Date(bookingData?.date), 'yyyy-MM-dd'),
+    //     booking_time: format(new Date(bookingData?.startTime), 'HH:mm:ss'),
+    //     phone_number: bookingData?.phone,
+    //     country: bookingData?.country,
+    //     message: bookingData?.notes,
+    //     adults: bookingData?.adults,
+    //     kid_teen: bookingData?.kids,
     //     total_cost: calculateTotal(),
     //   };
 
@@ -255,98 +261,268 @@ const Summary = ({ onNext,eventData }) => {
     // }
   };
 
+  useEffect(() => {
+    const fetchBookingDetails = async () => {
+      try {
+        // Prioritize initialBookingId, then bookingId from context
+        //  console.log(initialBookingId , bookingData?.bookingId)
+        const currentBookingId = initialBookingId || bookingData?.bookingId;
+        //  console.log(currentBookingId)
+
+        if (!currentBookingId) {
+          console.log("yahn")
+          toast.error('No booking ID found. Please complete the booking process again.');
+          return;
+        }
+        const url = session?.user?.userid
+          ? `${API_BASE_URL}/yacht/event-booking-get/${currentBookingId}/?user_id=${session?.user?.userid}`
+          : `${API_BASE_URL}/yacht/event-booking-get/${currentBookingId}/`;
+
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch booking details');
+        }
+
+        const details = await response.json();
+
+        // Filter extras with quantities > 0
+        //  const activeExtras = details.extras_data.filter(extra => extra.quantity > 0);
+        setEventDetails(details?.booking);
+        //  setEditableExtras(details.extras_data || []);
+        //  setIsPartialPayment(details.is_partial_payment || false);
+        //  setBookingCanCancel(checkBookingCanCancel(bookingType, details))
+
+        // Update booking context with booking details
+        // updateBookingData({
+        //   bookingId: details.id,
+        //   qrCodeUrl: details.qr_code,
+        //   remainingCost: details.remaining_cost,
+        //   totalCost: details.total_cost,
+        //   paidCost: details.paid_cost,
+        //   extras: activeExtras
+        // });
+
+
+
+      } catch (error) {
+        console.error('Error fetching booking details:', error);
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookingDetails();
+  }, [initialBookingId, bookingData?.bookingId, bookingType]);
+
+
+
+  //test
+
+  // console.log("eventDetails",eventDetails)
+  // console.log("eventData", eventData)
+
+
+
 
   return (
     <div className="mx-auto max-w-5xl px-2 space-y-6">
       {/* Package Summary */}
 
-          <Card className="p-4">
-              <div className="relative w-full h-48 mb-4">
-                <Image
-                  src={eventData?.event_image
-                    ? `${process.env.NEXT_PUBLIC_S3_URL}${eventData?.event_image}`
-                    : '/assets/images/Imagenotavailable.png'
-                }
-                  alt={eventData?.name}
-                  fill
-                  className="object-cover rounded-lg"
-                  onError={(e) => {
-                    e.target.src = '/assets/images/Imagenotavailable.png'
-                }}
-                />
-              </div>
-              <h2 className="text-xl font-semibold mb-2">{eventData?.name}</h2>
-              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-2">
-                <MapPin className="w-4 h-4" />
-                <span>{eventData?.location || 'Location not specified'}</span>
-              </div>
-            </Card> 
+      <Card className="p-4">
+        <div className="relative w-full h-48 mb-4">
+          <Image
+            src={eventData?.event_image
+              ? `${process.env.NEXT_PUBLIC_S3_URL}${eventData?.event_image}`
+              : '/assets/images/Imagenotavailable.png'
+            }
+            alt={eventData?.name}
+            fill
+            className="object-cover rounded-lg"
+            onError={(e) => {
+              e.target.src = '/assets/images/Imagenotavailable.png'
+            }}
+          />
+        </div>
+        <h2 className="text-xl font-semibold mb-2">{eventData?.name}</h2>
+        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-2">
+          <MapPin className="w-4 h-4" />
+          <span>{eventData?.location || 'Location not specified'}</span>
+        </div>
+      </Card>
 
-       
+      {bookingData?.bookingId ? <>
+
+        <Table className="bg-[#F4F0E4] dark:bg-gray-800 w-full rounded-lg">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="font-semibold text-md text-black dark:text-white">
+        Package Summary
+      </TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody className="bg-white dark:bg-gray-800 text-xs">
+    <TableRow>
+      <TableCell className="font-semibold">Booking Slot</TableCell>
+      <TableCell className="font-medium">
+        {formatDate(eventDetails?.event_dates?.start_date)} - {formatDate(eventDetails?.event_dates?.end_date)}
+      </TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="font-semibold">Selected Package</TableCell>
+      <TableCell className="font-medium">
+        {eventDetails?.package_type || 'No package selected'}
+      </TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="font-semibold">Package Price</TableCell>
+      <TableCell className="font-medium">
+        AED {eventDetails?.package_price || 0}/ticket
+      </TableCell>
+    </TableRow>
+    {/* <TableRow>
+      <TableCell className="font-semibold">Duration</TableCell>
+      <TableCell className="font-medium">
+        {eventDetails?.total_event_days || 1} day(s)
+      </TableCell>
+    </TableRow> */}
+    <TableRow>
+      <TableCell className="font-semibold">Total Tickets</TableCell>
+      <TableCell className="font-medium">
+        {eventDetails?.tickets_quantity} ticket(s)
+      </TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="font-semibold">Total Amount</TableCell>
+      <TableCell className="font-medium">
+        AED {eventDetails?.total_cost}
+      </TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+
+<Table className="bg-[#F4F0E4] dark:bg-gray-800 w-full rounded-lg">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="font-semibold text-md text-black dark:text-white">
+        Your Contact Details
+      </TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody className="bg-white dark:bg-gray-700 text-xs">
+    <TableRow>
+      <TableCell className="font-medium flex items-center gap-2">
+        <User className="w-4 h-4" /> {eventDetails?.name}
+      </TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="font-medium flex items-center gap-2">
+        <Phone className="w-4 h-4" /> {eventDetails?.phone_number}
+      </TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="font-medium flex items-center gap-2">
+        <Mail className="w-4 h-4" /> {eventDetails?.email}
+      </TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+{(eventDetails && (eventDetails.payment_status === "True" || eventDetails.payment_status === true)) && (
+  <div className="flex items-center justify-between bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md mb-4">
+    <div className="flex items-center">
+      <CheckCheck className="w-6 h-6 mr-2" />
+      <div>
+        <strong className="font-bold">Thank You!</strong>
+        <span className="block sm:inline"> Your payment has been successfully received. We appreciate your business!</span>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+   
+      </> :
+      <>
+      
       <Table className="bg-[#F4F0E4] dark:bg-gray-800 w-full rounded-lg">
-        <TableHeader>
-          <TableRow>
-            <TableHead className="font-semibold text-md text-black dark:text-white">
-              Package Summary
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody className="bg-white dark:bg-gray-800 text-xs">
-        <TableRow>
-            <TableCell className="font-semibold">Booking Slot</TableCell>
-            <TableCell className="font-medium">
-           {formatDate(eventData?.from_date)} - {formatDate(eventData?.to_date)}
-
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-semibold">Selected Package</TableCell>
-            <TableCell className="font-medium">
-           {bookingData.selectedPackage?.package_type || 'No package selected'}
-
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-semibold">Package Price</TableCell>
-            <TableCell className="font-medium">
-              AED {bookingData.selectedPackage?.price || 0}/ticket
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-semibold">Duration</TableCell>
-            <TableCell className="font-medium">
-              {bookingData?.duration || 3} hours
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-semibold">Total Tickets</TableCell>
-            <TableCell className="font-medium">
-              {bookingData.tickets} tickets
-            </TableCell>
-          </TableRow>
-          {bookingData.selectedPackage?.features?.length > 0 && (
+          <TableHeader>
             <TableRow>
-              <TableCell className="font-semibold" colSpan={2}>
-                <p className="mb-2">Included Features:</p>
-                <ul className="space-y-1">
-                  {bookingData.selectedPackage.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      {feature.name} (${feature.price})
-                    </li>
-                  ))}
-                </ul>
+              <TableHead className="font-semibold text-md text-black dark:text-white">
+                Package Summary
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white dark:bg-gray-800 text-xs">
+            <TableRow>
+              <TableCell className="font-semibold">Booking Slot</TableCell>
+              <TableCell className="font-medium">
+                {formatDate(eventData?.from_date)} - {formatDate(eventData?.to_date)}
+
               </TableCell>
             </TableRow>
-          )}
-          <TableRow>
-            <TableCell className="font-semibold">Total Amount</TableCell>
-            <TableCell className="font-medium">AED {calculateTotal()}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+            <TableRow>
+              <TableCell className="font-semibold">Selected Package</TableCell>
+              <TableCell className="font-medium">
+                {bookingData?.selectedPackage?.package_type || 'No package selected'}
 
-      {/* Contact Details */}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-semibold">Package Price</TableCell>
+              <TableCell className="font-medium">
+                AED {bookingData?.selectedPackage?.price || 0}/ticket
+              </TableCell>
+            </TableRow>
+            {/* <TableRow>
+              <TableCell className="font-semibold">Duration</TableCell>
+              <TableCell className="font-medium">
+                {bookingData?.duration || 3} hours
+              </TableCell>
+            </TableRow> */}
+            <TableRow>
+              <TableCell className="font-semibold">Total Tickets</TableCell>
+              <TableCell className="font-medium">
+                {bookingData?.tickets} tickets
+              </TableCell>
+            </TableRow>
+            {bookingData?.selectedPackage?.features?.length > 0 && (
+              <TableRow>
+                <TableCell className="font-semibold" colSpan={2}>
+                  <p className="mb-2">Included Features:</p>
+                  <ul className="space-y-1">
+                    {bookingData?.selectedPackage.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                        {feature.name} (${feature.price})
+                      </li>
+                    ))}
+                  </ul>
+                </TableCell>
+              </TableRow>
+            )}
+            <TableRow>
+              <TableCell className="font-semibold">Total Amount</TableCell>
+              <TableCell className="font-medium">AED {calculateTotal()}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+
+{/* Contact Details */}
       <Table className="bg-[#F4F0E4] dark:bg-gray-800 w-full rounded-lg">
         <TableHeader>
           <TableRow>
@@ -372,56 +548,61 @@ const Summary = ({ onNext,eventData }) => {
             </TableCell>
           </TableRow>
           {/* <TableRow>
-              <TableCell className="font-semibold">Your Booking Link:</TableCell>
-              <TableCell className="font-medium">
-                <div className="flex items-center">
-                  <span
-                    className="text-blue-500 cursor-pointer"
-                    onClick={handleCopyLink}
-                  >
-                    {isCopied ? <Check className="h-5 w-5" /> : <Clipboard className="h-5 w-5" />}
-                  </span>
-                  <span  onClick={handleCopyLink} className="ml-2 text-gray-500 cursor-pointer">{isCopied ? "Copied!" : "(Click to copy)"}</span>
-                </div>
-              </TableCell>
-            </TableRow> */}
+      <TableCell className="font-semibold">Your Booking Link:</TableCell>
+      <TableCell className="font-medium">
+        <div className="flex items-center">
+          <span
+            className="text-blue-500 cursor-pointer"
+            onClick={handleCopyLink}
+          >
+            {isCopied ? <Check className="h-5 w-5" /> : <Clipboard className="h-5 w-5" />}
+          </span>
+          <span  onClick={handleCopyLink} className="ml-2 text-gray-500 cursor-pointer">{isCopied ? "Copied!" : "(Click to copy)"}</span>
+        </div>
+      </TableCell>
+    </TableRow> */}
         </TableBody>
       </Table>
 
       {/* Booking Link */}
       {/* <div className="bg-[#F4F0E4] w-full rounded-t-lg p-3">
-        <p className="text-sm font-semibold">Your Unique booking link</p>
+<p className="text-sm font-semibold">Your Unique booking link</p>
+</div>
+<div className="bg-[#EFF2FF] flex justify-center items-center w-full border-dashed border-2 border-[#1D74FF] p-2">
+<Button
+  variant="link"
+  className="underline text-xs font-medium text-[#1D74FF]"
+>
+  https://yacht.com/booking/{eventData?.event?.id || ''} <Copy />
+</Button>
+</div> */}
+
+      {/* {eventDetails && eventDetails?.total_cost === eventDetails?.paid_cost && (
+  <div className="flex items-center justify-between bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md mb-4">
+    <div className="flex items-center">
+      <CheckCheck className="w-6 h-6 mr-2" />
+      <div>
+        <strong className="font-bold">Thank You!</strong>
+        <span className="block sm:inline"> Your payment has been successfully received. We appreciate your business!</span>
       </div>
-      <div className="bg-[#EFF2FF] flex justify-center items-center w-full border-dashed border-2 border-[#1D74FF] p-2">
-        <Button
-          variant="link"
-          className="underline text-xs font-medium text-[#1D74FF]"
-        >
-          https://yacht.com/booking/{eventData?.event?.id || ''} <Copy />
-        </Button>
-      </div> */}
+    </div>
 
-{/* {eventDetails && eventDetails?.total_cost === eventDetails?.paid_cost && (
-          <div className="flex items-center justify-between bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md mb-4">
-            <div className="flex items-center">
-              <CheckCheck className="w-6 h-6 mr-2" />
-              <div>
-                <strong className="font-bold">Thank You!</strong>
-                <span className="block sm:inline"> Your payment has been successfully received. We appreciate your business!</span>
-              </div>
-            </div>
-
-          </div>
-        )}
+  </div>
+)}
 {!(eventDetails && eventDetails?.total_cost === eventDetails?.paid_cost) &&      } */}
 
-<Button 
+      <Button
         onClick={handleConfirm}
-        disabled={loading || !bookingData.selectedPackage}
+        disabled={loading || !bookingData?.selectedPackage}
         className="rounded-full bg-[#BEA355] w-full text-white"
       >
         {loading ? 'Processing...' : 'Continue to Payment'}
       </Button>
+      </>
+
+}
+
+
 
     </div>
   );
