@@ -37,8 +37,8 @@ const AllBookings = () => {
         // Fetch bookings from multiple endpoints
         const [yachtResponse,experienceResponse,f1yachtResponse, eventResponse] = await Promise.all([
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}?BookingType=regular`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_exp_booking/1/?BookingType=duration`)
-          // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}/?BookingType=f1yachts`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_exp_booking/1/?BookingType=duration`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}?BookingType=f1yachts`),
           // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_event_booking/${userId}`),
           // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_exp_booking/1/?BookingType=date_range`)
 
@@ -48,19 +48,20 @@ const AllBookings = () => {
         // if (!yachtResponse.ok || !eventResponse.ok || !experienceResponse.ok) {
         //   throw new Error('Failed to fetch bookings');
         // }
-        if (!yachtResponse.ok || !experienceResponse.ok) {
-          // throw new Error('Failed to fetch bookings');
+        if (!yachtResponse.ok || !experienceResponse.ok || !f1yachtResponse.ok) {
+          throw new Error('Failed to fetch bookings');
         }
 
         const [yachtData,experienceData, f1yachtData, eventData] = await Promise.all([
           yachtResponse.json(),
-          experienceResponse.json()
-          // f1yachtResponse.json(),
+          experienceResponse.json(),
+          f1yachtResponse.json(),
           // eventResponse.json(),
         ]);
 
         // console.log("yach",yachtData)
         // console.log("experienceData",experienceData)
+        // console.log("f1yachtData",f1yachtData)
 
         // Process yacht bookings
         const yachtBookings = yachtData.data ? yachtData.data.map(item => ({
@@ -112,17 +113,40 @@ const AllBookings = () => {
         const allBookings = [...yachtBookings,...f1yachtBookings, ...eventBookings,...experienceBookings];
 
         // Categorize bookings based on date
+        // ?.filter(booking => booking?.type === "f1yachts")
+
         const processedBookings = allBookings
+        // ?.filter(booking => booking?.type === "f1yachts")
+
         ?.map(booking => {
-          const selectedDate = new Date(booking.selected_date);
           const today = new Date();
+      
+          // Use end_date for f1yachts, otherwise selected_date
+          const selectedDate = new Date(
+            booking.type === "f1yachts" ? booking.start_date : booking.selected_date
+          );
       
           return {
             ...booking,
             daysLeft: Math.ceil((selectedDate - today) / (1000 * 60 * 60 * 24))
           };
         })
-        .sort((a, b) => new Date(a.selected_date) - new Date(b.selected_date)); // Ascending sort
+        .sort((a, b) => {
+          const dateA =
+            a.type === "f1yachts"
+              ? new Date(a.start_date)
+              : new Date(a.selected_date);
+          const dateB =
+            b.type === "f1yachts"
+              ? new Date(b.start_date)
+              : new Date(b.selected_date);
+      
+          return dateA - dateB; // Ascending sort
+        });
+      
+
+        // let filterData = processedBookings.filter((booking)=>booking?.type=="f1yachts")
+        // console.log(filterData)
       
       setBookings(processedBookings);
       } catch (error) {

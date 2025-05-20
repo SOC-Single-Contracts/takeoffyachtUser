@@ -33,7 +33,29 @@ export const classifyBookings = (bookings = []) => {
 //  console.log("not cancel bookings=>",bookings.filter((booking) => booking?.cancel === false))
 
     bookings.forEach((booking, index) => {
-        
+
+      if(booking?.type == "f1yachts"){
+        if (!booking?.end_date) {
+          console.error(`Missing or invalid end_date in booking at index ${booking?.id}:`, booking);
+          return;
+        }
+      
+        let bookingDate;
+        try {
+          bookingDate = startOfDay(parseISO(booking.end_date));
+        } catch (err) {
+          console.error(`Error parsing end_date "${booking.end_date}" at index ${index}`, err);
+          return;
+        }
+      
+        if (booking.cancel) {
+          cancel.push(booking);
+        } else if (isAfter(bookingDate, today) || isEqual(bookingDate, today)) {
+          upcoming.push(booking);
+        } else {
+          past.push(booking);
+        }
+      }else{
         if (!booking?.selected_date) {
           console.error(`Missing or invalid selected_date in booking at index ${booking?.id}:`, booking);
           return;
@@ -54,6 +76,9 @@ export const classifyBookings = (bookings = []) => {
         } else {
           past.push(booking);
         }
+      }
+        
+     
       });
   
     return { upcoming, past, cancel };

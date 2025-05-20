@@ -60,7 +60,7 @@ const Summary = ({ onNext, initialBookingId }) => {
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
-      console.log(experienceType)
+      // console.log(experienceType)
       try {
         if (experienceType == "regular-exp") {
           // Prioritize initialBookingId, then bookingId from context
@@ -87,7 +87,7 @@ const Summary = ({ onNext, initialBookingId }) => {
           }
 
           const details = await response.json();
-          console.log(details)
+          // console.log(details)
 
 
           // Filter extras with quantities > 0
