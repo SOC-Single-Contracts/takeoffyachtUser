@@ -35,29 +35,32 @@ const AllBookings = () => {
     const fetchBookings = async () => {
       try {
         // Fetch bookings from multiple endpoints
-        const [yachtResponse,f1yachtResponse, eventResponse, experienceResponse] = await Promise.all([
+        const [yachtResponse,experienceResponse,f1yachtResponse, eventResponse] = await Promise.all([
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}?BookingType=regular`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_exp_booking/1/?BookingType=duration`)
           // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}/?BookingType=f1yachts`),
           // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_event_booking/${userId}`),
-          // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_experience_booking/${userId}`)
+          // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_exp_booking/1/?BookingType=date_range`)
+
         ]);
 
         // Check responses
         // if (!yachtResponse.ok || !eventResponse.ok || !experienceResponse.ok) {
         //   throw new Error('Failed to fetch bookings');
         // }
-        if (!yachtResponse.ok) {
+        if (!yachtResponse.ok || !experienceResponse.ok) {
           // throw new Error('Failed to fetch bookings');
         }
 
-        const [yachtData, f1yachtData, eventData, experienceData] = await Promise.all([
+        const [yachtData,experienceData, f1yachtData, eventData] = await Promise.all([
           yachtResponse.json(),
+          experienceResponse.json()
           // f1yachtResponse.json(),
           // eventResponse.json(),
-          // experienceResponse.json()
         ]);
 
         // console.log("yach",yachtData)
+        // console.log("experienceData",experienceData)
 
         // Process yacht bookings
         const yachtBookings = yachtData.data ? yachtData.data.map(item => ({
@@ -95,32 +98,33 @@ const AllBookings = () => {
 
         // Process experience bookings
         const experienceBookings = experienceData?.data ? experienceData?.data.map(item => ({
-          ...item,
-          experience: item.experience,
-          type: 'experience',
-          name: item.experience?.name,
-          image: '', // No image in the current data
-          location: item.experience?.location,
-          selected_date: item.selected_date,
-          duration_hour: item.duration_hour
+          ...item.booking[0],
+          yacht: item?.experience[0],
+          type: 'regular-exp',
+          name: item?.experience[0]?.name,
+          image: item?.experience[0]?.experience_image,
+          location: item?.experience[0]?.location
         })) : [];
 
+        // console.log(experienceBookings)
+
         // Combine all bookings
-        const allBookings = [...yachtBookings,...f1yachtBookings, ...eventBookings, ...experienceBookings];
+        const allBookings = [...yachtBookings,...f1yachtBookings, ...eventBookings,...experienceBookings];
 
         // Categorize bookings based on date
-        const processedBookings = allBookings?.map(booking => {
+        const processedBookings = allBookings
+        ?.map(booking => {
           const selectedDate = new Date(booking.selected_date);
           const today = new Date();
-          
+      
           return {
             ...booking,
-            // cancel: selectedDate < today, // Past bookings
-            daysLeft: Math.ceil((selectedDate - today) / (1000 * 60 * 60 * 24)) // Calculate days left
+            daysLeft: Math.ceil((selectedDate - today) / (1000 * 60 * 60 * 24))
           };
-        });
-
-        setBookings(processedBookings);
+        })
+        .sort((a, b) => new Date(a.selected_date) - new Date(b.selected_date)); // Ascending sort
+      
+      setBookings(processedBookings);
       } catch (error) {
         console.error('Error fetching bookings:', error);
         setError(error);
