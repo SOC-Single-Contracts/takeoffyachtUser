@@ -41,7 +41,7 @@ const EmptyEventState = ({ onRetry }) => {
             <RefreshCw className="mr-2 w-4 h-4" />
             Retry Loading
           </Button>
-          <Link href="/dashboard/event/normal-events">
+          <Link href="/dashboard/event/all">
             <Button 
               variant="outline" 
               className="rounded-full border-[#BEA355] text-[#BEA355] hover:bg-[#BEA355]/10"
@@ -138,7 +138,7 @@ const Events = ({ limit = 4 }) => {
   return (
     <section className="py-8 px-2">
       <div className="max-w-5xl mx-auto">
-        <h1 className="md:text-4xl text-[32px] font-semibold text-start"> Normal Events</h1>
+        <h1 className="md:text-4xl text-[32px] font-semibold text-start">Events</h1>
         {/* grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[0.6rem]  place-items-center my-8 */}
         
         <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
@@ -170,7 +170,7 @@ const Events = ({ limit = 4 }) => {
                     }}
                     />
 
-                  <Link href={`/dashboard/event/normal-events/${event?.id}`}>
+                  <Link href={`/dashboard/event/all/${event?.id}`}>
                     <p className="absolute inset-0 z-10"></p>
                   </Link>
 
@@ -195,7 +195,7 @@ const Events = ({ limit = 4 }) => {
             );
           })}
         </div>
-        {!id &&     <Link href="/dashboard/event/normal-events">
+        {!id &&     <Link href="/dashboard/event/all">
         <Button variant="outline" className="text-black hover:underline font-semibold uppercase md:text-[16px] hover:shadow-2xl transition duration-500 ease-in-out dark:text-white text-[12px] rounded-full flex items-center group">
             See All
             <svg
@@ -214,9 +214,8 @@ const Events = ({ limit = 4 }) => {
         </Link>}
     
       </div>
-      <div className="max-w-5xl mx-auto mt-7">
+      {/* <div className="max-w-5xl mx-auto mt-7">
         <h1 className="md:text-4xl text-[32px] font-semibold text-start">Formula One Events</h1>
-        {/* grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[0.6rem]  place-items-center my-8 */}
         
         <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {eventsToDisplay.map((item) => {
@@ -231,7 +230,6 @@ const Events = ({ limit = 4 }) => {
                 className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[298px]] h-full h-full md:min-h-[270px] min-h-[290px]"
               >
                 <div className="relative">
-                {/* <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" /> */}
                 <Image
                      src={event.event_image
                       ? `${process.env.NEXT_PUBLIC_S3_URL}${event.event_image}`
@@ -290,10 +288,9 @@ const Events = ({ limit = 4 }) => {
           </Button>
         </Link>}
     
-      </div>
-      <div className="max-w-5xl mx-auto mt-7">
+      </div> */}
+      {/* <div className="max-w-5xl mx-auto mt-7">
         <h1 className="md:text-4xl text-[32px] font-semibold text-start"> Year Events</h1>
-        {/* grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[0.6rem]  place-items-center my-8 */}
         
         <div className="grid grid-cols-1 gap-4 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 place-items-center my-8">
           {eventsToDisplay.map((item) => {
@@ -308,7 +305,6 @@ const Events = ({ limit = 4 }) => {
                 className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full md:max-w-[298px]] h-full h-full md:min-h-[270px] min-h-[290px]"
               >
                 <div className="relative">
-                {/* <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" /> */}
                 <Image
                      src={event.event_image
                       ? `${process.env.NEXT_PUBLIC_S3_URL}${event.event_image}`
@@ -367,7 +363,7 @@ const Events = ({ limit = 4 }) => {
           </Button>
         </Link>}
     
-      </div>
+      </div> */}
     </section>
   );
 };

@@ -399,7 +399,7 @@ const Payment = () => {
             <div className='border-t dark:border-gray-700 pt-3 mt-2'>
               <div className='flex justify-between font-semibold'>
                 <span>Total Amount</span>
-                <span>AED {calculateTotal()}</span>
+                <span>AED {calculateTotal().toFixed(2)}</span>
               </div>
               {bookingData?.isPartialPayment && (
                 <div className='flex justify-between text-blue-600 font-semibold mt-2'>
