@@ -305,7 +305,15 @@ const Header = () => {
                       F1  Experiences
                       </Link>
                     </MenubarItem> */}
-                    <MenubarItem>
+                       <MenubarItem>
+                      <Link
+                      onClick={()=>setIsSheetOpen(false)}
+                       className="flex items-center space-x-2" href="/dashboard/event/all">
+                        <CalendarClock className="w-4 h-4 mr-2" />
+                       Events
+                      </Link>
+                    </MenubarItem>
+                    {/* <MenubarItem>
                       <Link
                       onClick={()=>setIsSheetOpen(false)}
                        className="flex items-center space-x-2" href="/dashboard/event/normal-events">
@@ -328,7 +336,7 @@ const Header = () => {
                         <CalendarClock className="w-4 h-4 mr-2" />
                        F1 Events
                       </Link>
-                    </MenubarItem>
+                    </MenubarItem> */}
                     <Separator />
                     <MenubarItem>
                       <Link
@@ -501,7 +509,15 @@ const Header = () => {
                     >
                       <SquareArrowOutUpRight className="w-4 h-4" /> <span>F1 Experiences</span>
                     </Link> */}
-                    <Link
+                             <Link
+                      onClick={()=>setIsSheetOpen(false)}
+
+                      href="/dashboard/event/all"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
+                    >
+                      <CalendarClock className="w-4 h-4" /> <span>Events</span>
+                    </Link>
+                    {/* <Link
                       onClick={()=>setIsSheetOpen(false)}
 
                       href="/dashboard/event/normal-events"
@@ -524,7 +540,7 @@ const Header = () => {
                       className="flex items-center space-x-2 text-gray-700 hover:text-black dark:text-gray-300"
                     >
                       <CalendarClock className="w-4 h-4" /> <span>F1 Events</span>
-                    </Link>
+                    </Link> */}
                     <Separator />
                     <Link
                       onClick={()=>setIsSheetOpen(false)}

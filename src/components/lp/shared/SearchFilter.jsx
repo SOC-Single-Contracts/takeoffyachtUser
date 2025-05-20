@@ -243,7 +243,7 @@ const SearchFilter = () => {
 
           };
           searchResults = await yachtApi.checkEvents(eventParams);
-          searchPath = `/dashboard/event/${eventsType == "f1-events" ? "f1-events" : "normal-events"}/search`;
+          searchPath = `/dashboard/event/${eventsType == "f1-events" ? "f1-events" : "all"}/search`;
 
           break;
       }

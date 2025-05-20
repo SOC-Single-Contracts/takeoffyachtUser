@@ -178,7 +178,7 @@ const Selection = ({ onNext,eventData }) => {
       <div className="grid grid-cols-2 gap-8">
         <div className="space-y-6">
 
-            {eventsType == "normal-events" ? <div className="flex flex-col space-y-2">
+            {eventsType == "all" ? <div className="flex flex-col space-y-2">
                         <Label className="text-sm font-medium">
                           <span className='text-red-5'> Event Booking Slot:</span>
                         </Label>

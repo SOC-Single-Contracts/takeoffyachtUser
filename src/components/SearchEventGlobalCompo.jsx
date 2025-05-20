@@ -55,8 +55,8 @@ const SearchEventGlobalCompo = () => {
   const [totalEvents, settotalEvents] = useState(0);
   const [paginateEvents, setpaginateEvents] = useState(0);
   const [componentType, setcomponentType] = useState("simpleEvent")
-  const [searchPath, setSearchPath] = useState(`/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}`)
-  const targetPath = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}/search`;
+  const [searchPath, setSearchPath] = useState(`/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}`)
+  const targetPath = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}/search`;
 
   const [mapBox, setMapBox] = useState(false)
   const [validMarkers, setValidMarkers] = useState([])
@@ -391,6 +391,7 @@ const SearchEventGlobalCompo = () => {
       // max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
       date_filter: searchParams.get('eventOrder'),
+      event_type:searchParams.get('eventType'),
       month: searchParams.get('eventMonth'),
       search: searchParams.get('name') || "",
       // created_on: searchParams.get('date') || "",
@@ -402,7 +403,7 @@ const SearchEventGlobalCompo = () => {
       //     min_per_hour: parseInt(searchParams.get('min_price')) || "",
       //     max_per_hour: parseInt(searchParams.get('max_price')) || "",
       //   }
-      //   : eventsType == "year-events" ? "year-events" : eventsType === "f1-events"
+      //   : eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType === "f1-events"
       //     ? {
       //       min_per_day: parseInt(searchParams.get('min_price')) || "",
       //       max_per_day: parseInt(searchParams.get('max_price')) || "",
@@ -432,7 +433,6 @@ const SearchEventGlobalCompo = () => {
       ...payload,
       source: componentType == "searchEvent" ? "searchEvent" : componentType == "simpleEvent" ? "simpleEvent" : "",
       reqType: "handlePagination",
-      event_type: eventsType == "year-events" ? "YEAR" : eventsType == "f1-events" ? "F1" : "NORMAL",
       user_id: userId,
       page: page
     };
@@ -491,7 +491,6 @@ const SearchEventGlobalCompo = () => {
     let payloadHardReset = {
       source: componentType == "searchEvent" ? "searchEvent" : componentType == "simpleEvent" ? "simpleEvent" : "",
       reqType: "handleResetAll",
-      event_type: eventsType == "year-events" ? "YEAR" : eventsType == "f1-events" ? "F1" : "NORMAL",
       user_id: userId,
       page: 1,
     };
@@ -574,6 +573,7 @@ const SearchEventGlobalCompo = () => {
       // max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
       date_filter: searchParams.get('eventOrder'),
+      event_type: searchParams.get('eventType'),
       month: searchParams.get('eventMonth'),
       search: searchParams.get('name') || "",
       // created_on: searchParams.get('date') || "",
@@ -585,7 +585,7 @@ const SearchEventGlobalCompo = () => {
       //     min_per_hour: parseInt(searchParams.get('min_price')) || "",
       //     max_per_hour: parseInt(searchParams.get('max_price')) || "",
       //   }
-      //   : eventsType == "year-events" ? "year-events" : eventsType === "f1-events"
+      //   : eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType === "f1-events"
       //     ? {
       //       min_per_day: parseInt(searchParams.get('min_price')) || "",
       //       max_per_day: parseInt(searchParams.get('max_price')) || "",
@@ -616,14 +616,13 @@ const SearchEventGlobalCompo = () => {
       page: 1,
       source: componentType == "searchEvent" ? "searchEvent" : componentType == "simpleEvent" ? "simpleEvent" : "",
       reqType: "handleFilterChange",
-      event_type: eventsType == "year-events" ? "YEAR" : eventsType == "f1-events" ? "F1" : "NORMAL",
       user_id: userId,
       // ...(eventsType === "normal-events"
       //   ? {
       //     min_per_hour: filters?.min_price?.toString() || "",
       //     max_per_hour: filters?.max_price?.toString() || "",
       //   }
-      //   : eventsType == "year-events" ? "year-events" : eventsType === "f1-events"
+      //   : eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType === "f1-events"
       //     ? {
       //       min_per_day: filters?.min_price?.toString() || "",
       //       max_per_day: filters?.max_price?.toString() || "",
@@ -651,6 +650,7 @@ const SearchEventGlobalCompo = () => {
       // created_on: filters?.created_on || "",
       location: filters?.location || "",
       date_filter: filters?.eventOrder,
+      event_type: filters?.eventType,
       month: filters?.eventMonth,
       // min_length: filters?.min_length || "",
       // max_length: filters?.max_length || "",
@@ -895,11 +895,11 @@ const SearchEventGlobalCompo = () => {
   useEffect(() => {
     // console.log(currentPath,"=>",targetPath)
     if (currentPath === targetPath) {
-      let value = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}/search`;
+      let value = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}/search`;
       setSearchPath(value)
       setcomponentType("searchEvent")
     } else {
-      let value = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}`;
+      let value = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}`;
       setSearchPath(value)
       setcomponentType("simpleEvent")
 
@@ -1031,15 +1031,15 @@ const SearchEventGlobalCompo = () => {
     <section className="py-4 px-2">
       <div className="max-w-5xl mx-auto">
         {/* {componentType == "searchEvent" ? <h1 className="text-2xl font-semibold mb-6">
-          Listing ({events.length}) {eventsType == "year-events" ? "year-events" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal-Events" : ""}
+          Listing ({events.length}) {eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal-Events" : ""}
         </h1> : componentType == "simpleEvent" ? <h1 className="text-2xl font-semibold mb-6">
-          Listing ({totalEvents}) {eventsType == "year-events" ? "year-events" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal-Events" : ""}
+          Listing ({totalEvents}) {eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal-Events" : ""}
         </h1> : ""} */}
 
         {activeFilters.length > 0 ? <h1 className="text-2xl font-semibold mb-6">
-          Search Results ({paginateEvents ? paginateEvents : 0}) {eventsType == "year-events" ? "year events" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal Events" : ""}
+          Search Results ({paginateEvents ? paginateEvents : 0}) {eventsType == "year-events" ? "year events" : eventsType == "all" ? "" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal Events" : ""}
         </h1> : <h1 className="text-2xl font-semibold mb-6">
-          Listing ({totalEvents}) {eventsType == "year-events" ? "year events" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal Events" : ""}
+          Listing ({totalEvents}) {eventsType == "year-events" ? "year events" : eventsType == "all" ? "" : eventsType === "f1-events" ? "f1 events" : eventsType === "normal-events" ? "normal Events" : ""}
         </h1>}
 
         <h1 className="md:text-4xl text-3xl font-bold mb-6">Our Events</h1>
@@ -1131,7 +1131,7 @@ const SearchEventGlobalCompo = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      {/* <div className="space-y-2">
+                      <div className="space-y-2">
                         <Label className="text-base">Event Type</Label>
                         <Select
                           value={filters.eventType}
@@ -1148,7 +1148,7 @@ const SearchEventGlobalCompo = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                      </div> */}
+                      </div>
 
                       <div className="space-y-2">
                         <Label className="text-base">Event Order</Label>
@@ -1190,7 +1190,7 @@ const SearchEventGlobalCompo = () => {
 
 
                       {/* <div className="space-y-2">
-                                              <Label className="text-sm"> {eventsType == "normal-events" ? "Min Available Packages " : eventsType == "year-events" ? "year-events" : "f1-events" ? "Min Available Packages" : ""}</Label>
+                                              <Label className="text-sm"> {eventsType == "normal-events" ? "Min Available Packages " : eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : "f1-events" ? "Min Available Packages" : ""}</Label>
                                               <div className="flex gap-4">
                                                 <div className="flex-1">
                                                   <Input
