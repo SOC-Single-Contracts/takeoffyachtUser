@@ -31,6 +31,7 @@ const BookingSkeleton = () => {
 };
 
 const BookingCard = ({ booking,bookingType }) => {
+  // console.log("booking",booking)
   const getDisplayDate = (booking) => {
     const date = booking.from_date || booking.selected_date;
     if (!date) return 'Date not available';
@@ -240,7 +241,18 @@ const BookingCard = ({ booking,bookingType }) => {
        >
          Booking Summary
        </Button>
-     </Link>
+     </Link> : booking?.type == "f1yachts" ? <Link 
+        href={`/dashboard/f1yachts/${id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
+        className="mt-4 block"
+      >
+        <Button
+          variant="outline"
+          className="w-full py-3 rounded-full border-2 border-black dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          Booking Summary
+          
+        </Button>
+      </Link>
         : <Link 
         href={`/dashboard/${type}/${id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
         className="mt-4 block"
@@ -250,6 +262,7 @@ const BookingCard = ({ booking,bookingType }) => {
           className="w-full py-3 rounded-full border-2 border-black dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           Booking Summary
+          
         </Button>
       </Link>}
 
