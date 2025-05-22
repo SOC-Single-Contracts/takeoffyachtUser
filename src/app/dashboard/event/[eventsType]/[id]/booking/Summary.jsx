@@ -275,7 +275,7 @@ const Summary = ({ onNext, eventData, initialBookingId }) => {
           return;
         }
         const url = session?.user?.userid
-          ? `${API_BASE_URL}/yacht/event-booking-get/${currentBookingId}/?user_id=${session?.user?.userid}`
+          ? `${API_BASE_URL}/yacht/event-booking-get/${currentBookingId}/`
           : `${API_BASE_URL}/yacht/event-booking-get/${currentBookingId}/`;
 
         const response = await fetch(url, {
