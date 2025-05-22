@@ -516,7 +516,7 @@ const EventDetail = () => {
       <section className="px-2 pb-10">
         <Events />
         <div className="flex justify-center">
-          <Link href="/dashboard/event/normal-events">
+          <Link href="/dashboard/event/all">
             <Button className="rounded-full bg-[#BEA355] text-white flex justify-center mx-auto">
               View All Events
             </Button>
