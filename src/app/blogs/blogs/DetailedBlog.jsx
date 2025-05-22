@@ -17,11 +17,17 @@ const DetailedBlog = ({ blogId }) => {
     tempDiv.innerHTML = content
 
     const headers = tempDiv.getElementsByTagName('h2')
+
+    return [{
+      id: 'main',
+      title: 'Blog Content',
+      content: content
+    }]
     
     if (headers.length === 0) {
       return [{
         id: 'main',
-        title: 'Main Content',
+        title: 'Blog Content',
         content: content
       }]
     }
@@ -87,6 +93,11 @@ const DetailedBlog = ({ blogId }) => {
   }
 
   const sections = parseBlogContent(blog.content)
+
+
+  //test
+  // console.log("sections,blog",sections,blog)
+
 
   return (
     <>
