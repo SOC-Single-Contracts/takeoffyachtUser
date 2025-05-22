@@ -17,7 +17,7 @@ const Footer = () => {
       const reviewsData = await fetchGoogleReviews();
       setReviews(reviewsData);
     };
-    getReviews();
+    // getReviews();
   }, []);
 //test
   // useEffect(() => {

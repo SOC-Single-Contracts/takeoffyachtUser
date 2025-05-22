@@ -2,8 +2,16 @@ import React from "react";
 import { bloghero } from "../../../../public/assets/images";
 import Image from "next/image";
 import { Dot, User } from "lucide-react";
+import { format } from "date-fns";
 
 const Hero = ({ blog }) => {
+  const formatDate = (dateString) => {
+    try {
+      return format(new Date(dateString), 'MMM dd, yyyy hh:mm a');
+    } catch (err) {
+      return dateString;
+    }
+  };
   return (
     <section className="py-10 bg-[#1F1F1F] mt-24">
       <div className="max-w-5xl px-4 mx-auto flex items-center lg:flex-row flex-col justify-between">
@@ -16,14 +24,10 @@ const Hero = ({ blog }) => {
               <User className="md:w-8 md:h-8 w-6 h-6 bg-white rounded-full p-1 text-black" />
               <p className="md:text-md text-xs text-white">By {blog.author_name}</p>
             </div>
+            {/* <Dot className="text-white md:mx-2 mx-1" /> */}
+            {/* <p className="text-white md:text-md text-xs">12 Min Read</p> */}
             <Dot className="text-white md:mx-2 mx-1" />
-            <p className="text-white md:text-md text-xs">12 Min Read</p>
-            <Dot className="text-white md:mx-2 mx-1" />
-            <p className="text-white md:text-md text-xs">{new Date(blog.created_at).toLocaleDateString('en-US', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric'
-            })}</p>
+            <p className="text-white md:text-md text-xs">{formatDate(blog?.created_at)}</p>
           </div>
         </div>
         <Image
