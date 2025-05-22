@@ -196,7 +196,7 @@ const EventDetail = () => {
   const uniqueEventImages = [...new Set([selectedEvent?.event_image, ...eventImages])].filter(Boolean);
 
   //test
-  // console.log("selectedEvent", selectedEvent)
+  console.log("selectedEvent", selectedEvent)
   // console.log("ticketCounts", ticketCounts)
 
 
