@@ -209,7 +209,7 @@ export const yachtApi = {
 
   checkEvents: async (params) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/yacht/check_event/`, {
+      const response = await fetch(`${API_BASE_URL}/yacht/check_eventsystem/?page=1`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
