@@ -35,11 +35,11 @@ const AllBookings = () => {
     const fetchBookings = async () => {
       try {
         // Fetch bookings from multiple endpoints
-        const [yachtResponse,experienceResponse,f1yachtResponse, eventResponse] = await Promise.all([
+        const [yachtResponse, experienceResponse, f1yachtResponse, eventResponse] = await Promise.all([
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}?BookingType=regular`),
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_exp_booking/1/?BookingType=duration`),
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}?BookingType=f1yachts`),
-          // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_event_booking/${userId}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_event_booking/${userId}`),
           // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_exp_booking/1/?BookingType=date_range`)
 
         ]);
@@ -48,20 +48,22 @@ const AllBookings = () => {
         // if (!yachtResponse.ok || !eventResponse.ok || !experienceResponse.ok) {
         //   throw new Error('Failed to fetch bookings');
         // }
-        if (!yachtResponse.ok || !experienceResponse.ok || !f1yachtResponse.ok) {
+        if (!yachtResponse.ok || !experienceResponse.ok || !f1yachtResponse.ok || !eventResponse.ok) {
           throw new Error('Failed to fetch bookings');
         }
 
-        const [yachtData,experienceData, f1yachtData, eventData] = await Promise.all([
+        const [yachtData, experienceData, f1yachtData, eventData] = await Promise.all([
           yachtResponse.json(),
           experienceResponse.json(),
           f1yachtResponse.json(),
-          // eventResponse.json(),
+          eventResponse.json(),
         ]);
 
         // console.log("yach",yachtData)
         // console.log("experienceData",experienceData)
         // console.log("f1yachtData",f1yachtData)
+        // console.log("eventData",eventData)
+
 
         // Process yacht bookings
         const yachtBookings = yachtData.data ? yachtData.data.map(item => ({
@@ -84,17 +86,17 @@ const AllBookings = () => {
         })) : [];
         // console.log("f1yachtBookings",f1yachtBookings)
         // console.log("yachtBookings",yachtBookings)
- 
+
         // Process event bookings
         const eventBookings = eventData?.data ? eventData?.data.map(item => ({
-          ...item,
-          event: item.package,
+          ...item.booking[0],
+          yacht: item?.event[0],
           type: 'event',
-          name: item.package?.event_name,
-          image: item.package?.package_image,
+          name: item?.event[0]?.name,
+          image: item?.event[0]?.event_image,
           location: 'Event Location',
-          selected_date: item.selected_date,
-          duration_hour: item.duration_hour
+          selected_date: item?.event[0].from_date,
+          duration_hour: item?.event[0].duration_hour
         })) : [];
 
         // Process experience bookings
@@ -110,45 +112,49 @@ const AllBookings = () => {
         // console.log(experienceBookings)
 
         // Combine all bookings
-        const allBookings = [...yachtBookings,...f1yachtBookings, ...eventBookings,...experienceBookings];
+        const allBookings = [...yachtBookings, ...f1yachtBookings, ...eventBookings, ...experienceBookings];
 
         // Categorize bookings based on date
         // ?.filter(booking => booking?.type === "f1yachts")
 
         const processedBookings = allBookings
-        // ?.filter(booking => booking?.type === "f1yachts")
+          // ?.filter(booking => booking?.type === "event")
 
-        ?.map(booking => {
-          const today = new Date();
-      
-          // Use end_date for f1yachts, otherwise selected_date
-          const selectedDate = new Date(
-            booking.type === "f1yachts" ? booking.start_date : booking.selected_date
-          );
-      
-          return {
-            ...booking,
-            daysLeft: Math.ceil((selectedDate - today) / (1000 * 60 * 60 * 24))
-          };
-        })
-        .sort((a, b) => {
-          const dateA =
-            a.type === "f1yachts"
-              ? new Date(a.start_date)
-              : new Date(a.selected_date);
-          const dateB =
-            b.type === "f1yachts"
-              ? new Date(b.start_date)
-              : new Date(b.selected_date);
-      
-          return dateA - dateB; // Ascending sort
-        });
-      
+          ?.map(booking => {
+            const today = new Date();
+
+            // Use end_date for f1yachts, otherwise selected_date
+            const selectedDate = new Date(
+              booking.type === "f1yachts" ? booking.start_date : booking.type === "event" ? booking.from_date : booking.selected_date
+            );
+
+            return {
+              ...booking,
+              daysLeft: Math.ceil((selectedDate - today) / (1000 * 60 * 60 * 24))
+            };
+          })
+          .sort((a, b) => {
+            const dateA =
+              a.type === "f1yachts"
+                ? new Date(a.start_date) :
+                a.type === "event"
+                  ? new Date(a.from_date)
+                  : new Date(a.selected_date);
+            const dateB =
+              b.type === "f1yachts"
+                ? new Date(b.start_date) :
+                a.type === "event"
+                  ? new Date(a.from_date)
+                  : new Date(b.selected_date);
+
+            return dateA - dateB; // Ascending sort
+          });
+
 
         // let filterData = processedBookings.filter((booking)=>booking?.type=="f1yachts")
         // console.log(filterData)
-      
-      setBookings(processedBookings);
+        // console.log(processedBookings)
+        setBookings(processedBookings);
       } catch (error) {
         console.error('Error fetching bookings:', error);
         setError(error);
@@ -164,15 +170,15 @@ const AllBookings = () => {
   const { upcoming: upcomingBookings, past: pastBookings, cancel: cancelBookings } = useMemo(() => {
     return classifyBookings(bookings);
   }, [bookings]);
-//test
-//   useEffect(()=>{
+  //test
+  //   useEffect(()=>{
 
-// console.log("bookings",bookings)
-// console.log("upcomingBookings",upcomingBookings)
-// console.log("pastBookings",pastBookings)  
-//  console.log("cancelBookings",cancelBookings)
+  // console.log("bookings",bookings)
+  // console.log("upcomingBookings",upcomingBookings)
+  // console.log("pastBookings",pastBookings)  
+  //  console.log("cancelBookings",cancelBookings)
 
-//   },[bookings,upcomingBookings,pastBookings,cancelBookings])
+  //   },[bookings,upcomingBookings,pastBookings,cancelBookings])
 
   if (status === "loading") {
     return <Loading />;
@@ -186,7 +192,7 @@ const AllBookings = () => {
           <p className="text-gray-600 mb-6">
             Looks like you're not logged in. Please sign in to view your bookings.
           </p>
-          <Button 
+          <Button
             onClick={() => router.push('/login')}
             className="bg-[#BEA355] hover:bg-[#a68f4b] text-white rounded-full"
           >
@@ -204,7 +210,7 @@ const AllBookings = () => {
   return (
     <section className="py-10">
       <div className="max-w-5xl px-2 mx-auto flex items-center space-x-4">
-        <Button 
+        <Button
           onClick={() => router.back()}
           className="bg-[#F8F8F8] hover:bg-[#F8F8F8] shadow-md rounded-full flex items-center justify-center w-10 h-10"
         >
@@ -242,7 +248,7 @@ const AllBookings = () => {
                 <p className="text-gray-500 mb-6">
                   You haven't made any upcoming yacht bookings yet. Start exploring our amazing yacht experiences!
                 </p>
-                <Button 
+                <Button
                   onClick={() => router.push('/dashboard')}
                   className="bg-[#BEA355] hover:bg-[#a68f4b] text-white rounded-full"
                 >
@@ -251,9 +257,9 @@ const AllBookings = () => {
               </div>
             ) : (
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                <BookingCards 
-                  bookings={upcomingBookings} 
-                  loading={loading} 
+                <BookingCards
+                  bookings={upcomingBookings}
+                  loading={loading}
                   bookingType="upcoming"
 
                 />
@@ -268,7 +274,7 @@ const AllBookings = () => {
                 <p className="text-gray-500 mb-6">
                   You haven't made any past yacht bookings yet. Start exploring our amazing yacht experiences!
                 </p>
-                <Button 
+                <Button
                   onClick={() => router.push('/dashboard')}
                   className="bg-[#BEA355] hover:bg-[#a68f4b] text-white rounded-full"
                 >
@@ -277,9 +283,9 @@ const AllBookings = () => {
               </div>
             ) : (
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                <BookingCards 
-                  bookings={pastBookings} 
-                  loading={loading} 
+                <BookingCards
+                  bookings={pastBookings}
+                  loading={loading}
                   bookingType="past"
 
                 />
@@ -294,7 +300,7 @@ const AllBookings = () => {
                 <p className="text-gray-500 mb-6">
                   You haven't made any past yacht bookings yet. Start exploring our amazing yacht experiences!
                 </p>
-                <Button 
+                <Button
                   onClick={() => router.push('/dashboard')}
                   className="bg-[#BEA355] hover:bg-[#a68f4b] text-white rounded-full"
                 >
@@ -303,9 +309,9 @@ const AllBookings = () => {
               </div>
             ) : (
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                <BookingCards 
-                  bookings={cancelBookings} 
-                  loading={loading} 
+                <BookingCards
+                  bookings={cancelBookings}
+                  loading={loading}
                   bookingType="cancel"
                 />
               </div>

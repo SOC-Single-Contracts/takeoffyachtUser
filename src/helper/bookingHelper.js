@@ -55,6 +55,27 @@ export const classifyBookings = (bookings = []) => {
         } else {
           past.push(booking);
         }
+      }else if(booking?.type == "event"){
+        if (!booking?.selected_date) {
+          console.error(`Missing or invalid selected_date in booking at index ${booking?.id}:`, booking);
+          return;
+        }
+      
+        let bookingDate;
+        try {
+          bookingDate = startOfDay(parseISO(booking.selected_date));
+        } catch (err) {
+          console.error(`Error parsing selected_date "${booking.selected_date}" at index ${index}`, err);
+          return;
+        }
+      
+        if (booking.cancel) {
+          cancel.push(booking);
+        } else if (isAfter(bookingDate, today) || isEqual(bookingDate, today)) {
+          upcoming.push(booking);
+        } else {
+          past.push(booking);
+        }
       }else{
         if (!booking?.selected_date) {
           console.error(`Missing or invalid selected_date in booking at index ${booking?.id}:`, booking);

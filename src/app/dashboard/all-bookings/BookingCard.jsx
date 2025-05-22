@@ -229,7 +229,19 @@ const BookingCard = ({ booking,bookingType }) => {
             >
               Booking Summary
             </Button>
-          </Link>
+          </Link> :
+          booking?.type == "event" ? 
+          <Link 
+          href={`/dashboard/event/all/${id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
+          className="mt-4 block"
+        >
+          <Button
+            variant="outline"
+            className="w-full py-3 rounded-full border-2 border-black dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-700"
+          >
+            Booking Summary
+          </Button>
+        </Link>
        : booking?.type == "f1-exp" ? 
        <Link 
        href={`/dashboard/experience/f1-exp/${id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
