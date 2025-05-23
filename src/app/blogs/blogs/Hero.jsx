@@ -13,7 +13,7 @@ const Hero = ({ blog }) => {
     }
   };
   return (
-    <section className="py-10 bg-[#1F1F1F] mt-24">
+    <section className="py-20 bg-[#1F1F1F] mt-24">
       <div className="max-w-5xl px-4 mx-auto flex items-center lg:flex-row flex-col justify-between">
         <div className="flex flex-col items-start justify-center max-w-[700px] w-full">
           <h1 className="lg:text-5xl md:text-3xl text-xl font-bold text-white">
