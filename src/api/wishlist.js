@@ -32,6 +32,8 @@ export const addToWishlist = async (userId, itemId, itemType) => {
   // Conditional check to determine if the item is a yacht, experience, or event
   if (itemType === 'yacht') {
     payload.yacht = itemId; // Use yacht key for yacht IDs
+  }else if (itemType === 'f1yacht') {
+    payload.yacht = itemId; // Use yacht key for yacht IDs
   } else if (itemType === 'experience') {
     payload.experience = itemId; // Use experience key for experience IDs
   } else if (itemType === 'event') {
@@ -47,6 +49,8 @@ export const removeFromWishlist = async (userId, itemId, itemType) => {
 
   // Determine the correct endpoint based on itemType
   if (itemType === 'yacht') {
+    url = `${BASE_URL}remove_yacht/?yacht_id=${itemId}&Auth_user=${userId}`;
+  }else  if (itemType === 'f1yacht') {
     url = `${BASE_URL}remove_yacht/?yacht_id=${itemId}&Auth_user=${userId}`;
   } else if (itemType === 'experience') {
     url = `${BASE_URL}remove_experience/?experience_id=${itemId}&Auth_user=${userId}`;

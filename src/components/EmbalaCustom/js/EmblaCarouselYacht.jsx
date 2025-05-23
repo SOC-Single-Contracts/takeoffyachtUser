@@ -67,26 +67,26 @@ const EmblaCarouselYacht = (props) => {
               slidesInView={slidesInView}
 
             />
-          )) : 
-          
-          <Image
-          className="object-cover pl-3 pr-3 pt-3 rounded-[1.8rem] w-full h-[240px] ml-4"
-            src={`/assets/images/Imagenotavailable.png`}
-            alt="loadAlt"
-            height={240}
-            width={100}
-            onError={(e) => {
-              e.target.src = '/assets/images/Imagenotavailable.png';
-            }}
-          />
-          // <span className="embla__lazy-load__spinner" />
-          // "FOR1"
+          )) :
+
+            <Image
+              className="object-cover pl-3 pr-3 pt-3 rounded-[1.8rem] w-full h-[240px] ml-4"
+              src={`/assets/images/Imagenotavailable.png`}
+              alt="loadAlt"
+              height={240}
+              width={100}
+              onError={(e) => {
+                e.target.src = '/assets/images/Imagenotavailable.png';
+              }}
+            />
+            // <span className="embla__lazy-load__spinner" />
+            // "FOR1"
           }
         </div>
       </div>
-   {yachtsType == "f1yachts" &&   <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" />} 
+      {yachtsType == "f1yachts" && <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10" />}
 
-                
+
 
       <Button
         variant="secondary"
@@ -105,7 +105,7 @@ const EmblaCarouselYacht = (props) => {
         />
       </Button>
 
-     <div className="absolute priceContainer right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
+      <div className="absolute priceContainer right-5 bg-white dark:bg-gray-800 p-[0.3rem] rounded-md shadow-md">
 
         {yachtsType == "yachts" ? <span className="font-medium text-xs">
           AED <span className="font-bold font-medium text-primary">{item?.yacht?.per_hour_price}</span>
