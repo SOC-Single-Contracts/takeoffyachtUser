@@ -754,20 +754,40 @@ const SearchYachtGlobalCompo = () => {
       return;
     }
 
-    const updatedFavorites = new Set(favorites);
-    try {
-      if (updatedFavorites.has(yachtId)) {
-        await removeFromWishlist(userId, yachtId, 'yacht');
-        updatedFavorites.delete(yachtId);
-      } else {
-        await addToWishlist(userId, yachtId, 'yacht');
-        updatedFavorites.add(yachtId);
+    if(yachtsType == "yachts"){
+      const updatedFavorites = new Set(favorites);
+      try {
+        if (updatedFavorites.has(yachtId)) {
+          await removeFromWishlist(userId, yachtId, 'yacht');
+          updatedFavorites.delete(yachtId);
+        } else {
+          await addToWishlist(userId, yachtId, 'yacht');
+          updatedFavorites.add(yachtId);
+        }
+  
+        setFavorites(updatedFavorites);
+      } catch (error) {
+        console.error('Error toggling wishlist:', error);
       }
+    }else if(yachtsType == "f1yachts"){
+      const updatedFavorites = new Set(favorites);
+      // console.log("updatedFavorites",updatedFavorites,yachtId)
 
-      setFavorites(updatedFavorites);
-    } catch (error) {
-      console.error('Error toggling wishlist:', error);
+      try {
+        if (updatedFavorites.has(yachtId)) {
+          await removeFromWishlist(userId, yachtId, 'f1yacht');
+          updatedFavorites.delete(yachtId);
+        } else {
+          await addToWishlist(userId, yachtId, 'f1yacht');
+          updatedFavorites.add(yachtId);
+        }
+  
+        setFavorites(updatedFavorites);
+      } catch (error) {
+        console.error('Error toggling wishlist:', error);
+      }
     }
+  
   };
 
   /// set orignial yachts to yachts

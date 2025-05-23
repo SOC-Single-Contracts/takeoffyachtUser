@@ -8,15 +8,18 @@ import { Heart } from 'lucide-react';
 
 const CartItem = ({ yacht }) => {
   const { id, wishlistId, name, description, image, features, pricePerHour, minHours, type } = yacht;
+  // console.log(type)
 
   const getBookingLink = () => {
     switch (type) {
       case 'yacht':
         return `/dashboard/yachts/${id}/booking`;
-      case 'experience':
-        return `/dashboard/experience/${id}/booking`;
+        case 'f1-yachts':
+          return `/dashboard/f1-yachts/${id}/booking`;
+      case 'regular-exp':
+        return `/dashboard/experience/regular-exp/${id}/booking`;
       case 'event':
-        return `/dashboard/events/${id}/booking`;
+        return `/dashboard/event/all/${id}/booking`;
       default:
         return `/dashboard/yachts/${id}/booking`; // Default to yacht booking
     }
@@ -58,6 +61,9 @@ const CartItem = ({ yacht }) => {
           className="w-full md:max-w-[120px] max-w-[100px] md:h-[110px] h-[100px] object-cover rounded-3xl"
           width={100}
           height={100}
+          onError={(e) => {
+            e.target.src = '/assets/images/Imagenotavailable.png';
+          }}
         />
         <div className="flex flex-col gap-1 md:mt-0 mt-2">
           <h1 className="md:text-2xl text-lg font-bold">{name}</h1>

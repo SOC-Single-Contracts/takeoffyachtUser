@@ -61,6 +61,22 @@ const Cart = () => {
                 minHours: yacht?.duration_hour || 0,
                 type: 'yacht'
               };
+            }else if (item?.yacht && item?.yacht_details) {
+              const yacht = item?.yacht_details;
+              return {
+                uniqueKey: `yacht-${yacht?.id}-${index}`,
+                id: yacht?.id,
+                wishlistId: item?.id,
+                name: yacht?.name || 'Unnamed Yacht',
+                description: yacht?.description || 'No description available',
+                image: yacht?.yacht_image ? `https://api.takeoffyachts.com${yacht?.yacht_image}` : null,
+                features: yacht.features 
+                ? Object.keys(yacht.features).map(key => `${key}: ${yacht.features[key]}`).join(', ')
+                : [],              
+                pricePerHour: yacht?.per_hour_price || 0,
+                minHours: yacht?.duration_hour || 0,
+                type: 'f1-yachts'
+              };
             } else if (item?.experience && item?.experience_details) {
               const experience = item?.experience_details;
               return {
@@ -76,7 +92,7 @@ const Cart = () => {
               
                 pricePerHour: experience?.per_hour_price || 0,
                 minHours: experience?.duration_hour || 0,
-                type: 'experience'
+                type: 'regular-exp'
               };
             } else if (item?.event) {
               return {
