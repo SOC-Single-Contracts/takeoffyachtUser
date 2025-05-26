@@ -39,7 +39,7 @@ export const BookingProvider = ({ children, initialEventData }) => {
     const totalDaysPrice = Number(bookingData?.totalDaysPrice) || 0;
 
     
-    return (packagePrice + featuresPrices) * totalTickets + totalDaysPrice;
+    return (packagePrice) * totalTickets;
   };
 
   // useEffect(()=>{

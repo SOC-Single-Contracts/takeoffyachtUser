@@ -194,7 +194,7 @@ const Summary = ({ onNext, eventData, initialBookingId }) => {
       total + (feature.price || 0), 0) || 0;
     const totalDaysPrice = Number(bookingData?.totalDaysPrice) || 0;
     
-    return (packagePrice + featuresPrices) * totalGuests + totalDaysPrice;
+    return (packagePrice) * totalGuests;
   };
 
 
