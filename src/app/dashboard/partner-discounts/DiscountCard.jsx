@@ -16,7 +16,7 @@ const BrandCard = ({ brand }) => {
     <Dialog>
       <DialogTrigger asChild>
         <Card
-          className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[298px] h-fulll max-h-[260px] cursor-pointer"
+          className="overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-[298px] h-fulll h-[160px] max-h-[260px] cursor-pointer"
           role="button"
           tabIndex={0}
         >

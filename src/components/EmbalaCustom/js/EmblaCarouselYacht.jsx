@@ -84,14 +84,14 @@ const EmblaCarouselYacht = (props) => {
           }
         </div>
       </div>
-      {yachtsType == "f1yachts" && <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0 z-10 " />}
+      {yachtsType == "f1yachts" && <Image src="/assets/images/redtag.png" alt="Hot" width={50} height={50} className="absolute top-0 right-0  " />}
 
 
 
       <Button
         variant="secondary"
         size="icon"
-        className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white z-[999]"
+        className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white "
         onClick={() => handleWishlistToggle(item?.yacht?.id)}
       >
         <Image
