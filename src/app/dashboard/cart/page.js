@@ -23,7 +23,7 @@ const Cart = () => {
   const router = useRouter();
 
   // Get user ID, default to 1 if not available
-  const userId = session?.user?.userid || 1;
+  const userId = session?.user?.userid ;
 
   useEffect(() => {
     const loadWishlist = async () => {
@@ -38,7 +38,7 @@ const Cart = () => {
       }
 
       try {
-        const response = await fetch('https://api.takeoffyachts.com/wishlist/wishlistview/');
+        const response = await fetch(`https://api.takeoffyachts.com/wishlist/wishlistview/?Auth_user=${userId}`);
         const wishlistItems = await response.json();
         // console.log(wishlistItems)
         const filterYac = wishlistItems.filter((item)=>item?.yacht == 55);
@@ -61,10 +61,10 @@ const Cart = () => {
                 minHours: yacht?.duration_hour || 0,
                 type: 'yacht'
               };
-            }else if (item?.yacht && item?.yacht_details) {
-              const yacht = item?.yacht_details;
+            }else if (item?.f1yacht && item?.f1yacht_details) {
+              const yacht = item?.f1yacht_details;
               return {
-                uniqueKey: `yacht-${yacht?.id}-${index}`,
+                uniqueKey: `f1yacht-${yacht?.id}-${index}`,
                 id: yacht?.id,
                 wishlistId: item?.id,
                 name: yacht?.name || 'Unnamed Yacht',
@@ -74,6 +74,7 @@ const Cart = () => {
                 ? Object.keys(yacht.features).map(key => `${key}: ${yacht.features[key]}`).join(', ')
                 : [],              
                 pricePerHour: yacht?.per_hour_price || 0,
+                pricePerDat: yacht?.per_day_price || 0,
                 minHours: yacht?.duration_hour || 0,
                 type: 'f1-yachts'
               };

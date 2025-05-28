@@ -376,7 +376,7 @@ const Featured = () => {
                     <div className="absolute inset-0"></div>
                   </Link> */}
 
-                  <Button
+                  {/* <Button
                     variant="secondary"
                     size="icon"
                     className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
@@ -392,7 +392,7 @@ const Featured = () => {
                       height={20}
                       quality={100}
                     />
-                  </Button>
+                  </Button> */}
 
                   {/* {yachtsType == "yachts" ? <div className="absolute bottom-4 right-6 bg-white dark:bg-gray-800 p-1.5 rounded-md shadow-md">
                     <span className="font-medium text-xs">

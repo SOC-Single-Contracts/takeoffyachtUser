@@ -6,7 +6,8 @@ import { switchReducer } from './switchReducer';
 export const GlobalStateContext = createContext();
 
 const initialState = {
-  number: 3
+  number: 3,
+  cities: [],
 }
 const persistState = () => {
   try {

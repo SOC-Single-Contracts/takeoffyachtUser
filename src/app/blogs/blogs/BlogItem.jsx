@@ -16,6 +16,7 @@ const sanitizeHTML = (html) => {
 const BlogItem = ({ blog }) => {
   return (
     <Card className="overflow-hidden bg-transparent shadow-none border-none w-full max-w-[350px]] h-full max-h-[465px]">
+        <Link href={`/blogs/${blog?.ID}`}>
       <div className="relative overflow-hidden rounded-2xl group">
         <Image 
           src={blog?.thumbnail_image || "/assets/images/blog-hero.png"}
@@ -42,13 +43,12 @@ const BlogItem = ({ blog }) => {
           }}
         />
         <div className="flex items-center justify-between">
-          <Link href={`/blogs/${blog?.ID}`}>
             <Button variant="link" className="p-0 h-auto uppercase group text-[16px] font-semibold dark:text-gray-200">
               Read More <ArrowRight className="ml-2 h-4 w-4 group-hover:rotate-[-45deg] transition-all duration-200 ease-in" />
             </Button>
-          </Link>
         </div>
       </CardContent>
+          </Link>
     </Card>
   );
 };

@@ -24,7 +24,7 @@ export default function SuccessPage() {
               Thank you for completing your secure online payment.
             </p>
             <p className="text-sm md:text-lg">
-              Your booking has been confirmed.
+            Your booking is pending and will be confirmed after admin approval.
             </p>
             <p className="text-sm md:text-md text-gray-500 dark:text-gray-300">
               A confirmation email will be sent to your registered email address.

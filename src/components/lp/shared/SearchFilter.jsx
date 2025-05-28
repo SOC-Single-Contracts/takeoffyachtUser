@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Tabs,
@@ -26,7 +26,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from "@/hooks/use-toast";
-import { useGlobalState } from '@/context/GlobalStateContext';
+import { GlobalStateContext, useGlobalState } from '@/context/GlobalStateContext';
 import { removeLeadingZeros } from '@/helper/calculateDays';
 
 
@@ -43,7 +43,9 @@ const SearchFilter = () => {
     from: null,
     to: null
   });
-  const { yachtsType, eventsType,experienceType } = useParams();
+  const { globalState: appState, dispatch: appDispatch } = useContext(GlobalStateContext)
+  // console.log("appState", appState)
+  const { yachtsType, eventsType, experienceType } = useParams();
 
   const [minimumGuests, setMinimumGuests] = useState({
     // adults: 1,
@@ -135,6 +137,9 @@ const SearchFilter = () => {
 
         if (data.error_code === 'pass') {
           setCities(data.data);
+          appDispatch({ type: "setCitites", cities: data?.data });
+
+
         } else {
           console.error('Failed to fetch cities:', data.error);
         }
@@ -248,7 +253,7 @@ const SearchFilter = () => {
           break;
       }
       setFilter({ max_guest: totalGuests, location: selectedCity })
-      if(activeMainTab == "experiences"){
+      if (activeMainTab == "experiences") {
         if (searchResults?.success == true) {
           // router.push(`${searchPath}?${new URLSearchParams({
           //   location: selectedCity || '',
@@ -268,22 +273,22 @@ const SearchFilter = () => {
             max_guest: maxGuest > 0 ? parseInt(maxGuest) : "",
             start_date: formattedStartDate || "",
             end_date: formattedEndDate || ""
-  
+
           }).toString();
-  
+
           const newPath = `${searchPath}?${queryParams}`;
-  
+
           // Navigate and reload
           if (typeof window !== "undefined") {
             window.location.assign(newPath);
           }
-  
-  
+
+
           setIsDialogOpen(false);
         } else {
           // toast.error('No results found. Please try different search criteria.');
         }
-      }else if(activeMainTab == "yachts"){
+      } else if (activeMainTab == "yachts") {
         if (searchResults?.error_code === 'pass') {
           // router.push(`${searchPath}?${new URLSearchParams({
           //   location: selectedCity || '',
@@ -303,22 +308,22 @@ const SearchFilter = () => {
             max_guest: maxGuest > 0 ? parseInt(maxGuest) : "",
             start_date: formattedStartDate || "",
             end_date: formattedEndDate || ""
-  
+
           }).toString();
-  
+
           const newPath = `${searchPath}?${queryParams}`;
-  
+
           // Navigate and reload
           if (typeof window !== "undefined") {
             window.location.assign(newPath);
           }
-  
-  
+
+
           setIsDialogOpen(false);
         } else {
           // toast.error('No results found. Please try different search criteria.');
         }
-      }else if(activeMainTab == "events"){
+      } else if (activeMainTab == "events") {
         const queryParams = new URLSearchParams({
           location: selectedCity || "",
           min_guest: totalGuests > 0 ? totalGuests : "",
@@ -339,7 +344,7 @@ const SearchFilter = () => {
 
         setIsDialogOpen(false);
       }
-    
+
     } catch (error) {
       console.error('Search error:', error);
       toast.error('Failed to perform search. Please try again.');
@@ -548,7 +553,7 @@ const SearchFilter = () => {
                         <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{selectedCity || "Add Destination"}</span>
                       </div>
                     </TabsTrigger>
-                    {activeMainTab != "events" &&   <TabsTrigger
+                    {activeMainTab != "events" && <TabsTrigger
                       value="when"
                       // disabled={!selectedCity}
                       className="py-2 sm:py-3 text-xs sm:text-sm rounded-full text-[#BEA355] dark:text-[#BEA355] flex flex-col items-start px-2 sm:px-4"
@@ -568,8 +573,8 @@ const SearchFilter = () => {
 
                       </div>
                     </TabsTrigger>}
-                  
-                    {activeMainTab != "events" &&  <TabsTrigger
+
+                    {activeMainTab != "events" && <TabsTrigger
                       value="who"
                       // disabled={!selectedDate}
                       className="py-1 md:py-3.5 w-[130px] md:w-[150px] text-xs md:text-sm rounded-full bg-transparent hover:bg-transparent text-[#BEA355] dark:text-[#BEA355] data-[state=active]:bg-white data-[state=active]:drop-shadow-2xl flex flex-col items-start"
@@ -579,7 +584,7 @@ const SearchFilter = () => {
                         <span className="text-xs md:text-sm text-gray-500 font-light dark:text-gray-400 max-w-full truncate">{minimumGuests.capacity > 0 ? `${minimumGuests.capacity} Guests` : "Add Guests"}</span>
                       </div>
                     </TabsTrigger>}
-                   
+
                     <div>
 
                     </div>
@@ -600,7 +605,7 @@ const SearchFilter = () => {
                         </>
                       )}
                     </TabsTrigger>
-                    {activeMainTab != "events" &&     <TabsContent
+                    {activeMainTab != "events" && <TabsContent
                       value="who"
                       className="absolute right-0 top-full mt-2 z-10 w-full sm:w-[350px] p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl h-[230px] overflow-y-auto shadow-lg border border-gray-200 dark:border-gray-700"
                     >
@@ -748,7 +753,7 @@ const SearchFilter = () => {
 
 
                     </TabsContent>}
-                
+
                     <TabsContent
                       value="where"
                       className="absolute left-0 top-full mt-2 z-10 md:w-[400px] mx-2 p-6 space-y-3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
@@ -772,11 +777,14 @@ const SearchFilter = () => {
                                 >
                                   <div className="relative overflow-hidden rounded-2xl">
                                     <Image
-                                      src={`${API_BASE_URL}${city.image}`}
+                                      src={`${process.env.NEXT_PUBLIC_S3_URL}${city.image}`}
                                       alt=""
                                       width={100}
                                       height={200}
                                       quality={100}
+                                      onError={(e) => {
+                                        e.target.src = '/assets/images/Imagenotavailable.png';
+                                      }}
                                       className="w-full h-44 object-cover transition-transform duration-300 group-hover:scale-110"
                                     />
                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-background duration-300"></div>
@@ -800,28 +808,28 @@ const SearchFilter = () => {
                       )}
                     </TabsContent>
                   </TabsList>
- {/* When Tab Content */}
-                  {activeMainTab != "events" &&            
-                  <TabsContent value="when" className="flex justify-center">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl">
-                      <Calendar
-                        // mode="range"
-                        mode="single"
-                        selected={selectedDateRange}
-                        onSelect={(range) => {
-                          setSelectedDateRange({ from: range, to: null });
-                          if (range) {
-                            setActiveSearchTab("who");
-                          }
-                        }}
-                        disabled={(date) => date < new Date().setHours(0, 0, 0, 0)}
-                        numberOfMonths={1}
-                        className="rounded-md"
-                      />
-                    </div>
-                  </TabsContent> }
+                  {/* When Tab Content */}
+                  {activeMainTab != "events" &&
+                    <TabsContent value="when" className="flex justify-center">
+                      <div className="bg-white dark:bg-gray-800 rounded-2xl">
+                        <Calendar
+                          // mode="range"
+                          mode="single"
+                          selected={selectedDateRange}
+                          onSelect={(range) => {
+                            setSelectedDateRange({ from: range, to: null });
+                            if (range) {
+                              setActiveSearchTab("who");
+                            }
+                          }}
+                          disabled={(date) => date < new Date().setHours(0, 0, 0, 0)}
+                          numberOfMonths={1}
+                          className="rounded-md"
+                        />
+                      </div>
+                    </TabsContent>}
 
-      
+
 
                   <TabsContent value="searchbyName" className="flex justify-start">
                     <div className="bg-white dark:bg-gray-800 rounded-2xl">
@@ -838,6 +846,12 @@ const SearchFilter = () => {
                             required
                             value={searchByName}
                             onChange={(e) => setsearchByName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                handleSearch(); // Call your search function
+                              }
+                            }}
+
                           />
                         </div>
 
