@@ -32,3 +32,26 @@
 
   }
  
+
+  export const buildCleanQuery = (params) => {
+    const cleanParams = {};
+  
+    for (const key in params) {
+      const value = params[key];
+  
+      const isEmpty =
+        value === null ||
+        value === undefined ||
+        value === "" ||
+        value === 0 ||
+        (Array.isArray(value) && value.length === 0) ||
+        (typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0);
+  
+      if (!isEmpty) {
+        cleanParams[key] = value;
+      }
+    }
+  
+    return new URLSearchParams(cleanParams).toString();
+  };
+  

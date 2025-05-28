@@ -1808,7 +1808,7 @@ const SearchExperinceGlobalCompo = () => {
 
 
 
-        <div className="fixed md:hidde bottom-0 left-0 w-full  shadow-md z-50 p-4">
+        {/* <div className="fixed md:hidde bottom-0 left-0 w-full  shadow-md z-50 p-4">
           <div className="relative  flex justify-center">
             <Button
               onClick={() => setMapBox(!mapBox)}
@@ -1828,7 +1828,7 @@ const SearchExperinceGlobalCompo = () => {
             </Button>
 
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

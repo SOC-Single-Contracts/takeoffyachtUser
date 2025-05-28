@@ -28,6 +28,7 @@ import MapBoxComponent from "@/components/shared/dashboard/mapBox";
 import { checkValidateLatLong } from '@/helper/validateLatlong';
 import EmblaCarouselYacht from './EmbalaCustom/js/EmblaCarouselYacht';
 import { useToast } from '@/hooks/use-toast';
+import { buildCleanQuery } from '@/helper/sortYachtGlobal';
 
 
 
@@ -43,7 +44,7 @@ const SearchYachtGlobalCompo = () => {
   const router = useRouter();
   const [yachts, setYachts] = useState([]);
   const [loading, setLoading] = useState(true);
-    const { toast } = useToast();
+  const { toast } = useToast();
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const [originalYachts, setOriginalYachts] = useState([]);
@@ -64,11 +65,13 @@ const SearchYachtGlobalCompo = () => {
   const [searchPath, setSearchPath] = useState(`/dashboard/${yachtsType == "f1yachts" ? "f1yachts" : "yachts"}`)
   const targetPath = `/dashboard/${yachtsType == "f1yachts" ? "f1yachts" : "yachts"}/search`;
 
-  const [mapBox, setMapBox] = useState(false)
+  const [mapBox, setMapBox] = useState(searchParams.get('mapBox') || false)
+  // const [mapBox, setMapBox] = useState(false)
+
   const [validMarkers, setValidMarkers] = useState([])
   const [validmovingObjects, setValidMovingObject] = useState([])
-    const { globalState: appState, dispatch: appDispatch } = useContext(GlobalStateContext)
-    // console.log("appState", appState)
+  const { globalState: appState, dispatch: appDispatch } = useContext(GlobalStateContext)
+  // console.log("appState", appState)
 
   const [filters, setFilters] = useState({
     min_price: "",
@@ -137,7 +140,7 @@ const SearchYachtGlobalCompo = () => {
 
 
 
-  const [sortByOptions,setSortByOptions] = useState( [
+  const [sortByOptions, setSortByOptions] = useState([
     // { value: "default", label: "Default" },
     { value: "Price-High-Low", label: "Price: High to Low" },
     { value: "Price-Low-High", label: "Price: Low to High" },
@@ -147,7 +150,8 @@ const SearchYachtGlobalCompo = () => {
 
   const [selectedSortBy, setSelectedSortBy] = useState(searchParams.get('sortBy') || "Price-High-Low");
   const [startSort, setStartSort] = useState(false);
-  
+  const [startMapbox, setStartMapbox] = useState(false);
+
 
   const handleChange = (value) => {
     setStartSort(true);
@@ -352,14 +356,14 @@ const SearchYachtGlobalCompo = () => {
       if (userId) {
         try {
           const wishlistItems = await fetchWishlist(userId);
-          if(yachtsType=="yachts"){
+          if (yachtsType == "yachts") {
             const wishlistIds = new Set(wishlistItems.map(item => item?.yacht));
             setFavorites(wishlistIds);
-          }else if(yachtsType == "f1yachts"){
+          } else if (yachtsType == "f1yachts") {
             const wishlistIds = new Set(wishlistItems.map(item => item?.f1yacht));
             setFavorites(wishlistIds);
           }
- 
+
         } catch (err) {
           console.error('Wishlist loading error:', err);
         }
@@ -418,8 +422,10 @@ const SearchYachtGlobalCompo = () => {
       source: componentType == "searchYacht" ? "searchYacht" : componentType == "simpleYacht" ? "simpleYacht" : "",
       reqType: "handlePagination",
       sort_by: selectedSortBy,
+      isMapBox: mapBox,
       YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
       user_id: userId,
+
     };
     try {
       setLoading(true);
@@ -468,8 +474,10 @@ const SearchYachtGlobalCompo = () => {
       source: componentType == "searchYacht" ? "searchYacht" : componentType == "simpleYacht" ? "simpleYacht" : "",
       reqType: "handleResetAll",
       sort_by: selectedSortBy,
+      isMapBox: mapBox,
       YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
       user_id: userId,
+
     };
     try {
       setLoading(true);
@@ -508,29 +516,10 @@ const SearchYachtGlobalCompo = () => {
       setPage(1)
 
     }
-    router.push(`${searchPath}?${new URLSearchParams({
-      max_guest: "",
-      min_guest: "",
-      min_price: "",
-      max_price: "",
-      location: "",
-      min_length: "",
-      max_length: "",
-      sleep_capacity: "",
-      number_of_cabin: "",
-      category_name: "[]",
-      outdoor_equipment: "[]",
-      navigation: "[]",
-      leisure: "[]",
-      kitchen: "[]",
-      indoor: "[]",
-      extra_comforts: "[]",
-      energy: "[]",
-      name: "",
-      start_date:  "",
-      end_date:  "",
-
-    }).toString()}`);
+    router.push(`${searchPath}?${buildCleanQuery({
+      sortBy: selectedSortBy,
+      mapBox: mapBox
+    })}`);
 
     setIsOpen(false);
 
@@ -584,6 +573,7 @@ const SearchYachtGlobalCompo = () => {
       source: componentType == "searchYacht" ? "searchYacht" : componentType == "simpleYacht" ? "simpleYacht" : "",
       reqType: "handleFilterChange",
       sort_by: selectedSortBy,
+      isMapBox: mapBox,
       YachtType: yachtsType == "f1yachts" ? "f1yachts" : "regular",
       user_id: userId,
       ...(yachtsType === "yachts"
@@ -643,7 +633,7 @@ const SearchYachtGlobalCompo = () => {
       const responseData = await response.json();
       if (responseData.error_code === 'pass') {
 
-  
+
         const filteredYachts = responseData.data;
         settotalYachts(responseData?.total_yachts)
         setpaginateYachts(responseData?.paginate_count)
@@ -669,8 +659,8 @@ const SearchYachtGlobalCompo = () => {
     }
 
 
-    router.push(`${searchPath}?${new URLSearchParams({
-
+    router.push(`${searchPath}?${buildCleanQuery({
+      mapBox,
       max_guest: filters?.max_guest,
       min_guest: filters?.min_guest,
       min_price: filters?.min_price,
@@ -682,36 +672,34 @@ const SearchYachtGlobalCompo = () => {
       number_of_cabin: filters?.number_of_cabin,
       category_name: filters?.category_name?.length
         ? `["${filters?.category_name.join('","')}"]`
-        : "[]",
+        : undefined,
       outdoor_equipment: filters?.outdoor_equipment?.length
         ? `["${filters?.outdoor_equipment.join('","')}"]`
-        : "[]",
+        : undefined,
       navigation: filters?.navigation?.length
         ? `["${filters?.navigation.join('","')}"]`
-        : "[]",
+        : undefined,
       leisure: filters?.leisure?.length
         ? `["${filters?.leisure.join('","')}"]`
-        : "[]",
+        : undefined,
       kitchen: filters?.kitchen?.length
         ? `["${filters?.kitchen.join('","')}"]`
-        : "[]",
+        : undefined,
       indoor: filters?.indoor?.length
         ? `["${filters?.indoor.join('","')}"]`
-        : "[]",
+        : undefined,
       extra_comforts: filters?.extra_comforts?.length
         ? `["${filters?.extra_comforts.join('","')}"]`
-        : "[]",
+        : undefined,
       energy: filters?.energy?.length
         ? `["${filters?.energy.join('","')}"]`
-        : "[]",
+        : undefined,
       name: filters?.name,
       start_date: filters?.start_date,
       end_date: filters?.end_date,
-      sortBy:selectedSortBy
+      sortBy: selectedSortBy,
+    })}`);
 
-
-
-    }).toString()}`);
 
     setIsOpen(false);
   };
@@ -719,7 +707,7 @@ const SearchYachtGlobalCompo = () => {
 
   // "hitApiCall" on first render and when scroll page
   useEffect(() => {
- 
+
     if (page > 1) {
       handlePagination();
     }
@@ -728,6 +716,13 @@ const SearchYachtGlobalCompo = () => {
   useEffect(() => {
     handlePagination();
   }, []);
+
+  // useEffect(() => {
+  //   if(mapBox){
+  //     handlePagination();
+  //   }
+  // }, [mapBox]);
+
   //page
 
   // hitApiCall Modify resetFilters function
@@ -745,11 +740,18 @@ const SearchYachtGlobalCompo = () => {
   }, [filters, onCancelEachFilter]);
 
   // hit Api When sort change
-  useEffect(()=>{
-    if(startSort){
+  useEffect(() => {
+    if (startSort) {
       handleFilterChange()
     }
-  },[selectedSortBy,startSort])
+  }, [selectedSortBy, startSort])
+
+  useEffect(() => {
+    if (startMapbox) {
+      handleFilterChange()
+
+    }
+  }, [mapBox, startMapbox])
 
   const handleWishlistToggle = async (yachtId) => {
     if (!userId) {
@@ -758,7 +760,7 @@ const SearchYachtGlobalCompo = () => {
       return;
     }
 
-    if(yachtsType == "yachts"){
+    if (yachtsType == "yachts") {
       const updatedFavorites = new Set(favorites);
       try {
         if (updatedFavorites.has(yachtId)) {
@@ -768,12 +770,12 @@ const SearchYachtGlobalCompo = () => {
           await addToWishlist(userId, yachtId, 'yacht');
           updatedFavorites.add(yachtId);
         }
-  
+
         setFavorites(updatedFavorites);
       } catch (error) {
         console.error('Error toggling wishlist:', error);
       }
-    }else if(yachtsType == "f1yachts"){
+    } else if (yachtsType == "f1yachts") {
       const updatedFavorites = new Set(favorites);
       // console.log("updatedFavorites",updatedFavorites,yachtId)
 
@@ -785,13 +787,13 @@ const SearchYachtGlobalCompo = () => {
           await addToWishlist(userId, yachtId, 'f1yacht');
           updatedFavorites.add(yachtId);
         }
-  
+
         setFavorites(updatedFavorites);
       } catch (error) {
         console.error('Error toggling wishlist:', error);
       }
     }
-  
+
   };
 
   /// set orignial yachts to yachts
@@ -886,19 +888,31 @@ const SearchYachtGlobalCompo = () => {
 
 
 
+  const handleSwitchToMapBox = (value) => {
+    setStartMapbox(true)
+    setMapBox(value)
+    // Get current search params
+    const currentParams = new URLSearchParams(window.location.search);
+
+    // Update or add new parameter
+    currentParams.set("mapBox", value);
+
+    // Push updated URL with all existing params
+    router.push(`${searchPath}?${currentParams.toString()}`);
+  }
 
   //test
 
 
-//   useEffect(()=>{
-// console.log("favorites",favorites)
-//   },[favorites])
+  //   useEffect(()=>{
+  // console.log("favorites",favorites)
+  //   },[favorites])
 
-//   useEffect(()=>{
-//  console.log("selectedSortBy",selectedSortBy)
-//   },[selectedSortBy])
+  //   useEffect(()=>{
+  //  console.log("selectedSortBy",selectedSortBy)
+  //   },[selectedSortBy])
 
-  
+
 
   // console.log("Page",page)
   // useEffect(() => {
@@ -913,10 +927,11 @@ const SearchYachtGlobalCompo = () => {
   //   console.log("activeFilters", activeFilters);
   // }, [activeFilters]);
 
-//   useEffect(()=>{
-// console.log("validMarkers",validMarkers)
-// console.log("validmovingObjects",validmovingObjects)
-//   },[validMarkers,validmovingObjects])
+  // useEffect(() => {
+  //   console.log("validMarkers", validMarkers)
+  //   console.log("validmovingObjects", validmovingObjects)
+  //   console.log("mapBox", mapBox)
+  // }, [validMarkers, validmovingObjects, mapBox])
 
   // useEffect(() => {
   //   console.log("selectedOption.value",selectedOption.value);
@@ -995,7 +1010,7 @@ const SearchYachtGlobalCompo = () => {
   return (
     <section className="py-4 px-2">
       <div className="max-w-5xl mx-auto">
-     
+
         {activeFilters.length > 0 ? <h1 className="text-2xl font-semibold mb-6">
           Search Results ({paginateYachts ? paginateYachts : 0}) {yachtsType === "f1yachts" ? "f1 yachts" : yachtsType === "yachts" ? "Regular yachts" : ""}
         </h1> : <h1 className="text-2xl font-semibold mb-6">
@@ -1579,12 +1594,12 @@ const SearchYachtGlobalCompo = () => {
                           case 'name':
                             setFilters(prev => ({ ...prev, name: "" }));
                             break;
-                            case 'start date':
-                              setFilters(prev => ({ ...prev, start_date: "" }));
-                              break;
-                              case 'end date':
-                                setFilters(prev => ({ ...prev, end_date: "" }));
-                                break;
+                          case 'start date':
+                            setFilters(prev => ({ ...prev, start_date: "" }));
+                            break;
+                          case 'end date':
+                            setFilters(prev => ({ ...prev, end_date: "" }));
+                            break;
                         }
                         setonCancelEachFilter(true);
                       }}
@@ -1721,7 +1736,7 @@ const SearchYachtGlobalCompo = () => {
                     </div> */}
                   <EmblaCarouselYacht slides={images} options={OPTIONS} yachtsType={yachtsType} item={item} daysCount={daysCount} handleWishlistToggle={handleWishlistToggle} favorites={favorites} />
                   {/* <EmblaCarousel slides={SLIDES} options={OPTIONS} /> */}
-  
+
                   <Link href={`/dashboard/${yachtsType}/${item?.yacht?.id}`}>
                     <CardContent className="px-4 py-2">
                       <p className="text-xs font-light bg-[#BEA355]/30 text-black dark:text-white rounded-md px-1 py-0.5 w-auto inline-flex items-center">
@@ -1761,7 +1776,7 @@ const SearchYachtGlobalCompo = () => {
                 </Card>
               );
             })
-          )  :(!loading && yachts.length <= 0 ? (
+          ) : (!loading && yachts.length <= 0 ? (
             <div className="col-span-full flex flex-col items-center justify-center py-12">
               <p className="text-gray-500 text-lg mb-4">No yachts found</p>
               <Button
@@ -1799,10 +1814,11 @@ const SearchYachtGlobalCompo = () => {
               </Card>
             ))
           )}
-        </div> : <>
+        </div> :  <>
           <MapBoxComponent
             markers={validMarkers}
             movingObjects={validmovingObjects}
+            loading={loading}
 
           // markers={[
           //   { latitude: 25.127476, longitude: 55.342584, yacht: selectedYacht?.yacht, yachtsType },
@@ -1820,7 +1836,7 @@ const SearchYachtGlobalCompo = () => {
           //   { id: 'obj5', name: 'Object 5', coordinates: [55.347584, 25.132476] },
           // ]}
           />
-        </>}
+        </> }
 
 
 
@@ -1828,7 +1844,7 @@ const SearchYachtGlobalCompo = () => {
         <div className="fixed md:hidde bottom-0 left-0 w-full  shadow-md z-50 p-4">
           <div className="relative  flex justify-center">
             <Button
-              onClick={() => setMapBox(!mapBox)}
+              onClick={() => handleSwitchToMapBox(!mapBox)}
               className="rounded-full bg-[#BEA355]  min-w-[100px] h-12 flex items-center gap-2 shadow-lg px-4"
 
             >
