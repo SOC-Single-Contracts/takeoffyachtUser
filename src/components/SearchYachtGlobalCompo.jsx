@@ -913,9 +913,11 @@ const SearchYachtGlobalCompo = () => {
   //   console.log("activeFilters", activeFilters);
   // }, [activeFilters]);
 
+//   useEffect(()=>{
+// console.log("validMarkers",validMarkers)
+// console.log("validmovingObjects",validmovingObjects)
+//   },[validMarkers,validmovingObjects])
 
-  // console.log(validMarkers)
-  // console.log(validmovingObjects)
   // useEffect(() => {
   //   console.log("selectedOption.value",selectedOption.value);
   // }, [selectedOption]);
