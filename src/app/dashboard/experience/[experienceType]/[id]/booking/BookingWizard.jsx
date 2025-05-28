@@ -100,9 +100,9 @@ const BookingWizardContent = ({ initialBookingId }) => {
         const data = await getWallet(token);
 
         handleDispatchwalletData({
-          ...appStatWwalletContext, balance: data?.balance ?? prev.balance,
-          freezeWallet: data?.freeze ?? prev.freezeWallet,
-          transactions: data?.transactions ?? prev.transactions
+          ...appStatWwalletContext, balance: data?.balance ?? 0,
+          freezeWallet: data?.freeze ?? false,
+          transactions: data?.transactions
         })
         // console.log("hello",data)
 
@@ -114,7 +114,7 @@ const BookingWizardContent = ({ initialBookingId }) => {
       }
     };
 
-    getWalletResponse();
+    // getWalletResponse();
   }, [userId, token]);
 
   // Show loading while checking session

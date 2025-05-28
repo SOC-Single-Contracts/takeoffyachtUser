@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -21,12 +21,13 @@ import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, Ca
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchFilter from '@/components/lp/shared/SearchFilter';
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useGlobalState } from '@/context/GlobalStateContext';
+import { GlobalStateContext, useGlobalState } from '@/context/GlobalStateContext';
 import { Loading } from '@/components/ui/loading';
 import { calculateDaysBetween } from '@/helper/calculateDays';
 import MapBoxComponent from "@/components/shared/dashboard/mapBox";
 import { checkValidateLatLong } from '@/helper/validateLatlong';
 import EmblaCarouselYacht from './EmbalaCustom/js/EmblaCarouselYacht';
+import { useToast } from '@/hooks/use-toast';
 
 
 
@@ -42,6 +43,7 @@ const SearchYachtGlobalCompo = () => {
   const router = useRouter();
   const [yachts, setYachts] = useState([]);
   const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const [originalYachts, setOriginalYachts] = useState([]);
@@ -65,6 +67,8 @@ const SearchYachtGlobalCompo = () => {
   const [mapBox, setMapBox] = useState(false)
   const [validMarkers, setValidMarkers] = useState([])
   const [validmovingObjects, setValidMovingObject] = useState([])
+    const { globalState: appState, dispatch: appDispatch } = useContext(GlobalStateContext)
+    // console.log("appState", appState)
 
   const [filters, setFilters] = useState({
     min_price: "",
@@ -161,7 +165,7 @@ const SearchYachtGlobalCompo = () => {
 
 
 
-  const userId = session?.user?.userid || 1;
+  const userId = session?.user?.userid || null;
 
   const categories = ['Catamarans', "motor boat", "motor", 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
   const locations = ['Dubai', 'Abu Dhabi', 'Sharjah'];
@@ -348,8 +352,14 @@ const SearchYachtGlobalCompo = () => {
       if (userId) {
         try {
           const wishlistItems = await fetchWishlist(userId);
-          const wishlistIds = new Set(wishlistItems.map(item => item?.yacht));
-          setFavorites(wishlistIds);
+          if(yachtsType=="yachts"){
+            const wishlistIds = new Set(wishlistItems.map(item => item?.yacht));
+            setFavorites(wishlistIds);
+          }else if(yachtsType == "f1yachts"){
+            const wishlistIds = new Set(wishlistItems.map(item => item?.f1yacht));
+            setFavorites(wishlistIds);
+          }
+ 
         } catch (err) {
           console.error('Wishlist loading error:', err);
         }
@@ -361,7 +371,6 @@ const SearchYachtGlobalCompo = () => {
 
   const handlePagination = async () => {
 
-    if (!userId) return;
     if (!hasMore) return;
 
     let payload = {
@@ -455,7 +464,6 @@ const SearchYachtGlobalCompo = () => {
   };
   const handleResetAll = async () => {
 
-    if (!userId) return;
     let payloadHardReset = {
       source: componentType == "searchYacht" ? "searchYacht" : componentType == "simpleYacht" ? "simpleYacht" : "",
       reqType: "handleResetAll",
@@ -530,7 +538,6 @@ const SearchYachtGlobalCompo = () => {
 
   const handleFilterChange = async () => {
 
-    if (!userId) return;
 
     let payload = {
       max_guest: parseInt(searchParams.get('max_guest')) || "",
@@ -746,11 +753,8 @@ const SearchYachtGlobalCompo = () => {
 
   const handleWishlistToggle = async (yachtId) => {
     if (!userId) {
-      toast({
-        title: "Error",
-        description: "You must Login First",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'You must Login First' });
+
       return;
     }
 
@@ -884,6 +888,11 @@ const SearchYachtGlobalCompo = () => {
 
 
   //test
+
+
+//   useEffect(()=>{
+// console.log("favorites",favorites)
+//   },[favorites])
 
 //   useEffect(()=>{
 //  console.log("selectedSortBy",selectedSortBy)
@@ -1229,9 +1238,9 @@ const SearchYachtGlobalCompo = () => {
                             <SelectValue placeholder="Select location" />
                           </SelectTrigger>
                           <SelectContent>
-                            {locations.map((location) => (
-                              <SelectItem key={location} value={location}>
-                                {location}
+                            {appState?.cities?.map((city) => (
+                              <SelectItem key={city?.name} value={city?.name}>
+                                {city?.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -1750,7 +1759,7 @@ const SearchYachtGlobalCompo = () => {
                 </Card>
               );
             })
-          ) : (
+          )  :(!loading && yachts.length <= 0 ? (
             <div className="col-span-full flex flex-col items-center justify-center py-12">
               <p className="text-gray-500 text-lg mb-4">No yachts found</p>
               <Button
@@ -1761,9 +1770,8 @@ const SearchYachtGlobalCompo = () => {
                 <X className="h-4 w-4" />
                 Reset Filters
               </Button>
-
             </div>
-          )}
+          ) : "")}
 
           {loading && (
             // Render skeleton UI

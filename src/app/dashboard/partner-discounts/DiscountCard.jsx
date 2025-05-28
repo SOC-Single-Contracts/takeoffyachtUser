@@ -7,8 +7,8 @@ const BrandCard = ({ brand }) => {
   if (!brand) return null;
 
   const imageUrl = brand?.image
-    ? `${process.env.NEXT_PUBLIC_API_URL}${brand.image}`
-    : "/assets/images/f1.png";
+    ? `${process.env.NEXT_PUBLIC_S3_URL}${brand.image}`
+    : "/assets/images/Imagenotavailable.png";
 
     // console.log(imageUrl)
 
@@ -27,6 +27,9 @@ const BrandCard = ({ brand }) => {
               width={400}
               height={250}
               className="object-cover px-3 pt-3 rounded-3xl h-[120px]"
+              onError={(e) => {
+                e.target.src = '/assets/images/Imagenotavailable.png';
+              }}
             />
           </div>
           <div className="px-4 py-2">
@@ -44,6 +47,9 @@ const BrandCard = ({ brand }) => {
           width={800}
           height={500}
           className="rounded-lg object-contain"
+          onError={(e) => {
+            e.target.src = '/assets/images/Imagenotavailable.png';
+          }}
         />
         <h2 className="text-xl font-semibold mt-4">
           {brand?.name || "Unnamed brand"}

@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react'
 import ExperienceCard from './ExperienceCard'
 import Image from 'next/image'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog'
+import { useToast } from '@/hooks/use-toast'
 
 const ExperienceSkeleton = () => {
   return (
@@ -72,6 +73,7 @@ const EmptyExperienceState = ({ onRetry }) => {
 const Experience = () => {
   const { data: session, status } = useSession();
   const userId = session?.user?.userid || 1;
+  const { toast } = useToast();
 
   const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -84,7 +86,7 @@ const Experience = () => {
 
     if (!userId) {
       console.error('User ID is undefined.');
-      return;
+      // return;
     }
     try {
       setLoading(true);
@@ -116,6 +118,14 @@ const Experience = () => {
   }, [userId, status]);
 
   const handleWishlistToggle = async (experienceId) => {
+     if (!userId) {
+      toast({
+        title: "Error",
+        description: "You must Login First",
+        variant: "destructive",
+      });
+      return;
+    }
     if (!userId) return;
     
     const updatedFavorites = new Set(favorites);

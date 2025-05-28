@@ -28,7 +28,7 @@ import MapBoxComponent from "@/components/shared/dashboard/mapBox";
 import { checkValidateLatLong } from '@/helper/validateLatlong';
 import EmblaCarouselYacht from './EmbalaCustom/js/EmblaCarouselYacht';
 import EmblaCarouselExperience from './EmbalaCustomExperience/js/EmbalaCustomExperience';
-
+import { useToast } from '@/hooks/use-toast';
 
 
 const PAGE_SIZE = 10;
@@ -62,6 +62,7 @@ const SearchExperinceGlobalCompo = () => {
   const [componentType, setcomponentType] = useState("simpleYacht")
   const [searchPath, setSearchPath] = useState(`/dashboard/experience/${experienceType == "f1-exp" ? "f1-exp" : "regular-exp"}`)
   const targetPath = `/dashboard/experience/${experienceType == "f1-exp" ? "f1-exp" : "regular-exp"}/search`;
+    const { toast } = useToast();
 
   const [mapBox, setMapBox] = useState(false)
   const [validMarkers, setValidMarkers] = useState([])
@@ -162,7 +163,7 @@ const SearchExperinceGlobalCompo = () => {
 
 
 
-  const userId = session?.user?.userid || 1;
+  const userId = session?.user?.userid || null;
 
   const categories = ['Catamarans', "motor boat", "motor", 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
   const locations = ['Dubai', 'Abu Dhabi', 'Sharjah'];
@@ -362,7 +363,6 @@ const SearchExperinceGlobalCompo = () => {
 
   const handlePagination = async () => {
 
-    if (!userId) return;
     if (!hasMore) return;
 
     let payload = {
@@ -458,7 +458,6 @@ const SearchExperinceGlobalCompo = () => {
   };
   const handleResetAll = async () => {
 
-    if (!userId) return;
     let payloadHardReset = {
       source: componentType == "searchYacht" ? "searchYacht" : componentType == "simpleYacht" ? "simpleYacht" : "",
       reqType: "handleResetAll",
@@ -535,7 +534,6 @@ const SearchExperinceGlobalCompo = () => {
 
   const handleFilterChange = async () => {
 
-    if (!userId) return;
 
     let payload = {
       max_guest: parseInt(searchParams.get('max_guest')) || "",
@@ -883,9 +881,9 @@ const SearchExperinceGlobalCompo = () => {
   //   console.log("componentType", componentType, searchPath)
 
   // }, [componentType, searchPath])
-  useEffect(() => {
-    console.log("filters", filters);
-  }, [filters]);
+  // useEffect(() => {
+  //   console.log("filters", filters);
+  // }, [filters]);
 
   // useEffect(() => {
   //   console.log("activeFilters", activeFilters);
@@ -1713,16 +1711,16 @@ const SearchExperinceGlobalCompo = () => {
                       </p>
                       <div className="flex justify-between items-center">
                         <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{item?.experience?.name}</h3>
-                        {experienceType == "regular-exp" ? <span className="font-medium text-xs">
+                        {/* {experienceType == "regular-exp" ? <span className="font-medium text-xs">
                           AED <span className="font-bold text-sm text-primary">{item?.experience?.per_day_price}</span>
                           <span className="text-xs font-light ml-1">/Day</span>
                         </span> : experienceType == "f1-exp" ? <span className="font-medium text-xs">
                           AED <span className="font-bold text-sm text-primary">{item?.experience?.per_day_price}</span>
                           <span className="text-xs font-light ml-1">{`/${daysCount} ${daysCount === 1 ? 'Day' : 'Days'}`}  </span>
-                        </span> : ""}
+                        </span> : ""} */}
 
                       </div>
-                      <div className="flex justify-start items-center gap-1 flex-wrap">
+                      {/* <div className="flex justify-start items-center gap-1 flex-wrap">
                         <Image src="/assets/images/transfer.svg" alt="length" width={9} height={9} className="" />
                         <p className="font-semibold text-xs">{item?.experience?.length?.toFixed(2) || 0} ft</p>
                         <Dot />
@@ -1737,7 +1735,7 @@ const SearchExperinceGlobalCompo = () => {
                           <p>Cabins</p>
                           <p>{item?.experience?.number_of_cabin || 0}</p>
                         </div>
-                      </div>
+                      </div> */}
 
                     </CardContent>
                   </Link>
@@ -1745,20 +1743,19 @@ const SearchExperinceGlobalCompo = () => {
                 </Card>
               );
             })
-          ) : (
-            <div className="col-span-full flex flex-col items-center justify-center py-12">
-              <p className="text-gray-500 text-lg mb-4">No yachts found</p>
-              <Button
-                variant="outline"
-                onClick={resetFilters}
-                className="gap-2"
-              >
-                <X className="h-4 w-4" />
-                Reset Filters
-              </Button>
-
-            </div>
-          )}
+          ) : (!loading && yachts.length <= 0 ? (
+                      <div className="col-span-full flex flex-col items-center justify-center py-12">
+                        <p className="text-gray-500 text-lg mb-4">No Experience found</p>
+                        <Button
+                          variant="outline"
+                          onClick={resetFilters}
+                          className="gap-2"
+                        >
+                          <X className="h-4 w-4" />
+                          Reset Filters
+                        </Button>
+                      </div>
+                    ) : "")}
 
           {loading && (
             // Render skeleton UI

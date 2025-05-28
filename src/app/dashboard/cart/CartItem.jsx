@@ -15,7 +15,7 @@ const CartItem = ({ yacht }) => {
       case 'yacht':
         return `/dashboard/yachts/${id}/booking`;
         case 'f1-yachts':
-          return `/dashboard/f1-yachts/${id}/booking`;
+          return `/dashboard/f1yachts/${id}/booking`;
       case 'regular-exp':
         return `/dashboard/experience/regular-exp/${id}/booking`;
       case 'event':
@@ -54,7 +54,7 @@ const CartItem = ({ yacht }) => {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg overflow-hidden">
-      <div className="flex md:flex-row flex-col md:items-center items-start md:space-x-4">
+      <div className="flex relative md:flex-row flex-col md:items-center items-start md:space-x-4">
         <Image
           src={image || featuredyachts}
           alt={name}
@@ -69,12 +69,12 @@ const CartItem = ({ yacht }) => {
           <h1 className="md:text-2xl text-lg font-bold">{name}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{description}</p>
         </div>
-        <Button 
+        {/* <Button 
           onClick={handleRemoveFromWishlist}
           className="absolute top-2 right-2 bg-white/70 hover:bg-white rounded-full p-2 z-10"
         >
           <Heart className="w-5 h-5 text-red-500 fill-red-500" />
-        </Button>
+        </Button> */}
       </div>
       <div className="cart-item-details">
         <YachtDetailsGrid yacht={yacht} />
@@ -99,7 +99,7 @@ const CartItem = ({ yacht }) => {
             {getButtonText()}
           </Button>
         </Link>
-        <div className="flex flex-col text-start">
+        {/* <div className="flex flex-col text-start">
           <p className="text-sm font-medium">
             AED{" "}
             <span className="md:text-2xl text-lg font-bold">
@@ -108,7 +108,7 @@ const CartItem = ({ yacht }) => {
             /hour
           </p>
           <p className="text-sm text-gray-500">Min. {minHours} Hours</p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

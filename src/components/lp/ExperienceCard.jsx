@@ -40,7 +40,7 @@ const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle,experienc
                         />
                     </div>
                     
-                    <Button 
+                    {/* <Button 
                         variant="secondary" 
                         size="icon" 
                         className="absolute top-4 right-4 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
@@ -57,7 +57,7 @@ const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle,experienc
                             quality={100}
                             className=""
                         />
-                    </Button>
+                    </Button> */}
                     
                     {experienceType == "f1-exp" ?   <div className="absolute bottom-4 right-5 bg-white dark:bg-gray-900 p-1.5 rounded-md">
                         <span className="text-[14px] font-semibold">
@@ -86,12 +86,12 @@ const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle,experienc
                                     </p>
                                     <div className="flex justify-between items-center">
                                       <h3 className="text-[20px] font-semibold mb-1 truncate max-w-[230px]">{experience?.name}</h3>
-                                      <span className="font-medium text-xs">
+                                      {/* <span className="font-medium text-xs">
                                         AED <span className="font-bold text-sm text-primary">{experience?.per_day_price}</span>
                                         <span className="text-xs font-light ml-1">/Day</span>
-                                      </span>
+                                      </span> */}
                                     </div>
-                                    <div className="flex justify-start items-center gap-1">
+                                    {/* <div className="flex justify-start items-center gap-1">
                                       <Image src="/assets/images/transfer.svg" alt="length" quality={100} width={9} height={9} className="" />
                                       <p className="font-semibold text-xs">{experience?.length || 0} ft</p>
                                       <Dot />
@@ -106,7 +106,7 @@ const ExperienceCard = ({ experienceData, isFavorite, onWishlistToggle,experienc
                                         <p>Cabins</p>
                                         <p>{experience?.number_of_cabin || 0}</p>
                                       </div>
-                                    </div>
+                                    </div> */}
                                   </CardContent>
                                 </Link>
             </Card>

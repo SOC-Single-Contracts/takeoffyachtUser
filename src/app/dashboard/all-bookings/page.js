@@ -37,7 +37,7 @@ const AllBookings = () => {
         // Fetch bookings from multiple endpoints
         const [yachtResponse, experienceResponse, f1yachtResponse, eventResponse] = await Promise.all([
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}?BookingType=regular`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_exp_booking/1/?BookingType=duration`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_exp_booking/${userId}/?BookingType=duration`),
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_yacht_booking/${userId}?BookingType=f1yachts`),
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_event_booking/${userId}`),
           // fetch(`${process.env.NEXT_PUBLIC_API_URL}/yacht/get_exp_booking/1/?BookingType=date_range`)

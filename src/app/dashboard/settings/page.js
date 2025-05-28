@@ -472,13 +472,13 @@ const Settings = () => {
                     Logout
                     <LogOut className="size-4" />
                   </Button>
-                  <p className="dark:text-white text-gray-800 font-semibold text-sm pb-4">
+                  {/* <p className="dark:text-white text-gray-800 font-semibold text-sm pb-4">
                     App V1.10
-                  </p>
-                  <Button className="rounded-full px-8 py-2 h-10">
+                  </p> */}
+                  {/* <Button className="rounded-full px-8 py-2 h-10">
                     <ArrowRightLeft className="size-4" />
                     Switch to hosting
-                  </Button>
+                  </Button> */}
                 </div>
               </AccordionContent>
             </AccordionItem>

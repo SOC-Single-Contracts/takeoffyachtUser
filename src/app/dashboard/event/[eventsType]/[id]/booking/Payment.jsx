@@ -208,6 +208,8 @@ const PaymentForm = ({eventData}) => {
             email: bookingData?.email,
             phone_number: bookingData?.phone,
             tickets_quantity: bookingData?.tickets,
+            user: session?.user?.userid,
+
           }),
         });
 

@@ -57,6 +57,7 @@ const Selection = ({ onNext }) => {
   const [timeLeft, setTimeLeft] = useState(44 * 60);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isUserNewYearBooking, setIsUserNewYearBooking] = useState(false)
+  let min_duration_hour = 2;
   const [durationMinutesList,setDurationMinutesList] = useState([{
     name:"30 Mins",
     value:0.5
@@ -74,6 +75,7 @@ const Selection = ({ onNext }) => {
     value:2
   }
 ])
+const [filteredDurations, setFilteredDurations] = useState([]);
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -96,6 +98,18 @@ const Selection = ({ onNext }) => {
   }, []);
 
   // Fetch availability on component mount
+
+  useEffect(() => {
+    if (
+      experienceType === "regular-exp" &&
+      selectedYacht?.experience?.min_duration_hour !== undefined &&
+      selectedYacht?.experience?.min_duration_hour !== null
+    ) {
+      const min = selectedYacht.experience.min_duration_hour;
+      const filtered = durationMinutesList.filter((item) => item.value >= min);
+      setFilteredDurations(filtered);
+    }
+  }, [experienceType, selectedYacht?.experience?.min_duration_hour]);
   useEffect(() => {
     const fetchAvailability = async () => {
       if (!selectedYacht?.experience?.id) {
@@ -162,7 +176,7 @@ const Selection = ({ onNext }) => {
       // fetchAvailability();
       updateBookingData({
         // duration: selectedYacht?.experience?.duration_hour ? selectedYacht?.experience?.duration_hour : 3
-        duration:0.5
+        duration:selectedYacht?.experience?.min_duration_hour ? selectedYacht?.experience?.min_duration_hour : 0.5
       });
     }
   }, [selectedYacht, isUserNewYearBooking]);
@@ -661,9 +675,10 @@ const Selection = ({ onNext }) => {
 
   // useEffect(() => {
   //   console.log("selectedYacht", selectedYacht)
-  //   console.log("extras", extras)
-    // console.log("experienceType, bookingData,", experienceType, bookingData,)
-  // }, [selectedYacht, experienceType, bookingData, newYearCanApply, isUserNewYearBooking, extras])
+  //   // console.log("extras", extras)
+  //   console.log("experienceType, bookingData,", experienceType, bookingData,)
+  //   console.log("filteredDurations",filteredDurations)
+  // }, [selectedYacht, experienceType, bookingData, newYearCanApply, isUserNewYearBooking, extras,filteredDurations])
 
 
   if (loading || !selectedYacht) {
@@ -1049,7 +1064,7 @@ const Selection = ({ onNext }) => {
                             <SelectValue placeholder="Select Duration Minutes" />
                           </SelectTrigger>
                           <SelectContent>
-                            {durationMinutesList.map((durationMin) => (
+                            {filteredDurations?.length > 0 && filteredDurations.map((durationMin) => (
                               <SelectItem key={durationMin?.value} value={durationMin?.value}>
                                 {durationMin?.name}
                               </SelectItem>

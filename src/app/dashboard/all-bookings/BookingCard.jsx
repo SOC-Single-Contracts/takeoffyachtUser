@@ -49,13 +49,16 @@ const BookingCard = ({ booking,bookingType }) => {
           booking.experience?.name || 
           booking.event_name || 
           'Unknown',
-    image: booking.yacht?.yacht_image 
-      ? `${process.env.NEXT_PUBLIC_S3_URL}${booking.yacht.yacht_image}` 
-      : booking.package?.package_image 
-        ? `${process.env.NEXT_PUBLIC_S3_URL}${booking.package.package_image}` 
-        : booking.experience?.experience_image 
-          ? `${process.env.NEXT_PUBLIC_S3_URL}${booking.experience.experience_image}` 
-          : "/assets/images/abudhabi.png",
+          image:
+          booking.type === 'yacht' && booking.yacht?.yacht_image
+            ? `${process.env.NEXT_PUBLIC_S3_URL}${booking.yacht.yacht_image}`
+            : booking.type === 'event' && booking.yacht?.event_image
+            ? `${process.env.NEXT_PUBLIC_S3_URL}${booking.yacht.event_image}`
+            : booking.type === 'f1yachts' && booking.yacht?.yacht_image
+            ? `${process.env.NEXT_PUBLIC_S3_URL}${booking.yacht.yacht_image}`
+            : booking.type === 'regular-exp' && booking.yacht?.experience_image
+            ? `${process.env.NEXT_PUBLIC_S3_URL}${booking.yacht.experience_image}`
+            : '/assets/images/abudhabi.png',
     location: booking.yacht?.location || 
               booking.package?.location || 
               booking.experience?.location || 
@@ -75,15 +78,20 @@ const BookingCard = ({ booking,bookingType }) => {
           type: 'yachts', 
           id: booking.yacht_id || booking.id 
         };
-      case 'event':
-        return { 
+        case 'f1yachts':
+          return { 
+            type: 'f1yachts', 
+            id: booking.f1_yacht_id || booking.id 
+          };
+        case 'event':
+          return { 
           type: 'events', 
           id: booking.package_id || booking.package?.id || booking.id 
         };
-      case 'experience':
+      case 'regular-exp':
         return { 
-          type: 'experience', 
-          id: booking.experience_id || booking.id 
+          type: 'regular-exp', 
+          id: booking.yacht?.id || booking.id 
         };
       default:
         return { 
@@ -93,7 +101,7 @@ const BookingCard = ({ booking,bookingType }) => {
     }
   };
 
-  const { type, id } = getRouteParams();
+  const { id } = getRouteParams();
 
   return (
     <div
@@ -111,6 +119,9 @@ const BookingCard = ({ booking,bookingType }) => {
         className="w-full h-48 object-cover"
         width={500}
         height={300}
+        onError={(e) => {
+          e.target.src = '/assets/images/Imagenotavailable.png';
+        }}
       />  
     {/* <div className="p-4 dark:bg-gray-800">
       <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
@@ -204,12 +215,12 @@ const BookingCard = ({ booking,bookingType }) => {
           </div>
         </div> */}
 
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <div className="flex items-center text-sm gap-2">
             <span className="text-gray-600 dark:text-gray-400 font-medium">Guests:</span>
             <span className="text-gray-600 dark:text-gray-400">{bookingDetails.guests}</span>
           </div>
-        </div>
+        </div> */}
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 bg-[#BEA355]/20 dark:bg-[#BEA355]/20 px-2 py-1 rounded-md">
@@ -220,7 +231,7 @@ const BookingCard = ({ booking,bookingType }) => {
       </div>
       {booking?.type == "regular-exp" ? 
             <Link 
-            href={`/dashboard/experience/regular-exp/${id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
+            href={`/dashboard/experience/regular-exp/${booking?.yacht?.id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
             className="mt-4 block"
           >
             <Button
@@ -232,7 +243,7 @@ const BookingCard = ({ booking,bookingType }) => {
           </Link> :
           booking?.type == "event" ? 
           <Link 
-          href={`/dashboard/event/all/${id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
+          href={`/dashboard/event/all/${booking?.yacht?.id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
           className="mt-4 block"
         >
           <Button
@@ -244,7 +255,7 @@ const BookingCard = ({ booking,bookingType }) => {
         </Link>
        : booking?.type == "f1-exp" ? 
        <Link 
-       href={`/dashboard/experience/f1-exp/${id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
+       href={`/dashboard/experience/f1-exp/${booking?.yacht?.id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
        className="mt-4 block"
      >
        <Button
@@ -254,7 +265,7 @@ const BookingCard = ({ booking,bookingType }) => {
          Booking Summary
        </Button>
      </Link> : booking?.type == "f1yachts" ? <Link 
-        href={`/dashboard/f1yachts/${id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
+        href={`/dashboard/f1yachts/${booking?.yacht?.id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
         className="mt-4 block"
       >
         <Button
@@ -266,7 +277,7 @@ const BookingCard = ({ booking,bookingType }) => {
         </Button>
       </Link>
         : <Link 
-        href={`/dashboard/${type}/${id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
+        href={`/dashboard/yachts/${booking?.yacht?.id}/booking/?bookingId=${booking.id}&bookingType=${bookingType}`}
         className="mt-4 block"
       >
         <Button

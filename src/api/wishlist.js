@@ -33,7 +33,7 @@ export const addToWishlist = async (userId, itemId, itemType) => {
   if (itemType === 'yacht') {
     payload.yacht = itemId; // Use yacht key for yacht IDs
   }else if (itemType === 'f1yacht') {
-    payload.yacht = itemId; // Use yacht key for yacht IDs
+    payload.f1yacht = itemId; // Use yacht key for yacht IDs
   } else if (itemType === 'experience') {
     payload.experience = itemId; // Use experience key for experience IDs
   } else if (itemType === 'event') {
@@ -51,7 +51,7 @@ export const removeFromWishlist = async (userId, itemId, itemType) => {
   if (itemType === 'yacht') {
     url = `${BASE_URL}remove_yacht/?yacht_id=${itemId}&Auth_user=${userId}`;
   }else  if (itemType === 'f1yacht') {
-    url = `${BASE_URL}remove_yacht/?yacht_id=${itemId}&Auth_user=${userId}`;
+    url = `${BASE_URL}remove_f1yacht/?f1yacht_id=${itemId}&Auth_user=${userId}`;
   } else if (itemType === 'experience') {
     url = `${BASE_URL}remove_experience/?experience_id=${itemId}&Auth_user=${userId}`;
   } else if (itemType === 'event') {
@@ -64,6 +64,6 @@ export const removeFromWishlist = async (userId, itemId, itemType) => {
 
 
 export const fetchWishlist = async (userId) => {
-  const response = await axios.get(BASE_URL);
+  const response = await axios.get(`${BASE_URL}?Auth_user=${userId}`);
   return response?.data?.filter(item => item.Auth_user == userId);
 };

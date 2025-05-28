@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ import { Carousel, CarouselContent, CarouselDots, CarouselItem, CarouselNext, Ca
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchFilter from '@/components/lp/shared/SearchFilter';
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useGlobalState } from '@/context/GlobalStateContext';
+import { GlobalStateContext, useGlobalState } from '@/context/GlobalStateContext';
 import { Loading } from '@/components/ui/loading';
 import { calculateDaysBetween } from '@/helper/calculateDays';
 import MapBoxComponent from "@/components/shared/dashboard/mapBox";
@@ -29,6 +29,8 @@ import { checkValidateLatLong } from '@/helper/validateLatlong';
 import { cn } from '@/lib/utils';
 import { Calendar } from './ui/calendar';
 import { getMonthName } from '@/helper/filterData';
+import { useToast } from '@/hooks/use-toast';
+
 
 const PAGE_SIZE = 10;
 
@@ -55,12 +57,15 @@ const SearchEventGlobalCompo = () => {
   const [totalEvents, settotalEvents] = useState(0);
   const [paginateEvents, setpaginateEvents] = useState(0);
   const [componentType, setcomponentType] = useState("simpleEvent")
-  const [searchPath, setSearchPath] = useState(`/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}`)
-  const targetPath = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}/search`;
+  const [searchPath, setSearchPath] = useState(`/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType == "f1-events" ? "f1-events" : "normal-events"}`)
+  const targetPath = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType == "f1-events" ? "f1-events" : "normal-events"}/search`;
+    const { toast } = useToast();
 
   const [mapBox, setMapBox] = useState(false)
   const [validMarkers, setValidMarkers] = useState([])
   const [validmovingObjects, setValidMovingObject] = useState([])
+  const { globalState: appState, dispatch: appDispatch } = useContext(GlobalStateContext)
+  // console.log("appState", appState)
 
   const [filters, setFilters] = useState({
     min_price: "",
@@ -161,7 +166,7 @@ const SearchEventGlobalCompo = () => {
   const selectedOption = sortByOptions.find(option => option.value === selectedSortBy);
 
 
-  const userId = session?.user?.userid || 1;
+  const userId = session?.user?.userid || null;
 
   const categories = ['Catamarans', "motor boat", "motor", 'Explorer Yacht', 'Ferries & Cruises', 'House Boat', 'Mega Yacht', 'Jet Ski', 'Open Yachts', 'Wake Surfing', 'Motor Yachts', 'House Yacht', 'Wedding Yacht', 'Trawler Yachts'];
   const locations = ['Dubai', 'Abu Dhabi', 'Sharjah'];
@@ -371,7 +376,7 @@ const SearchEventGlobalCompo = () => {
       if (userId) {
         try {
           const wishlistItems = await fetchWishlist(userId);
-          const wishlistIds = new Set(wishlistItems.map(item => item?.yacht));
+          const wishlistIds = new Set(wishlistItems.map(item => item?.event));
           setFavorites(wishlistIds);
         } catch (err) {
           console.error('Wishlist loading error:', err);
@@ -379,19 +384,18 @@ const SearchEventGlobalCompo = () => {
       }
     };
 
-    // loadWishlist();
+    loadWishlist();
   }, [userId]);
 
   const handlePagination = async () => {
 
-    if (!userId) return;
     if (!hasMore) return;
 
     let payload = {
       // max_guest: parseInt(searchParams.get('max_guest')) || "",
       location: searchParams.get('location'),
       date_filter: searchParams.get('eventOrder'),
-      event_type:searchParams.get('eventType'),
+      event_type: searchParams.get('eventType'),
       month: searchParams.get('eventMonth'),
       search: searchParams.get('name') || "",
       // created_on: searchParams.get('date') || "",
@@ -487,7 +491,6 @@ const SearchEventGlobalCompo = () => {
   };
   const handleResetAll = async () => {
 
-    if (!userId) return;
     let payloadHardReset = {
       source: componentType == "searchEvent" ? "searchEvent" : componentType == "simpleEvent" ? "simpleEvent" : "",
       reqType: "handleResetAll",
@@ -567,7 +570,6 @@ const SearchEventGlobalCompo = () => {
 
   const handleFilterChange = async () => {
 
-    if (!userId) return;
 
     let payload = {
       // max_guest: parseInt(searchParams.get('max_guest')) || "",
@@ -820,6 +822,11 @@ const SearchEventGlobalCompo = () => {
   }, [filters, onCancelEachFilter]);
 
   const handleWishlistToggle = async (eventId) => {
+    if (!session?.user?.userid) {
+      toast({ title: 'Error', description: 'You must Login First' });
+
+      return;
+    }
     if (!session?.user?.userid) return;
 
     const updatedFavorites = new Set(favorites);
@@ -836,7 +843,7 @@ const SearchEventGlobalCompo = () => {
       console.error('Error toggling wishlist:', error);
     }
   };
-  
+
   /// set orignial events to events
   useEffect(() => {
     let data = [...originalEvents]
@@ -895,11 +902,11 @@ const SearchEventGlobalCompo = () => {
   useEffect(() => {
     // console.log(currentPath,"=>",targetPath)
     if (currentPath === targetPath) {
-      let value = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}/search`;
+      let value = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType == "f1-events" ? "f1-events" : "normal-events"}/search`;
       setSearchPath(value)
       setcomponentType("searchEvent")
     } else {
-      let value = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType ==  "f1-events" ? "f1-events" : "normal-events"}`;
+      let value = `/dashboard/event/${eventsType == "year-events" ? "year-events" : eventsType == "all" ? "all" : eventsType == "f1-events" ? "f1-events" : "normal-events"}`;
       setSearchPath(value)
       setcomponentType("simpleEvent")
 
@@ -1123,9 +1130,9 @@ const SearchEventGlobalCompo = () => {
                             <SelectValue placeholder="Select location" />
                           </SelectTrigger>
                           <SelectContent>
-                            {locations.map((location) => (
-                              <SelectItem key={location} value={location}>
-                                {location}
+                            {appState?.cities?.map((city) => (
+                              <SelectItem key={city?.name} value={city?.name}>
+                                {city?.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -1234,7 +1241,7 @@ const SearchEventGlobalCompo = () => {
                       variant="secondary"
                       className="px-3 py-1 flex items-center gap-1"
                     >
-                      {filterName === "Month" ? `${filterName}: ${getMonthName(filterValue?.trim(),months)}` : filter}
+                      {filterName === "Month" ? `${filterName}: ${getMonthName(filterValue?.trim(), months)}` : filter}
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => {
@@ -1400,9 +1407,9 @@ const SearchEventGlobalCompo = () => {
                 </Card>
               );
             })
-          ) : (
+          ) : (!loading && events.length <= 0 ? (
             <div className="col-span-full flex flex-col items-center justify-center py-12">
-              <p className="text-gray-500 text-lg mb-4">No Events found</p>
+              <p className="text-gray-500 text-lg mb-4">No Event found</p>
               <Button
                 variant="outline"
                 onClick={resetFilters}
@@ -1411,9 +1418,8 @@ const SearchEventGlobalCompo = () => {
                 <X className="h-4 w-4" />
                 Reset Filters
               </Button>
-
             </div>
-          )}
+          ) : "")}
 
           {loading && (
             // Render skeleton UI
