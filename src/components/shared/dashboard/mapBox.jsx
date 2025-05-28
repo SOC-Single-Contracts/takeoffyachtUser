@@ -3,9 +3,10 @@
 import React, { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { Loading } from "@/components/ui/loading";
 mapboxgl.accessToken = "pk.eyJ1IjoidGFrZW9mZnlhY2h0cyIsImEiOiJjbThzZjVzMnIxNTdwMmxzYWZjY2V2MmdsIn0.b-adD8juJslnBX5RGUx4Hw";
 
-const MapBoxComponent = ({ markers = [], movingObjects = [], callingFrom }) => {
+const MapBoxComponent = ({ markers = [], movingObjects = [], callingFrom,loading }) => {
     const mapContainerRef = useRef(null);
     const mapRef = useRef(null);
 
@@ -208,6 +209,12 @@ const MapBoxComponent = ({ markers = [], movingObjects = [], callingFrom }) => {
         });
     };
 
+   
+  if (loading) {
+      return (
+          <Loading />
+      );
+  }
     return <div ref={mapContainerRef} className="relative w-full h-[500px]" />;
 };
 
