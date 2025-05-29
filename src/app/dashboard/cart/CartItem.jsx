@@ -14,12 +14,12 @@ const CartItem = ({ yacht }) => {
     switch (type) {
       case 'yacht':
         return `/dashboard/yachts/${id}/booking`;
-        case 'f1-yachts':
-          return `/dashboard/f1yachts/${id}/booking`;
+      case 'f1-yachts':
+        return `/dashboard/f1yachts/${id}/booking`;
       case 'regular-exp':
         return `/dashboard/experience/regular-exp/${id}/booking`;
       case 'event':
-        return `/dashboard/event/all/${id}/booking`;
+        return `/dashboard/event/all/${id}`;
       default:
         return `/dashboard/yachts/${id}/booking`; // Default to yacht booking
     }
@@ -43,7 +43,7 @@ const CartItem = ({ yacht }) => {
       const response = await fetch(`https://api.takeoffyachts.com/wishlist/wishlistdelete/${wishlistId}/`, {
         method: 'DELETE'
       });
-      
+
       if (response.ok) {
         console.log('Item removed from wishlist');
       }
@@ -51,6 +51,9 @@ const CartItem = ({ yacht }) => {
       console.error('Error removing item from wishlist:', error);
     }
   };
+
+
+
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg overflow-hidden">
@@ -69,8 +72,8 @@ const CartItem = ({ yacht }) => {
           <h1 className="md:text-2xl text-lg font-bold">{name}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{description}</p>
         </div>
-        {/* <Button 
-          onClick={handleRemoveFromWishlist}
+        {/* <Button
+          onClick={()=>handleRemoveFromWishlist}
           className="absolute top-2 right-2 bg-white/70 hover:bg-white rounded-full p-2 z-10"
         >
           <Heart className="w-5 h-5 text-red-500 fill-red-500" />

@@ -74,56 +74,57 @@ const EventDetail = () => {
     }
   }, [id, session?.user?.userid || 1]);
 
-   // setTicketCounts(prev => ({
-    //   ...prev,
-    //   [packageId]: action === 'increase'
-    //     ? (prev[packageId] || 0) + 1
-    //     : Math.max(0, (prev[packageId] || 0) - 1)
-    // }));
-    const handleTicketChange = (packageId, action, pkg) => {
-      const now = new Date();
-    
-      // Convert from/to date strings to Date objects
-      const eventStart = new Date(selectedEvent.from_date);
-      const eventEnd = new Date(selectedEvent.to_date);
-    
-      // If the event has ended, block ticket changes
-      if (now > eventEnd) {
-        toast({
-          title: "Error",
-          description: "Cannot book tickets for past events.",
-          variant: "destructive",
-        });
-        return;
-      }
-    
-      setTicketCounts(prev => {
-        const currentCount = prev[packageId] || 0;
-        const remaining = pkg.remaining_quantity;
-    
-        if (action === 'increase') {
-          if (currentCount < remaining) {
-            return {
-              ...prev,
-              [packageId]: currentCount + 1
-            };
-          } else {
-            toast({
-              title: 'Error',
-              description: `You have reached the maximum allowed tickets (${remaining}) for this package.`,
-              variant: "destructive",
-            });
-            return prev;
-          }
-        } else {
+  // setTicketCounts(prev => ({
+  //   ...prev,
+  //   [packageId]: action === 'increase'
+  //     ? (prev[packageId] || 0) + 1
+  //     : Math.max(0, (prev[packageId] || 0) - 1)
+  // }));
+  const handleTicketChange = (packageId, action, pkg) => {
+    const now = new Date();
+    const today = now.toISOString().split("T")[0]; // e.g. "2025-06-10"
+    const eventEndDate = selectedEvent.to_date.split("T")[0]; // e.g. "2025-06-12"
+  
+    // console.log("Today:", today);
+    // console.log("Event End Date:", eventEndDate);
+  
+    if (today > eventEndDate) {
+      toast({
+        title: "Error",
+        description: "Cannot book tickets for past events.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setTicketCounts(prev => {
+      const currentCount = prev[packageId] || 0;
+      const remaining = pkg.remaining_quantity;
+
+      
+      if (action === 'increase') {
+        if (currentCount < remaining) {
           return {
             ...prev,
-            [packageId]: Math.max(0, currentCount - 1)
+            [packageId]: currentCount + 1
           };
+        } else {
+          toast({
+            title: 'Error',
+            description: `You have reached the maximum allowed tickets (${remaining}) for this package.`,
+            variant: "destructive",
+          });
+          return prev;
         }
-      });
-    };
-    
+      } else {
+        return {
+          ...prev,
+          [packageId]: Math.max(0, currentCount - 1)
+        };
+      }
+    });
+  };
+
 
 
   if (error) {

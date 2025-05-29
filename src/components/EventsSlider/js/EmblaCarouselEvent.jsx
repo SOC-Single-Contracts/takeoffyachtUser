@@ -47,9 +47,9 @@ const EventSliderEmbala = (props) => {
            
                 <div>
                 {
-                pkg?.remaining_quantity <=0 &&
+                (pkg?.sold) &&
 
-                <Image src="/assets/images/sold.jpg" alt="Hot" width={100} height={100} className="absolute top-0 right-0 z-10" />
+                <Image src="/assets/images/sold.jpg" alt="Hot" width={100} height={100} className="absolute rounded-3xl top-0 right-0 z-10" />
 
               }
                   <h3 className='text-gray-700 font-semibold text-lg dark:text-white'>{pkg?.package_type}</h3>
@@ -73,6 +73,9 @@ const EventSliderEmbala = (props) => {
                         size="icon"
                         onClick={() => handleTicketChange(pkg?.id, 'decrease', pkg)}
                         className="h-8 w-8 rounded-xl bg-[#F4F4F4] dark:bg-gray-800"
+                        disabled={pkg?.sold}
+
+                        
                       >
                         -
                       </Button>
@@ -84,6 +87,7 @@ const EventSliderEmbala = (props) => {
                         size="icon"
                         onClick={() => handleTicketChange(pkg?.id, 'increase', pkg)}
                         className="h-8 w-8 rounded-xl bg-[#F4F4F4] dark:bg-gray-800"
+                        disabled={pkg?.sold}
                       >
                         +
                       </Button>

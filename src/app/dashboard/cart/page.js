@@ -53,7 +53,7 @@ const Cart = () => {
                 wishlistId: item?.id,
                 name: yacht?.name || 'Unnamed Yacht',
                 description: yacht?.description || 'No description available',
-                image: yacht?.yacht_image ? `https://api.takeoffyachts.com${yacht?.yacht_image}` : null,
+                image: yacht?.yacht_image ? `${process.env.NEXT_PUBLIC_S3_URL}${yacht?.yacht_image}` : null,
                 features: yacht.features 
                 ? Object.keys(yacht.features).map(key => `${key}: ${yacht.features[key]}`).join(', ')
                 : [],              
@@ -69,7 +69,7 @@ const Cart = () => {
                 wishlistId: item?.id,
                 name: yacht?.name || 'Unnamed Yacht',
                 description: yacht?.description || 'No description available',
-                image: yacht?.yacht_image ? `https://api.takeoffyachts.com${yacht?.yacht_image}` : null,
+                image: yacht?.yacht_image ? `${process.env.NEXT_PUBLIC_S3_URL}${yacht?.yacht_image}` : null,
                 features: yacht.features 
                 ? Object.keys(yacht.features).map(key => `${key}: ${yacht.features[key]}`).join(', ')
                 : [],              
@@ -86,7 +86,7 @@ const Cart = () => {
                 wishlistId: item?.id,
                 name: experience?.name || 'Unnamed Experience',
                 description: experience?.description || 'No description available',
-                image: experience?.experience_image ? `https://api.takeoffyachts.com${experience?.experience_image}` : null,
+                image: experience?.experience_image ? `${process.env.NEXT_PUBLIC_S3_URL}${experience?.experience_image}` : null,
                 features: experience.features 
                 ? Object.keys(experience.features).map(key => `${key}: ${experience.features[key]}`).join(', ')
                 : [],
@@ -96,13 +96,14 @@ const Cart = () => {
                 type: 'regular-exp'
               };
             } else if (item?.event) {
+              const event =item?.event_detials;
               return {
                 uniqueKey: `event-${item?.event}-${index}`,
                 id: item?.event,
                 wishlistId: item?.id,
-                name: 'Event',
-                description: 'Event Details',
-                image: null,
+                name: event?.name || 'Event',
+                description: event?.description || 'No description available',
+                image: event?.event_image ? `${process.env.NEXT_PUBLIC_S3_URL}${event?.event_image}` : null,
                 features: [],
                 pricePerHour: 0,
                 minHours: 0,
