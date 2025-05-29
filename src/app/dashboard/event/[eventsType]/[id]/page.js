@@ -81,14 +81,14 @@ const EventDetail = () => {
   //     : Math.max(0, (prev[packageId] || 0) - 1)
   // }));
   const handleTicketChange = (packageId, action, pkg) => {
-    const now = new Date();
-    const today = now.toISOString().split("T")[0]; // e.g. "2025-06-10"
-    const eventEndDate = selectedEvent.to_date.split("T")[0]; // e.g. "2025-06-12"
+    // const now = new Date();
+    // const today = now.toISOString().split("T")[0]; // e.g. "2025-06-10"
+    // const eventEndDate = selectedEvent.to_date.split("T")[0]; // e.g. "2025-06-12"
   
     // console.log("Today:", today);
     // console.log("Event End Date:", eventEndDate);
   
-    if (today > eventEndDate) {
+    if (selectedEvent?.is_past) {
       toast({
         title: "Error",
         description: "Cannot book tickets for past events.",

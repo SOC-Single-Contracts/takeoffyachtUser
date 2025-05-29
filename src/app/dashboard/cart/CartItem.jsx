@@ -73,7 +73,7 @@ const CartItem = ({ yacht }) => {
           <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{description}</p>
         </div>
         {/* <Button
-          onClick={()=>handleRemoveFromWishlist}
+          onClick={()=>handleRemoveFromWishlist()}
           className="absolute top-2 right-2 bg-white/70 hover:bg-white rounded-full p-2 z-10"
         >
           <Heart className="w-5 h-5 text-red-500 fill-red-500" />
