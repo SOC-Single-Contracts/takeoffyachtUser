@@ -95,8 +95,8 @@ const Cart = () => {
                 minHours: experience?.duration_hour || 0,
                 type: 'regular-exp'
               };
-            } else if (item?.event) {
-              const event =item?.event_detials;
+            } else if (item?.event && item?.event_details) {
+              const event =item?.event_details;
               return {
                 uniqueKey: `event-${item?.event}-${index}`,
                 id: item?.event,
