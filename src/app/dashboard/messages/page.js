@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { sb } from "@/lib/sendBird";
 import Image from "next/image";
+import ChatProductCatalog from "./chat/ChatProductCatalog";
 
 const Chat = () => {
   const [participants, setParticipants] = useState([]);
@@ -117,6 +118,7 @@ const Chat = () => {
       console.error('Error handling file:', error);
     }
   };
+  console.log('session', session)
 
   const startNewChat = async () => {
     if (!session?.user?.userid) return;
@@ -194,6 +196,7 @@ const Chat = () => {
         }
   
         console.log("Fetched Users:", allUsers.length);
+        console.log("allUsers", allUsers)
   
         const formattedUsers = allUsers.map(user => ({
           id: user.userId,
@@ -203,6 +206,7 @@ const Chat = () => {
           status: user.connectionStatus || 'offline',
           email: user.metaData?.email
         }));
+        console.log("formattedUsers", formattedUsers)
   
         setParticipants(formattedUsers);
         setCurrentUser(sb.currentUser);
@@ -250,8 +254,9 @@ const Chat = () => {
               senderId: message.sender.userId,
               timestamp: message.createdAt,
               senderName: message.sender.nickname || message.sender.userId,
-              type: message.messageType === 'file' ? 'image' : 'text',
-              url: message.url
+              type: message.messageType === 'file' ? 'image' : message.customType === 'catalog' ? 'catalog' : 'text',
+              url: message.url,
+              data: message.data
             }]);
             setNewMessageAdded(true);
           };
@@ -364,8 +369,9 @@ const Chat = () => {
             senderId: msg.sender.userId,
             timestamp: msg.createdAt,
             senderName: msg.sender.nickname || msg.sender.userId,
-            type: msg.messageType === 'file' ? 'image' : 'text',
-            url: msg.url
+            type: msg.messageType === 'file' ? 'image' : msg.customType === 'catalog' ? 'catalog' : 'text',
+            url: msg.url,
+            data: msg.data
           }));
 
         setMessages(prev => {
@@ -586,7 +592,7 @@ const Chat = () => {
                     alt="Preview"
                     className="max-h-60 rounded-lg w-full object-cover"
                   />
-                  : ""}
+                  : message?.type === "catalog" ? <ChatProductCatalog product={message?.data?.length > 0 ? JSON.parse(message?.data) : {}} /> : ""}
                 <span className="text-xs opacity-70 mt-1 block">
                   {new Date(message.timestamp).toLocaleTimeString([], {
                     hour: '2-digit',
