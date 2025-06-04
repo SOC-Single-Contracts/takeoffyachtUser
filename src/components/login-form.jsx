@@ -33,19 +33,12 @@ export function LoginForm({ className, ...props }) {
 
   const onSubmit = async (data) => {
     try {
-      // Call both the new API and the existing signIn method in parallel
-      const [apiRes, signInRes] = await Promise.all([
-        axios.post(`${process.env.NEXT_PUBLIC_API_URL}/Auth/Login/`, {
-          Email: data.Email,
-          Password: data.Password,
-        }),
-        signIn("credentials", {
-          redirect: false,
-          Email: data.Email,
-          Password: data.Password,
-        }),
-      ]);
-
+      // Call the API to log in and get token
+      const apiRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/Auth/Login/`, {
+        Email: data.Email,
+        Password: data.Password,
+      });
+  
       // Handle the API response
       if (apiRes.data.error) {
         toast({
@@ -53,29 +46,53 @@ export function LoginForm({ className, ...props }) {
           description: apiRes.data.error,
           variant: "destructive",
         });
-      } else {
-        if (apiRes.data.token) {
-          // Save token and user ID to local storage
-          localStorage.setItem('token', apiRes.data.token);
-          localStorage.setItem('userid', apiRes.data.userid);
+        return;
+      }
+  
+      if (apiRes.data.token) {
+        // Save token and user ID to local storage
+        localStorage.setItem('token', apiRes.data.token);
+        localStorage.setItem('userid', apiRes.data.userid);
+  
+        // Fetch user details
+        try {
+          const userDetailsResponse = await axios.get(`https://api.takeoffyachts.com/Auth/user/details/`, {
+            headers: { Authorization: `Bearer ${apiRes.data.token}` },
+          });
+  
+          if (userDetailsResponse.data.Username) {
+            localStorage.setItem('nickname', userDetailsResponse.data.Username);
+          }
+        } catch (error) {
+          console.error('Error fetching user details:', error);
         }
+  
+        // ✅ Now that nickname is saved, call signIn
+        const signInRes = await signIn("credentials", {
+          redirect: false,
+          Email: data.Email,
+          Password: data.Password,
+          nickname: localStorage.getItem('nickname'), // Now this has the correct value
+        });
+  
+        if (signInRes.error) {
+          toast({
+            title: "Error",
+            description: signInRes.error,
+            variant: "destructive",
+          });
+          return;
+        }
+  
         toast({
           title: "Welcome back! ",
           description: "Successfully logged in.",
           variant: "default",
           className: "bg-green-500 text-white border-none",
         });
+  
         reset();
         router.push("/dashboard");
-      }
-
-      // Handle the signIn response
-      if (signInRes.error) {
-        toast({
-          title: "Error",
-          description: signInRes.error,
-          variant: "destructive",
-        });
       }
     } catch (error) {
       const errorMessage = error.response?.data?.detail || error.message || "An unexpected error occurred.";
@@ -86,6 +103,7 @@ export function LoginForm({ className, ...props }) {
       });
     }
   };
+  
 
   const handleSocialLogin = async (provider) => {
     try {
@@ -123,7 +141,7 @@ export function LoginForm({ className, ...props }) {
     >
       <div className="flex flex-col items-center gap-2 text-center">
         {/* <Image src={logo} width={200} height={50} alt="Logo" /> */}
-        
+
         <Image src={`/assets/images/logo.png`} width={200} height={50} alt="Logo" />
 
         <h1 className="text-3xl font-bold my-5">Login</h1>

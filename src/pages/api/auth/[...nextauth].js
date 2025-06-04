@@ -39,6 +39,7 @@ export const authOptions = {
           );
           
           const user = response.data;
+          user.nickname = credentials.nickname;
           if (!user) {
             return null;
           }
@@ -87,13 +88,18 @@ export const authOptions = {
         return {
           ...token,
           accessToken: account.access_token,
-          user
-        };
+          user: {
+            ...user,
+            nickname: user.nickname || null  
+          }        };
       }
       return token;
     },
     async session({ session, token }) {
-      session.user = token.user || session.user;
+      session.user = {
+        ...session.user,
+        ...token.user
+      }
       session.accessToken = token.accessToken;
       return session;
     }
