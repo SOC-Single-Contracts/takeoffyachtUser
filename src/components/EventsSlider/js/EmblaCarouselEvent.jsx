@@ -15,11 +15,13 @@ import Image from 'next/image'
 import BrandCard from '@/app/dashboard/partner-discounts/DiscountCard'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useTheme } from 'next-themes'
 
 const EventSliderEmbala = (props) => {
   const { slides, options, handleTicketChange, ticketCounts } = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
   const { id, eventsType } = useParams();
+  const { theme } = useTheme();
 
 
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
@@ -49,7 +51,7 @@ const EventSliderEmbala = (props) => {
                 {
                 (pkg?.sold) &&
 
-                <Image src="/assets/images/sold.jpg" alt="Hot" width={100} height={100} className="absolute rounded-3xl top-0 right-0 z-10" />
+                <Image src={theme === 'dark' ? "/assets/images/sold_dark.png" : "/assets/images/sold.jpg"} alt="Hot" width={100} height={100} className="absolute rounded-3xl top-0 right-0 z-10" />
 
               }
                   <h3 className='text-gray-700 font-semibold text-lg dark:text-white'>{pkg?.package_type}</h3>
