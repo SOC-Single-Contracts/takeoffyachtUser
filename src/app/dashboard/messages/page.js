@@ -36,16 +36,16 @@ const Chat = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
 
-
-
-
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
+  // Only scroll to bottom when the component mounts or when explicitly requested
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, []); // Empty dependency array means it only runs on mount
 
   /// send message
   const handleSendMessage = async (e) => {
@@ -118,7 +118,6 @@ const Chat = () => {
       console.error('Error handling file:', error);
     }
   };
-  console.log('session', session)
 
   const startNewChat = async () => {
     if (!session?.user?.userid) return;
@@ -170,6 +169,19 @@ const Chat = () => {
           } else {
             console.log("Connected as:", user);
           }
+          const desiredNickname = session.user.nickname || session.user.email?.split("@")[0] || "";
+        const profileUrl = session.user.image || "";
+        sb.updateCurrentUserInfo(
+          desiredNickname,
+          profileUrl,
+          (updatedUser, updateErr) => {
+            if (updateErr) {
+              console.error("Failed to update Sendbird user info:", updateErr);
+            } else {
+              console.log("Sendbird nickname set to:", updatedUser.nickname);
+            }
+          }
+        );
         });
   
         loadUserChannels(); // Load channels after connection
@@ -196,7 +208,6 @@ const Chat = () => {
         }
   
         console.log("Fetched Users:", allUsers.length);
-        console.log("allUsers", allUsers)
   
         const formattedUsers = allUsers.map(user => ({
           id: user.userId,
@@ -206,7 +217,6 @@ const Chat = () => {
           status: user.connectionStatus || 'offline',
           email: user.metaData?.email
         }));
-        console.log("formattedUsers", formattedUsers)
   
         setParticipants(formattedUsers);
         setCurrentUser(sb.currentUser);
@@ -259,6 +269,14 @@ const Chat = () => {
               data: message.data
             }]);
             setNewMessageAdded(true);
+            // Only scroll to bottom if it was at bottom before
+            const element = document.querySelector('.flex-1.overflow-y-auto');
+            if (element) {
+              const atBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 100;
+              if (atBottom) {
+                scrollToBottom();
+              }
+            }
           };
 
           sb.addChannelHandler(`channel_${existingChannel.channel.url}`, channelHandler);
@@ -412,7 +430,6 @@ const Chat = () => {
 
     // Create preview URL
     const previewUrl = URL.createObjectURL(file);
-    console.log("previewUrl h bahi", previewUrl, file)
     setImagePreview(previewUrl);
     setSelectedImage(file);
   };

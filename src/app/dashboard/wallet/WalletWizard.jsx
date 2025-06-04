@@ -217,7 +217,7 @@ const WalletWizardContent = () => {
 
             <h2 className="text-sm md:text-lg font-bold">Available Balance</h2>
             <h2 className="text-sm md:text-lg font-bold">
-              {!walletDetails?.hideAmount ? `$${walletDetails?.balance}` : "*****"}
+              {!walletDetails?.hideAmount ? `AED${walletDetails?.balance}` : "*****"}
             </h2>
 
 
