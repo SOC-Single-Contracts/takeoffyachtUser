@@ -4,9 +4,10 @@ import React from "react";
 import { featuredyachts, logo } from "../../../../public/assets/images";
 import Link from "next/link";
 import YachtDetailsGrid from "../../../../components/YachtDetailsGrid";
-import { Heart } from 'lucide-react';
+import { Heart, Trash, ArrowRight } from 'lucide-react';
+import { removeFromWishlist } from '@/api/wishlist'
 
-const CartItem = ({ yacht }) => {
+const CartItem = ({ yacht, userId, upatedWhislist }) => {
   const { id, wishlistId, name, description, image, features, pricePerHour, minHours, type } = yacht;
   // console.log(type)
 
@@ -22,6 +23,21 @@ const CartItem = ({ yacht }) => {
         return `/dashboard/event/all/${id}`;
       default:
         return `/dashboard/yachts/${id}/booking`; // Default to yacht booking
+    }
+  };
+
+  const getNavLink = () => {
+    switch (type) {
+      case 'yacht':
+        return `/dashboard/yachts/${id}`;
+      case 'f1-yachts':
+        return `/dashboard/f1yachts/${id}`;
+      case 'regular-exp':
+        return `/dashboard/experience/regular-exp/${id}`;
+      case 'event':
+        return `/dashboard/event/all/${id}`;
+      default:
+        return `/dashboard/yachts/${id}`; // Default to yacht booking
     }
   };
 
@@ -53,7 +69,10 @@ const CartItem = ({ yacht }) => {
   };
 
 
-
+  const deleteWishlistItem = async () => {
+    await removeFromWishlist(userId, id, type);
+    upatedWhislist()
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg overflow-hidden">
@@ -69,7 +88,13 @@ const CartItem = ({ yacht }) => {
           }}
         />
         <div className="flex flex-col gap-1 md:mt-0 mt-2">
-          <h1 className="md:text-2xl text-lg font-bold">{name}</h1>
+        <div className="flex items-center justify-between">
+            <h1 className="md:text-2xl text-lg font-bold">{name}</h1>
+            <div className="cursor-pointer relative">
+              <Trash size={20} className="absolute bottom-[14px] right-0 hover:opacity-50"
+                onClick={() => deleteWishlistItem()} />
+            </div>
+          </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{description}</p>
         </div>
         {/* <Button
@@ -100,6 +125,13 @@ const CartItem = ({ yacht }) => {
             className="rounded-full font-medium md:h-10 border-black border-2 md:mt-0 mt-2"
           >
             {getButtonText()}
+          </Button>
+        </Link>
+        <Link href={getNavLink()}>
+          <Button
+            className="bg-[#F8F8F8] hover:bg-[#F8F8F8] shadow-md rounded-full flex items-center justify-center w-10 h-10"
+          >
+            <ArrowRight className="w-4 h-4 text-black" />
           </Button>
         </Link>
         {/* <div className="flex flex-col text-start">

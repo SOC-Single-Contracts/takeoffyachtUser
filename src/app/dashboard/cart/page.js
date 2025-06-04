@@ -25,6 +25,10 @@ const Cart = () => {
   // Get user ID, default to 1 if not available
   const userId = session?.user?.userid ;
 
+  const upatedWhislist =  () => {
+    setLoading(true);
+  }
+
   useEffect(() => {
     const loadWishlist = async () => {
       // Only attempt to load wishlist if session is authenticated
@@ -125,7 +129,7 @@ const Cart = () => {
     };
 
     loadWishlist();
-  }, [session, status]);
+  }, [session, status, loading ]);
 
   ///test
   // useEffect(()=>{
@@ -193,6 +197,8 @@ const Cart = () => {
             <CartItem 
               key={yacht?.uniqueKey} 
               yacht={yacht} 
+              userId={userId} 
+              upatedWhislist={upatedWhislist}
             />
           ))
         ) : (
