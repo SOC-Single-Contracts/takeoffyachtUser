@@ -65,7 +65,7 @@ const Featured = () => {
       setLoading(true);
       setError(null);
       // Using hardcoded user ID 1 for public access
-      const newData = await fetchYachts(1, yachtsType == "f1yachts" ? "f1yachts" : "regular");
+      const newData = await fetchYachts(1, yachtsType == "f1yachts" ? "f1yachts" : "regular", true);
       setYachts(newData);
     } catch (err) {
       console.error('Yacht fetching error:', err);

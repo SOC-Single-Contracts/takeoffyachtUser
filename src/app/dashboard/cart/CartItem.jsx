@@ -75,7 +75,9 @@ const CartItem = ({ yacht, userId, upatedWhislist }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg overflow-hidden"
+    onClick={() => window.location.href = getNavLink()}
+    >
       <div className="flex relative md:flex-row flex-col md:items-center items-start md:space-x-4">
         <Image
           src={image || featuredyachts}
@@ -91,8 +93,11 @@ const CartItem = ({ yacht, userId, upatedWhislist }) => {
         <div className="flex items-center justify-between">
             <h1 className="md:text-2xl text-lg font-bold">{name}</h1>
             <div className="cursor-pointer relative">
-              <Trash size={20} className="absolute bottom-[14px] right-0 hover:opacity-50"
-                onClick={() => deleteWishlistItem()} />
+              <Trash size={20} className="absolute bottom-[14px] right-0 hover:opacity-50 z-10"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  deleteWishlistItem()
+                  }} />
             </div>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{description}</p>
@@ -119,21 +124,25 @@ const CartItem = ({ yacht, userId, upatedWhislist }) => {
         </div>
       </div>
       <div className="flex justify-between md:flex-row flex-col-reverse md:items-center items-start">
-        <Link href={getBookingLink()}>
           <Button
             variant="outline"
             className="rounded-full font-medium md:h-10 border-black border-2 md:mt-0 mt-2"
+            onClick={(e) => {
+              e.stopPropagation()
+              window.location.href = getBookingLink()
+              }}
           >
             {getButtonText()}
           </Button>
-        </Link>
-        <Link href={getNavLink()}>
           <Button
             className="bg-[#F8F8F8] hover:bg-[#F8F8F8] shadow-md rounded-full flex items-center justify-center w-10 h-10"
+            onClick={(e) => {
+              e.stopPropagation()
+              window.location.href = getNavLink()
+              }}
           >
             <ArrowRight className="w-4 h-4 text-black" />
           </Button>
-        </Link>
         {/* <div className="flex flex-col text-start">
           <p className="text-sm font-medium">
             AED{" "}

@@ -1,9 +1,9 @@
 import { API_BASE_URL } from "@/lib/api";
 import axios from "axios";
 
-export const fetchYachts = async (id,yachtsType) => {
+export const fetchYachts = async (id,yachtsType,is_featured) => {
   try {
-    const response = await axios.get(`https://api.takeoffyachts.com/yacht/get_yacht/1?YachtType=${yachtsType}`);
+    const response = await axios.get(`https://api.takeoffyachts.com/yacht/get_yacht/1?YachtType=${yachtsType}${is_featured ? '&is_featured=True' : ''}`);
 
     
     if (response.data.error_code === "pass") {
