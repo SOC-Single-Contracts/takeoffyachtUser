@@ -45,19 +45,19 @@ const NotFound = () => {
 
           {/* 404 Content */}
           <div className="relative">
-            <div className="text-[12rem] font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#BEA355] to-gray-600 leading-none animate-bounce">
+            <div className="text-[6rem] sm:text-[8rem] md:text-[10rem] lg:text-[12rem] font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#BEA355] to-gray-600 leading-none animate-bounce">
               404
             </div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-9xl font-bold text-[#BEA355]/10 -z-10 animate-pulse">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-bold text-[#BEA355]/10 -z-10 animate-pulse">
               LOST
             </div>
           </div>
 
-          <h1 className="text-4xl font-bold text-gray-800 mt-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mt-4">
             Page Not Found
           </h1>
 
-          <p className="text-lg text-gray-600 mt-4 mb-8">
+          <p className="text-base sm:text-lg text-gray-600 mt-4 mb-8">
             Oops! The page you're looking for seems to have set sail on an unexpected voyage.
           </p>
 
