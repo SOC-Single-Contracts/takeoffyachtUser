@@ -51,12 +51,12 @@ const EventSliderEmbala = (props) => {
                 {
                 (pkg?.sold) &&
 
-                <Image src={theme === 'dark' ? "/assets/images/sold_dark.png" : "/assets/images/sold.jpg"} alt="Hot" width={100} height={100} className="absolute rounded-3xl top-0 right-0 z-10" />
+                <Image src={theme === 'dark' ? "/assets/images/sold_out_dark-removebg-preview.png" : "/assets/images/sold_out_light.png"} alt="Hot" width={80} height={100} className="absolute rounded-3xl top-0 right-0 z-10" />
 
               }
                   <h3 className='text-gray-700 font-semibold text-lg dark:text-white'>{pkg?.package_type}</h3>
-                  <p className='text-gray-700 font-normal text-sm flex-grow dark:text-white truncate overflow-hidden ellipsis'>
-                    {pkg?.description || 'No description available'}
+                  <p className={`text-gray-700 font-normal text-sm flex-grow dark:text-white ${pkg?.sold ? 'line-clamp-2' : 'truncate overflow-hidden ellipsis'}`}>
+                    {pkg?.description || <span>No description<br />available</span>}
                   </p>
                 </div>
                 <div className='flex flex-col justify-start space-y-4'>
