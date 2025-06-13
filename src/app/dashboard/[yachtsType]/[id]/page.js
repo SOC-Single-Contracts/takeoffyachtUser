@@ -148,7 +148,17 @@ const YachtDetail = () => {
           ? selectedYacht.categories[0].replace(/'/g, '')
           : "Super Yacht", // Show first category or default to "Super Yacht"
         condition: true
-      }
+      },
+      {
+        imgSrc: "/assets/images/ticket.png",
+        text: `${yacht?.mariana} Marina Passes`,
+        condition: yacht?.mariana
+      },
+      {
+        imgSrc: "/assets/images/parking.png",
+        text: `${yacht?.trackside} Trackside Parking`,
+        condition: yacht?.mariana
+      },
     ];
 
     return detailsMap
@@ -159,7 +169,7 @@ const YachtDetail = () => {
           className="flex flex-col justify-center items-center w-full space-y-2 font-medium text-xs py-4 border border-gray-300 rounded-lg shadow-sm"
         >
           <Image src={imgSrc} quality={100} alt={text} width={20} height={20} className="dark:invert" />
-          <p className="text-gray-700 dark:text-gray-300">{text}</p>
+          <p className="text-gray-700 dark:text-gray-300 text-center">{text}</p>
         </div>
       ))
   }
@@ -393,11 +403,11 @@ const YachtDetail = () => {
 
 
   //test
-    // useEffect(()=>{
+  // useEffect(()=>{
 
-    // let arr = [{latitude:latitude,longitude:longitude}]
+  // let arr = [{latitude:latitude,longitude:longitude}]
 
-    // setMarkers(arr)
+  // setMarkers(arr)
 
 
   // },[selectedYacht])
@@ -585,9 +595,13 @@ const YachtDetail = () => {
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
                 {getYachtDetailsGrid(selectedYacht?.yacht)}
-                <div className="flex justify-center items-center w-full h-20 border border-gray-300 rounded-lg shadow-sm">
-                  <Image src="/assets/images/logoround.svg" quality={100} width={60} height={60} alt="Logo" />
-                </div>
+                {
+                  selectedYacht?.yacht?.brand?.image && (
+                    <div className="flex justify-center items-center w-full h-20 border border-gray-300 rounded-lg shadow-sm">
+                      <Image src={`${process.env.NEXT_PUBLIC_S3_URL}${selectedYacht?.yacht?.brand?.image}`} quality={100} width={60} height={60} alt="Logo" />
+                    </div>
+                  )
+                }
               </div>
               <div className="flex justify-between flex-wrap items-center gap-2 my-4">
                 <div className="flex justify-start items-center gap-2">
@@ -852,16 +866,16 @@ const YachtDetail = () => {
                     selectedYacht.yacht.features.map((feature, index) => (
                       <div key={index} className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md px-3 py-2 hover:shadow-lg transition-shadow duration-300">
                         <div className="flex-shrink-0">
-                        <Image
-                              src={
-                                (feature?.image) ? `${process.env.NEXT_PUBLIC_S3_URL}${feature?.image}`
-                                  : '/assets/images/filterSvgs/Icon_Dinghy.svg'
-                              }
-                              alt={feature.name} 
-                              onError={(e) => {
-                                e.target.src = '/assets/images/filterSvgs/Icon_Dinghy.svg';
-                              }}
-                               width={25} height={25} className="mr-2" />
+                          <Image
+                            src={
+                              (feature?.image) ? `${process.env.NEXT_PUBLIC_S3_URL}${feature?.image}`
+                                : '/assets/images/filterSvgs/Icon_Dinghy.svg'
+                            }
+                            alt={feature.name}
+                            onError={(e) => {
+                              e.target.src = '/assets/images/filterSvgs/Icon_Dinghy.svg';
+                            }}
+                            width={25} height={25} className="mr-2" />
                         </div>
                         <div className="flex-grow">
                           <h3 className="text-gray-800 dark:text-gray-200 font-medium">{feature.name}</h3>
@@ -888,7 +902,7 @@ const YachtDetail = () => {
                           key={sub.id}
                           className="text-gray-700 dark:text-gray-400 font-semibold text-sm flex items-center bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-2"
                         >
-                           <Image
+                          <Image
                             src={
                               (sub?.dark_icon) ? `${process.env.NEXT_PUBLIC_S3_URL}${sub?.dark_icon}`
                                 : '/assets/images/filterSvgs/Icon_Dinghy.svg'
